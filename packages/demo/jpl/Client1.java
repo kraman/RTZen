@@ -21,10 +21,10 @@ public class Client1 extends RealtimeThread
 {
     private static final int A_SECOND = 1000;
     private static final int INITIAL_SLEEP = A_SECOND;
-    private static final int REQUEST_SLEEP = 10;
-    public static final int RUN_NUM = 5000;
+    private static final int REQUEST_SLEEP = 1;
+    public static final int RUN_NUM = 10000;
     public static final int ARRAY_SIZE = 200;
-    public static final int WARM_UP = 1000;
+    public static final int WARM_UP = 2000;
 
     static int[] array1 = new int[ARRAY_SIZE];
 
@@ -93,27 +93,31 @@ public class Client1 extends RealtimeThread
              
             System.out.println("==============Warm Up==============");
             for (int i=0; i<WARM_UP; i++){
+                NativeTimeStamp.RecordTime(20);
                 server.getMessage(id, array1);
+                NativeTimeStamp.RecordTime(20);
+
             }
 
             System.out.println("==============Performance benchmark==============");
             long start = System.currentTimeMillis();
-            for (int i = 0; i< RUN_NUM; i++)
+            for (int i = 0; i< RUN_NUM*3; i++)
             {
                 
                 //System.out.print("# ");
                 //System.out.println(server.getMessage(id, array1));
+                NativeTimeStamp.RecordTime(21);
                 server.getMessage(id, array1);
                 NativeTimeStamp.RecordTime(21);
                     
                 sleep(REQUEST_SLEEP);
-                /*
+                
                 if (i != 0 && i % 500 == 0)
                 {
                     Logger.write(i);
                     Logger.writeln();
                 }
-                */
+                
                 
             }
             long end = System.currentTimeMillis();
