@@ -1,0 +1,65 @@
+Gunar Schirner (hschirne@uci.edu)
+
+
+Roundtrip Latency Measurements for different ORB implementations
+
+This package implements the tests for RTZen and for TAO. A package with the 
+same name exists in regular Zen, which implements the according test on 
+regular Zen. 
+
+This package uses the package perf.TimeStamp, which implements a native 
+time stamp driver. The TimeStamp driver was taken from Ed Pla, it uses
+unix commands to get an accurate (more granular than 1ms) time stamp.
+
+During the test each individual call is measured, this allows jitter 
+calculations later on. 
+
+
+1) Run the tests
+Use the script run_tests for executing each part of the test and generating
+the result files. The local tests can be run on any node.
+
+Run a local measurement test for RTZen on TimeSys:
+ ./run_test both 2 2 
+
+Run a local measurement test for TAO:
+ ./run_test both 3 3 
+
+To run a test with regular Zen, change to the directory of the perf.jitter
+package WITHIN regular Zen and execute:
+ ./run_test both 1 1 
+
+Copy the result files of the regular Zen named timeRecords.1.*.txt back to 
+the RTZen perf/jitter direcory for generating the graphs.
+
+
+For running the remote tests ssh has to be installed. Currently run_test is 
+setup to execute the remote part on node0.rtzen.pces.emulab.net. Modify the 
+script for a different hostname. Run the scripts as shown above but append a 
+zero '0' to the second argument (e.g. ./run_test both 20 2).
+
+
+2) Generating Graphs
+Generating the graphs uses octave and gnuplot. Perform the following command
+to generate the graphs:
+
+  octave <scriptName>
+
+
+The following scripts are available
+
+gen_tput.m  generates 4 graphs with for latency/throughput local/remote 
+            comparing each implementation
+get_summary.m  gives the raw statistical data for all tests. output into text 
+	           file
+
+gen_jitter.m  generates 6 graphs one for each implementation/location. 
+              Showing the jitter over increasing size.
+
+gen_local.m   compares the jitter for a fixed length over the different
+              implementation for local calls. ATTENTION this one is 
+              written for Matlab.
+
+gen_remote.m  compares the jitter for a fixed length over the different
+              implementation for remote calls. ATTENTION this one is 
+              written for Matlab.
