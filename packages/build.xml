@@ -104,16 +104,10 @@
             bootclasspath="${zen.rtbootclasspath}"
             includeJavaRuntime="yes"
             >
-
             <patternset refid="sources"/>
-            <patternset>
-                <include name="${zen.anttaskdir}/src/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java" if="compiler_jRate"/>
-                <include name="src/edu/uci/ece/zen/utils/ScopeSafeConsoleLogger.java" if="compiler_OVM"/>
-                <include name="src/javax/**" if="compiler_jdk"/>
-                <!--classpath="${basedir}/../fake_rtjava/lib/foundation.jar"
-                -->
-            </patternset>
-
+            <include name="ant-tasks/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java" if="compiler_jRate"/>
+            <include name="src/edu/uci/ece/zen/utils/ScopeSafeConsoleLogger.java" if="compiler_OVM"/>
+            <include name="src/javax/**" if="compiler_jdk"/>
             <classpath>
                 <pathelement location="${zen.classpath}"/>
             </classpath>
