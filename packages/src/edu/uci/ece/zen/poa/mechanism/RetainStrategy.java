@@ -162,7 +162,7 @@ public final class RetainStrategy extends ServantRetentionStrategy {
     public int bindDemuxIndex( edu.uci.ece.zen.poa.POAHashMap map , IntHolder exceptionValue )
     {
         exceptionValue.value = POARunnable.NoException;
-        return this.activeMap.bind(map.getObjectID() , map);
+        return this.activeMap.bind( map.objectID() , map);
     }
 
    /**

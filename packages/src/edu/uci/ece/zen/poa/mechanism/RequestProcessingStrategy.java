@@ -35,8 +35,8 @@ public abstract class RequestProcessingStrategy {
      */
 
     
-    public static RequestProcessingStrategy init( org.omg.CORBA.Policy[] policy, ServantRetentionStrategy retentionStrategy, IdUniquenessStrategy uniquenessStrategy,
-            ThreadPolicyStrategy threadStrategy, POAImpl pimpl , IntHolder exceptionValue)
+    public static RequestProcessingStrategy init( org.omg.CORBA.Policy[] policy, ServantRetentionStrategy retentionStrategy,
+             IdUniquenessStrategy uniquenessStrategy, ThreadPolicyStrategy threadStrategy, POAImpl pimpl , IntHolder exceptionValue)
     {
         exceptionValue.value = POARunnable.NoException;
 
@@ -46,8 +46,7 @@ public abstract class RequestProcessingStrategy {
             if( exceptionValue.value != POARunnable.NoException)
                 return null;
             ServantActivatorStrategy activator = new ServantActivatorStrategy();
-            activator.init(retentionStrategy, threadStrategy,uniquenessStrategy , 
-                pimpl , exceptionValue );
+            activator.init(retentionStrategy, threadStrategy,uniquenessStrategy , pimpl , exceptionValue );
 
             if (exceptionValue.value == POARunnable.NoException)
                 return activator;    
@@ -55,9 +54,11 @@ public abstract class RequestProcessingStrategy {
             {
                 exceptionValue.value = POARunnable.NoException;
                 retentionStrategy.validate(retentionStrategy.NON_RETAIN , exceptionValue );
-                ServantLocatorStrategy locator = new ServantLocatorStrategy();
+                //KLUDGE
+                //ServantLocatorStrategy locator = new ServantLocatorStrategy();
                 if (exceptionValue.value == POARunnable.NoException)
-                    return locator;
+                    return null;
+                    //return locator;
                 else
                 {
                     exceptionValue.value = POARunnable.InvalidPolicyException;
@@ -73,19 +74,14 @@ public abstract class RequestProcessingStrategy {
                 exceptionValue.value = POARunnable.InvalidPolicyException;
                 return null;
             }
-
-            try {
-                DefaultServantStrategy servant = new DefaultServantStrategy();
-
-                //servant.initialize(retentionStrategy, ;
+            DefaultServantStrategy servant = new DefaultServantStrategy();
+            servant.initialize(retentionStrategy, threadStrategy , exceptionValue );
+            if( exceptionValue.value == POARunnable.NoException )
                 return servant;
-            } catch (Exception ex2) {
-                throw new org.omg.PortableServer.POAPackage.InvalidPolicy();
-            }
+            else
+                return null;
         }
-
         ActiveObjectMapOnlyStrategy aom = new ActiveObjectMapOnlyStrategy();
-
         aom.initialize( retentionStrategy, threadStrategy , exceptionValue );
         return aom;
     }

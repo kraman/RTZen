@@ -99,8 +99,9 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
     public void handleRequest( RequestMessage request, edu.uci.ece.zen.poa.POA poa, edu.uci.ece.zen.poa.SynchronizedInt requests, IntHolder exceptionValue ) {
         exceptionValue.value = POARunnable.NoException;
         if (this.retentionStrategy != null) {
-                int tmp = handleIfRetain(request, poa, requests, exceptionValue);
-            } // can thorw ObjectNotActive, ClassCastException and WrongPolicy
+            handleIfRetain(request, poa, requests, exceptionValue);
+        } // can thorw ObjectNotActive, ClassCastException and WrongPolicy
+
         if (exceptionValue.value != 0) 
         {
             //something happened here and nothing is done

@@ -8,6 +8,7 @@ package edu.uci.ece.zen.poa.mechanism;
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.portable.InvokeHandler;
 import edu.uci.ece.zen.orb.ResponseHandler;
+import edu.uci.ece.zen.orb.giop.type.*;
 import edu.uci.ece.zen.poa.*;
 import edu.uci.ece.zen.utils.*;
 import org.omg.CORBA.IntHolder;
@@ -30,18 +31,17 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
     * @param servantManager java.lang.Object
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public synchronized void setInvokeHandler(java.lang.Object servantManager)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy {
+    public synchronized void setInvokeHandler(java.lang.Object servantManager , IntHolder exceptionValue ){
         if (this.manager != null) {
-            throw new org.omg.CORBA.BAD_INV_ORDER(6,
-                    CompletionStatus.COMPLETED_NO);
+            exceptionHolder.value = POARunnable.BadInvOrderException;
+            return;
         }
 
         if (servantManager instanceof org.omg.PortableServer.ServantLocator) {
             this.manager = (org.omg.PortableServer.ServantLocator) servantManager;
         }
-
-        throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+        
+        exceptionHolder.value = POARunnable.WrongPolicyException;
     }
 
    /**
@@ -51,14 +51,12 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     * @throws org.omg.PortableServer.POAPackage.ObjectNotActive
     */
-    public synchronized Object getRequestProcessor(int name) throws
-                org.omg.PortableServer.POAPackage.ObjectNotActive,
-                org.omg.PortableServer.POAPackage.WrongPolicy {
-        if (validate(name) && this.manager != null) {
+    public synchronized Object getRequestProcessor(int name , IntHolder exceptionValue ){
+        if (validate(name , exceptionValue) && this.manager != null) {
             return this.manager;
         }
 
-        throw new org.omg.PortableServer.POAPackage.ObjectNotActive();
+        exceptionValue.value = POARunnable.ObjNotActiveException;
     }
 
    /**
@@ -68,10 +66,9 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
     * @param requests active requests
     * @return int return state
     */
-    public int handleRequest(RequestMessage request,
-            edu.uci.ece.zen.poa.POA poa,
-            edu.uci.ece.zen.poa.SynchronizedInt requests) {
-        edu.uci.ece.zen.poa.ObjectKey ok = request.getObjectKey();
+    public int handleRequest(RequestMessage request, edu.uci.ece.zen.poa.POA poa,
+             edu.uci.ece.zen.poa.SynchronizedInt requests , IntHolder exceptionValue) {
+        FString ok = request.getObjectKey();
         byte[] id = ok.getId();
 
         InvokeHandler invokeHandler;

@@ -253,18 +253,24 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
     protected InvokeHandler incarnate( FString ok, FString oid , org.omg.PortableServer.POA poa , POAImpl pimpl , IntHolder exceptionValue ){
         InvokeHandler invokeHandler = null;
         synchronized (mutex) {
-            invokeHandler = (InvokeHandler) this.manager.incarnate( oid , poa);
+            //KLUDGE:
+            try{
+                invokeHandler = (InvokeHandler) this.manager.incarnate( oid.getData() , poa);
+            }catch( Exception fre ){
+                fre.printStackTrace();
+            }
 
-            if (this.uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID) && this.retain.servantPresent((org.omg.PortableServer.Servant) invokeHandler)) {
+            if (this.uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID) && 
+                    this.retain.servantPresent((org.omg.PortableServer.Servant) invokeHandler, exceptionValue)) {
                 exceptionValue.value = POARunnable.ObjAdapterException;
                 return null;
             }
 
-            POAHashMap map = pimpl.getHashMap();
+            POAHashMap map = pimpl.getPOAHashMap();
             map.init( oid , (org.omg.PortableServer.Servant) invokeHandler );
 
             // Add the Reference to the AOM
-            this.retain.add( oid, map );
+            this.retain.add( oid, map , exceptionValue );
             return invokeHandler;
         }
     }
