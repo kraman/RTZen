@@ -28,6 +28,7 @@ public class RequestMessage extends
         super();
     }
 
+    // client side
     public void init(ClientRequest clr, int messageId) {
         //super();
         ZenProperties.logger.log("RequestMessage1");
@@ -36,9 +37,17 @@ public class RequestMessage extends
         header.init(clr.contexts, messageId, clr.responseExpected,
                 clr.objectKey, clr.operation, reqPrin);
     }
+
+    //server side
+    public void init(ORB orb, ReadBuffer stream) {
+        super.init(orb, stream);
+        header = RequestHeaderHelper.read(istream, RequestHeader.instance(header));
+        messageBody = stream;
+    }
+
     static int drawn = 0;
     //private boolean inUse = false;
-    public static synchronized RequestMessage getMessage() {
+    public static RequestMessage getMessage() {
         drawn++;
         //if(ZenProperties.memDbg1) System.out.write('d');
         //if(ZenProperties.memDbg1) System.out.write('r');
@@ -64,11 +73,7 @@ public class RequestMessage extends
         messageBody = stream;
     }
 */
-    public void init(ORB orb, ReadBuffer stream) {
-        super.init(orb, stream);
-        header = RequestHeaderHelper.read(istream, RequestHeader.instance(header));
-        messageBody = stream;
-    }
+
 
     public int getRequestId() {
         return header.request_id;

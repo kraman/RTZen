@@ -541,6 +541,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
             return;
         }
         buffer.free();
+        buffer = null;
         CDRInputStream.release(this);
         inUse = false;
     }

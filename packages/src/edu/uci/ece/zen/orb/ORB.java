@@ -49,8 +49,8 @@ import java.net.URL;
 /**
  * @author Alex Potanin (alex@mcs.vuw.ac.nz)
  * @author Krishna Raman
- * 
- * 
+ *
+ *
  */
 
 public class ORB extends org.omg.CORBA_2_3.ORB {
@@ -102,7 +102,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             //Set up storage for memoryAreas
             unusedMemoryAreas = (Queue) imm.newInstance(Queue.class);
             scopeMemorySize = Integer.parseInt(ZenProperties.getGlobalProperty(
-                    "doc.zen.orb.scopedMemorySize", "2097951"));	//Change by Alex...TODO: unknown reason
+                    "doc.zen.orb.scopedMemorySize", "2097951"));    //Change by Alex...TODO: unknown reason
             for (int i = 0; i < 20; i++)
                 unusedMemoryAreas.enqueue(new LTMemory(100, scopeMemorySize));
 
@@ -405,7 +405,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         }
 
 
-    
+
     //org.omg.CORBA.Object ret = Resolver.resolve( this , object_name );
         //if( ret == null )
         throw new org.omg.CORBA.ORBPackage.InvalidName(object_name
@@ -459,7 +459,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             }
             String namingIOR = "";
             try{
-                URL namingURL = new URL(ZenProperties.getGlobalProperty("naming.ior_file.for_reading",""));                
+                URL namingURL = new URL(ZenProperties.getGlobalProperty("naming.ior_file.for_reading",""));
                 File namingIORFile = new File(namingURL.getFile());
                 BufferedReader br = new BufferedReader( new FileReader(namingIORFile) );
                 namingIOR = br.readLine();
@@ -666,15 +666,15 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                     "Queue not created");
             return null;
         }
-        
+
         if (!q.isEmpty()){
             return q.dequeue();
         }
 
-        Object o = null; 
+        Object o = null;
 
         try {
-            o = ImmortalMemory.instance().newInstance(cls); 
+            o = ImmortalMemory.instance().newInstance(cls);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
         }
@@ -867,7 +867,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     /**
      * Creata a new Any that has its orb reference populated by this orb.
-     * 
+     *
      * @return edu.uci.ece.zen.orb.any.Any using default strategy for
      *         implementing Anys, with its orb reference populated by this orb.
      */
@@ -877,7 +877,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     /**
      * Called in GIOP 1.0 and 1.1 to cancel a request.
-     * 
+     *
      * @param request_id
      *            numerical identifier of Request or LocateRequest to cancel
      */

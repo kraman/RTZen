@@ -41,7 +41,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
     }
 
     static int drawn = 0;
-    public static  synchronized ReplyMessage getMessage() {
+    public static ReplyMessage getMessage() {
          drawn++;
         if(ZenProperties.memDbg1) System.out.write('d');
         if(ZenProperties.memDbg1) System.out.write('r');

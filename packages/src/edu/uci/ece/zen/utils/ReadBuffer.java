@@ -36,8 +36,9 @@ public class ReadBuffer {
             System.exit(-1);
         }
     }
-    static int idgen = -1000000;
+    static int idgen = 0;
     int id;
+
     boolean inUse = false;
     public static ReadBuffer instance() {
         try {
@@ -45,7 +46,7 @@ public class ReadBuffer {
                 numFree--;
             if (bufferCache.isEmpty()) {
                 ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
-                rb.id = idgen++;
+                //rb.id = idgen++;
 
                 rb.inUse = true;
                 return rb;
@@ -56,7 +57,8 @@ public class ReadBuffer {
                     ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class,
                         "free",
                         "Buffer already in use.");
-
+                //ret.previd = ret.id;
+                //ret.id = idgen++;
                 ret.inUse = true;
                 ret.init();
                 return ret;
@@ -188,15 +190,22 @@ public class ReadBuffer {
     }
 
     public void free() {
-/*
-        if(position < limit) {
-            System.out.println("pos: " + position);
-            System.out.println("lim: " + limit);
+        /*
+        synchronized(ReadBuffer.class){
+            System.out.println("freeing id" + id + "prev id" + previd);
 
             Thread.dumpStack();
-
         }
-        */
+
+        if(position < limit) {
+            synchronized(ReadBuffer.class){
+                System.out.println("pos: " + position);
+                System.out.println("lim: " + limit);
+            }
+            return;
+
+        }*/
+
         if(!inUse){
             ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
                 "free",
