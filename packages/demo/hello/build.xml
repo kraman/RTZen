@@ -28,6 +28,16 @@
                 <include name="*.java"/>
             </fileset>
          </demo.compile.jrate>
+	 <demo.compile.jrate main="demo.hello.Server" out="server">
+            <fileset dir="${zen.srcdir}/${package.dir}">
+                <!--include name="Client.java"/-->
+                <!--include name="Server.java"/-->
+                <include name="*.java"/>
+            </fileset>
+            <fileset dir="${zen.gendir}/${package.dir}">
+                <include name="*.java"/>
+            </fileset>
+         </demo.compile.jrate>
     </target>
 
     <target name="server">
