@@ -17,9 +17,12 @@ public class ORBImpl{
         properties.addPropertiesFromArgs( args );
         properties.addProperties( props );
         this.orbFacade = orbFacade;
+        System.out.println( "======================Setting portal variable==============================" );
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( this );
         orbImplRunnable = new ORBImplRunnable();
-        NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,null,null,null,null,orbImplRunnable );
+        System.out.println( "======================Creating nhrt sleeper thread=========================" );
+        NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,null,null,
+                ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()),null,orbImplRunnable );
         System.out.println( "======================starting nhrt in orb impl region=====================" );
         nhrt.start();
 
