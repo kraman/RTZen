@@ -88,10 +88,10 @@ public class Queue {
      *            The object to enqueue
      */
     public void enqueue(Object data) {
-        size++;
         QueueNode node = getNode();
         node.value = data;
         synchronized (sObject) {
+            size++;
             if (allocListHead == null) {
                 allocListHead = allocListTail = node;
             } else {
@@ -130,11 +130,11 @@ public class Queue {
      * @return The top value on the queue or null.
      */
     public Object dequeue() {
-        size--;
         QueueNode ret;
         synchronized (sObject) {
             if (allocListHead == null) return null;
             else {
+                size--;
                 ret = allocListHead;
                 allocListHead = allocListHead.next;
             }

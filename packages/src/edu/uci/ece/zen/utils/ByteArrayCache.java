@@ -58,7 +58,7 @@ public class ByteArrayCache {
             System.exit(-1);
         }
     }
-
+    private int num = 0;
     /**
      * Gets a byte from the ByteArrayCache. A new byte array is created from
      * immortal memory if needed
@@ -68,7 +68,14 @@ public class ByteArrayCache {
     public byte[] getByteArray() {
         try {
             byte[] ret = (byte[]) byteBuffers.dequeue();
-            if (ret == null) {
+            num++;
+           //Thread.dumpStack();
+        if(ZenProperties.memDbg1) System.out.write('d');
+           if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(num);
+           if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln();
+           if (ret == null) {
+        if(ZenProperties.memDbg1) System.out.write('g');
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(byteBuffers.size());
                 return (byte[]) imm.newArray(byte.class, 1024);
             } else {
                 return ret;
@@ -88,5 +95,9 @@ public class ByteArrayCache {
      */
     public void returnByteArray(byte[] buf) {
         byteBuffers.enqueue(buf);
-    }
+        num--;
+        if(ZenProperties.memDbg1) System.out.write('e');
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(num);
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(byteBuffers.size());
+  }
 }

@@ -28,11 +28,11 @@ public class ReadBuffer {
 
     public static ReadBuffer instance() {
         try {
+                numFree--;
             if (bufferCache.isEmpty()) return (ReadBuffer) ImmortalMemory
                     .instance().newInstance(ReadBuffer.class);
             else {
                 //Thread.dumpStack();
-                numFree--;
                 ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
                 ret.init();
                 return ret;
@@ -162,23 +162,32 @@ public class ReadBuffer {
 
     public void free() {
                 //Thread.dumpStack();
-        numFree++;
-        //edu.uci.ece.zen.utils.Logger.write(numFree);
-        //edu.uci.ece.zen.utils.Logger.writeln();
-        // edu.uci.ece.zen.utils.Logger.write(bufferCache.size());
-        //edu.uci.ece.zen.utils.Logger.writeln();
-        
+       
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(635);
         ByteArrayCache cache = ByteArrayCache.instance();
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(636);
-        for (int i = 0; i < buffers.size(); i++)
+        for (int i = 0; i < buffers.size(); i++){
             cache.returnByteArray((byte[]) buffers.elementAt(i));
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(637);
+            ba--;
+        }
+ 
+ 
+         if(ZenProperties.memDbg1) System.out.write('b');
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(ba);
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(buffers.size());
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(bs);
+ 
+ 
+       edu.uci.ece.zen.utils.Logger.printMemStatsImm(637);
         //buffers.removeAllElements();
-        //init();
+        init();
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(638);
         ReadBuffer.release(this);
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(639);
+        numFree++;
+        if(ZenProperties.memDbg1) System.out.write('r');
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(numFree);
+       // edu.uci.ece.zen.utils.Logger.writeln(bufferCache.size());
     }
 
     public void freeWithoutBufferRelease() {
@@ -194,14 +203,19 @@ public class ReadBuffer {
     public void setEndian(boolean isLittleEndian) {
         this.isLittleEndian = isLittleEndian;
     }
-
+    int ba = 0;
+    int bs = 0;
     private void ensureCapacity(int size) {
         if (size <= 0) return;
         while (limit + size > capacity) {
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
             capacity += byteArray.length;
             buffers.addElement(byteArray);
-        }
+            ba++;
+          if(ZenProperties.memDbg1) System.out.write('c');
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(capacity);
+       }
+        bs = buffers.size();
     }
 
     public long getPosition() {

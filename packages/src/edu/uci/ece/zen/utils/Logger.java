@@ -69,17 +69,25 @@ public abstract class Logger{
         printMemStats(code, ma);
 
     }
-    public static void writeln(){
+    public static void writeln(long a){
+        write(a);
+        writeln();
+    }
+   public static void writeln(){
         System.out.write( '\n' );
         System.out.flush();
     }
     public static void write(long a){
+        if(a < 0){
+            a = -a;
+            System.out.write( '-' );
+        }
         for( long i = 10000000000L ; i > 0 ; i /= 10 ){
             byte b = (byte) (a/i);
             System.out.write( b + '0' );
             a -= (b*i);
         }
-        System.out.flush();
+        //System.out.flush();
     }
     public static void printTracePoint( int pos ){
         System.out.write( 'C' );

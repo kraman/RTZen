@@ -27,12 +27,16 @@ public class WriteBuffer {
             System.exit(-1);
         }
     }
-
+    private static int numFree = 0;
     public static WriteBuffer instance() {
         try {
-            if (bufferCache.isEmpty()) return (WriteBuffer) ImmortalMemory
+                numFree--;
+            if (bufferCache.isEmpty()){
+                 return (WriteBuffer) ImmortalMemory
                     .instance().newInstance(WriteBuffer.class);
-            else return (WriteBuffer) bufferCache.dequeue();
+            } else {
+                return (WriteBuffer) bufferCache.dequeue();
+            }
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "instance", e);
             System.exit(-1);
@@ -90,6 +94,10 @@ public class WriteBuffer {
         buffers.removeAllElements();
         init();
         WriteBuffer.release(this);
+        numFree++;
+        
+        if(ZenProperties.memDbg1) System.out.write('w');
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(numFree);
     }
 
     public void setEndian(boolean isLittleEndian) {
@@ -99,10 +107,17 @@ public class WriteBuffer {
     private void ensureCapacity(int size) {
         if (size <= 0) return;
         while (position + size > capacity) {
-            //Thread.dumpStack();
+//         edu.uci.ece.zen.utils.Logger.write(position);
+//         edu.uci.ece.zen.utils.Logger.write(size);
+//         edu.uci.ece.zen.utils.Logger.write(capacity);
+
+           //Thread.dumpStack();
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(511);
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(512);
             capacity += byteArray.length;
             buffers.addElement(byteArray);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(513);
         }
     }
 
@@ -153,12 +168,12 @@ public class WriteBuffer {
             int curBufPos = (int) (position % 1024);
             int copyLength = 1024 - curBufPos;
             if (copyLength > length) copyLength = length;
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(507);
+//        edu.uci.ece.zen.utils.Logger.printMemStatsImm(507);
             System.arraycopy(v, offset, buffer, curBufPos, copyLength);
             offset += copyLength;
             length -= copyLength;
             position += copyLength;
-        }
+       }
         if (position > limit) limit = position;
     }
 
