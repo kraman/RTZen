@@ -2,6 +2,7 @@ package edu.uci.ece.zen.orb;
 
 import javax.realtime.InaccessibleAreaException;
 import javax.realtime.MemoryArea;
+import javax.realtime.ScopedMemory;
 
 import org.omg.CORBA.Policy;
 
@@ -12,6 +13,10 @@ import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
+import edu.uci.ece.zen.utils.ThreadPool;
+import org.omg.IOP.TaggedProfile;
+
+import edu.uci.ece.zen.orb.transport.Acceptor;
 
 public class IOR {
     private static final char[] intToHex = {
@@ -102,16 +107,38 @@ public class IOR {
      * @return The CORBA object.
      */
     public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID,
-            FString objKey, MemoryArea clientArea, POA poa, int threadPoolId)
+            final FString objKey, final MemoryArea clientArea, final POA poa, int threadPoolId)
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
-        org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea
+        final org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea
                 .newInstance(org.omg.IOP.IOR.class);
         ior.type_id = typeID;
-        
-        // *** Start modifying here.
-        ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, clientArea, clientExposedPolicies, threadPoolId);  
+
+
+        //ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, clientArea, taggedComponents, tcLen, threadPoolId);
+        final ScopedMemory tpRegion = orb.getThreadPoolRegion(threadPoolId);
+        //final org.omg.IOP.IOR tempior = ior;
+        tpRegion.enter(
+            new Runnable(){
+                public void run(){
+
+                    ThreadPool tp = (ThreadPool)(tpRegion.getPortal());
+                    try{
+                        //tempior.profiles = tp.getProfiles(objKey, clientArea, poa);
+                        tp.getProfiles(objKey, clientArea, poa, ior);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+        );
+
+        //ior.profiles = profiles;
+
+
         ZenProperties.logger.log("makeCORBAObject 2");
 
         ObjectImpl objectImpl = (ObjectImpl) clientArea

@@ -3,11 +3,20 @@ package edu.uci.ece.zen.utils;
 import javax.realtime.NoHeapRealtimeThread;
 import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
+import javax.realtime.InaccessibleAreaException;
+import javax.realtime.MemoryArea;
+//import javax.realtime.ScopedMemory;
 
 import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.poa.POA;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.orb.transport.iiop.AcceptorRunnable;
+import edu.uci.ece.zen.orb.transport.Acceptor;
 import edu.uci.ece.zen.poa.HandleRequestRunnable;
+import org.omg.IOP.TaggedProfile;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
+
 
 public class ThreadPool {
     Lane lanes[];
@@ -83,8 +92,8 @@ public class ThreadPool {
     }
 
     private int statCount = 0;
-    
-    // TODO this method should indicate if we have an error.     
+
+    // TODO this method should indicate if we have an error.
     public void execute(RequestMessage task, short minPriority, short maxPriority) {
         statCount++;
         if (statCount % ZenBuildProperties.MEM_STAT_COUNT == 0) {
@@ -95,20 +104,80 @@ public class ThreadPool {
         boolean laneFound = false;
         int i = 0;
         for (; i < lanes.length; i++) {
-            short lanePriority = lanes[i].getPriority(); 
+            short lanePriority = lanes[i].getPriority();
+            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("TP execute pr: " + minPriority + " lane pr: " + lanePriority);
             if ( lanePriority >= minPriority && lanePriority <= maxPriority) {
                 laneFound = true;
+                break;
             }
         }
-        
+
         if (laneFound) {
-            lanes[i].execute(task);    
+            lanes[i].execute(task);
         }
         else {
-            ZenProperties.logger.log(Logger.WARN, getClass(), "execute(...)", 
+            ZenProperties.logger.log(Logger.WARN, getClass(), "execute(...)",
                                      "No lane matched the request priority.");
             lanes[0].execute(task);
         }
+    }
+
+    public Lane[] getLanes(){
+        return lanes;
+    }
+
+    /**
+     * Function to return all transport profiles for acceptors stored in this
+     * registry. The profile objects are created in the client area that is
+     * passed in.
+     *
+     * @param objKey
+     *            The object key to embed in the profile.
+     * @param clientArea
+     *            The memory area to create the profiles in.
+     * @return A array containing the list of transport profiles.
+     */
+    public /*TaggedProfile[]*/ void getProfiles(final FString objKey, final MemoryArea clientArea,
+                final POA poa, final org.omg.IOP.IOR ior)
+            throws IllegalAccessException, InstantiationException,
+            InaccessibleAreaException {
+
+        ior.profiles = new TaggedProfile[lanes.length];
+        for(int i = 0; i < lanes.length; ++i){
+            final ScopedMemory accArea = lanes[i].getAcceptorArea();
+            final int j = i;
+            orb.executeInORBRegion(
+                new Runnable(){
+
+                    public void run(){
+                        //final int k = j;
+                        accArea.enter(
+                            new Runnable(){
+
+                                public void run(){
+                                    Acceptor acc = (Acceptor)(accArea.getPortal());
+                                    ior.profiles[j] = acc.getProfile((byte) 1, ZenProperties.iiopMinor, objKey.getTrimData(clientArea), clientArea, poa);
+
+                                }
+
+
+
+                            }
+
+                        );
+
+                    }
+
+
+                }
+            );
+
+        }
+
+
+        //return tpList;
+
+
     }
 }
 
@@ -160,7 +229,7 @@ class Lane {
 
         for (numThreads = 0; numThreads < maxStaticThreads; numThreads++) {
             newThread();
-        }
+}
     }
 
     public void setLaneId(int id) {
@@ -175,6 +244,10 @@ class Lane {
         return priority;
     }
 
+    public ScopedMemory getAcceptorArea(){
+        return acceptorArea;
+    }
+
     private void newThread() {
         ThreadSleepRunnable r = new ThreadSleepRunnable(this);
         NoHeapRealtimeThread thr = new NoHeapRealtimeThread(null, null, null, RealtimeThread.getCurrentMemoryArea(), null, r);
@@ -186,7 +259,7 @@ class Lane {
     }
 
     public synchronized boolean getLeaderAndExecute(RequestMessage task, boolean forBorrowing) {
-	ThreadSleepRunnable thr = (ThreadSleepRunnable) threads.dequeue();
+    ThreadSleepRunnable thr = (ThreadSleepRunnable) threads.dequeue();
         if ( thr == null ) {
             //try to get a thread from somewhere else
             if (numThreads >= maxStaticThreads + maxDynamicThreads - 1) {
@@ -211,26 +284,26 @@ class Lane {
 
         //still couldnt get a thread, wait for one to return
         try {
-	    if( thr == null ){
-	        while (((thr = (ThreadSleepRunnable) threads.dequeue()) == null)) {
+        if( thr == null ){
+            while (((thr = (ThreadSleepRunnable) threads.dequeue()) == null)) {
                     synchronized (this) {
                         this.wait();
                     }
                 }
-	    }
+        }
             return thr.execute(task);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "getLeaderAndExecute", e);
-	    e.printStackTrace();
+        e.printStackTrace();
             return false;
         }
-        
+
     }
 
     public boolean execute(RequestMessage task) {
-	boolean b = getLeaderAndExecute(task, false);
-	//System.out.println( "Task executed with status: " + b );
-	return b;
+    boolean b = getLeaderAndExecute(task, false);
+    //System.out.println( "Task executed with status: " + b );
+    return b;
     }
 
     private boolean checkRequestBuffer() {
@@ -243,7 +316,7 @@ class Lane {
                 numBuffered--;
             }
         }
-        
+
         runnable.run();
         returnToPool(runnable);
         return false;
@@ -350,7 +423,7 @@ class ThreadSleepRunnable implements Runnable {
                     "Recieved an Interrupt exception. Shutting down.");
             //Ignore. Expected while shutting down.
         } catch (Throwable e1) {
-	    //e1.printStackTrace();
+        //e1.printStackTrace();
             ZenProperties.logger.log(Logger.WARN, getClass(), "run", e1);
         }
     }

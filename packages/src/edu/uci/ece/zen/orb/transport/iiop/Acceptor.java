@@ -17,6 +17,7 @@ import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
+import edu.uci.ece.zen.poa.POA;
 
 import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
 
@@ -52,7 +53,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
     }
 
     protected TaggedProfile getInternalProfile(byte iiopMajorVersion,
-            byte iiopMinorVersion, byte[] objKey) {
+            byte iiopMinorVersion, byte[] objKey, POA poa) {
         Version version = new Version(iiopMajorVersion, iiopMinorVersion);
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
@@ -76,7 +77,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
                 //org.omg.IOP.TaggedComponent[] components = new
                 // org.omg.IOP.TaggedComponent[0];
                 //TODO: insert rt policy info and other tagged components
-                ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock.getInetAddress().getHostAddress(), (short) ssock.getLocalPort(), objKey, getComponents());
+                ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock.getInetAddress().getHostAddress(), (short) ssock.getLocalPort(), objKey, getComponents(poa));
                 ProfileBody_1_1Helper.write(out, pb11);
                 break;
         }

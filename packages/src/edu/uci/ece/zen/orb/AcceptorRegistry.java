@@ -47,7 +47,7 @@ public class AcceptorRegistry {
             ScopedMemory sm = (ScopedMemory) (list.get(i));
             sm.enter(acr);
         }
-                
+
         TaggedProfile[] tpList = (TaggedProfile[]) clientArea.newArray(
                 org.omg.IOP.TaggedProfile.class, acr.count);
         byte[] tempOKey = objKey.getTrimData(clientArea);
@@ -144,6 +144,6 @@ class ARRunnable implements Runnable {
 
     public void run() {
         Acceptor acc = (Acceptor) ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
-        tpList[index] = acc.getProfile((byte) 1, ZenProperties.iiopMinor, objKey, ma, threadPoolId);
+        //tpList[index] = acc.getProfile((byte) 1, ZenProperties.iiopMinor, objKey, ma, threadPoolId);
     }
 }

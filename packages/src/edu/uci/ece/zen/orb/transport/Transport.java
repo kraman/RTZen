@@ -205,7 +205,7 @@ class MessageProcessor implements Runnable {
                 gmr.run();
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", "Could not process message", e);
-        e.printStackTrace();
+                e.printStackTrace();
             }
             gmr.setRequestScope(null);
         }
@@ -278,7 +278,7 @@ class GIOPMessageRunnable implements Runnable {
 
             ZenProperties.logger.log("Inside GMR run");
             if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(RealtimeThread.getCurrentMemoryArea().toString());
-          
+
             message = edu.uci.ece.zen.orb.protocol.MessageFactory.parseStream(orb, trans);
             if( message == null )   //connection closed
             {

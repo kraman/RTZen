@@ -60,7 +60,7 @@ public class MSGRunnable implements Runnable {
             int size = rb.readLong();
 
             if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable REPLY CONTEXT size: " + size);
-
+            orb.getRTCurrent().the_priority((short) javax.realtime.PriorityScheduler.instance().getNormPriority()); //kludge
             for(int i = 0; i < size; ++i){
 
                 int id = rb.readLong();

@@ -14,7 +14,7 @@ import org.omg.RTCORBA.PriorityModel;
 import org.omg.RTCORBA.PriorityModelPolicy;
 import org.omg.RTCORBA.ThreadpoolPolicy;
 
-import com.sun.corba.se.internal.POA.Policies;
+//import com.sun.corba.se.internal.POA.Policies;
 
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.ORBImpl;
@@ -86,7 +86,7 @@ public class POAImpl {
     private int poaState;
 
     private int processingState = POA.ACTIVE; // RequestProcessing
-    
+
     // --- POA Specific strategies ----
     private transient edu.uci.ece.zen.poa.mechanism.LifespanStrategy lifespanStrategy;
 
@@ -107,13 +107,13 @@ public class POAImpl {
     POAManager manager;
 
     int threadPoolId = 0; // this default value means: "use the same thread pool of RootPOA (0)"
-   
-    // TODO Just for now the default priority model is server declare, 
+
+    // TODO Just for now the default priority model is server declare,
     // but we have to ask the ORB in order to set this variable properly.
     private PriorityModel priorityModel = PriorityModel.SERVER_DECLARED;
-    // TODO Just for now we are using RTJava priorities. 
-    private int serverPriority = PriorityScheduler.instance().getNormPriority();   
-    
+    // TODO Just for now we are using RTJava priorities.
+    private int serverPriority = PriorityScheduler.instance().getNormPriority();
+
     // --- POA Cached Objects ---
     Queue poaHashMapQueue;
 
@@ -170,15 +170,15 @@ public class POAImpl {
     }
 
     /**
-     * Returns an array with the   
+     * Returns an array with the
      * @return
      */
     public Policy[] getClientExposedPolicies()
     {
         return this.clientExposedPolicies;
     }
-    
-    
+
+
     // --- POA Methods ---
     /**
      * Initializes the POAImpl and all mechanisms and policies.
@@ -190,7 +190,7 @@ public class POAImpl {
         this.self = self;
         this.parent = parent;
         this.manager = manager;
-        
+
         try {
             serverRequestHandler =
                 (POAServerRequestHandler) ((ORBImpl) orb.orbImplRegion.getPortal()).getServerRequestHandler();
@@ -218,48 +218,48 @@ public class POAImpl {
         int numOfClientExposedPolicies = 0;
         boolean threadoolPolicyChecked = false;
         boolean priorityModelPolicyChecked = false;
-        
+
         for (int i = 0; i < policyList.length; i++) {
             this.policyList[i] = policies[i].copy();
-            
-            if (this.policyList[i] instanceof ThreadpoolPolicy && !threadoolPolicyChecked) 
+
+            if (this.policyList[i] instanceof ThreadpoolPolicy && !threadoolPolicyChecked)
             {
-                this.threadPoolId = 
+                this.threadPoolId =
                     ((org.omg.RTCORBA.ThreadpoolPolicy) this.policyList[i]).threadpool();
                 // TODO Validate the threadPollID here.
                 //      Set the serverPriority value properly according to the lanes' priorities
-                //      (e.g. to the lanes' lowest priority value ) 
+                //      (e.g. to the lanes' lowest priority value )
                 threadoolPolicyChecked = true;
             }
-            
+
             if (this.policyList[i] instanceof PriorityModelPolicy && !priorityModelPolicyChecked)
-            {  
+            {
                  this.priorityModel = ((PriorityModelPolicy) this.policyList[i]).priority_model();
                  // Be careful here, we are not mapping CORBA and RTSJ priorities.
                  this.serverPriority = ((PriorityModelPolicy) this.policyList[i]).server_priority();
                  // TODO Validate the value of server priority. It must be consistent with the priority
                  //      of the lanes/threadpool
-                 
+
                  numOfClientExposedPolicies++;
                  priorityModelPolicyChecked = true;
             }
         }
-        
+
         clientExposedPolicies = new Policy[numOfClientExposedPolicies];
         priorityModelPolicyChecked = false;
-        
-        for (int i = 0, j = 0; i < policyList.length; i++) 
+
+        for (int i = 0, j = 0; i < policyList.length; i++)
         {
             if (this.policyList[i] instanceof PriorityModelPolicy && !priorityModelPolicyChecked)
-            {  
-                this.clientExposedPolicies[j] = this.policyList[i]; 
+            {
+                this.clientExposedPolicies[j] = this.policyList[i];
                 priorityModelPolicyChecked = true;
                 j++;
             }
-            
+
             if (j == clientExposedPolicies.length) break;
         }
-        
+
         //init the stratergies
         IntHolder ih = getIntHolder();
         this.threadPolicyStrategy = ThreadPolicyStrategy.init(policyList, ih);
@@ -283,7 +283,7 @@ public class POAImpl {
             return;
         }
 
-        this.retentionStrategy = 
+        this.retentionStrategy =
             ServantRetentionStrategy.init(policyList, this.uniquenessStrategy, ih);
         if (ih.value != 0) {
             retIntHolder(ih);
@@ -298,8 +298,8 @@ public class POAImpl {
             return;
         }
 
-        this.activationStrategy = 
-            ActivationStrategy.init(this.policyList, this.idAssignmentStrategy, 
+        this.activationStrategy =
+            ActivationStrategy.init(this.policyList, this.idAssignmentStrategy,
                                     this.retentionStrategy, ih);
         if (ih.value != 0) {
             retIntHolder(ih);
@@ -307,8 +307,8 @@ public class POAImpl {
             return;
         }
 
-        this.requestProcessingStrategy = 
-            RequestProcessingStrategy.init(this.policyList, this.retentionStrategy, 
+        this.requestProcessingStrategy =
+            RequestProcessingStrategy.init(this.policyList, this.retentionStrategy,
                                            this.uniquenessStrategy, this.threadPolicyStrategy,
                                            this, ih);
         if (ih.value != 0) {
@@ -347,25 +347,26 @@ public class POAImpl {
      * </p>
      * </p>
      */
-    TPRunnable tpr = null;	//KLUDGE..leaks memory to IMM, 3am..wll fix later
+    TPRunnable tpr = null;  //KLUDGE..leaks memory to IMM, 3am..wll fix later
     public synchronized void handleRequest(RequestMessage req, POARunnable prun) {
-	if( tpr == null ){
-		try{
-		 	tpr= (TPRunnable) ImmortalMemory.instance().newInstance( TPRunnable.class ); //orb.getTPR();
-		}catch( Throwable e ){
-			System.out.println( "handleRequest: e" + e );
-		}
-	}
+    if( tpr == null ){
+        try{
+            tpr= (TPRunnable) ImmortalMemory.instance().newInstance( TPRunnable.class ); //orb.getTPR();
+        }catch( Throwable e ){
+            System.out.println( "handleRequest: e" + e );
+        }
+    }
         IntHolder ih = getIntHolder();
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------handleRequest:0 ");
 
         // Check the POA's state. if it is discarding then throw the transient exception.
-        validateProcessingState(ih); 
+        validateProcessingState(ih);
         if (ih.value != POARunnable.NoException) {
             prun.exception = ih.value;
             retIntHolder(ih);
             return;
         }
-
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:1 ");
         // Check the state of the POAManager. Here the POA is in active state
         prun.exception = POAManager.checkPOAManagerState(self.the_POAManager());
         if (ih.value != POARunnable.NoException) {
@@ -373,7 +374,7 @@ public class POAImpl {
             retIntHolder(ih);
             return;
         }
-
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:2 ");
         // check if the POA has the persistent policy/or the transient
         FString objKey = req.getObjectKey();
         this.lifespanStrategy.validate(objKey, ih);
@@ -382,7 +383,7 @@ public class POAImpl {
             retIntHolder(ih);
             return;
         }
-
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:3 ");
         try {
             ScopedMemory tpRegion = this.orb.getThreadPoolRegion(threadPoolId);
             edu.uci.ece.zen.utils.Logger.printThreadStack();
@@ -392,17 +393,20 @@ public class POAImpl {
             if (statCount % ZenBuildProperties.MEM_STAT_COUNT == 0)
                 edu.uci.ece.zen.utils.Logger.printMemStats(ZenBuildProperties.dbgPOAScopeId);
 
-            //ExecuteInRunnable eir = 
+            //ExecuteInRunnable eir =
             //    (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             ExecuteInRunnable eir = orb.getEIR();
-            
-            tpr.init(self, req, orb.getRTCurrent().the_priority());
-            eir.init(tpr, tpRegion);
 
+            short pr = orb.getRTCurrent().the_priority();
+            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:4 pr:" + pr);
+
+            tpr.init(self, req, pr);
+            eir.init(tpr, tpRegion);
+            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:5 ");
             //HandleRequestRunnable hrr = (HandleRequestRunnable)
             // requestScope.newInstance( HandleRequestRunnable.class );
             //hrr.init( self , req );
-            
+
             //((ScopedMemory)requestScope).setPo{rtal( hrr );
             req.associatePOA(self);
             edu.uci.ece.zen.utils.Logger.printMemStatsImm(318);
@@ -456,20 +460,20 @@ public class POAImpl {
             this.retentionStrategy.getObjectID(p_servant, oid, ih);
 
             switch (ih.value) {
-                case POARunnable.ServantNotActiveException: 
+                case POARunnable.ServantNotActiveException:
                     {
-                        if (this.activationStrategy.validate(ActivationStrategy.IMPLICIT_ACTIVATION) || 
+                        if (this.activationStrategy.validate(ActivationStrategy.IMPLICIT_ACTIVATION) ||
                             this.uniquenessStrategy.validate(IdUniquenessStrategy.MULTIPLE_ID))
                         {
                             this.idAssignmentStrategy.nextId(oid, ih);
-                            if (ih.value != POARunnable.NoException) 
+                            if (ih.value != POARunnable.NoException)
                             {
                                 prun.exception = ih.value;
                                 break;
                             }
 
                             POAHashMap map = getPOAHashMap();
-                            
+
                             //TODO This should be obtain from the ORB
                             map.init(oid, p_servant, this.serverPriority);
 
@@ -517,7 +521,7 @@ public class POAImpl {
                         prun.exception = ih.value;
                         break;
                     }
-                    
+
                     int index = this.retentionStrategy.find(oid, ih);
                     if (ih.value != POARunnable.NoException) {
                         prun.exception = ih.value;
@@ -532,7 +536,7 @@ public class POAImpl {
                     // Create the Object Key using the IdHint Strategy
                     this.lifespanStrategy.create(self.poaPath, oid,
                         self.poaDemuxIndex, self.poaDemuxCount, index, count, okey);
-                    
+
                     retVal = this.create_reference_with_object_key(okey, p_servant
                             ._all_interfaces(self, null)[0], clientMemoryArea);
                     }
@@ -566,25 +570,25 @@ public class POAImpl {
         }
 
         /**
-         * 
+         *
          * @param servant
          * @param mem
          * @param prun
          */
         public void activate_object(Servant servant, MemoryArea mem, POARunnable prun)
         {
-           this.activate_object_with_priority(servant, this.serverPriority, mem, prun); 
+           this.activate_object_with_priority(servant, this.serverPriority, mem, prun);
         }
-        
+
         /**
-         * 
+         *
          * @param servant
          * @param priority
          * @param mem
          * @param prun
          */
-        public void activate_object_with_priority(Servant servant, int priority, MemoryArea mem, 
-                                                  POARunnable prun) 
+        public void activate_object_with_priority(Servant servant, int priority, MemoryArea mem,
+                                                  POARunnable prun)
         {
             if (!(idAssignmentStrategy instanceof SystemIdStrategy &&
                     retentionStrategy instanceof RetainStrategy))
@@ -647,15 +651,15 @@ public class POAImpl {
               retIntHolder(ih);
               retFString(okey);
               retFString(oid);
-              prun.exception = POARunnable.NoException;            
-            
+              prun.exception = POARunnable.NoException;
+
         }
 
         public void activate_object_with_id(byte[] oid, Servant servant,
                 MemoryArea mem, POARunnable prun) {
         }
 
-        
+
         public void deactivate_object(byte[] oid, MemoryArea mem, POARunnable prun) {
         }
 
@@ -754,7 +758,7 @@ public class POAImpl {
         public void finalize() {
             ZenProperties.logger.log("POAImpl GC'd");
         }
-        
+
     }
 
     class CreateReferenceWithObjectRunnable implements Runnable {
@@ -777,7 +781,7 @@ public class POAImpl {
         public CreateReferenceWithObjectRunnable() {
         }
 
-        public void init(FString ok, String intf, MemoryArea ma, ORB orb, int threadPoolId, 
+        public void init(FString ok, String intf, MemoryArea ma, ORB orb, int threadPoolId,
                 POA poa) {
             this.ok = ok;
             this.intf = intf;
@@ -835,7 +839,7 @@ public class POAImpl {
 
     }
 
-    
+
     // Validate threadpoolid in Init(...)
     // int parentDepth = RealtimeThread.getMemoryAreaStackDepth() - 1;
     // ScopedMemory orbImplMem = (ScopedMemory) RealtimeThread.getOuterMemoryArea(parentDepth);
