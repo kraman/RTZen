@@ -91,6 +91,14 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
         return tmpID;
     }
 
+    public boolean validateThreadPoolID(int id) 
+    {
+        // TODO chack max TPs too
+        return (this.tpID >= id); 
+    }
+    
+    
+    
     /**
      * Operation destroy_threadpool
      */

@@ -66,18 +66,21 @@ public class ThreadPool {
 
     private int statCount = 0;
 
-    public void execute(RequestMessage task, short minPriority,
-            short maxPriority) {
+    public void execute(RequestMessage task, short minPriority, short maxPriority) 
+    {
         statCount++;
         if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
             edu.uci.ece.zen.utils.Logger.printMemStats(4);
         }
 
         //TODO: Have to improve performance here
-        for (int i = 0; i < lanes.length; i++) {
-            if (lanes[i].getPriority() > minPriority
-                    && lanes[i].getPriority() < maxPriority) lanes[i]
-                    .execute(task);
+        for (int i = 0; i < lanes.length; i++) 
+        {
+            if (lanes[i].getPriority() > minPriority && 
+                lanes[i].getPriority() < maxPriority)
+            {
+                lanes[i].execute(task);
+            }
         }
     }
 }
@@ -152,8 +155,8 @@ class Lane {
         thr.start();
     }
 
-    public synchronized boolean getLeaderAndExecute(RequestMessage task,
-            boolean forBorrowing) {
+    public synchronized boolean getLeaderAndExecute(RequestMessage task, boolean forBorrowing) 
+    {
         if (threads.isEmpty()) {
             //try to get a thread from somewhere else
             if (numThreads < maxStaticThreads + maxDynamicThreads - 1) {
@@ -297,9 +300,7 @@ class ThreadSleepRunnable implements Runnable {
                 //System.out.println( "HandleRequestRunnable finished in
                 // ThreadPool" );
                 //System.out.println( task.getAssociatedPOA() );
-                eir
-                        .init(ir, ((edu.uci.ece.zen.poa.POA) task
-                                .getAssociatedPOA()).poaMemoryArea);
+                eir.init(ir, ((edu.uci.ece.zen.poa.POA) task.getAssociatedPOA()).poaMemoryArea);
                 //System.out.println( "Calling executeInArea on
                 // HandleRequestRunnable" );
                 try {

@@ -148,7 +148,8 @@ public class ActiveDemuxTable {
      * @return The object at specified active demux location.
      */
     public Object mapEntry(int idx) {
-        if (idx < 0 || idx > data.length) return null;
+        if (idx < 0 || idx > data.length) 
+            return null;
         return data[idx].data;
     }
 

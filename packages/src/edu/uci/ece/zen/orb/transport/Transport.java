@@ -170,9 +170,7 @@ class MessageProcessor implements Runnable {
                 //messageScope.enter(gmr);
                 gmr.run();
             } catch (Exception e) {
-                ZenProperties.logger.log(Logger.SEVERE,
-                        getClass(),
-                        "run", "Could not process message", e);
+                ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", "Could not process message", e);
             }
             gmr.setRequestScope(null);
             //ORB.freeScopedRegion( messageScope );
@@ -226,9 +224,9 @@ class GIOPMessageRunnable implements Runnable {
 
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(2220);
         try {
-
             statCount++;
-            if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
+            if (statCount % ZenProperties.MEM_STAT_COUNT == 0) 
+            {
                 //System.out.print(name);
                 edu.uci.ece.zen.utils.Logger.printMemStats(3);
                 edu.uci.ece.zen.utils.Logger.printMemStats(orb);
@@ -236,12 +234,14 @@ class GIOPMessageRunnable implements Runnable {
             ZenProperties.logger.log("Inside GMR run");
             if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread.getCurrentMemoryArea().toString());
             message = edu.uci.ece.zen.orb.protocol.MessageFactory.parseStream(orb, trans);
-            if (message instanceof edu.uci.ece.zen.orb.protocol.type.RequestMessage) {
+            if (message instanceof edu.uci.ece.zen.orb.protocol.type.RequestMessage) 
+            {
                 ZenProperties.logger.log("Inside GMR run: RequestMessage");
                 trans.orbImpl.getServerRequestHandler().handleRequest(
                         (edu.uci.ece.zen.orb.protocol.type.RequestMessage) message);
-            
-            }else if (message instanceof edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage) {
+            }
+            else if (message instanceof edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage) 
+            {
                 //this is provisional until we get it working right
                 //just return OBJECT_HERE for now
                 CDROutputStream out = edu.uci.ece.zen.orb.protocol.MessageFactory.
@@ -250,13 +250,15 @@ class GIOPMessageRunnable implements Runnable {
                 trans.send(out.getBuffer());
                 out.free();
                 
-            }else if (message instanceof edu.uci.ece.zen.orb.protocol.type.ReplyMessage) {
+            }
+            else if (message instanceof edu.uci.ece.zen.orb.protocol.type.ReplyMessage) 
+            {
                 ZenProperties.logger.log("Inside GMR run: ReplyMessage");                
-                ScopedMemory waiterRegion = orb.getWaiterRegion(message
-                        .getRequestId());
+                ScopedMemory waiterRegion = orb.getWaiterRegion(message.getRequestId());
                 wsnr.init(message, waiterRegion);
                 eir.init(wsnr, waiterRegion);
-                try {
+                try 
+                {
                     orb.orbImplRegion.executeInArea(eir);
                 } catch (Exception e) {
                     ZenProperties.logger
