@@ -93,7 +93,7 @@ public abstract class Transport implements Runnable {
         if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
                 .getMemoryArea(this).toString());
 
-        RealtimeThread messageProcessorThr = new RealtimeThread(null,
+        RealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,
                 null, null, RealtimeThread.getCurrentMemoryArea(), null,
                 messageProcessor);
         messageProcessorThr.setDaemon(true);
