@@ -75,13 +75,14 @@ public class IOR
      * @param ior This object's IOR.
      * @return The CORBA object.
      */
-    public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID, byte [] objKey, int objKeyLength, ORBImpl orbImpl )
+    public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID, byte [] objKey, int objKeyLength, MemoryArea clientArea)
     {
-        org.omg.IOP.IOR ior = new org.omg.IOP.IOR();
-        ior.type_id = typeID;
-        ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, objKeyLength);
+        org.omg.IOP.IOR ior = clientArea.newInstance(org.omg.IOP.IOR.class);
+        ior.type_id = typeID; 
+        ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, objKeyLength, clientArea);
 
-        ObjectImpl objectImpl = new ObjectImpl(ior);
+        ObjectImpl objectImpl = clientArea.newInstance(edu.uci.ece.zen.orb.ObjectIml.class);
+        objectImpl.init(ior);
         ObjRefDelegate delegate = ObjRefDelegate.instance();
         objectImpl._set_delegate(delegate);
 

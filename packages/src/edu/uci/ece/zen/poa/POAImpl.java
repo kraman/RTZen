@@ -255,16 +255,16 @@ public class POAImpl{
         return -1;
     }
 
-    org.omg.CORBA.Object synchronized create_reference_with_object_key( final byte[]  ok, final String intf, MemoryArea clientArea ) {
+    org.omg.CORBA.Object synchronized create_reference_with_object_key( final byte[]  ok, int okLength, final String intf, MemoryArea clientArea ) {
         CreateReferenceWithObjectRunnable r = CreateReferenceWithObjectRunnable.instance();       
-        r.init( ok , intf );
+        r.init( ok, okLength, intf, clientArea, orb);
+        orb.orbImplRegion().executeInArea(r)
         try{
-            clientArea.executeInArea( r );
+            return r.retVal; 
         }catch( Exception e ){
             e.printStackTrace();
             return null;
         }
-        return r.retVal();
     }
 
     private void activate_object_with_id_and_return_contents(
@@ -379,13 +379,20 @@ class CreateReferenceWithObjectRunnable implements Runnable{
     public org.omg.CORBA.Object retVal;
     public byte[] ok;
     public String intf;
+    public MemoryArea ma;
+    public ORB orb;
+    public int okLength;
 
-    public void init( byte[] ok , String intf ){
+    public void init( byte[] ok , int objKeyLength, String intf, MemoryArea ma, ORB orb){
         this.ok = ok;
         this.intf = intf;
+        this.ma = ma;
+        this.orb = orb;
+        this.okLength = okLength;
     }
 
-    public void run(){
-        //create object and set it to retVal
+    public void run()
+    {
+        retVal = edu.uci.ece.zen.poa.IOR.makeCORBAObject(orb, intf, ok, okLength, ma);
     }
 }

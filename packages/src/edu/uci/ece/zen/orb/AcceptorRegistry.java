@@ -10,17 +10,17 @@ public class AcceptorRegistry{
     private Vector list = new Vector();
     private TaggedProfile[] tpList;
 
-    public TaggedProfile[] getProfiles(byte [] objKey, int objKeyLength){
-        tpList = new TaggedProfile[list.size()];
+    public TaggedProfile[] getProfiles(byte [] objKey, int objKeyLength, MemoryArea clientArea){
 
-        byte [] tempOKey = new byte[objKeyLength];
+        tpList = clientArea.newArray(org.omg.IOP.TaggedProfile.class, list.size());
+        byte [] tempOKey = clientArea.newArray(java.lang.Byte.class, objKeyLength);
 
         //kludge: assuming objKey.length >= objKeyLength
         System.arraycopy(objKey, 0, tempOKey, 0, objKeyLength);
 
         for(int i = 0; i < list.size(); ++i){
             ScopedMemory sm = (ScopedMemory)(list.get(i));
-            sm.enter(new ARRunnable(i, tempOKey, RealtimeThread.getCurrentMemoryArea()));
+            sm.enter(new ARRunnable(i, tempOKey, clientArea));
 
         }
 
@@ -33,7 +33,7 @@ public class AcceptorRegistry{
         MemoryArea ma;
         byte[] objKey;
 
-        public ARRunnable(int ind, byte [] objKey, MemoryArea ma){
+        public ARRunnable(int ind, byte [] objKey, MemoryArea clientArea){
             index = ind;
             this.ma = ma;
             this.objKey = objKey;
@@ -41,7 +41,7 @@ public class AcceptorRegistry{
 
         public void run(){
             Acceptor acc = (Acceptor) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
-            tpList[index] = acc.getProfile((byte)1, (byte)0, objKey, ma);
+            tpList[index] = acc.getProfile((byte)1, (byte)0, objKey, clientArea);
         }
     }
 
