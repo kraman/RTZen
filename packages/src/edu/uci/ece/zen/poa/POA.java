@@ -7,13 +7,22 @@ import edu.uci.ece.zen.orb.IOR;
 import edu.uci.ece.zen.utils.*;
 import java.io.*;
 import java.util.Properties;
+import edu.uci.ece.zen.orb.*;
+import org.omg.CORBA.Policy;
+import org.omg.PortableServer.*;
+import org.omg.PortableServer.POAPackage.*;
 
 public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.POA {
 
     private static String maxNumPOAsProperty = "doc.zen.poa.maxNumPOAs";
     private static String defaultMaxNumPOAs = "1";
-    private static int maxNumPOAs
+    private static int maxNumPOAs;
+    private static String maxNumChildrenProperty = "doc.zen.poa.maxNumChildren";
+    private static String defaultMaxNumChildren = "1";
+    private static int maxNumChildren;
+    private POAServerRequestHandler serverRequestHandler;
 
+    public static final int POA_CREATION_COMPLETE = 0;
 
     private static Queue unusedFacades;
     private static ImmortalMemory imm;
@@ -21,89 +30,90 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     static{
         try{
             imm = ImmortalMemory.instance();
-            int numFacades = Integer.parseInt( ZenProperties.getGlobalProperty( maxNumPOAsProperty , defaultMaxNumPOAs ) );
+            maxNumPOAs = Integer.parseInt( ZenProperties.getGlobalProperty( maxNumPOAsProperty , defaultMaxNumPOAs ) );
             unusedFacades = (Queue) imm.newInstance( Queue.class );
             for( int i=0;i<maxNumPOAs;i++ )
                 unusedFacades.enqueue( imm.newInstance( edu.uci.ece.zen.poa.POA.class ) );
+            maxNumChildren = Integer.parseInt( ZenProperties.getGlobalProperty( maxNumChildrenProperty , defaultMaxNumChildren ) );
+
         }catch( Exception e ){
             e.printStackTrace();
             System.exit( -1 );
         }
     }
 
-    public synchronized static org.omg.CORBA.Object instance(final edu.uci.ece.zen.orb.ORB orb) throws org.omg.PortableServer.POAPackage.InvalidPolicy {
-            edu.uci.ece.zen.poa.POA retVal;
-            retVal = (edu.uci.ece.zen.poa.POA) unusedFacades.dequeue();
-            retVal.internalInit(orb, "RootPOA", "RootPOA", null, null, null);
-            return retVal;
+    public synchronized static POA instance(){
+        Object obj = unusedFacades.dequeue();
+        if( obj == null ){
+            ZenProperties.logger.log(
+                Logger.SEVERE,
+                "edu.uci.ece.zen.poa.POA",
+                "instance()",
+                "No more POAs available. Please increase the doc.zen.poa.maxNumPOAs porperty in the zen.properties file" );
+        }
+        return (POA) obj;
+    }
+
+    private ORB orb;
+    private POA parent;
+    private ScopedMemory implMemoryRegion;
+    private POAManager poaManager;
+    private SynchronizedInt numberOfCurrentRequests;
+    private Hashtable children;
+    private int poaState;
+
+    public void init( final ORB orb ) throws org.omg.PortableServer.POAPackage.InvalidPolicy {
+        internalInit(orb, "RootPOA", "RootPOA", null, null, null);
+    }
+
+    public POA(){
+        numberOfCurrentRequests = new SynchronizedInt();
+        children = new Hashtable();
+        children.init( POA.maxNumChildren );
+    }
+
+    protected void internalInit(final ORB orb, final String poaName, final String poaPath, Policy[] policies, POA parent, POAManager manager) throws InvalidPolicy {
+        this.orb = orb;
+        this.parent = parent;
+        implMemoryRegion = ORB.getScopedRegion();
+        if (manager == null) {
+            poaManager = POAManager.instance();
+            poaManager.init(orb);
+        } else {
+            poaManager = manager;
         }
 
+        // register the POA with the POA Manager
+        poaManager.register(this);
 
-    public POA(){}
+        serverRequestHandler = (POAServerRequestHandler) orb.requestHandler();
+        // Get the index to the Active Demux Index
+        this.poaDemuxIndex = serverRequestHandler.addPOA(poaPath, this);
 
-    protected void internalInit(final edu.uci.ece.zen.orb.ORB orb,
-            final String poaName,
-            final String poaPath,
-            org.omg.CORBA.Policy[] policies,
-            org.omg.PortableServer.POA parent,
-            org.omg.PortableServer.POAManager manager)
+        POARunnable r = new POARunnable( this , POARunnable.POA_INIT );
+        r.addArgs( poaName );
+        r.addArgs( poaPath );
+        r.addArgs( policies );
+        r.addArgs( parent );
+        r.addArgs( manager );
 
-        throws org.omg.PortableServer.POAPackage.InvalidPolicy {
-            this.orb = orb;
-            this.poaName = poaName;
-            this.parent = (edu.uci.ece.zen.poa.POA) parent;
-            this.poaPath = poaPath;
-            currentMemory = MemoryArea.getMemoryArea(this);
-            run = new Run();
-
-            if (policies != null) {
-                this.policyList = new org.omg.CORBA.Policy[policies.length];
-                for (int iterator = 0; iterator < policies.length; iterator++) {
-                    this.policyList[iterator] = policies[iterator].copy();
-                }
-            }
-
-            if (manager == null) {
-                this.poaManager = new edu.uci.ece.zen.poa.POAManager(orb);
-            } else {
-                this.poaManager = manager;
-            }
-
-            // register the POA with the POA Manager
-            ((edu.uci.ece.zen.poa.POAManager) poaManager).register(this);
-
-            this.serverRequestHandler = (POAServerRequestHandler) orb.requestHandler();
-            // Get the index to the Active Demux Index
-            this.poaDemuxIndex = serverRequestHandler.addPOA(poaPath, this);
-
-            theChildren = new java.util.Hashtable();
-            numberOfCurrentRequests = new SynchronizedInt();
-
-            // --- Strategies ---
-            this.createImpl();
-
-            this.poaState = Util.CREATION_COMPLETE;
-        }
-
-    private void createImpl()
-    {
-
+        ExecuteInRunnable eir1 = new ExecuteInRunnable();
+        eir1.init( implMemoryRegion , r );
+        ExecuteInRunnable eir2 = new ExecuteInRunnable();
+        eir2.init( orb.orbImplRegion , eir1 );
         try{
-            ScopedMemory childMemory = orb.getScopedRegion();
-            Object poa =childMemory.newInstance(POAImpl.class);
-
-            childMemory.enter( new Runnable() {
-                    public void run()
-                    {
-                    POAImpl impl  = new POAImpl();
-                    ScopedMemory curMem = ((ScopedMemory) RealtimeThread.getCurrentMemoryArea());
-                    impl.setParameters(orb,poaName,poaPath,policyList,poaManager,serverRequestHandler,
-                        poaDemuxIndex,numberOfCurrentRequests,curMem);
-                    curMem.setPortal( impl );
-                    }
-                    });
-        }catch(Exception e) { //System.out.println(e);
+            orb.parentMemoryArea.executeIn( eir2 );
+        }catch(Exception e){
+            e.printStackTrace();
+            System.exit(-1);
         }
+        if( r.exceptionOccured )
+            switch( r.exceptionType ){
+                case 0:
+                    throw new InvalidPolicy();
+            }
+
+        this.poaState = POA_CREATION_COMPLETE;
     }
 
     public void handleRequest(final ServerRequest req) {
@@ -856,7 +866,6 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private POA                                     parent;
     private java.util.Hashtable                     theChildren;
     private org.omg.PortableServer.POAManager       poaManager;
-    private POAServerRequestHandler                 serverRequestHandler;
 
     // ---  Current Number of request executing in the POA ---
 

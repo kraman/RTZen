@@ -42,7 +42,8 @@ final public class ActiveDemuxServantTable extends edu.uci.ece.zen.utils.Hashtab
      * @return boolean true if remove was successful
      */
     public synchronized boolean unbind( byte[] oid ) {
-        return remove( oid );
+        remove( oid );
+        return true;    //KLUDGE
     }
 
     /**

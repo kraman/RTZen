@@ -92,17 +92,21 @@ public class DualMap implements ActiveObjectMap{
      */
     public void remove(Object key) {
         if (key instanceof byte[]) {
-            ScopedMemory st = getServantRegion((byte[]) key);
+            POAHashMap map = (POAHashMap) mapByObjectIDs.get( (byte[]) key );
+            ScopedMemory st = map.getServantRegion();
             mapByObjectIDs.remove((byte[]) key);
             mapByServants.remove(st);
+            map.free();
         } else if (key instanceof ScopedMemory ) {
             byte[] okey = null;
 
             try {
                 okey = getObjectID((ScopedMemory)key);
             } catch (Exception ex) {}
+            POAHashMap map = (POAHashMap) mapByObjectIDs.get( (byte[]) okey );
             mapByObjectIDs.remove(okey);
-            mapByServants.remove((org.omg.PortableServer.Servant) key);
+            mapByServants.remove(key);
+            map.free();
         } else {
             ZenProperties.logger.log(
                     Logger.SEVERE,

@@ -48,7 +48,7 @@ public class Hashtable
         this.setTableEntry( index , key.hashCode() , obj , incrGenCount );
     }
 
-    public boolean remove( Object key ){
+    public void remove( Object key ){
         this.remove( key.hashCode() );
     }
 
@@ -119,7 +119,7 @@ public class Hashtable
         }
     }
 
-    public boolean remove( long key ){
+    public void remove( long key ){
         int hash = (int)(key % keytable.length);
         synchronized( table ){
             for( int i=0;i<keytable.length;i++ ){
@@ -131,7 +131,6 @@ public class Hashtable
                 }
             }
         }
-        return true;
     }
 }
 

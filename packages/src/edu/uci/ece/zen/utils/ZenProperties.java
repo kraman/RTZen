@@ -34,13 +34,6 @@ public final class ZenProperties{
 
     private static boolean isInit = false;
 
-    //initialize everything in order
-    //1) global properties
-    //2) memory regions
-    static{
-        init();
-    }
-
     private static synchronized void init(){
         if( isInit )
             return;
@@ -104,6 +97,13 @@ public final class ZenProperties{
             System.out.println("Global properties have been loaded");
         System.out.flush();
         //All properties loaded
+    }
+
+    //initialize everything in order
+    //1) global properties
+    //2) memory regions
+    static{
+        init();
     }
 
     /**
