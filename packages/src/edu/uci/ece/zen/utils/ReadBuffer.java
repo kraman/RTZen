@@ -169,7 +169,7 @@ public class ReadBuffer{
     private void ensureCapacity( int size ){
         if( size <= 0 )
             return;
-        if( limit + size > capacity ){
+        while( limit + size > capacity ){
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
             capacity += byteArray.length;
             buffers.addElement( byteArray );

@@ -121,8 +121,8 @@ public class WriteBuffer{
 
     public void writeByteArray( byte[] v , int offset , int length ){
         ensureCapacity(length);
-        byte[] buffer = (byte[]) buffers.elementAt((int)(position/1024));
         while( length > 0 ){
+            byte[] buffer = (byte[]) buffers.elementAt((int)(position/1024));
             int curBufPos = (int)(position%1024);
             int copyLength = 1024-curBufPos;
             if( copyLength > length )
@@ -137,10 +137,15 @@ public class WriteBuffer{
     }
 
     public void dumpBuffer( WriteBuffer out ){
-        for( int i=0;i<position/1024-1;i++ ){
+        //System.out.println( "----GIOP MSG START---" );
+        for( int i=0;i<position/1024;i++ ){
             out.writeByteArray( (byte[])buffers.elementAt(i) , 0 , 1024 );
+            //System.out.write( (byte[])buffers.elementAt(i) , 0 , 1024 );
         }
         out.writeByteArray( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) );
+        //System.out.write( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) );
+        //System.out.flush();
+        //System.out.println( "\n----GIOP MSG END---" );
     }
 
     private void dumpByteArray( byte[] arr , int off , int len , java.io.OutputStream out ) throws java.io.IOException{
@@ -149,11 +154,15 @@ public class WriteBuffer{
     }
 
     public void dumpBuffer( java.io.OutputStream out ) throws java.io.IOException{
-        //System.err.println( "----BEGIN GIOP MESSAGE----" );
-        for( int i=0;i<position/1024-1;i++ ){
+        //System.err.println( "----BEGIN GIOP MESSAGE----" + position );
+        for( int i=0;i<position/1024;i++ ){
+            //System.out.println( "Writing buffer " + i + " from 0 to 1024" );
             dumpByteArray( (byte[])buffers.elementAt(i) , 0 , 1024 , out );
+            //System.out.write( (byte[])buffers.elementAt(i) , 0 , 1024 );
         }
+        //System.out.println( "Writing buffer " + (position/1024) + " from 0 to " +(position%1024) );
         dumpByteArray( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) , out );
+        //System.out.write( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) );
         //System.err.println( "\n----END GIOP MESSAGE----" );
     }
 
