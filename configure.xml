@@ -93,6 +93,7 @@ zen.gendir = ${new.zen.basedir}/packages/generated
 zen.classdir = ${zen.classdir}
 zen.libdir = ${new.zen.basedir}/lib
 zen.testdir = ${new.zen.basedir}/packages/tests
+zen.anttaskdir = ${new.zen.basedir}/packages/ant-tasks
 zen.classpath = ${zen.classpath}
 zen.win.exec = zen.bat
 idl.win.exec = idlc.bat

@@ -99,7 +99,7 @@
 
             <patternset refid="sources"/>
             <patternset>
-                <include name="src/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java" if="compiler_jRate"/>
+                <include name="${zen.anttaskdir}/src/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java" if="compiler_jRate"/>
                 <include name="src/edu/uci/ece/zen/utils/ScopeSafeConsoleLogger.java" if="compiler_OVM"/>
                 <include name="src/javax/**" if="compiler_jdk"/>
                 <!--classpath="${basedir}/../fake_rtjava/lib/foundation.jar"
@@ -153,7 +153,7 @@
     <target name="compile_perf" unless="compiler_jdk">
         <ant antfile="${zen.srcdir}/perf/cPrint/build.xml"/>
     </target>
-   
+
     <target name="clean">
         <echo message="Removing generated directory all its contents"/>
         <delete failonerror="false" dir="${zen.srcdir}/generated"/>
