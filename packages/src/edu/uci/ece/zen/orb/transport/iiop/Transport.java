@@ -39,35 +39,10 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             edu.uci.ece.zen.orb.ORBImpl orbImpl, String host, int port) {
         super(orb, orbImpl);
         setProtocolFactory( edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
-
-
-/*
-
-        int retries = 1;
-
-        while(retries <= 20)
-            try{
-
-                break;
-            }catch(Exception e){
-                retries++;
-                System.out.println("Cannot connect to server -- retrying");
-                try{
-                    Thread.currentThread().sleep(1000);
-                }catch(Exception e1){
-                    e.printStackTrace();
-                }
-            }
-*/
             try {
                 if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Connecting to " + host + ":" + port);
                 if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Current transport thread is of type " + javax.realtime.RealtimeThread.currentRealtimeThread());
-
-                if(ZenProperties.CAN_USE_STRINGS)
-                    sock = new java.net.Socket(host, port);
-                else{
-                    sock = new java.net.Socket( InetAddress.getByAddress( new byte[]{ ((byte)(128&0xFF)), ((byte)(195&0xFF)), ((byte)(174&0xFF)), ((byte)(20&0xFF))})  , port );
-                }
+                sock = new java.net.Socket(host, port);
 
 
                 ZenProperties.logger.log("Connected");
@@ -123,4 +98,3 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
         }
     }
 }
-
