@@ -7,6 +7,8 @@ import javax.realtime.ScopedMemory;
 import org.omg.CORBA.BAD_INV_ORDER;
 import org.omg.CORBA.CompletionStatus;
 import org.omg.PortableServer.AdapterActivator;
+import org.omg.PortableServer.ImplicitActivationPolicy;
+import org.omg.PortableServer.ImplicitActivationPolicyValue;
 import org.omg.PortableServer.RequestProcessingPolicy;
 import org.omg.PortableServer.RequestProcessingPolicyValue;
 import org.omg.PortableServer.Servant;
@@ -38,7 +40,7 @@ import edu.uci.ece.zen.utils.ZenProperties;
  * 
  * @author juancol, hojjat
  */
-public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.POA 
+public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortableServer.POA 
 {
     private static Queue unusedFacades;
 
@@ -119,11 +121,6 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             System.exit(-1);
         }
     }
-
-
- 
-    
-    
     
     public static edu.uci.ece.zen.poa.POA instance() {
         edu.uci.ece.zen.poa.POA retVal;
@@ -139,7 +136,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         POA.release(this);
     }
 
-    public void initAsRootPOA(final edu.uci.ece.zen.orb.ORB orb) {
+    public void initAsRootPOA(final edu.uci.ece.zen.orb.ORB orb) 
+    {
         this.init(orb, rootPoaString, null, null, null);
     }
 
@@ -184,7 +182,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
        
         //TODO improve synchronization
         
-        POA parent = (POA) _parent;
+        this.parent = (POA) _parent;
         poaState = POA.CREATING;
         this.orb = orb;
         this.poaMemoryArea = ORB.getScopedRegion();
@@ -201,10 +199,25 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         this.poaPath.append(this.poaName.getData(), 0, this.poaName.length());
         this.poaPath.append('/');
 
-        if (manager == null) manager = POAManager.instance();
-        this.poaManager = manager;
-        ((POAManager) poaManager).register((org.omg.PortableServer.POA) this);
+        // Assigning the POAManager
+        if (manager == null)
+        {
+            if (poaName.equals(POA.rootPoaString))
+            {
+               this.poaManager = POAManager.instance();
+            }
+            else
+            {
+                this.poaManager = parent.poaManager;
+            }
+        }
+        else
+        {  
+            this.poaManager = manager;
+        }
 
+        ((POAManager) poaManager).register((org.omg.PortableServer.POA) this);
+        
         theChildren.clear();
         numberOfCurrentRequests.reset();
 
@@ -212,15 +225,18 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         r.addParam(orb);
         r.addParam(this);
         r.addParam(policies);
-        r.addParam(parent);
-        r.addParam(manager);
+        r.addParam(this.parent);
+        r.addParam(this.poaManager);
         ExecuteInRunnable eir1 = new ExecuteInRunnable();
         eir1.init(r, poaMemoryArea);
         ExecuteInRunnable eir2 = new ExecuteInRunnable();
         eir2.init(eir1, orb.orbImplRegion);
-        try {
+        try 
+        {
             orb.parentMemoryArea.executeInArea(eir2);
-        } catch (Exception e2) {
+        } 
+        catch (Exception e2) 
+        {
             ZenProperties.logger.log(Logger.WARN, getClass(), "init", e2);
         }
 
@@ -340,7 +356,6 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
 
         if (transport.objectTable[1] == null) {
             transport.objectTable[1] = new ExecuteInRunnable();
-            ZenProperties.logger.log("new EI  runnable");
         }
 
         ExecuteInRunnable eir1 = (ExecuteInRunnable) transport.objectTable[1];
@@ -350,6 +365,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", e);
         }
+        
+        
         //TODO: Cant throw exceptions here....marchall the exception into a
         // reply message and send back
         //Look at ResponseHandler
@@ -613,12 +630,19 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public org.omg.PortableServer.ImplicitActivationPolicy create_implicit_activation_policy(
-            final org.omg.PortableServer.ImplicitActivationPolicyValue value) {
-        /*
-         * return this.serverRequestHandler.create_implicit_activation_policy(value);
-         */
-        throw new org.omg.CORBA.NO_IMPLEMENT();
+    public ImplicitActivationPolicy create_implicit_activation_policy(final ImplicitActivationPolicyValue value) 
+    {
+        if (value == ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION)
+        { 
+            return edu.uci.ece.zen.poa.policy.ImplicitActivationPolicy.ImplicitActivation;
+        } 
+        else if (value == ImplicitActivationPolicyValue.NO_IMPLICIT_ACTIVATION)
+        {
+            return edu.uci.ece.zen.poa.policy.ImplicitActivationPolicy.ExplicitActivation;
+        }
+        
+        throw new IllegalArgumentException(); // this should never happen.
+
     }
 
     public org.omg.PortableServer.ServantRetentionPolicy create_servant_retention_policy(
@@ -857,7 +881,47 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
          * this.theChildren.get(poaName); if (child == null) { throw new
          * org.omg.CORBA.INTERNAL("unknown_adapter operation", 0, CompletionStatus.COMPLETED_NO); } }
          * throw new org.omg.CORBA.OBJECT_NOT_EXIST("POA activation failed"); } return child;
-         */throw new org.omg.CORBA.NO_IMPLEMENT();
+         */
+        throw new org.omg.CORBA.NO_IMPLEMENT();
+    }
+
+    /* (non-Javadoc)
+     * @see org.omg.RTPortableServer.POA#create_reference_with_priority(java.lang.String, short)
+     */
+    public Object create_reference_with_priority(String arg0, short arg1) throws WrongPolicy
+    {
+        throw new org.omg.CORBA.NO_IMPLEMENT();
+        // TODO Auto-generated method stub
+        //return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.omg.RTPortableServer.POA#create_reference_with_id_and_priority(byte[], java.lang.String, short)
+     */
+    public Object create_reference_with_id_and_priority(byte[] arg0, String arg1, short arg2) throws WrongPolicy
+    {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new org.omg.CORBA.NO_IMPLEMENT();
+    }
+
+    /* (non-Javadoc)
+     * @see org.omg.RTPortableServer.POA#activate_object_with_priority(org.omg.PortableServer.Servant, short)
+     */
+    public byte[] activate_object_with_priority(Servant servant, short priority) throws ServantAlreadyActive, WrongPolicy
+    {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new org.omg.CORBA.NO_IMPLEMENT();
+    }
+
+    /* (non-Javadoc)
+     * @see org.omg.RTPortableServer.POA#activate_object_with_id_and_priority(byte[], org.omg.PortableServer.Servant, short)
+     */
+    public void activate_object_with_id_and_priority(byte[] arg0, Servant arg1, short arg2) throws ServantAlreadyActive, ObjectAlreadyActive, WrongPolicy
+    {
+        // TODO Auto-generated method stub
+        throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 }
 
