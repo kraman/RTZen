@@ -1,9 +1,9 @@
 package org.omg.IOP_N.CodecPackage;
 
-
 /**
- *	Generated from IDL definition of exception "InvalidTypeForEncoding"
- *	@author IDL compiler 
+ * Generated from IDL definition of exception "InvalidTypeForEncoding"
+ * 
+ * @author IDL compiler
  */
 
 public final class InvalidTypeForEncoding extends org.omg.CORBA.UserException {

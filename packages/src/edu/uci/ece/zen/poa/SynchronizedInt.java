@@ -1,17 +1,18 @@
-/* --------------------------------------------------------------------------*
+/*******************************************************************************
+ * --------------------------------------------------------------------------
  * $Id: SynchronizedInt.java,v 1.5 2003/08/05 23:37:22 nshankar Exp $
- *--------------------------------------------------------------------------*/
+ * --------------------------------------------------------------------------
+ */
 
 package edu.uci.ece.zen.poa;
 
-
 /**
- * <code> Synchronized Int </code> is a simple wrapper around the normal integer type
- * that provides methods for the synchronization based on the state of the integer value.
- *
- * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna</a>
+ * <code> Synchronized Int </code> is a simple wrapper around the normal integer
+ * type that provides methods for the synchronization based on the state of the
+ * integer value.
+ * 
+ * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna </a>
  * @version 1.0
- *
  */
 
 public class SynchronizedInt {
@@ -28,8 +29,8 @@ public class SynchronizedInt {
      */
 
     /**
-     *
-     * @param condition boolean
+     * @param condition
+     *            boolean
      */
     public void decrementAndNotifyAll(boolean condition) {
         if (--this.value == 0) {
@@ -40,13 +41,13 @@ public class SynchronizedInt {
     }
 
     /**
-     * Return integer value 
+     * Return integer value
+     * 
      * @return int
      */
     public synchronized int get() {
         return this.value;
     }
-
 
     /**
      * Wait for value to drop to zero.
@@ -54,11 +55,12 @@ public class SynchronizedInt {
     public synchronized void waitForCompletion() {
         try {
             wait();
-        } catch (InterruptedException ex) {}
+        } catch (InterruptedException ex) {
+        }
     }
 
-    public void reset(){
-        value=0;
+    public void reset() {
+        value = 0;
     }
 
     private int value;

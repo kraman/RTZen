@@ -1,8 +1,6 @@
 package org.omg.CORBA;
 
-
-import java.lang.reflect.*;
-
+import java.lang.reflect.Constructor;
 
 public class SystemExceptionHelper {
 
@@ -10,19 +8,25 @@ public class SystemExceptionHelper {
         return "IDL:org.omg/CORBA/SystemException:1.0";
     }
 
-    public static org.omg.CORBA.SystemException read(org.omg.CORBA.portable.InputStream in) {
+    public static org.omg.CORBA.SystemException read(
+            org.omg.CORBA.portable.InputStream in) {
         String className = className(in.read_string());
         int minor = in.read_long();
 
-        org.omg.CORBA.CompletionStatus completed = org.omg.CORBA.CompletionStatusHelper.read(in);
+        org.omg.CORBA.CompletionStatus completed = org.omg.CORBA.CompletionStatusHelper
+                .read(in);
 
         try {
             Class ex = Class.forName(className);
-            Constructor constr = ex.getDeclaredConstructor(new Class[] { String.class,
-                int.class, org.omg.CORBA.CompletionStatus.class});
+            Constructor constr = ex.getDeclaredConstructor(new Class[] {
+                    String.class, int.class,
+                    org.omg.CORBA.CompletionStatus.class
+            });
 
-            java.lang.Object[] params = { "This exception occured in the Server",
-                new Integer(minor), completed};
+            java.lang.Object[] params = {
+                    "This exception occured in the Server", new Integer(minor),
+                    completed
+            };
 
             return (org.omg.CORBA.SystemException) constr.newInstance(params);
         } catch (Exception e) {
@@ -47,9 +51,7 @@ public class SystemExceptionHelper {
     }
 
     private static final String ir2scopes(String prefix, String s) {
-        if (s.indexOf("/") < 0) {
-            return s;
-        }
+        if (s.indexOf("/") < 0) { return s; }
         java.util.StringTokenizer strtok = new java.util.StringTokenizer(s, "/");
 
         int count = strtok.countTokens();
@@ -94,9 +96,7 @@ public class SystemExceptionHelper {
     }
 
     private static final String scopesToIR(String s) {
-        if (s.indexOf(".") < 0) {
-            return s;
-        }
+        if (s.indexOf(".") < 0) { return s; }
         java.util.StringTokenizer strtok = new java.util.StringTokenizer(s, ".");
         String scopes[] = new String[strtok.countTokens()];
 
@@ -121,6 +121,12 @@ public class SystemExceptionHelper {
         return sb.toString();
     }
 
-    // Temporarily aspectized.  Refer to edu.uci.ece.zen.orb.TypeCodeAspect.
-    // private static org.omg.CORBA.TypeCode _type = org.omg.CORBA.ORB.init().create_exception_tc( org.omg.CORBA.SystemExceptionHelper.id(),"SystemException",new org.omg.CORBA.StructMember[]{new org.omg.CORBA.StructMember("minor",org.omg.CORBA.ORB.init().get_primitive_tc(org.omg.CORBA.TCKind.from_int(5)),null),new org.omg.CORBA.StructMember("completed",org.omg.CORBA.ORB.init().create_enum_tc(org.omg.CORBA.CompletionStatusHelper.id(),"CompletionStatus",new String[]{"COMPLETED_YES","COMPLETED_NO","COMPLETED_MAYBE"}),null)});
+    // Temporarily aspectized. Refer to edu.uci.ece.zen.orb.TypeCodeAspect.
+    // private static org.omg.CORBA.TypeCode _type =
+    // org.omg.CORBA.ORB.init().create_exception_tc(
+    // org.omg.CORBA.SystemExceptionHelper.id(),"SystemException",new
+    // org.omg.CORBA.StructMember[]{new
+    // org.omg.CORBA.StructMember("minor",org.omg.CORBA.ORB.init().get_primitive_tc(org.omg.CORBA.TCKind.from_int(5)),null),new
+    // org.omg.CORBA.StructMember("completed",org.omg.CORBA.ORB.init().create_enum_tc(org.omg.CORBA.CompletionStatusHelper.id(),"CompletionStatus",new
+    // String[]{"COMPLETED_YES","COMPLETED_NO","COMPLETED_MAYBE"}),null)});
 }

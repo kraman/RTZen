@@ -1,29 +1,42 @@
 package edu.uci.ece.zen.orb;
 
-import org.omg.RTCORBA.*;
-import edu.uci.ece.zen.orb.policies.*;
-import edu.uci.ece.zen.utils.*;
-import javax.realtime.*;
+import javax.realtime.RealtimeThread;
+import javax.realtime.ScopedMemory;
 
-public class ThreadPoolRunnable implements Runnable{
+import edu.uci.ece.zen.utils.ThreadPool;
+
+public class ThreadPoolRunnable implements Runnable {
 
     int stacksize;
+
     org.omg.RTCORBA.ThreadpoolLane[] lanes;
+
     boolean allowBorrowing;
+
     boolean allowRequestBuffering;
+
     int maxBufferedRequests;
+
     int maxRequestBufferSize;
+
     int staticThreads;
+
     int dynamicThreads;
+
     short defaultPriority;
+
     ORB orb;
+
     RTORBImpl rtorb;
 
-    public ThreadPoolRunnable(){
+    public ThreadPoolRunnable() {
         stacksize = -1;
     }
 
-    public void init(RTORBImpl rtorb, ORB orb, int stacksize, int static_threads, int dynamic_threads, short default_priority, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
+    public void init(RTORBImpl rtorb, ORB orb, int stacksize,
+            int static_threads, int dynamic_threads, short default_priority,
+            boolean allow_request_buffering, int max_buffered_requests,
+            int max_request_buffer_size) {
         this.orb = orb;
         this.rtorb = rtorb;
         this.stacksize = stacksize;
@@ -36,7 +49,10 @@ public class ThreadPoolRunnable implements Runnable{
         this.lanes = null;
     }
 
-    public void init(RTORBImpl rtorb, ORB orb, int stacksize, org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allow_borrowing, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
+    public void init(RTORBImpl rtorb, ORB orb, int stacksize,
+            org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allow_borrowing,
+            boolean allow_request_buffering, int max_buffered_requests,
+            int max_request_buffer_size) {
         this.orb = orb;
         this.rtorb = rtorb;
         this.stacksize = stacksize;
@@ -47,18 +63,21 @@ public class ThreadPoolRunnable implements Runnable{
         this.maxRequestBufferSize = max_request_buffer_size;
     }
 
-    public void run(){
+    public void run() {
         //make sure this has been initialized
-        if(stacksize >= 0){
+        if (stacksize >= 0) {
             ThreadPool tp;
-            if(lanes == null)
-                tp = new ThreadPool(stacksize, staticThreads, dynamicThreads, defaultPriority, allowRequestBuffering, maxBufferedRequests, maxRequestBufferSize , orb);
-            else
-                tp = new ThreadPool(stacksize, allowRequestBuffering, maxBufferedRequests, maxRequestBufferSize, lanes, allowBorrowing , orb );
+            if (lanes == null) tp = new ThreadPool(stacksize, staticThreads,
+                    dynamicThreads, defaultPriority, allowRequestBuffering,
+                    maxBufferedRequests, maxRequestBufferSize, orb);
+            else tp = new ThreadPool(stacksize, allowRequestBuffering,
+                    maxBufferedRequests, maxRequestBufferSize, lanes,
+                    allowBorrowing, orb);
 
-            orb.threadpoolList[rtorb.tpID] = (ScopedMemory) RealtimeThread.getCurrentMemoryArea();
+            orb.threadpoolList[rtorb.tpID] = (ScopedMemory) RealtimeThread
+                    .getCurrentMemoryArea();
 
-            ((ScopedMemory)orb.threadpoolList[rtorb.tpID]).setPortal(tp);
+            ((ScopedMemory) orb.threadpoolList[rtorb.tpID]).setPortal(tp);
             stacksize = -1;
         }
     }

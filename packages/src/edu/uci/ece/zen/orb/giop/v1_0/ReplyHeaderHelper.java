@@ -1,29 +1,27 @@
 package edu.uci.ece.zen.orb.giop.v1_0;
 
-
-import javax.realtime.*;
-import edu.uci.ece.zen.utils.*;
-import edu.uci.ece.zen.orb.giop.IOP.*;
+import edu.uci.ece.zen.utils.FString;
+import edu.uci.ece.zen.utils.ZenProperties;
 
 /**
  * Helper class for : ReplyHeader_1_0
- *
+ * 
  * @author OpenORB Compiler
  */
-public class ReplyHeaderHelper
-{
+public class ReplyHeaderHelper {
 
     /**
      * Read ReplyHeader_1_0 from a marshalled stream
-     * @param istream the input stream
+     * 
+     * @param istream
+     *            the input stream
      * @return the readed ReplyHeader_1_0 value
      */
-    public static ReplyHeader read(org.omg.CORBA.portable.InputStream istream)
-    {
+    public static ReplyHeader read(org.omg.CORBA.portable.InputStream istream) {
         ReplyHeader new_one = ReplyHeader.instance();
 
-        new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.
-                read(istream,FString.instance(new_one.service_context));
+        new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper
+                .read(istream, FString.instance(new_one.service_context));
 
         new_one.request_id = istream.read_ulong();
 
@@ -34,12 +32,16 @@ public class ReplyHeaderHelper
 
     /**
      * Write ReplyHeader_1_0 into a marshalled stream
-     * @param ostream the output stream
-     * @param value ReplyHeader_1_0 value
+     * 
+     * @param ostream
+     *            the output stream
+     * @param value
+     *            ReplyHeader_1_0 value
      */
-    public static void write(org.omg.CORBA.portable.OutputStream ostream, ReplyHeader value)
-    {
-        if(ZenProperties.devDbg) System.out.println("writing REPLY 1.0 header");
+    public static void write(org.omg.CORBA.portable.OutputStream ostream,
+            ReplyHeader value) {
+        if (ZenProperties.devDbg) System.out
+                .println("writing REPLY 1.0 header");
 
         //ServiceContextListHelper.write(ostream,value.service_context);
 

@@ -1,10 +1,10 @@
-/***** Copyright (c) 1999-2000 Object Management Group. Unlimited rights to
- duplicate and use this code are hereby granted provided that this
- copyright notice is included.
- *****/
+/*******************************************************************************
+ * *** Copyright (c) 1999-2000 Object Management Group. Unlimited rights to
+ * duplicate and use this code are hereby granted provided that this copyright
+ * notice is included.
+ ******************************************************************************/
 
 package org.omg.CORBA;
-
 
 public abstract class Any implements org.omg.CORBA.portable.IDLEntity {
 
@@ -14,7 +14,7 @@ public abstract class Any implements org.omg.CORBA.portable.IDLEntity {
 
     abstract public void type(org.omg.CORBA.TypeCode type);
 
-    abstract public void read_value(org.omg.CORBA.portable.InputStream is, 
+    abstract public void read_value(org.omg.CORBA.portable.InputStream is,
             org.omg.CORBA.TypeCode type);
 
     abstract public void write_value(org.omg.CORBA.portable.OutputStream os);
@@ -83,7 +83,7 @@ public abstract class Any implements org.omg.CORBA.portable.IDLEntity {
 
     abstract public void insert_Value(java.io.Serializable v);
 
-    abstract public void insert_Value(java.io.Serializable v, 
+    abstract public void insert_Value(java.io.Serializable v,
             org.omg.CORBA.TypeCode t);
 
     abstract public void insert_Object(org.omg.CORBA.Object obj,
@@ -127,8 +127,7 @@ public abstract class Any implements org.omg.CORBA.portable.IDLEntity {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public void insert_fixed(java.math.BigDecimal f,
-            org.omg.CORBA.TypeCode t) {
+    public void insert_fixed(java.math.BigDecimal f, org.omg.CORBA.TypeCode t) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 

@@ -1,16 +1,14 @@
-/***** Copyright (c) 2000 Object Management Group. Unlimited rights to 
- duplicate and use this code are hereby granted provided that this 
- copyright notice is included.
- *****/
+/*******************************************************************************
+ * *** Copyright (c) 2000 Object Management Group. Unlimited rights to duplicate
+ * and use this code are hereby granted provided that this copyright notice is
+ * included.
+ ******************************************************************************/
 
 package org.omg.CORBA;
 
-
-import org.omg.CORBA.portable.*;
-
-
 public abstract class LocalObject implements org.omg.CORBA.Object {
-    public LocalObject() {}
+    public LocalObject() {
+    }
 
     public boolean _is_equivalent(org.omg.CORBA.Object that) {
         return equals(that);
@@ -40,26 +38,19 @@ public abstract class LocalObject implements org.omg.CORBA.Object {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public Request _create_request(
-            Context ctx,
-            String operation,
-            NVList arg_list,
-            NamedValue result) {
+    public Request _create_request(Context ctx, String operation,
+            NVList arg_list, NamedValue result) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public Request _create_request(
-            Context ctx,
-            String operation,
-            NVList arg_list,
-            NamedValue result,
-            ExceptionList exceptions,
+    public Request _create_request(Context ctx, String operation,
+            NVList arg_list, NamedValue result, ExceptionList exceptions,
             ContextList contexts) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     /**
-     *@deprecated Deprecated by CORBA 2.3.
+     * @deprecated Deprecated by CORBA 2.3.
      */
     public org.omg.CORBA.InterfaceDef _get_interface() {
         throw new org.omg.CORBA.NO_IMPLEMENT();
@@ -96,25 +87,23 @@ public abstract class LocalObject implements org.omg.CORBA.Object {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public void _servant_postinvoke(
-            org.omg.CORBA.portable.ServantObject servant) {
+    public void _servant_postinvoke(org.omg.CORBA.portable.ServantObject servant) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public org.omg.CORBA.portable.OutputStream _request(
-            String operation, boolean responseExpected) {
+    public org.omg.CORBA.portable.OutputStream _request(String operation,
+            boolean responseExpected) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     public org.omg.CORBA.portable.InputStream _invoke(
             org.omg.CORBA.portable.OutputStream output)
-        throws org.omg.CORBA.portable.ApplicationException,
-                org.omg.CORBA.portable.RemarshalException {
+            throws org.omg.CORBA.portable.ApplicationException,
+            org.omg.CORBA.portable.RemarshalException {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public void _releaseReply(
-            org.omg.CORBA.portable.InputStream input) {
+    public void _releaseReply(org.omg.CORBA.portable.InputStream input) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 

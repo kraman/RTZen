@@ -1,268 +1,280 @@
 package edu.uci.ece.zen.utils;
 
 import java.util.Vector;
-import javax.realtime.*;
 
-public class WriteBuffer{
+import javax.realtime.ImmortalMemory;
+
+public class WriteBuffer {
     private static Queue bufferCache;
-    private static int BYTE=1;
-    private static int SHORT=2;
-    private static int LONG=4;
-    private static int LONGLONG=8;
 
-    static{
-        try{
-            bufferCache = (Queue) ImmortalMemory.instance().newInstance( Queue.class );
-        }catch( Exception e ){
+    private static int BYTE = 1;
+
+    private static int SHORT = 2;
+
+    private static int LONG = 4;
+
+    private static int LONGLONG = 8;
+
+    static {
+        try {
+            bufferCache = (Queue) ImmortalMemory.instance().newInstance(
+                    Queue.class);
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
     }
 
-    public static WriteBuffer instance(){
-        try{
-            if( bufferCache.isEmpty() )
-                return (WriteBuffer) ImmortalMemory.instance().newInstance( WriteBuffer.class );
-            else
-                return (WriteBuffer) bufferCache.dequeue();
-        }catch( Exception e ){
+    public static WriteBuffer instance() {
+        try {
+            if (bufferCache.isEmpty()) return (WriteBuffer) ImmortalMemory
+                    .instance().newInstance(WriteBuffer.class);
+            else return (WriteBuffer) bufferCache.dequeue();
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
         return null;
     }
 
-    private static void release( WriteBuffer self ){
-        bufferCache.enqueue( self );
+    private static void release(WriteBuffer self) {
+        bufferCache.enqueue(self);
     }
 
     private Vector buffers;
-    private boolean isLittleEndian;
-    long position;
-    long limit;
-    long capacity;
-    
-   
 
-    public WriteBuffer(){
-        try{
-            buffers = (Vector) ImmortalMemory.instance().newInstance( Vector.class );
-        }catch( Exception e ){
+    private boolean isLittleEndian;
+
+    long position;
+
+    long limit;
+
+    long capacity;
+
+    public WriteBuffer() {
+        try {
+            buffers = (Vector) ImmortalMemory.instance().newInstance(
+                    Vector.class);
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
     }
-    
-    public void printBuffer(){
-             
-	    System.out.println("Here is in the printBuffer of WriteBuffer...");
-	    int i,j;
-	    for(i=0; i<buffers.size();i++){
-                    byte[] buffer = (byte[]) buffers.elementAt(i);
-		    for(j=0; j<buffer.length; j++){
-			    System.out.println(buffer[j]);
-	            }
-	    }
-           
+
+    public void printBuffer() {
+
+        System.out.println("Here is in the printBuffer of WriteBuffer...");
+        int i, j;
+        for (i = 0; i < buffers.size(); i++) {
+            byte[] buffer = (byte[]) buffers.elementAt(i);
+            for (j = 0; j < buffer.length; j++) {
+                System.out.println(buffer[j]);
+            }
+        }
+
     }
 
-    public void init(){
+    public void init() {
         position = limit = capacity = 0;
         buffers.removeAllElements();
     }
 
-    public void free(){
+    public void free() {
         ByteArrayCache cache = ByteArrayCache.instance();
-        for( int i=0;i<buffers.size();i++ )
-            cache.returnByteArray( (byte[]) buffers.elementAt(i) );
+        for (int i = 0; i < buffers.size(); i++)
+            cache.returnByteArray((byte[]) buffers.elementAt(i));
         init();
-        WriteBuffer.release( this );
+        WriteBuffer.release(this);
     }
 
-    public void setEndian( boolean isLittleEndian ){
+    public void setEndian(boolean isLittleEndian) {
         this.isLittleEndian = isLittleEndian;
     }
 
-    private void ensureCapacity( int size ){
-        if( size <= 0 )
-            return;
-        while( position + size > capacity ){
+    private void ensureCapacity(int size) {
+        if (size <= 0) return;
+        while (position + size > capacity) {
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
             capacity += byteArray.length;
-            buffers.addElement( byteArray );
+            buffers.addElement(byteArray);
         }
     }
 
-    private void pad( int boundry ){
-        int extraBytesUsed = (int)(position % boundry);
+    private void pad(int boundry) {
+        int extraBytesUsed = (int) (position % boundry);
 
         if (extraBytesUsed != 0) {
             int incr = boundry - extraBytesUsed;
-            ensureCapacity( incr );
+            ensureCapacity(incr);
             position += incr;
-            if( limit < position )
-                limit = position;
+            if (limit < position) limit = position;
         }
     }
 
-    public long getPosition(){
+    public long getPosition() {
         return position;
     }
 
-    public void setPosition( long position ){
+    public void setPosition(long position) {
         this.position = position;
-        ensureCapacity( (int)(capacity-position) );
-        if( position > limit )
-            limit = position;
+        ensureCapacity((int) (capacity - position));
+        if (position > limit) limit = position;
     }
 
-    public long getLimit(){
+    public long getLimit() {
         return limit;
     }
 
-    public void setLimit( long limit ){
+    public void setLimit(long limit) {
         this.limit = limit;
-        ensureCapacity( (int)(capacity-limit) );
+        ensureCapacity((int) (capacity - limit));
     }
 
-    public void writeByte( byte v ){
+    public void writeByte(byte v) {
         ensureCapacity(1);
-        byte[] buffer = (byte[]) buffers.elementAt((int)(position/1024));
-        buffer[(int)(position%1024)] = v;
+        byte[] buffer = (byte[]) buffers.elementAt((int) (position / 1024));
+        buffer[(int) (position % 1024)] = v;
         ++position;
-        if( position > limit )
-            limit = position;
+        if (position > limit) limit = position;
     }
 
-    public void writeByteArray( byte[] v , int offset , int length ){
+    public void writeByteArray(byte[] v, int offset, int length) {
         ensureCapacity(length);
-        while( length > 0 ){
-            byte[] buffer = (byte[]) buffers.elementAt((int)(position/1024));
-            int curBufPos = (int)(position%1024);
-            int copyLength = 1024-curBufPos;
-            if( copyLength > length )
-                copyLength = length;
-            System.arraycopy( v , offset , buffer , curBufPos , copyLength );
+        while (length > 0) {
+            byte[] buffer = (byte[]) buffers.elementAt((int) (position / 1024));
+            int curBufPos = (int) (position % 1024);
+            int copyLength = 1024 - curBufPos;
+            if (copyLength > length) copyLength = length;
+            System.arraycopy(v, offset, buffer, curBufPos, copyLength);
             offset += copyLength;
             length -= copyLength;
             position += copyLength;
         }
-        if( position > limit )
-            limit = position;
+        if (position > limit) limit = position;
     }
 
-    public void dumpBuffer( WriteBuffer out ){
+    public void dumpBuffer(WriteBuffer out) {
         //System.out.println( "----GIOP MSG START---" );
-        for( int i=0;i<position/1024;i++ ){
-            out.writeByteArray( (byte[])buffers.elementAt(i) , 0 , 1024 );
+        for (int i = 0; i < position / 1024; i++) {
+            out.writeByteArray((byte[]) buffers.elementAt(i), 0, 1024);
             //System.out.write( (byte[])buffers.elementAt(i) , 0 , 1024 );
         }
-        out.writeByteArray( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) );
-        //System.out.write( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) );
+        out.writeByteArray((byte[]) buffers
+                .elementAt(((int) (position / 1024))), 0,
+                (int) (position % 1024));
+        //System.out.write( (byte[])buffers.elementAt(((int)(position/1024))) ,
+        // 0 , (int)(position%1024) );
         //System.out.flush();
         //System.out.println( "\n----GIOP MSG END---" );
     }
 
-    private void dumpByteArray( byte[] arr , int off , int len , java.io.OutputStream out ) throws java.io.IOException{
-        out.write( arr , off , len );
+    private void dumpByteArray(byte[] arr, int off, int len,
+            java.io.OutputStream out) throws java.io.IOException {
+        out.write(arr, off, len);
         //System.err.write( arr , off , len );
     }
 
-    public void dumpBuffer( java.io.OutputStream out ) throws java.io.IOException{
+    public void dumpBuffer(java.io.OutputStream out) throws java.io.IOException {
         //System.err.println( "----BEGIN GIOP MESSAGE----" + position );
-        for( int i=0;i<position/1024;i++ ){
+        for (int i = 0; i < position / 1024; i++) {
             //System.out.println( "Writing buffer " + i + " from 0 to 1024" );
-            dumpByteArray( (byte[])buffers.elementAt(i) , 0 , 1024 , out );
+            dumpByteArray((byte[]) buffers.elementAt(i), 0, 1024, out);
             //System.out.write( (byte[])buffers.elementAt(i) , 0 , 1024 );
         }
-        //System.out.println( "Writing buffer " + (position/1024) + " from 0 to " +(position%1024) );
-        dumpByteArray( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) , out );
-        //System.out.write( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) );
+        //System.out.println( "Writing buffer " + (position/1024) + " from 0 to
+        // " +(position%1024) );
+        dumpByteArray((byte[]) buffers.elementAt(((int) (position / 1024))), 0,
+                (int) (position % 1024), out);
+        //System.out.write( (byte[])buffers.elementAt(((int)(position/1024))) ,
+        // 0 , (int)(position%1024) );
         //System.err.println( "\n----END GIOP MESSAGE----" );
     }
 
-    public void readByteArray( byte[] v , int offset , int length ){
-        while( length > 0 ){
-            byte[] curBuf = (byte[])buffers.elementAt((int)(position/1024));
-            int curBufPos = (int)position%1024;
+    public void readByteArray(byte[] v, int offset, int length) {
+        while (length > 0) {
+            byte[] curBuf = (byte[]) buffers.elementAt((int) (position / 1024));
+            int curBufPos = (int) position % 1024;
             int bytesLeft = 1024 - curBufPos;
-            if( bytesLeft > length )
-                bytesLeft = length;
-            System.arraycopy( curBuf , curBufPos , v , offset , bytesLeft );
+            if (bytesLeft > length) bytesLeft = length;
+            System.arraycopy(curBuf, curBufPos, v, offset, bytesLeft);
 
             length -= bytesLeft;
             position += bytesLeft;
         }
     }
 
-    public ReadBuffer readBuffer( int length ){
+    public ReadBuffer readBuffer(int length) {
         ReadBuffer out = ReadBuffer.instance();
         byte[] tmpBuf = ByteArrayCache.instance().getByteArray();
 
-        while( length > 0 ){
+        while (length > 0) {
             int copyLen = length > tmpBuf.length ? tmpBuf.length : length;
-            readByteArray( tmpBuf , 0 , copyLen );
-            out.writeByteArray( tmpBuf , 0 , copyLen );
+            readByteArray(tmpBuf, 0, copyLen);
+            out.writeByteArray(tmpBuf, 0, copyLen);
             length -= copyLen;
         }
-        ByteArrayCache.instance().returnByteArray( tmpBuf );
+        ByteArrayCache.instance().returnByteArray(tmpBuf);
 
         return out;
     }
 
-    public ReadBuffer getReadBuffer(){
+    public ReadBuffer getReadBuffer() {
         ReadBuffer out = ReadBuffer.instance();
         out.init();
-        for( int i=0;i<position/1024-1;i++ ){
-            out.writeByteArray( (byte[])buffers.elementAt(i) , 0 , 1024 );
+        for (int i = 0; i < position / 1024 - 1; i++) {
+            out.writeByteArray((byte[]) buffers.elementAt(i), 0, 1024);
         }
-        out.writeByteArray( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) );
+        out.writeByteArray((byte[]) buffers
+                .elementAt(((int) (position / 1024))), 0,
+                (int) (position % 1024));
         return out;
     }
 
-    public ReadBuffer getReadBufferAndFree(){
+    public ReadBuffer getReadBufferAndFree() {
         ReadBuffer ret = getReadBuffer();
         free();
         return ret;
     }
 
-    public void writeShort( short v ){
+    public void writeShort(short v) {
         pad(WriteBuffer.SHORT);
 
-        byte b1 = (byte) ((v >>> 8) & 0xFF); 
+        byte b1 = (byte) ((v >>> 8) & 0xFF);
         byte b2 = (byte) (v & 0xFF);
 
-        if( isLittleEndian ){
-            writeByte( b2 );
-            writeByte( b1 );
-        }else{
-            writeByte( b1 );
-            writeByte( b2 );
+        if (isLittleEndian) {
+            writeByte(b2);
+            writeByte(b1);
+        } else {
+            writeByte(b1);
+            writeByte(b2);
         }
     }
 
-    public void writeLong( int v ){
+    public void writeLong(int v) {
         pad(WriteBuffer.LONG);
         byte b1 = (byte) ((v >>> 24) & 0xFF);
         byte b2 = (byte) ((v >>> 16) & 0xFF);
         byte b3 = (byte) ((v >>> 8) & 0xFF);
         byte b4 = (byte) (v & 0xFF);
-        //System.out.println( "" + ((int)b1) + " " + ((int)b2) + " " + ((int)b3) + " " + ((int)b4) );
-        if( isLittleEndian ){
-            writeByte( b4 );
-            writeByte( b3 );
-            writeByte( b2 );
-            writeByte( b1 );
-        }else{
-            writeByte( b1 );
-            writeByte( b2 );
-            writeByte( b3 );
-            writeByte( b4 );
+        //System.out.println( "" + ((int)b1) + " " + ((int)b2) + " " +
+        // ((int)b3) + " " + ((int)b4) );
+        if (isLittleEndian) {
+            writeByte(b4);
+            writeByte(b3);
+            writeByte(b2);
+            writeByte(b1);
+        } else {
+            writeByte(b1);
+            writeByte(b2);
+            writeByte(b3);
+            writeByte(b4);
         }
     }
-    
-    public void writeLongLong( long v ){
-      //  System.out.println("If translated to double, it's "+Double.longBitsToDouble(v));
+
+    public void writeLongLong(long v) {
+        //  System.out.println("If translated to double, it's
+        // "+Double.longBitsToDouble(v));
 
         pad(WriteBuffer.LONGLONG);
         byte b1 = (byte) ((v >>> 56) & 0xFF);
@@ -272,58 +284,58 @@ public class WriteBuffer{
         byte b4 = (byte) ((v >>> 32) & 0xFF);
         byte b5 = (byte) ((v >>> 24) & 0xFF);
         byte b6 = (byte) ((v >>> 16) & 0xFF);
-	byte b7 = (byte) ((v >>> 8) & 0xFF);
-	byte b8 = (byte) (v & 0xFF);
+        byte b7 = (byte) ((v >>> 8) & 0xFF);
+        byte b8 = (byte) (v & 0xFF);
 
-	if( isLittleEndian ){
-		writeByte( b8 );
-		writeByte( b7 );
-		writeByte( b6 );
-		writeByte( b5 );
-		writeByte( b4 );
-		writeByte( b3 );
-		writeByte( b2 );
-		writeByte( b1 );
-	}else{
-		writeByte( b1 );
-		writeByte( b2 );
-		writeByte( b3 );
-		writeByte( b4 );
-		writeByte( b5 );
-		writeByte( b6 );
-		writeByte( b7 );
-		writeByte( b8 );
-	}
+        if (isLittleEndian) {
+            writeByte(b8);
+            writeByte(b7);
+            writeByte(b6);
+            writeByte(b5);
+            writeByte(b4);
+            writeByte(b3);
+            writeByte(b2);
+            writeByte(b1);
+        } else {
+            writeByte(b1);
+            writeByte(b2);
+            writeByte(b3);
+            writeByte(b4);
+            writeByte(b5);
+            writeByte(b6);
+            writeByte(b7);
+            writeByte(b8);
+        }
     }
 
-    public boolean equals( WriteBuffer rhs ){
-        try{
-            int lastIdx = (int)(position/1024);
-            for( int i=0;i<lastIdx;i++ )
-                if( !java.util.Arrays.equals( (byte[]) buffers.elementAt(i) , (byte[]) rhs.buffers.elementAt(i) ) )
-                    return false;
-            byte[] lhs_lastbuf = (byte[]) buffers.elementAt( lastIdx );
-            byte[] rhs_lastbuf = (byte[]) rhs.buffers.elementAt( lastIdx );
-            int posInBuf = (int) (position%1024);
-            for( int i=0;i<posInBuf;i++ )
-                if( lhs_lastbuf[i] != rhs_lastbuf[i] )
-                    return false;
+    public boolean equals(WriteBuffer rhs) {
+        try {
+            int lastIdx = (int) (position / 1024);
+            for (int i = 0; i < lastIdx; i++)
+                if (!java.util.Arrays.equals((byte[]) buffers.elementAt(i),
+                        (byte[]) rhs.buffers.elementAt(i))) return false;
+            byte[] lhs_lastbuf = (byte[]) buffers.elementAt(lastIdx);
+            byte[] rhs_lastbuf = (byte[]) rhs.buffers.elementAt(lastIdx);
+            int posInBuf = (int) (position % 1024);
+            for (int i = 0; i < posInBuf; i++)
+                if (lhs_lastbuf[i] != rhs_lastbuf[i]) return false;
             return true;
-        }catch( ArrayIndexOutOfBoundsException  ex ){
+        } catch (ArrayIndexOutOfBoundsException ex) {
             return false;
         }
     }
 
     private long mementoPosition;
-    public void setLocationMemento(){
-        pad( WriteBuffer.LONG );
+
+    public void setLocationMemento() {
+        pad(WriteBuffer.LONG);
         mementoPosition = position;
     }
 
-    public void writeLongAtLocationMemento( int val ){
+    public void writeLongAtLocationMemento(int val) {
         long tmp = position;
         position = mementoPosition;
-        writeLong( val );
+        writeLong(val);
         position = tmp;
     }
 }

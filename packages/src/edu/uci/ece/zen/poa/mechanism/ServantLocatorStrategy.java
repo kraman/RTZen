@@ -7,7 +7,7 @@ package edu.uci.ece.zen.poa.mechanism;
 // --- OMG Specific Imports ---
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.portable.InvokeHandler;
-import edu.uci.ece.zen.orb.ResponseHandler;
+import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.orb.giop.type.*;
 import edu.uci.ece.zen.poa.*;
 import edu.uci.ece.zen.utils.*;
@@ -33,7 +33,7 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
     */
     public synchronized void setInvokeHandler(java.lang.Object servantManager , IntHolder exceptionValue ){
         if (this.manager != null) {
-            exceptionHolder.value = POARunnable.BadInvOrderException;
+        	exceptionValue.value = POARunnable.BadInvOrderException;
             return;
         }
 
@@ -41,7 +41,7 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
             this.manager = (org.omg.PortableServer.ServantLocator) servantManager;
         }
         
-        exceptionHolder.value = POARunnable.WrongPolicyException;
+        exceptionValue.value = POARunnable.WrongPolicyException;
     }
 
    /**
@@ -57,6 +57,7 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
         }
 
         exceptionValue.value = POARunnable.ObjNotActiveException;
+        return null;
     }
 
    /**

@@ -2,11 +2,13 @@ package edu.uci.ece.zen.utils;
 
 /**
  * Internal node class to hold empty active demux locations.
+ * 
  * @author Krishna Raman
  */
-public class ActiveDemuxTableNode{
+public class ActiveDemuxTableNode {
 
-    public ActiveDemuxTableNode(){}
+    public ActiveDemuxTableNode() {
+    }
 
     /**
      * The next node in the linked list.
@@ -15,7 +17,7 @@ public class ActiveDemuxTableNode{
 
     /**
      * The index this node refers to.
-     */ 
+     */
     public int idx;
 
     /**

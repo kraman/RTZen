@@ -1,40 +1,42 @@
 package edu.uci.ece.zen.orb.policies;
 
-import org.omg.RTCORBA.*;
+import org.omg.RTCORBA.Protocol;
+import org.omg.RTCORBA.SERVER_PROTOCOL_POLICY_TYPE;
+import org.omg.RTCORBA.ServerProtocolPolicy;
 
 /**
  * This class implements the Server Protocol Policy
+ * 
  * @author Mark Panahi
  * @version 1.0
  */
 
-public class ServerProtocolPolicyImpl
-        extends org.omg.CORBA.LocalObject
-        implements ServerProtocolPolicy
-{
+public class ServerProtocolPolicyImpl extends org.omg.CORBA.LocalObject
+        implements ServerProtocolPolicy {
     private Protocol[] protocols;
 
-    public ServerProtocolPolicyImpl(){
+    public ServerProtocolPolicyImpl() {
         //right now there's only IIOP
         //protocols = new Protocol[1];
     }
-/*
-    public ServerProtocolPolicyImpl(org.omg.RTCORBA.Protocol[] protocols){
-        this.protocols = protocols;
 
-    }*/
+    /*
+     * public ServerProtocolPolicyImpl(org.omg.RTCORBA.Protocol[] protocols){
+     * this.protocols = protocols; }
+     */
     /**
      * Read accessor for policy_type attribute
+     * 
      * @return the attribute value
      */
-    public int policy_type(){
+    public int policy_type() {
         return SERVER_PROTOCOL_POLICY_TYPE.value;
     }
 
     /**
      * Operation copy
      */
-    public org.omg.CORBA.Policy copy(){
+    public org.omg.CORBA.Policy copy() {
         ServerProtocolPolicyImpl spp = new ServerProtocolPolicyImpl();
         spp.protocols(protocols);
         return spp;
@@ -43,19 +45,20 @@ public class ServerProtocolPolicyImpl
     /**
      * Operation destroy
      */
-    public void destroy(){
+    public void destroy() {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     /**
      * Read accessor for protocols attribute
+     * 
      * @return the attribute value
      */
-    public Protocol[] protocols(){
+    public Protocol[] protocols() {
         return protocols;
     }
 
-    public void protocols(Protocol[] protocols){
+    public void protocols(Protocol[] protocols) {
         this.protocols = protocols;
     }
 }

@@ -1,55 +1,61 @@
 package edu.uci.ece.zen.orb.giop.v1_0;
 
-import org.omg.GIOP.*;
-import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.utils.*;
 import javax.realtime.ImmortalMemory;
 
+import org.omg.GIOP.CancelRequestHeaderHelper;
+
+import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.utils.ReadBuffer;
+
 /**
- * Represents header of GIOP CancelRequest message as described in
- * CORBA Spec General Inter-ORB Protocol standard.
+ * Represents header of GIOP CancelRequest message as described in CORBA Spec
+ * General Inter-ORB Protocol standard.
+ * 
  * @author Bruce Miller
  */
 
-public class CancelRequestMessage extends edu.uci.ece.zen.orb.giop.type.CancelRequestMessage {
+public class CancelRequestMessage extends
+        edu.uci.ece.zen.orb.giop.type.CancelRequestMessage {
     private org.omg.GIOP.CancelRequestHeader header;
-    private static CancelRequestMessage crm;
 
+    private static CancelRequestMessage crm;
 
     public CancelRequestMessage(ORB orb, ReadBuffer stream) {
         // Super's constructor sets and filles this.istream
-        super (orb, stream);
-        header = org.omg.GIOP.CancelRequestHeaderHelper.read (istream);
+        super(orb, stream);
+        header = org.omg.GIOP.CancelRequestHeaderHelper.read(istream);
         messageBody = null;
     }
- public void init(ORB orb, ReadBuffer stream) {
+
+    public void init(ORB orb, ReadBuffer stream) {
         // Super's constructor sets and filles this.istream
-        super.init (orb, stream);
-        header = org.omg.GIOP.CancelRequestHeaderHelper.read (istream);
+        super.init(orb, stream);
+        header = org.omg.GIOP.CancelRequestHeaderHelper.read(istream);
         messageBody = null;
     }
 
-    public int getRequestId() { return header.request_id; }
-
-    public void marshal (edu.uci.ece.zen.orb.CDROutputStream out) {
-        CancelRequestHeaderHelper.write( out , header );
+    public int getRequestId() {
+        return header.request_id;
     }
 
-    public static CancelRequestMessage getMessage()
-    {
-        try
-        {
-            if (crm == null)
-                crm = (CancelRequestMessage) ImmortalMemory.instance().newInstance(CancelRequestMessage.class);
+    public void marshal(edu.uci.ece.zen.orb.CDROutputStream out) {
+        CancelRequestHeaderHelper.write(out, header);
+    }
+
+    public static CancelRequestMessage getMessage() {
+        try {
+            if (crm == null) crm = (CancelRequestMessage) ImmortalMemory
+                    .instance().newInstance(CancelRequestMessage.class);
             return crm;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public int getGiopVersion(){ return 10; }
+    public int getGiopVersion() {
+        return 10;
+    }
 }
 
 // client should call

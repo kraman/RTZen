@@ -1,13 +1,13 @@
-/***** Copyright (c) 1999 Object Management Group. Unlimited rights to 
- duplicate and use this code are hereby granted provided that this 
- copyright notice is included.
- *****/
+/*******************************************************************************
+ * *** Copyright (c) 1999 Object Management Group. Unlimited rights to duplicate
+ * and use this code are hereby granted provided that this copyright notice is
+ * included.
+ ******************************************************************************/
 
 package org.omg.CORBA;
 
-
 abstract public class ServerRequest {
-  
+
     /**
      * @deprecated use operation()
      */
@@ -40,7 +40,7 @@ abstract public class ServerRequest {
     }
 
     public void set_result(org.omg.CORBA.Any result) {
-        throw new org.omg.CORBA.NO_IMPLEMENT();    
+        throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     /**
@@ -53,5 +53,5 @@ abstract public class ServerRequest {
     public void set_exception(org.omg.CORBA.Any except) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
-  
+
 }

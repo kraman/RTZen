@@ -1,10 +1,10 @@
-/***** Copyright (c) 1999 Object Management Group. Unlimited rights to 
- duplicate and use this code are hereby granted provided that this 
- copyright notice is included.
- *****/
+/*******************************************************************************
+ * *** Copyright (c) 1999 Object Management Group. Unlimited rights to duplicate
+ * and use this code are hereby granted provided that this copyright notice is
+ * included.
+ ******************************************************************************/
 
 package org.omg.CORBA;
-
 
 abstract public class Request {
 
@@ -21,7 +21,7 @@ abstract public class Request {
     abstract public org.omg.CORBA.ExceptionList exceptions();
 
     abstract public org.omg.CORBA.ContextList contexts();
-    
+
     abstract public void ctx(org.omg.CORBA.Context ctx);
 
     abstract public org.omg.CORBA.Context ctx();
@@ -48,8 +48,7 @@ abstract public class Request {
 
     abstract public void send_deferred();
 
-    abstract public void get_response() throws
-                org.omg.CORBA.WrongTransaction;
+    abstract public void get_response() throws org.omg.CORBA.WrongTransaction;
 
     abstract public boolean poll_response();
 }

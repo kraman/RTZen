@@ -1,16 +1,15 @@
 package edu.uci.ece.zen.utils;
 
-
 /**
  * This class represent an <em>Event Variable</em> that can be used to
  * synchronize concurrent thread on the happening of a given event.
- *
- * @author <a href="mailto:corsaro@doc.ece.uci.edu">Angelo Corsaro</a>
+ * 
+ * @author <a href="mailto:corsaro@doc.ece.uci.edu">Angelo Corsaro </a>
  * @version 1.0
  */
 public class EventVariable {
 
-    private boolean signaled;   // = false;
+    private boolean signaled; // = false;
 
     public EventVariable() {
         this.signaled = false;
@@ -19,7 +18,7 @@ public class EventVariable {
     public EventVariable(boolean signal) {
         signaled = signal;
     }
-    
+
     public synchronized void stall() throws InterruptedException {
         if (!this.signaled) {
             this.wait();
@@ -27,15 +26,16 @@ public class EventVariable {
         this.signaled = false;
     }
 
-    public synchronized void stall(long timeoutMillis) throws InterruptedException {
+    public synchronized void stall(long timeoutMillis)
+            throws InterruptedException {
         if (!this.signaled) {
             super.wait(timeoutMillis);
         }
         this.signaled = false;
     }
 
-    public synchronized void stall(long timeoutMillis, int timeoutNanos) throws
-                InterruptedException {
+    public synchronized void stall(long timeoutMillis, int timeoutNanos)
+            throws InterruptedException {
 
         if (!this.signaled) {
             this.wait(timeoutMillis, timeoutNanos);

@@ -1,18 +1,20 @@
 package org.omg.IOP_N.CodecPackage;
 
-
 /**
- *	Generated from IDL definition of exception "FormatMismatch"
- *	@author IDL compiler 
+ * Generated from IDL definition of exception "FormatMismatch"
+ * 
+ * @author IDL compiler
  */
 
-final public class FormatMismatchHolder
-    implements org.omg.CORBA.portable.Streamable {
+final public class FormatMismatchHolder implements
+        org.omg.CORBA.portable.Streamable {
     public org.omg.IOP_N.CodecPackage.FormatMismatch value;
 
-    public FormatMismatchHolder() {}
+    public FormatMismatchHolder() {
+    }
 
-    public FormatMismatchHolder(org.omg.IOP_N.CodecPackage.FormatMismatch initial) {
+    public FormatMismatchHolder(
+            org.omg.IOP_N.CodecPackage.FormatMismatch initial) {
         value = initial;
     }
 

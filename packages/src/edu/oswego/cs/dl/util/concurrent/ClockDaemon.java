@@ -1,15 +1,10 @@
 /*
- File: ClockDaemon.java
-
- Originally written by Doug Lea and released into the public domain.
- This may be used for any purposes whatsoever without acknowledgment.
- Thanks for the assistance and support of Sun Microsystems Labs,
- and everyone contributing, testing, and using this code.
-
- History:
- Date       Who                What
- 29Aug1998  dl               created initial public version
- 17dec1998  dl               null out thread after shutdown
+ * File: ClockDaemon.java Originally written by Doug Lea and released into the
+ * public domain. This may be used for any purposes whatsoever without
+ * acknowledgment. Thanks for the assistance and support of Sun Microsystems
+ * Labs, and everyone contributing, testing, and using this code. History: Date
+ * Who What 29Aug1998 dl created initial public version 17dec1998 dl null out
+ * thread after shutdown
  */
 
 package edu.oswego.cs.dl.util.concurrent;
@@ -17,432 +12,411 @@ package edu.oswego.cs.dl.util.concurrent;
 import java.util.Date;
 
 /**
- * A general-purpose time-based daemon, vaguely similar in functionality
- * to common system-level utilities such as <code>at</code> 
- * (and the associated crond) in Unix.
- * Objects of this class maintain a single thread and a task queue
- * that may be used to execute Runnable commands in any of three modes --
- * absolute (run at a given time), relative (run after a given delay),
- * and periodic (cyclically run with a given delay).
+ * A general-purpose time-based daemon, vaguely similar in functionality to
+ * common system-level utilities such as <code>at</code> (and the associated
+ * crond) in Unix. Objects of this class maintain a single thread and a task
+ * queue that may be used to execute Runnable commands in any of three modes --
+ * absolute (run at a given time), relative (run after a given delay), and
+ * periodic (cyclically run with a given delay).
  * <p>
- * All commands are executed by the single background thread. 
- * The thread is not actually started until the first 
- * request is encountered. Also, if the
- * thread is stopped for any reason, one is started upon encountering
- * the next request,  or <code>restart()</code> is invoked. 
+ * All commands are executed by the single background thread. The thread is not
+ * actually started until the first request is encountered. Also, if the thread
+ * is stopped for any reason, one is started upon encountering the next request,
+ * or <code>restart()</code> is invoked.
  * <p>
- * If you would instead like commands run in their own threads, you can
- * use as arguments Runnable commands that start their own threads
- * (or perhaps wrap within ThreadedExecutors). 
+ * If you would instead like commands run in their own threads, you can use as
+ * arguments Runnable commands that start their own threads (or perhaps wrap
+ * within ThreadedExecutors).
  * <p>
- * You can also use multiple
- * daemon objects, each using a different background thread. However,
- * one of the reasons for using a time daemon is to pool together
- * processing of infrequent tasks using a single background thread.
+ * You can also use multiple daemon objects, each using a different background
+ * thread. However, one of the reasons for using a time daemon is to pool
+ * together processing of infrequent tasks using a single background thread.
  * <p>
- * Background threads are created using a ThreadFactory. The
- * default factory does <em>not</em>
- * automatically <code>setDaemon</code> status.
+ * Background threads are created using a ThreadFactory. The default factory
+ * does <em>not</em> automatically <code>setDaemon</code> status.
  * <p>
- * The class uses Java timed waits for scheduling. These can vary
- * in precision across platforms, and provide no real-time guarantees
- * about meeting deadlines.
- * <p>[<a href="http://gee.cs.oswego.edu/dl/classes/edu.oswego/cs/dl/util/concurrent/intro.html"> Introduction to this package. </a>]
- **/
+ * The class uses Java timed waits for scheduling. These can vary in precision
+ * across platforms, and provide no real-time guarantees about meeting
+ * deadlines.
+ * <p>[ <a
+ * href="http://gee.cs.oswego.edu/dl/classes/edu.oswego/cs/dl/util/concurrent/intro.html">
+ * Introduction to this package. </a>]
+ */
 
-public class ClockDaemon extends ThreadFactoryUser
-{
+public class ClockDaemon extends ThreadFactoryUser {
 
-	/** tasks are maintained in a standard priority queue **/
-	protected final Heap heap_ = new Heap(DefaultChannelCapacity.get());
+    /** tasks are maintained in a standard priority queue * */
+    protected final Heap heap_ = new Heap(DefaultChannelCapacity.get());
 
-	protected static class TaskNode implements Comparable
-	{
-		final Runnable command; // The command to run
-		final long period; // The cycle period, or -1 if not periodic
-		private long timeToRun_; // The time to run command
+    protected static class TaskNode implements Comparable {
+        final Runnable command; // The command to run
 
-		// Cancellation does not immediately remove node, it just
-		// sets up lazy deletion bit, so is thrown away when next 
-		// encountered in run loop
+        final long period; // The cycle period, or -1 if not
 
-		private boolean cancelled_ = false;
+        // periodic
 
-		// Access to cancellation status and and run time needs sync 
-		// since they can be written and read in different threads
+        private long timeToRun_; // The time to run command
 
-		synchronized void setCancelled()
-		{
-			cancelled_ = true;
-		}
+        // Cancellation does not immediately remove node, it just
+        // sets up lazy deletion bit, so is thrown away when next
+        // encountered in run loop
 
-		synchronized boolean getCancelled()
-		{
-			return cancelled_;
-		}
+        private boolean cancelled_ = false;
 
-		synchronized void setTimeToRun(long w)
-		{
-			timeToRun_ = w;
-		}
+        // Access to cancellation status and and run time needs sync
+        // since they can be written and read in different threads
 
-		synchronized long getTimeToRun()
-		{
-			return timeToRun_;
-		}
+        synchronized void setCancelled() {
+            cancelled_ = true;
+        }
 
-		public int compareTo(Object other)
-		{
-			long a = getTimeToRun();
-			long b = ((TaskNode) (other)).getTimeToRun();
+        synchronized boolean getCancelled() {
+            return cancelled_;
+        }
 
-			return (a < b) ? -1 : ((a == b) ? 0 : 1);
-		}
+        synchronized void setTimeToRun(long w) {
+            timeToRun_ = w;
+        }
 
-		TaskNode(long w, Runnable c, long p)
-		{
-			timeToRun_ = w;
-			command = c;
-			period = p;
-		}
+        synchronized long getTimeToRun() {
+            return timeToRun_;
+        }
 
-		TaskNode(long w, Runnable c)
-		{
-			this(w, c, -1);
-		}
-	}
+        public int compareTo(Object other) {
+            long a = getTimeToRun();
+            long b = ((TaskNode) (other)).getTimeToRun();
 
-	/**
-	 * Execute the given command at the given time.
-	 * @param date -- the absolute time to run the command, expressed
-	 * as a java.util.Date.
-	 * @param command -- the command to run at the given time.
-	 * @return taskID -- an opaque reference that can be used to cancel execution request
-	 **/
-	public Object executeAt(Date date, Runnable command)
-	{
-		TaskNode task = new TaskNode(date.getTime(), command);
+            return (a < b) ? -1 : ((a == b) ? 0 : 1);
+        }
 
-		heap_.insert(task);
-		restart();
-		return task;
-	}
+        TaskNode(long w, Runnable c, long p) {
+            timeToRun_ = w;
+            command = c;
+            period = p;
+        }
 
-	/**
-	 * Excecute the given command after waiting for the given delay.
-	 * <p>
-	 * <b>Sample Usage.</b>
-	 * You can use a ClockDaemon to arrange timeout callbacks to break out
-	 * of stuck IO. For example (code sketch):
-	 * <pre>
-	 * class X {   ...
-	 * 
-	 *   ClockDaemon timer = ...
-	 *   Thread readerThread;
-	 *   FileInputStream datafile;
-	 * 
-	 *   void startReadThread() {
-	 *     datafile = new FileInputStream("data", ...);
-	 * 
-	 *     readerThread = new Thread(new Runnable() {
-	 *      public void run() {
-	 *        for(;;) {
-	 *          // try to gracefully exit before blocking
-	 *         if (Thread.currentThread().isInterrupted()) {
-	 *           quietlyWrapUpAndReturn();
-	 *         }
-	 *         else {
-	 *           try {
-	 *             int c = datafile.read();
-	 *             if (c == -1) break;
-	 *             else process(c);
-	 *           }
-	 *           catch (IOException ex) {
-	 *            cleanup();
-	 *            return;
-	 *          }
-	 *       }
-	 *     } };
-	 *
-	 *    readerThread.start();
-	 *
-	 *    // establish callback to cancel after 60 seconds
-	 *    timer.executeAfterDelay(60000, new Runnable() {
-	 *      readerThread.interrupt();    // try to interrupt thread
-	 *      datafile.close(); // force thread to lose its input file 
-	 *    });
-	 *   } 
-	 * }
-	 * </pre>
-	 * @param millisecondsToDelay -- the number of milliseconds
-	 * from now to run the command.
-	 * @param command -- the command to run after the delay.
-	 * @return taskID -- an opaque reference that can be used to cancel execution request
-	 **/
-	public Object executeAfterDelay(long millisecondsToDelay, Runnable command)
-	{
-		long runtime = System.currentTimeMillis() + millisecondsToDelay;
-		TaskNode task = new TaskNode(runtime, command);
+        TaskNode(long w, Runnable c) {
+            this(w, c, -1);
+        }
+    }
 
-		heap_.insert(task);
-		restart();
-		return task;
-	}
+    /**
+     * Execute the given command at the given time.
+     * 
+     * @param date --
+     *            the absolute time to run the command, expressed as a
+     *            java.util.Date.
+     * @param command --
+     *            the command to run at the given time.
+     * @return taskID -- an opaque reference that can be used to cancel
+     *         execution request
+     */
+    public Object executeAt(Date date, Runnable command) {
+        TaskNode task = new TaskNode(date.getTime(), command);
 
-	/**
-	 * Execute the given command every <code>period</code> milliseconds.
-	 * If <code>startNow</code> is true, execution begins immediately,
-	 * otherwise, it begins after the first <code>period</code> delay.
-	 * <p>
-	 * <b>Sample Usage</b>. Here is one way
-	 * to update Swing components acting as progress indicators for
-	 * long-running actions.
-	 * <pre>
-	 * class X {
-	 *   JLabel statusLabel = ...;
-	 *
-	 *   int percentComplete = 0;
-	 *   synchronized int  getPercentComplete() { return percentComplete; }
-	 *   synchronized void setPercentComplete(int p) { percentComplete = p; }
-	 *
-	 *   ClockDaemon cd = ...;
-	 * 
-	 *   void startWorking() {
-	 *     Runnable showPct = new Runnable() {
-	 *       public void run() {
-	 *          SwingUtilities.invokeLater(new Runnable() {
-	 *            public void run() {
-	 *              statusLabel.setText(getPercentComplete() + "%");
-	 *            } 
-	 *          } 
-	 *       } 
-	 *     };
-	 *
-	 *     final Object updater = cd.executePeriodically(500, showPct, true);
-	 *
-	 *     Runnable action = new Runnable() {
-	 *       public void run() {
-	 *         for (int i = 0; i < 100; ++i) {
-	 *           work();
-	 *           setPercentComplete(i);
-	 *         }
-	 *         cd.cancel(updater);
-	 *       }
-	 *     };
-	 *
-	 *     new Thread(action).start();
-	 *   }
-	 * }  
-	 * </pre>
-	 * @param period -- the period, in milliseconds. Periods are
-	 *  measured from start-of-task to the next start-of-task. It is
-	 * generally a bad idea to use a period that is shorter than 
-	 * the expected task duration.
-	 * @param command -- the command to run at each cycle
-	 * @param startNow -- true if the cycle should start with execution
-	 * of the task now. Otherwise, the cycle starts with a delay of
-	 * <code>period</code> milliseconds.
-	 * @exception IllegalArgumentException if period less than or equal to zero.
-	 * @return taskID -- an opaque reference that can be used to cancel execution request
-	 **/
-	public Object executePeriodically(
-		long period,
-		Runnable command,
-		boolean startNow)
-	{
+        heap_.insert(task);
+        restart();
+        return task;
+    }
 
-		if (period <= 0)
-		{
-			throw new IllegalArgumentException();
-		}
+    /**
+     * Excecute the given command after waiting for the given delay.
+     * <p>
+     * <b>Sample Usage. </b> You can use a ClockDaemon to arrange timeout
+     * callbacks to break out of stuck IO. For example (code sketch):
+     * 
+     * <pre>
+     * 
+     *  
+     *   
+     *    
+     *     class X {   ...
+     *     
+     *       ClockDaemon timer = ...
+     *       Thread readerThread;
+     *       FileInputStream datafile;
+     *     
+     *       void startReadThread() {
+     *         datafile = new FileInputStream(&quot;data&quot;, ...);
+     *     
+     *         readerThread = new Thread(new Runnable() {
+     *          public void run() {
+     *            for(;;) {
+     *              // try to gracefully exit before blocking
+     *             if (Thread.currentThread().isInterrupted()) {
+     *               quietlyWrapUpAndReturn();
+     *             }
+     *             else {
+     *               try {
+     *                 int c = datafile.read();
+     *                 if (c == -1) break;
+     *                 else process(c);
+     *               }
+     *               catch (IOException ex) {
+     *                cleanup();
+     *                return;
+     *              }
+     *           }
+     *         } };
+     *    
+     *        readerThread.start();
+     *    
+     *        // establish callback to cancel after 60 seconds
+     *        timer.executeAfterDelay(60000, new Runnable() {
+     *          readerThread.interrupt();    // try to interrupt thread
+     *          datafile.close(); // force thread to lose its input file 
+     *        });
+     *       } 
+     *     }
+     *     
+     *    
+     *   
+     *  
+     * </pre>
+     * 
+     * @param millisecondsToDelay --
+     *            the number of milliseconds from now to run the command.
+     * @param command --
+     *            the command to run after the delay.
+     * @return taskID -- an opaque reference that can be used to cancel
+     *         execution request
+     */
+    public Object executeAfterDelay(long millisecondsToDelay, Runnable command) {
+        long runtime = System.currentTimeMillis() + millisecondsToDelay;
+        TaskNode task = new TaskNode(runtime, command);
 
-		long firstTime = System.currentTimeMillis();
+        heap_.insert(task);
+        restart();
+        return task;
+    }
 
-		if (!startNow)
-		{
-			firstTime += period;
-		}
+    /**
+     * Execute the given command every <code>period</code> milliseconds. If
+     * <code>startNow</code> is true, execution begins immediately, otherwise,
+     * it begins after the first <code>period</code> delay.
+     * <p>
+     * <b>Sample Usage </b>. Here is one way to update Swing components acting
+     * as progress indicators for long-running actions.
+     * 
+     * <pre>
+     * 
+     *  
+     *   
+     *    
+     *     class X {
+     *       JLabel statusLabel = ...;
+     *    
+     *       int percentComplete = 0;
+     *       synchronized int  getPercentComplete() { return percentComplete; }
+     *       synchronized void setPercentComplete(int p) { percentComplete = p; }
+     *    
+     *       ClockDaemon cd = ...;
+     *     
+     *       void startWorking() {
+     *         Runnable showPct = new Runnable() {
+     *           public void run() {
+     *              SwingUtilities.invokeLater(new Runnable() {
+     *                public void run() {
+     *                  statusLabel.setText(getPercentComplete() + &quot;%&quot;);
+     *                } 
+     *              } 
+     *           } 
+     *         };
+     *    
+     *         final Object updater = cd.executePeriodically(500, showPct, true);
+     *    
+     *         Runnable action = new Runnable() {
+     *           public void run() {
+     *             for (int i = 0; i &lt; 100; ++i) {
+     *               work();
+     *               setPercentComplete(i);
+     *             }
+     *             cd.cancel(updater);
+     *           }
+     *         };
+     *    
+     *         new Thread(action).start();
+     *       }
+     *     }  
+     *     
+     *    
+     *   
+     *  
+     * </pre>
+     * 
+     * @param period --
+     *            the period, in milliseconds. Periods are measured from
+     *            start-of-task to the next start-of-task. It is generally a bad
+     *            idea to use a period that is shorter than the expected task
+     *            duration.
+     * @param command --
+     *            the command to run at each cycle
+     * @param startNow --
+     *            true if the cycle should start with execution of the task now.
+     *            Otherwise, the cycle starts with a delay of
+     *            <code>period</code> milliseconds.
+     * @exception IllegalArgumentException
+     *                if period less than or equal to zero.
+     * @return taskID -- an opaque reference that can be used to cancel
+     *         execution request
+     */
+    public Object executePeriodically(long period, Runnable command,
+            boolean startNow) {
 
-		TaskNode task = new TaskNode(firstTime, command, period);
+        if (period <= 0) { throw new IllegalArgumentException(); }
 
-		heap_.insert(task);
-		restart();
-		return task;
-	}
+        long firstTime = System.currentTimeMillis();
 
-	/**
-	 * Cancel a scheduled task that has not yet been run. 
-	 * The task will be cancelled
-	 * upon the <em>next</em> opportunity to run it. This has no effect if
-	 * this is a one-shot task that has already executed.
-	 * Also, if an execution is in progress, it will complete normally.
-	 * (It may however be interrupted via getThread().interrupt()).
-	 * But if it is a periodic task, future iterations are cancelled. 
-	 * @param taskID -- a task reference returned by one of
-	 * the execute commands
-	 * @exception ClassCastException if the taskID argument is not 
-	 * of the type returned by an execute command.
-	 **/
-	public static void cancel(Object taskID)
-	{
-		((TaskNode) taskID).setCancelled();
-	}
+        if (!startNow) {
+            firstTime += period;
+        }
 
-	/** The thread used to process commands **/
-	protected Thread thread_;
+        TaskNode task = new TaskNode(firstTime, command, period);
 
-	/**
-	 * Return the thread being used to process commands, or
-	 * null if there is no such thread. You can use this
-	 * to invoke any special methods on the thread, for
-	 * example, to interrupt it.
-	 **/
-	public synchronized Thread getThread()
-	{
-		return thread_;
-	}
+        heap_.insert(task);
+        restart();
+        return task;
+    }
 
-	/** set thread_ to null to indicate termination **/
-	protected synchronized void clearThread()
-	{
-		thread_ = null;
-	}
+    /**
+     * Cancel a scheduled task that has not yet been run. The task will be
+     * cancelled upon the <em>next</em> opportunity to run it. This has no
+     * effect if this is a one-shot task that has already executed. Also, if an
+     * execution is in progress, it will complete normally. (It may however be
+     * interrupted via getThread().interrupt()). But if it is a periodic task,
+     * future iterations are cancelled.
+     * 
+     * @param taskID --
+     *            a task reference returned by one of the execute commands
+     * @exception ClassCastException
+     *                if the taskID argument is not of the type returned by an
+     *                execute command.
+     */
+    public static void cancel(Object taskID) {
+        ((TaskNode) taskID).setCancelled();
+    }
 
-	/**
-	 * Start (or restart) a thread to process commands, or wake
-	 * up an existing thread if one is already running. This
-	 * method can be invoked if the background thread crashed
-	 * due to an unrecoverable exception in an executed command.
-	 **/
+    /** The thread used to process commands * */
+    protected Thread thread_;
 
-	public synchronized void restart()
-	{
-		if (thread_ == null)
-		{
-			thread_ = threadFactory_.newThread(runLoop_);
-			thread_.start();
-		}
-		else
-		{
-			notify();
-		}
-	}
+    /**
+     * Return the thread being used to process commands, or null if there is no
+     * such thread. You can use this to invoke any special methods on the
+     * thread, for example, to interrupt it.
+     */
+    public synchronized Thread getThread() {
+        return thread_;
+    }
 
-	/**
-	 * Cancel all tasks and interrupt the background thread executing
-	 * the current task, if any.
-	 * A new background thread will be started if new execution
-	 * requests are encountered. If the currently executing task
-	 * does not repsond to interrupts, the current thread may persist, even
-	 * if a new thread is started via restart().
-	 **/
-	public synchronized void shutDown()
-	{
-		heap_.clear();
-		if (thread_ != null)
-		{
-			thread_.interrupt();
-		}
-		thread_ = null;
-	}
+    /** set thread_ to null to indicate termination * */
+    protected synchronized void clearThread() {
+        thread_ = null;
+    }
 
-	/** Return the next task to execute, or null if thread is interrupted **/
-	protected synchronized TaskNode nextTask()
-	{
+    /**
+     * Start (or restart) a thread to process commands, or wake up an existing
+     * thread if one is already running. This method can be invoked if the
+     * background thread crashed due to an unrecoverable exception in an
+     * executed command.
+     */
 
-		// Note: This code assumes that there is only one run loop thread
+    public synchronized void restart() {
+        if (thread_ == null) {
+            thread_ = threadFactory_.newThread(runLoop_);
+            thread_.start();
+        } else {
+            notify();
+        }
+    }
 
-		try
-		{
-			while (!Thread.interrupted())
-			{
+    /**
+     * Cancel all tasks and interrupt the background thread executing the
+     * current task, if any. A new background thread will be started if new
+     * execution requests are encountered. If the currently executing task does
+     * not repsond to interrupts, the current thread may persist, even if a new
+     * thread is started via restart().
+     */
+    public synchronized void shutDown() {
+        heap_.clear();
+        if (thread_ != null) {
+            thread_.interrupt();
+        }
+        thread_ = null;
+    }
 
-				// Using peek simplifies dealing with spurious wakeups
+    /** Return the next task to execute, or null if thread is interrupted * */
+    protected synchronized TaskNode nextTask() {
 
-				TaskNode task = (TaskNode) (heap_.peek());
+        // Note: This code assumes that there is only one run loop thread
 
-				if (task == null)
-				{
-					wait();
-				}
-				else
-				{
-					long now = System.currentTimeMillis();
-					long when = task.getTimeToRun();
+        try {
+            while (!Thread.interrupted()) {
 
-					if (when > now)
-					{ // false alarm wakeup
-						wait(when - now);
-					}
-					else
-					{
-						task = (TaskNode) (heap_.extract());
+                // Using peek simplifies dealing with spurious wakeups
 
-						if (!task.getCancelled())
-						{ // Skip if cancelled by
+                TaskNode task = (TaskNode) (heap_.peek());
 
-							if (task.period > 0)
-							{ // If periodic, requeue 
-								task.setTimeToRun(now + task.period);
-								heap_.insert(task);
-							}
+                if (task == null) {
+                    wait();
+                } else {
+                    long now = System.currentTimeMillis();
+                    long when = task.getTimeToRun();
 
-							return task;
-						}
-					}
-				}
-			}
-		}
-		catch (InterruptedException ex)
-		{
-		} // fall through
+                    if (when > now) { // false alarm wakeup
+                        wait(when - now);
+                    } else {
+                        task = (TaskNode) (heap_.extract());
 
-		return null; // on interrupt
-	}
+                        if (!task.getCancelled()) { // Skip if cancelled by
 
-	/**
-	 * The runloop is isolated in its own Runnable class
-	 * just so that the main 
-	 * class need not implement Runnable,  which would
-	 * allow others to directly invoke run, which is not supported.
-	 **/
+                            if (task.period > 0) { // If periodic, requeue
+                                task.setTimeToRun(now + task.period);
+                                heap_.insert(task);
+                            }
 
-	protected class RunLoop implements Runnable
-	{
-		public void run()
-		{
-			try
-			{
-				for (;;)
-				{
-					TaskNode task = nextTask();
+                            return task;
+                        }
+                    }
+                }
+            }
+        } catch (InterruptedException ex) {
+        } // fall through
 
-					if (task != null)
-					{
-						task.command.run();
-					}
-					else
-					{
-						break;
-					}
-				}
-			}
-			finally
-			{
-				clearThread();
-			}
-		}
-	}
+        return null; // on interrupt
+    }
 
-	protected final RunLoop runLoop_;
+    /**
+     * The runloop is isolated in its own Runnable class just so that the main
+     * class need not implement Runnable, which would allow others to directly
+     * invoke run, which is not supported.
+     */
 
-	/**
-	 * Create a new ClockDaemon 
-	 **/
+    protected class RunLoop implements Runnable {
+        public void run() {
+            try {
+                for (;;) {
+                    TaskNode task = nextTask();
 
-	public ClockDaemon()
-	{
-		runLoop_ = new RunLoop();
-	}
+                    if (task != null) {
+                        task.command.run();
+                    } else {
+                        break;
+                    }
+                }
+            } finally {
+                clearThread();
+            }
+        }
+    }
+
+    protected final RunLoop runLoop_;
+
+    /**
+     * Create a new ClockDaemon
+     */
+
+    public ClockDaemon() {
+        runLoop_ = new RunLoop();
+    }
 
 }

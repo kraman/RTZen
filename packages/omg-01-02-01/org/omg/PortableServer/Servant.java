@@ -1,10 +1,10 @@
-/***** Copyright (c) 1999-2000 Object Management Group. Unlimited rights to 
- duplicate and use this code are hereby granted provided that this 
- copyright notice is included.
- *****/
+/*******************************************************************************
+ * *** Copyright (c) 1999-2000 Object Management Group. Unlimited rights to
+ * duplicate and use this code are hereby granted provided that this copyright
+ * notice is included.
+ ******************************************************************************/
 
 package org.omg.PortableServer;
-
 
 abstract public class Servant {
 
@@ -16,7 +16,8 @@ abstract public class Servant {
         try {
             ((org.omg.CORBA_2_3.ORB) orb).set_delegate(this);
         } catch (ClassCastException e) {
-            throw new org.omg.CORBA.BAD_PARAM("POA Servant requires an instanceof org.omg.CORBA_2_3.ORB");
+            throw new org.omg.CORBA.BAD_PARAM(
+                    "POA Servant requires an instanceof org.omg.CORBA_2_3.ORB");
         }
         return _this_object();
     }
@@ -45,12 +46,13 @@ abstract public class Servant {
         return _get_delegate().non_existent(this);
     }
 
-    /** @deprecated Deprecated by CORBA 2.4
+    /**
+     * @deprecated Deprecated by CORBA 2.4
      */
     public org.omg.CORBA.InterfaceDef _get_interface() {
         return _get_delegate().get_interface(this);
     }
-    
+
     public org.omg.CORBA.Object _get_interface_def() {
         // First try to call the delegate implementation class's
         // "Object get_interface_def(..)" method (will work for ORBs
@@ -71,10 +73,14 @@ abstract public class Servant {
         } catch (AbstractMethodError aex) {
             // Call "InterfaceDef get_interface(..)" method using reflection.
             try {
-                Class[] argc = { org.omg.PortableServer.Servant.class };
-                java.lang.reflect.Method meth = delegate.getClass().getMethod("get_interface",
-                        argc);
-                Object[] argx = { this };
+                Class[] argc = {
+                    org.omg.PortableServer.Servant.class
+                };
+                java.lang.reflect.Method meth = delegate.getClass().getMethod(
+                        "get_interface", argc);
+                Object[] argx = {
+                    this
+                };
 
                 return (org.omg.CORBA.Object) meth.invoke(delegate, argx);
             } catch (java.lang.reflect.InvocationTargetException exs) {
@@ -100,9 +106,8 @@ abstract public class Servant {
     private transient org.omg.PortableServer.portable.Delegate _delegate = null;
 
     final public org.omg.PortableServer.portable.Delegate _get_delegate() {
-        if (_delegate == null) {
-            throw new org.omg.CORBA.BAD_INV_ORDER("The Servant has not been associated with an ORBinstance");
-        }
+        if (_delegate == null) { throw new org.omg.CORBA.BAD_INV_ORDER(
+                "The Servant has not been associated with an ORBinstance"); }
         return _delegate;
     }
 

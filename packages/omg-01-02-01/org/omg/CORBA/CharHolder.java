@@ -1,16 +1,17 @@
-/***** Copyright (c) 1999 Object Management Group. Unlimited rights to
- duplicate and use this code are hereby granted provided that this
- copyright notice is included.
- *****/
+/*******************************************************************************
+ * *** Copyright (c) 1999 Object Management Group. Unlimited rights to duplicate
+ * and use this code are hereby granted provided that this copyright notice is
+ * included.
+ ******************************************************************************/
 
 package org.omg.CORBA;
-
 
 final public class CharHolder implements org.omg.CORBA.portable.Streamable {
 
     public char value;
 
-    public CharHolder() {}
+    public CharHolder() {
+    }
 
     public CharHolder(char initial) {
         value = initial;

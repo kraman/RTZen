@@ -1,8 +1,10 @@
 package edu.uci.ece.zen.poa.mechanism;
 
-import edu.uci.ece.zen.poa.*;
-import edu.uci.ece.zen.utils.*;
 import org.omg.CORBA.IntHolder;
+
+import edu.uci.ece.zen.poa.ObjectKeyHelper;
+import edu.uci.ece.zen.poa.POARunnable;
+import edu.uci.ece.zen.utils.FString;
 
 public final class TransientStrategy extends LifespanStrategy {
 
@@ -23,57 +25,78 @@ public final class TransientStrategy extends LifespanStrategy {
         timeStamp[nextFreeByte++] = (byte) ((value >>> 8) & 0xFF);
         timeStamp[nextFreeByte++] = (byte) (value & 0xFF);
 
-        this.ftimeStamp = new FString( 8 );
-        ftimeStamp.append( timeStamp );
+        this.ftimeStamp = new FString(8);
+        ftimeStamp.append(timeStamp);
     }
 
-   /**
-    * Return time stamp
-    * @return long time stamp
-    */
+    /**
+     * Return time stamp
+     * 
+     * @return long time stamp
+     */
     public long timeStamp() {
         return this.value;
     }
 
-   /**
-    * create Transient Object Key with no hints
-    * @param path_name The poa path name
-    * @param oid object id
-    * @param index poa demux index
-    * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
-    */
+    /**
+     * create Transient Object Key with no hints
+     * 
+     * @param path_name
+     *            The poa path name
+     * @param oid
+     *            object id
+     * @param index
+     *            poa demux index
+     * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
+     */
 
-    public void create(FString path_name, FString oid, int index , int genCount , FString okey_out ) {
-        IdNoHintStrategy.create( prefix, oid, this.ftimeStamp, index , genCount , okey_out );
+    public void create(FString path_name, FString oid, int index, int genCount,
+            FString okey_out) {
+        IdNoHintStrategy.create(prefix, oid, this.ftimeStamp, index, genCount,
+                okey_out);
     }
 
-   /**
-    * Create transient Object key without hints
-    * @param path_name POA path
-    * @param oid object id
-    * @param poaLoc poa index
-    * @param servLoc servant index
-    * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
-    */
-    public void create(FString path_name, FString oid, int poaLocIndex , int poaLocGenCount , int servLocIndex , int servLocGenCount , FString okey_out ) {
-        IdHintStrategy.create(prefix, oid, this.ftimeStamp, poaLocIndex , poaLocGenCount , servLocIndex , servLocGenCount , okey_out );
+    /**
+     * Create transient Object key without hints
+     * 
+     * @param path_name
+     *            POA path
+     * @param oid
+     *            object id
+     * @param poaLoc
+     *            poa index
+     * @param servLoc
+     *            servant index
+     * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
+     */
+    public void create(FString path_name, FString oid, int poaLocIndex,
+            int poaLocGenCount, int servLocIndex, int servLocGenCount,
+            FString okey_out) {
+        IdHintStrategy.create(prefix, oid, this.ftimeStamp, poaLocIndex,
+                poaLocGenCount, servLocIndex, servLocGenCount, okey_out);
     }
 
-   /**
-    * Validate Object Key
-    * @param ok object Key
-    * @throws org.omg.CORBA.OBJECT_NOT_EXIST
-    */
-    public void validate( FString ok , IntHolder exceptionHolder ){
+    /**
+     * Validate Object Key
+     * 
+     * @param ok
+     *            object Key
+     * @throws org.omg.CORBA.OBJECT_NOT_EXIST
+     */
+    public void validate(FString ok, IntHolder exceptionHolder) {
         exceptionHolder.value = POARunnable.NoException;
-        if (!ObjectKeyHelper.compareTimeStamps(this.ftimeStamp, ok ) && ObjectKeyHelper.isPersistent( ok )) {
+        if (!ObjectKeyHelper.compareTimeStamps(this.ftimeStamp, ok)
+                && ObjectKeyHelper.isPersistent(ok)) {
             // if (this.value != ok.timeStamp())
             exceptionHolder.value = POARunnable.ObjNotExistException;
         }
     }
 
-    protected long  value; // contains the time stamp of the POA
-    protected static char prefix = 'T';   // Transient Prefix
+    protected long value; // contains the time stamp of the POA
+
+    protected static char prefix = 'T'; // Transient Prefix
+
     protected byte[] timeStamp;
+
     protected FString ftimeStamp;
 }

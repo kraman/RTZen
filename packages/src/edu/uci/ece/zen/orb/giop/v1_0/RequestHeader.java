@@ -1,25 +1,24 @@
 package edu.uci.ece.zen.orb.giop.v1_0;
 
+import javax.realtime.ImmortalMemory;
 
-import javax.realtime.*;
-import edu.uci.ece.zen.utils.*;
-import edu.uci.ece.zen.orb.giop.IOP.ServiceContext;
+import edu.uci.ece.zen.utils.FString;
+
 /**
  * Struct definition : RequestHeader_1_0
- *
+ * 
  * @author OpenORB Compiler
-*/
-public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity
-{
+ */
+public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
 
     private static RequestHeader rh;
 
-    public static RequestHeader instance(){
+    public static RequestHeader instance() {
 
-        try{
-            if(rh == null)
-                rh = (RequestHeader) ImmortalMemory.instance().newInstance( RequestHeader.class );
-        }catch(Exception e){
+        try {
+            if (rh == null) rh = (RequestHeader) ImmortalMemory.instance()
+                    .newInstance(RequestHeader.class);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -48,15 +47,15 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity
     //public byte[] object_key = new byte[1024];
     //public int object_key_length = 0;
     public FString object_key;
-    //byte [] object_key1;
 
+    //byte [] object_key1;
 
     /**
      * Struct member operation
      */
     public FString operation;
-    //String operation1;
 
+    //String operation1;
 
     /**
      * Struct member requesting_principal
@@ -64,27 +63,34 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity
     //public byte[] requesting_principal = new byte[1024];
     //public int requesting_principal_length = 0;
     public FString requesting_principal;
-    //byte [] requesting_principal1;
 
+    //byte [] requesting_principal1;
 
     /**
      * Default constructor
      */
-    public RequestHeader()
-    { }
+    public RequestHeader() {
+    }
 
     /**
      * Constructor with fields initialization
-     * @param service_context service_context struct member
-     * @param request_id request_id struct member
-     * @param response_expected response_expected struct member
-     * @param object_key object_key struct member
-     * @param operation operation struct member
-     * @param requesting_principal requesting_principal struct member
+     * 
+     * @param service_context
+     *            service_context struct member
+     * @param request_id
+     *            request_id struct member
+     * @param response_expected
+     *            response_expected struct member
+     * @param object_key
+     *            object_key struct member
+     * @param operation
+     *            operation struct member
+     * @param requesting_principal
+     *            requesting_principal struct member
      */
-    public void init(FString service_context, int request_id, boolean response_expected,
-                                FString object_key, String operation, byte [] requesting_principal)
-    {
+    public void init(FString service_context, int request_id,
+            boolean response_expected, FString object_key, String operation,
+            byte[] requesting_principal) {
         this.service_context = service_context;
         this.request_id = request_id;
         this.response_expected = response_expected;
@@ -102,6 +108,5 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity
         this.requesting_principal = FString.instance(this.requesting_principal);
         this.requesting_principal.append(requesting_principal);
     }
-
 
 }

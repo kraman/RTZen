@@ -1,18 +1,20 @@
 package org.omg.IOP_N.CodecFactoryPackage;
 
-
 /**
- *	Generated from IDL definition of exception "UnknownEncoding"
- *	@author IDL compiler 
+ * Generated from IDL definition of exception "UnknownEncoding"
+ * 
+ * @author IDL compiler
  */
 
-final public class UnknownEncodingHolder
-    implements org.omg.CORBA.portable.Streamable {
+final public class UnknownEncodingHolder implements
+        org.omg.CORBA.portable.Streamable {
     public org.omg.IOP_N.CodecFactoryPackage.UnknownEncoding value;
 
-    public UnknownEncodingHolder() {}
+    public UnknownEncodingHolder() {
+    }
 
-    public UnknownEncodingHolder(org.omg.IOP_N.CodecFactoryPackage.UnknownEncoding initial) {
+    public UnknownEncodingHolder(
+            org.omg.IOP_N.CodecFactoryPackage.UnknownEncoding initial) {
         value = initial;
     }
 
@@ -21,7 +23,8 @@ final public class UnknownEncodingHolder
     }
 
     public void _read(org.omg.CORBA.portable.InputStream _in) {
-        value = org.omg.IOP_N.CodecFactoryPackage.UnknownEncodingHelper.read(_in);
+        value = org.omg.IOP_N.CodecFactoryPackage.UnknownEncodingHelper
+                .read(_in);
     }
 
     public void _write(org.omg.CORBA.portable.OutputStream _out) {

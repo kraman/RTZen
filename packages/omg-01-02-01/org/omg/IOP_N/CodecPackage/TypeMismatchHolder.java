@@ -1,16 +1,17 @@
 package org.omg.IOP_N.CodecPackage;
 
-
 /**
- *	Generated from IDL definition of exception "TypeMismatch"
- *	@author IDL compiler 
+ * Generated from IDL definition of exception "TypeMismatch"
+ * 
+ * @author IDL compiler
  */
 
-final public class TypeMismatchHolder
-    implements org.omg.CORBA.portable.Streamable {
+final public class TypeMismatchHolder implements
+        org.omg.CORBA.portable.Streamable {
     public org.omg.IOP_N.CodecPackage.TypeMismatch value;
 
-    public TypeMismatchHolder() {}
+    public TypeMismatchHolder() {
+    }
 
     public TypeMismatchHolder(org.omg.IOP_N.CodecPackage.TypeMismatch initial) {
         value = initial;

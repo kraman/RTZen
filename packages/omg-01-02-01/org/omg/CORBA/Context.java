@@ -1,10 +1,10 @@
-/***** Copyright (c) 1999 Object Management Group. Unlimited rights to 
- duplicate and use this code are hereby granted provided that this 
- copyright notice is included.
- *****/
+/*******************************************************************************
+ * *** Copyright (c) 1999 Object Management Group. Unlimited rights to duplicate
+ * and use this code are hereby granted provided that this copyright notice is
+ * included.
+ ******************************************************************************/
 
 package org.omg.CORBA;
-
 
 abstract public class Context {
 
@@ -12,11 +12,9 @@ abstract public class Context {
 
     abstract public org.omg.CORBA.Context parent();
 
-    abstract public org.omg.CORBA.Context create_child(
-            String child_context_name);
+    abstract public org.omg.CORBA.Context create_child(String child_context_name);
 
-    abstract public void set_one_value(String prop_name,
-            org.omg.CORBA.Any value);
+    abstract public void set_one_value(String prop_name, org.omg.CORBA.Any value);
 
     abstract public void set_values(org.omg.CORBA.NVList values);
 

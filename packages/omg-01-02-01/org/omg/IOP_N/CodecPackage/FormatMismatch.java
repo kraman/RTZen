@@ -1,9 +1,9 @@
 package org.omg.IOP_N.CodecPackage;
 
-
 /**
- *	Generated from IDL definition of exception "FormatMismatch"
- *	@author IDL compiler 
+ * Generated from IDL definition of exception "FormatMismatch"
+ * 
+ * @author IDL compiler
  */
 
 public final class FormatMismatch extends org.omg.CORBA.UserException {

@@ -1,70 +1,60 @@
 /*
- TimedCallable.java
- 
- Originally written by Joseph Bowbeer and released into the public domain.
- This may be used for any purposes whatsoever without acknowledgment.
- 
- Originally part of jozart.swingutils.
- Adapted by Doug Lea for util.concurrent.
-
- History:
- Date       Who                What
- 11dec1999   dl                Adapted for util.concurrent
-
+ * TimedCallable.java Originally written by Joseph Bowbeer and released into the
+ * public domain. This may be used for any purposes whatsoever without
+ * acknowledgment. Originally part of jozart.swingutils. Adapted by Doug Lea for
+ * util.concurrent. History: Date Who What 11dec1999 dl Adapted for
+ * util.concurrent
  */
 
 package edu.oswego.cs.dl.util.concurrent;
 
 /**
- * TimedCallable runs a Callable function for a given length of time.
- * The function is run in its own thread. If the function completes
- * in time, its result is returned; otherwise the thread is interrupted
- * and an InterruptedException is thrown.
+ * TimedCallable runs a Callable function for a given length of time. The
+ * function is run in its own thread. If the function completes in time, its
+ * result is returned; otherwise the thread is interrupted and an
+ * InterruptedException is thrown.
  * <p>
- * Note: TimedCallable will always return within the given time limit
- * (modulo timer inaccuracies), but whether or not the worker thread
- * stops in a timely fashion depends on the interrupt handling in the
- * Callable function's implementation. 
- *
- * @author  Joseph Bowbeer
+ * Note: TimedCallable will always return within the given time limit (modulo
+ * timer inaccuracies), but whether or not the worker thread stops in a timely
+ * fashion depends on the interrupt handling in the Callable function's
+ * implementation.
+ * 
+ * @author Joseph Bowbeer
  * @version 1.0
- *
- * <p>[<a href="http://gee.cs.oswego.edu/dl/classes/edu.oswego/cs/dl/util/concurrent/intro.html"> Introduction to this package. </a>]
-
+ *          <p>[ <a
+ *          href="http://gee.cs.oswego.edu/dl/classes/edu.oswego/cs/dl/util/concurrent/intro.html">
+ *          Introduction to this package. </a>]
  */
 
-public class TimedCallable extends ThreadFactoryUser implements Callable
-{
+public class TimedCallable extends ThreadFactoryUser implements Callable {
 
-	private final Callable function;
-	private final long millis;
+    private final Callable function;
 
-	public TimedCallable(Callable function, long millis)
-	{
-		this.function = function;
-		this.millis = millis;
-	}
+    private final long millis;
 
-	public Object call() throws Exception
-	{
+    public TimedCallable(Callable function, long millis) {
+        this.function = function;
+        this.millis = millis;
+    }
 
-		FutureResult result = new FutureResult();
+    public Object call() throws Exception {
 
-		Thread thread = getThreadFactory().newThread(result.setter(function));
+        FutureResult result = new FutureResult();
 
-		thread.start();
+        Thread thread = getThreadFactory().newThread(result.setter(function));
 
-		try
-		{
-			return result.timedGet(millis);
-		}
-		catch (InterruptedException ex)
-		{
+        thread.start();
 
-			/* Stop thread if we were interrupted or timed-out
-			 while waiting for the result. */
-			thread.interrupt();
-			throw ex;
-		}
-	}
+        try {
+            return result.timedGet(millis);
+        } catch (InterruptedException ex) {
+
+            /*
+             * Stop thread if we were interrupted or timed-out while waiting for
+             * the result.
+             */
+            thread.interrupt();
+            throw ex;
+        }
+    }
 }
