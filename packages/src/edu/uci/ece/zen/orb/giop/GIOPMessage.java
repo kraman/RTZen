@@ -20,9 +20,6 @@ public abstract class GIOPMessage{
         this.istream.init( orb , stream );
     }
 
-    public abstract boolean isRequest();
-    public abstract boolean isReply();
-    public boolean isCancelRequest() { return false; } // CancelRequest overrides
     public abstract int getRequestId();
 
     public CDRInputStream getCDRInputStream() {
