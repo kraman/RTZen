@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>CORBA DOOM</title>
+</head>
+<body>
+<h1>CORBA DOOM</h1>
+This code is a demonstration of 3D multiplayer gaming using CORBA. It
+began life as a <a
+ href="http://www.cc.gatech.edu/grads/z/Xiaotong.Zhuang/doomreport.pdf">research
+project</a> by <a
+ href="http://www.cc.gatech.edu/grads/z/Xiaotong.Zhuang/">Xiaotong
+Zhuang</a>. Although he has lost the original source code, he gave me
+permission to decompile the project and release it as open-source. I
+used the <a href="http://members.fortunecity.com/neshkov/dj.html">DJ
+Java Decompiler</a> by Atanas Neshkov for this task.<br>
+<br>
+Note that this game is not really a game. Players can walk around a
+maze and see each other, but that's about it. They cannot shoot each
+other or do anything else. This was a limitation of the original code,
+and I simply ported it from RMI to CORBA. It is intended to be used
+simply as a demo of what is possible with CORBA.<br>
+<h2>Usage</h2>
+To compile the code, run "ant".<br>
+<br>
+To play the game, first start the server by running "ant server". You
+can then launch clients on the same machine or on other machines by
+running "ant client".<br>
+<h2>Notes<br>
+</h2>
+Because it has been decompiled, the code is not very clean. All of the
+comments have been stripped, and local variables and parameters have
+been given dummy names. Still, it is fairly readable and can be
+modified and redistributed under the terms of the GNU GPL license.<br>
+<br>
+By the way, "Doom" is a misnomer. This application has much more in
+common with Doom's predecessor, Wolfenstein 3D, than with Doom.<br>
+<br>
+<a href="mailto:trevor@vocaro.com"><span style="font-weight: bold;">Trevor
+Harmon</span></a><br style="font-weight: bold;">
+<span style="font-weight: bold;">September 2, 2003</span><br
+ style="font-weight: bold;">
+<br>
+</body>
+</html>

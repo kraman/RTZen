@@ -226,7 +226,7 @@ public class DoomClient extends JPanel
 
 
 
-            callServer = CallServerHelper.unchecked_narrow(object);
+            callServer = CallServerHelper.narrow(object);
         }
                 //catch (UserException e)
                 //{
