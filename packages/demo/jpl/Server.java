@@ -33,7 +33,7 @@ public class Server extends RealtimeThread
     private static final int ITERATION_FACTOR_2 = 1;
     private static final int ITERATION_FACTOR_1 = 20;
     public String[] args;
-    private static boolean isClientPropagated = true;
+    private static boolean isClientPropagated = false;
     ORB orb;
     
     public static void main(String[] args) throws Exception
@@ -77,8 +77,8 @@ public class Server extends RealtimeThread
             System.out.println("Min prio " + PriorityScheduler.instance().getMinPriority());
             System.out.println("Norm prio " + PriorityScheduler.instance().getNormPriority());
             //short priority = (short) (30 + (PriorityScheduler.getNormPriority(RealtimeThread.currentThread()))) ;
-            short priority = (short) PriorityScheduler.instance().getMaxPriority();
-            System.out.println("Higher priority is: " + priority);
+            //short priority = (short) PriorityScheduler.instance().getMaxPriority();
+            //System.out.println("Higher priority is: " + priority);
             
             int threadPoolId;
             Policy[] policy;
@@ -98,7 +98,7 @@ public class Server extends RealtimeThread
                 policy[1] = rtorb.create_threadpool_policy(threadPoolId);
             }else{
                 System.out.println("Using server-declared policy.....");                
-                threadPoolId = rtorb.create_threadpool(10, 5, 5, priority, false, 10, 10);            
+                threadPoolId = rtorb.create_threadpool(10, 5, 5, maxPriority.value, false, 10, 10);            
                 policy = new Policy[1];
                 policy[0] = rtorb.create_threadpool_policy(threadPoolId);                
             }
