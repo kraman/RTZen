@@ -356,6 +356,7 @@ public final class GIOPMessageFactory {
                 .getMessage();
         rm.init(req, messageId);
         rm.marshal(out);
+        rm.free();
     }
 
     public static CDROutputStream constructReplyMessage(ORB orb,

@@ -9,6 +9,7 @@ import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.Queue;
 
 /**
  * @author Bruce Miller
@@ -20,6 +21,8 @@ public class RequestMessage extends
     private static RequestMessage rm;
 
     private byte[] reqPrin = new byte[0];
+
+    private static  Queue queue = Queue.fromImmortal();
 
     public RequestMessage() {
         super();
@@ -33,8 +36,14 @@ public class RequestMessage extends
         header.init(clr.contexts, messageId, clr.responseExpected,
                 clr.objectKey, clr.operation, reqPrin);
     }
-
+    static int drawn = 0;
     public static RequestMessage getMessage() {
+        drawn++;
+        //if(ZenProperties.memDbg1) System.out.write('d');
+        //if(ZenProperties.memDbg1) System.out.write('r');
+        //if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(drawn);
+        return (RequestMessage)ORB.getQueuedInstance(RequestMessage.class,queue);
+/*
         try {
             if (rm == null) rm = (RequestMessage) ImmortalMemory.instance()
                     .newInstance(RequestMessage.class);
@@ -43,6 +52,7 @@ public class RequestMessage extends
             ZenProperties.logger.log(Logger.WARN, RequestMessage.class, "getMessage", e);
         }
         return null;
+*/        
     }
 
     public RequestMessage(ORB orb, ReadBuffer stream) {
@@ -85,5 +95,11 @@ public class RequestMessage extends
 
     public int getGiopVersion() {
         return 10;
+    }
+
+    public void free(){
+        super.free();
+        drawn--;
+        queue.enqueue(this);
     }
 }

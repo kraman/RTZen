@@ -20,7 +20,7 @@ public abstract class GIOPMessage {
     protected CDRInputStream istream;
 
     protected ScopedMemory scope;
-
+    
     protected ReadBuffer messageBody;
 
     protected GIOPMessage() {
@@ -65,7 +65,7 @@ public abstract class GIOPMessage {
     }
 
     public void free(){
-        istream.free();
+        if(istream != null) istream.free();
         //messageBody.free();    
     }
 }

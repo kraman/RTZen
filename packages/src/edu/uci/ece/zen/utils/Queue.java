@@ -80,6 +80,19 @@ public class Queue {
     /** Object to synchronize the queue on. */
     private final Integer sObject = new Integer(0);
 
+    public static Queue fromImmortal() {
+        Queue q = null;
+        
+        try {
+            q = (Queue)javax.realtime.ImmortalMemory.instance().newInstance(Queue.class); 
+        } catch (Exception e) {
+            ZenProperties.logger.log(Logger.WARN, Queue.class, "fromImmortal", e);
+        }
+ 
+        return q;
+    }
+
+
     /**
      * Enqueue an object onto the queue. Use a preexisting queue node if
      * possible, otherwise create a new queue node.

@@ -660,6 +660,29 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         }
     }
 
+    public static Object getQueuedInstance(Class cls, Queue q) {
+        if(q == null){
+            ZenProperties.logger.log(Logger.FATAL, cls, "getQueuedInstance",
+                    "Queue not created");
+            return null;
+        }
+        
+        if (!q.isEmpty()){
+            return q.dequeue();
+        }
+
+        Object o = null; 
+
+        try {
+            o = ImmortalMemory.instance().newInstance(cls); 
+        } catch (Exception e) {
+            ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
+        }
+
+        return o;
+    }
+
+
     ///////////////////////////////////////////////////////////////////////////
     ////////////////// DON'T CARE ABOUT THESE /////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
