@@ -24,7 +24,7 @@ public class CDRTestClient extends RealtimeThread
 		rt.start();
 	}
 
-	void run(){
+	public void run(){
 		try{
 
 			ORB orb = new ORB.init((String[]) null, null);
