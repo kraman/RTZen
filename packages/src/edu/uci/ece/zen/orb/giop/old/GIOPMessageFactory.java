@@ -12,7 +12,7 @@ import edu.uci.ece.zen.orb.transport.Transport;
 import edu.uci.ece.zen.utils.ReadBuffer;
 
 /**
- * This class is a factory for creating GIOP messages for marshalling or
+ * This class is a factory for creating GIOP messages for marshalling or 
  * demarshalling messages.
  *
  * @author Krishna Raman
@@ -21,19 +21,19 @@ import edu.uci.ece.zen.utils.ReadBuffer;
 public final class GIOPMessageFactory
 {
 	private static final byte magic[] = { 0x47, 0x49, 0x4f, 0x50 }; // GIOP
-
+    
     public static GIOPMessage parseStream( ORB orb , Transport trans ) throws java.io.IOException{
         ReadBuffer buffer = ReadBuffer.instance();
         boolean nextMessageIsFragment = false;
-        byte[] header = new byte[8];
+        byte[] header = new byte[12];
         GIOPMessage ret = null;
 
         do{
             java.io.InputStream in = trans.getInputStream();
             int read = 0;
-            while( read < 8 )
-                read += in.read( header , 0 , 8 );
-
+            while( read < 12 )
+                read += in.read( header , 0 , 12 );
+            
             // Bytes 0,1,2,3 should equal 'GIOP'
             if (   header[0] != magic[0]
                 || header[1] != magic[1]
@@ -64,10 +64,10 @@ public final class GIOPMessageFactory
             }
             nextMessageIsFragment=false;
             ZenProperties.logger.log("----GIOP Message Header ----");
-            if (ZenProperties.dbg) ZenProperties.logger.log(new String(header, 0, 8));
+            if (ZenProperties.dbg) ZenProperties.logger.log(new String(header, 0, 12));
             ZenProperties.logger.log("---- ----");
 
-
+            
             buffer.appendFromStream( in , messageSize );
 
             switch( giopMajorVersion ){                   //GIOP major version (byte 4)
@@ -121,7 +121,7 @@ public final class GIOPMessageFactory
                     break;
                 default:
                     throw new RuntimeException(""); //throw GIOP error here
-            }
+            }   
         }while( nextMessageIsFragment );
         return ret;
     }
