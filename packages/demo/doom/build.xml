@@ -1,10 +1,19 @@
-<project default="compile">
+<project name="RTZen Doom Demo" default="compile">
 
-	<property name="package.dir" value="demo/doom"/>
-	<property name="idl.src" value="doom.idl"/>
+	<!--property name="package.dir" value="demo/doom"/-->
+	<!--property name="idl.src" value="doom.idl"/-->
 
-	<import file="../../../init.xml"/>
-	<import file="../demo_tasks.xml"/>
+	<!--import file="../../../init.xml"/-->
+	<!--import file="../demo_tasks.xml"/-->
+	
+	
+	
+	<property file="zen-build-bootstrap.properties"/>
+	<property file="zen-build.properties"/>
+	<import file="${zen.srcdir}/property_processor.xml"/>
+	    
+	<property name="package.dir" value="${zen.srcdir}/demo/object"/>
+        <property name="idl.src" value="object.idl"/>
 
 	<target name="compile">
 		<copy todir="${zen.classdir}/${package.dir}/images">
