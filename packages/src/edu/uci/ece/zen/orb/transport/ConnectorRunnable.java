@@ -12,10 +12,10 @@ public class ConnectorRunnable implements Runnable{
         }catch( Exception e2 ){
              ZenProperties.logger.log(
                 Logger.SEVERE,
-                "edu.uci.ece.zen.orb.ConnectorRunnable",
+                getClass(),
                 "<init>",
-                "Could not initialize Connector due to exception: " + e2.toString()
-                );
+                "Could not initialize Connector",
+				e2);
         }
     }
 
