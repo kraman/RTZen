@@ -671,7 +671,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         r2.init(runnable, sm);
         try {
             parentMemoryArea.executeInArea(r1);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL,
                     getClass(), "create_threadpool",
                     "Could not create threadpool", e);
