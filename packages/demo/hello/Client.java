@@ -26,7 +26,7 @@ public class Client
             ior = br.readLine();
             System.out.println("[Client] " + ior);
             org.omg.CORBA.Object object = orb.string_to_object(ior);
-            //System.out.println( orb.object_to_string( object ) );
+            System.out.println( orb.object_to_string( object ) );
             HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
 
             for( int i=0;i<10000;i++ )

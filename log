@@ -1,194 +1,228 @@
 Buildfile: build.xml
 
-init:
-
-init:
-
-createConfigFile:
-
-body-zen:
-
-body-openorb:
-
-createDirectories:
-
-createScripts:
-
-all:
-
-packages:
-
-idl:
-     [echo] Compiling IDL files
-
-compile-omg:
-     [echo] Compiling IDL files to /home/kraman/RTZen/packages/generated
-
-zen:
-
-openorb:
-     [echo] Using OpenOrb's IDL compiler
-
-Corba:
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/orb.idl:110: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/orb.idl:114: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/orb.idl:115: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/orb.idl:340: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/IOP.idl:14: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/IOP.idl:21: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/IOP.idl:29: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/IOP.idl:66: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/GIOP.idl:31: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/GIOP.idl:39: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/GIOP.idl:52: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/GIOP.idl:61: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/GIOP.idl:62: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/GIOP.idl:76: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/GIOP.idl:83: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/GIOP.idl:133: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/IIOP.idl:17: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/IIOP.idl:24: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/IIOP.idl:26: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/CONV_FRAME.idl:7: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/DCE_CIOP.idl:35: warning: Anonymous sequences and arrays are deprecated
-     [java] file:/home/kraman/RTZen/packages/idl/omg/openorb-idl/idl/DCE_CIOP.idl:63: warning: Anonymous sequences and arrays are deprecated
-
-
-
-idlCheck:
-
-all:
-
-all:
-
-compile:
-     [echo] Compiling OMG and Zen sources with the AspectJ compiler
-
-
-
 lib:
-   [delete] Deleting directory /home/kraman/RTZen/classes/src
-     [exec] Parsing edu/uci/ece/zen/orb/TypeCodeAspect.class... Generating src/edu/uci/ece/zen/orb/TypeCodeAspect.java
-     [exec] Couldn't fully decompile method aspectOf
-     [exec] Parsing edu/uci/ece/zen/orb/ConnectionRegistry.class... Generating src/edu/uci/ece/zen/orb/ConnectionRegistry.java
-     [exec] Parsing edu/uci/ece/zen/orb/ORBImpl.class... Generating src/edu/uci/ece/zen/orb/ORBImpl.java
-     [exec] Parsing edu/uci/ece/zen/orb/ORB.class... Generating src/edu/uci/ece/zen/orb/ORB.java
-     [exec] Parsing edu/uci/ece/zen/orb/ORBTable.class... Generating src/edu/uci/ece/zen/orb/ORBTable.java
-     [exec] Parsing edu/uci/ece/zen/orb/SendMessageRunnable.class... Generating src/edu/uci/ece/zen/orb/SendMessageRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/ORBImplRunnable.class... Generating src/edu/uci/ece/zen/orb/ORBImplRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/TwoWayWaitingStrategy.class... Generating src/edu/uci/ece/zen/orb/TwoWayWaitingStrategy.java
-     [exec] Parsing edu/uci/ece/zen/orb/WaiterRegistry.class... Generating src/edu/uci/ece/zen/orb/WaiterRegistry.java
-     [exec] Parsing edu/uci/ece/zen/orb/ClientRequest.class... Generating src/edu/uci/ece/zen/orb/ClientRequest.java
-     [exec] Parsing edu/uci/ece/zen/orb/CDRInputStream.class... Generating src/edu/uci/ece/zen/orb/CDRInputStream.java
-     [exec] Parsing edu/uci/ece/zen/orb/AcceptorRegistry.class...Parsing inner class edu/uci/ece/zen/orb/AcceptorRegistry$ARRunnable.class... Generating src/edu/uci/ece/zen/orb/AcceptorRegistry.java
-     [exec] Parsing edu/uci/ece/zen/orb/TypeCode.class... Generating src/edu/uci/ece/zen/orb/TypeCode.java
-     [exec] Parsing edu/uci/ece/zen/orb/ORBStrToObjRunnable.class... Generating src/edu/uci/ece/zen/orb/ORBStrToObjRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/CDROutputStream.class... Generating src/edu/uci/ece/zen/orb/CDROutputStream.java
-     [exec] Parsing edu/uci/ece/zen/orb/IOR.class... Generating src/edu/uci/ece/zen/orb/IOR.java
-     [exec] Parsing edu/uci/ece/zen/orb/ReplyMessageRunnable.class... Generating src/edu/uci/ece/zen/orb/ReplyMessageRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/ObjRefDelegate.class... Generating src/edu/uci/ece/zen/orb/ObjRefDelegate.java
-     [exec] Parsing edu/uci/ece/zen/orb/LaneInfo.class... Generating src/edu/uci/ece/zen/orb/LaneInfo.java
-     [exec] Parsing edu/uci/ece/zen/orb/ORBInitRunnable.class... Generating src/edu/uci/ece/zen/orb/ORBInitRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/ObjectImpl.class... Generating src/edu/uci/ece/zen/orb/ObjectImpl.java
-     [exec] Parsing edu/uci/ece/zen/orb/MessageComposerRunnable.class... Generating src/edu/uci/ece/zen/orb/MessageComposerRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/WaitingStrategy.class... Generating src/edu/uci/ece/zen/orb/WaitingStrategy.java
-     [exec] Parsing edu/uci/ece/zen/orb/Resolver.class... Generating src/edu/uci/ece/zen/orb/Resolver.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/WaitingStratergyNotifyRunnable.class... Generating src/edu/uci/ece/zen/orb/transport/WaitingStratergyNotifyRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/AcceptorRunnable.class... Generating src/edu/uci/ece/zen/orb/transport/AcceptorRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/ProfileRunnable.class... Generating src/edu/uci/ece/zen/orb/transport/ProfileRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/MessageProcessor.class... Generating src/edu/uci/ece/zen/orb/transport/MessageProcessor.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/Transport.class... Generating src/edu/uci/ece/zen/orb/transport/Transport.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/GIOPMessageRunnable.class... Generating src/edu/uci/ece/zen/orb/transport/GIOPMessageRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/Acceptor.class... Generating src/edu/uci/ece/zen/orb/transport/Acceptor.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/Connector.class... Generating src/edu/uci/ece/zen/orb/transport/Connector.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/ConnectorRunnable.class... Generating src/edu/uci/ece/zen/orb/transport/ConnectorRunnable.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/iiop/Acceptor.class... Generating src/edu/uci/ece/zen/orb/transport/iiop/Acceptor.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/iiop/Connector.class... Generating src/edu/uci/ece/zen/orb/transport/iiop/Connector.java
-     [exec] Parsing edu/uci/ece/zen/orb/transport/iiop/Transport.class... Generating src/edu/uci/ece/zen/orb/transport/iiop/Transport.java
-     [exec] Parsing edu/uci/ece/zen/orb/giop/GIOPMessageFactory.class... Generating src/edu/uci/ece/zen/orb/giop/GIOPMessageFactory.java
-     [exec] Parsing edu/uci/ece/zen/orb/giop/GIOPMessage.class... Generating src/edu/uci/ece/zen/orb/giop/GIOPMessage.java
-     [exec] Parsing edu/uci/ece/zen/orb/giop/v1_0/RequestMessage.class... Generating src/edu/uci/ece/zen/orb/giop/v1_0/RequestMessage.java
-     [exec] Parsing edu/uci/ece/zen/orb/giop/v1_0/ReplyMessage.class... Generating src/edu/uci/ece/zen/orb/giop/v1_0/ReplyMessage.java
-     [exec] Parsing edu/uci/ece/zen/orb/any/AnyStrategy.class... Generating src/edu/uci/ece/zen/orb/any/AnyStrategy.java
-     [exec] Parsing edu/uci/ece/zen/orb/any/Any.class... Generating src/edu/uci/ece/zen/orb/any/Any.java
-     [exec] Parsing edu/uci/ece/zen/orb/any/monolithic/Any.class... Generating src/edu/uci/ece/zen/orb/any/monolithic/Any.java
-     [exec] Parsing edu/uci/ece/zen/orb/policies/ThreadpoolPolicyImpl.class... Generating src/edu/uci/ece/zen/orb/policies/ThreadpoolPolicyImpl.java
-     [exec] Parsing edu/uci/ece/zen/orb/policies/PriorityModelPolicyImpl.class... Generating src/edu/uci/ece/zen/orb/policies/PriorityModelPolicyImpl.java
-     [exec] Parsing edu/uci/ece/zen/utils/HashtableOverflowException.class... Generating src/edu/uci/ece/zen/utils/HashtableOverflowException.java
-     [exec] Parsing edu/uci/ece/zen/utils/Hashtable.class... Generating src/edu/uci/ece/zen/utils/Hashtable.java
-     [exec] Parsing edu/uci/ece/zen/utils/EventVariable.class... Generating src/edu/uci/ece/zen/utils/EventVariable.java
-     [exec] Parsing edu/uci/ece/zen/utils/Lane.class... Generating src/edu/uci/ece/zen/utils/Lane.java
-     [exec] Parsing edu/uci/ece/zen/utils/QueueNode.class... Generating src/edu/uci/ece/zen/utils/QueueNode.java
-     [exec] Parsing edu/uci/ece/zen/utils/WriteBuffer.class... Generating src/edu/uci/ece/zen/utils/WriteBuffer.java
-     [exec] Parsing edu/uci/ece/zen/utils/Logger.class... Generating src/edu/uci/ece/zen/utils/Logger.java
-     [exec] Parsing edu/uci/ece/zen/utils/ZenProperties.class... Generating src/edu/uci/ece/zen/utils/ZenProperties.java
-     [exec] Parsing edu/uci/ece/zen/utils/ReadBuffer.class... Generating src/edu/uci/ece/zen/utils/ReadBuffer.java
-     [exec] Parsing edu/uci/ece/zen/utils/CountableEventVariable.class... Generating src/edu/uci/ece/zen/utils/CountableEventVariable.java
-     [exec] Parsing edu/uci/ece/zen/utils/ObjectCache.class...Parsing inner class edu/uci/ece/zen/utils/ObjectCache$ListNode.class... Generating src/edu/uci/ece/zen/utils/ObjectCache.java
-     [exec] Parsing edu/uci/ece/zen/utils/ExecuteInRunnable.class... Generating src/edu/uci/ece/zen/utils/ExecuteInRunnable.java
-     [exec] Parsing edu/uci/ece/zen/utils/ThreadPool.class... Generating src/edu/uci/ece/zen/utils/ThreadPool.java
-     [exec] Parsing edu/uci/ece/zen/utils/ThreadSleepRunnable.class... Generating src/edu/uci/ece/zen/utils/ThreadSleepRunnable.java
-     [exec] Parsing edu/uci/ece/zen/utils/ByteArrayCache.class... Generating src/edu/uci/ece/zen/utils/ByteArrayCache.java
-     [exec] Parsing edu/uci/ece/zen/utils/Queue.class... Generating src/edu/uci/ece/zen/utils/Queue.java
-     [exec] Parsing edu/uci/ece/zen/utils/ConsoleLogger.class... Generating src/edu/uci/ece/zen/utils/ConsoleLogger.java
-     [exec] Parsing edu/uci/ece/zen/utils/NullLogger.class... Generating src/edu/uci/ece/zen/utils/NullLogger.java
-
-
-     [copy] Copying 85 files to /home/kraman/RTZen/classes/src/edu/oswego
-     [copy] Copying 182 files to /home/kraman/RTZen/classes/src/org
-     [copy] Copying 1186 files to /home/kraman/RTZen/classes/src/org
-    [javac] Compiling 1516 source files to /home/kraman/RTZen/lib
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:91: error: Constructor invocation must be first thing in a constructor.
-    [javac]            super();
-    [javac]                   ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:98: error: Constructor invocation must be first thing in a constructor.
-    [javac]            super();
-    [javac]                   ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:105: error: Constructor invocation must be first thing in a constructor.
-    [javac]            super();
-    [javac]                   ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:112: error: Constructor invocation must be first thing in a constructor.
-    [javac]            super();
-    [javac]                   ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:119: error: Constructor invocation must be first thing in a constructor.
-    [javac]            super();
-    [javac]                   ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:126: error: Constructor invocation must be first thing in a constructor.
-    [javac]            super();
-    [javac]                   ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:133: error: Constructor invocation must be first thing in a constructor.
-    [javac]            super();
-    [javac]                   ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:435: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 434.
-    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
-    [javac]                               ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:457: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 456.
-    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
-    [javac]                               ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:488: error: Variable `id' is already defined in this method and was declared `String id' at line 486.
-    [javac]                String id = cdr.read_string();
-    [javac]                       ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:504: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 503.
-    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
-    [javac]                               ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:517: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 516.
-    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
-    [javac]                               ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:529: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 528.
-    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
-    [javac]                               ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:552: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 551.
-    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
-    [javac]                               ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:717: error: Variable `i' is already defined in this method and was declared `int i' at line 713.
-    [javac]                    for(int i = 0; i < memCount; i++)
-    [javac]                            ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:1982: error: ':' expected.
-    [javac]            ajc$perSingletonInstance;
-    [javac]                                    ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:1983: error: Invalid expression statement.
-    [javac]            if(ajc$perSingletonInstance == null) goto _L2; else goto _L1
+    [javac] Compiling 1219 source files to /home/kraman/RTZen/lib
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In class `edu.uci.ece.zen.orb.any.Any':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.equal(org.omg.CORBA.Any)':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:122: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.equal(anAny.anyStrategy);
+    [javac]                                                       ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.type()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:126: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.type();
+    [javac]                                     ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_short()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:146: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_short();
+    [javac]                                              ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_long()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:156: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_long();
+    [javac]                                             ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_longlong()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:166: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_longlong();
     [javac]                                                 ^
-    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:1985: confused by earlier errors, bailing out
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_ushort()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:176: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_ushort();
+    [javac]                                               ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_ulong()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:186: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_ulong();
+    [javac]                                              ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_ulonglong()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:196: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_ulonglong();
+    [javac]                                                  ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_float()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:206: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_float();
+    [javac]                                              ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_double()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:216: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_double();
+    [javac]                                               ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_boolean()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:226: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_boolean();
+    [javac]                                                ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_char()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:236: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_char();
+    [javac]                                             ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_wchar()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:246: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_wchar();
+    [javac]                                              ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_octet()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:256: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_octet();
+    [javac]                                              ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_any()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:266: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_any();
+    [javac]                                            ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_Object()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:276: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_Object();
+    [javac]                                               ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_Value()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:291: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_Value();
+    [javac]                                              ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_string()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:306: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_string();
+    [javac]                                               ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_wstring()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:317: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_wstring();
+    [javac]                                                ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.extract_TypeCode()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:328: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.extract_TypeCode();
+    [javac]                                                 ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.create_output_stream()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:376: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.create_output_stream();
+    [javac]                                                     ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java: In method `edu.uci.ece.zen.orb.any.Any.create_input_stream()':
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:0: error: Type `org.omg.CORBA.Object' also potentially defined in package `java.lang'.
+    [javac]    <<file too short - unexpected EOF>>
+    [javac]    ^
+    [javac] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/any/Any.java:381: error: Undefined variable or class name: `Object'.
+    [javac]            return anyStrategy.create_input_stream();
+    [javac]                                                    ^
+    [javac] 66 errors
 
 

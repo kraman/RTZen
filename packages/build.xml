@@ -18,8 +18,8 @@
 
     <patternset id="sources" >
 
-        <!--*** Ant extensions -->
-            <include name="src/org/apache/**"/>
+        <!--*** Ant extensions 
+            <include name="src/org/apache/**"/> -->
 
         <!--*** OMG Sources ***-->
         
@@ -60,10 +60,13 @@
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TracerAspect.java"/>
+            <exclude name="src/edu/uci/ece/zen/orb/TypeCodeAspect.java"/>
 
-        <!--*** Zen support packages ***-->
-            <include name="src/org/**"/>
-        
+        <!--*** classes that jRate cant compile ***-->
+            <exclude name="src/edu/oswego/cs/dl/util/concurrent/VetoableChangeMulticaster.java"/>
+            <exclude name="src/edu/oswego/cs/dl/util/concurrent/PropertyChangeMulticaster.java"/>
+            <exclude name="src/edu/oswego/cs/dl/util/concurrent/CopyOnWriteArraySet.java"/>
+
     </patternset>
 
     <target name="all" depends="idl, compile, lib"/>
@@ -76,32 +79,9 @@
     </target>    
 
     <target name="lib">
-    
-        <!--<antcall target="zenlib"/>-->
-        <delete dir="${zen.classdir}/src"/>
-        <javac 
-            srcdir="${zen.srcdir}/src/"
-            destdir="${zen.classdir}"
-            includes="org/apache/**"/>
-        <exec dir="${zen.classdir}" executable="/home/kraman/jad" >
-            <arg line="-s java -r -dsrc edu/uci/ece/**/*.class"/>
-        </exec>
-        <copy todir="${zen.classdir}/src/edu/oswego">
-            <fileset dir="${zen.srcdir}/src/edu/oswego">
-                <include name="**/*.java"/>
-                <exclude name="cs/dl/util/concurrent/VetoableChangeMulticaster.java"/>
-                <exclude name="cs/dl/util/concurrent/PropertyChangeMulticaster.java"/>
-            </fileset>
-        </copy>
-        <copy todir="${zen.classdir}/src/org">
-            <fileset dir="${zen.srcdir}/omg-01-02-01/org"/>
-        </copy>
-        <copy todir="${zen.classdir}/src/org">
-            <fileset dir="${zen.gendir}/org"/>
-        </copy>
         <javac
-            srcdir="${zen.classdir}/src/"
             destdir="${zen.libdir}"
+            srcdir="${zen.srcdir}"
             executable="/usr/java/jRate-gcc/bin/jRate-gcj"
             compiler="org.apache.tools.ant.taskdefs.compilers.jRateGcj"
             includeAntRuntime="false"
@@ -109,6 +89,7 @@
             classpath="${zen.classdir}"
         >
            <compilerarg line="-shared -o ${zen.libdir}/libZen.so"/>
+           <patternset refid="sources"/>
         </javac>
     </target>     
 

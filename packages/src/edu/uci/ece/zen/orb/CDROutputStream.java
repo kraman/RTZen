@@ -562,7 +562,11 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
             case TCKind._tk_Principal:
             default:
-                Logger.error("Unwritten method in CDROutputStream for TypeCode with TCKind " + value_kind_val);
+                ZenProperties.logger.log(
+                    Logger.WARN,
+                    "edu.uci.ece.zen.orb.CDROutputStream",
+                    "write_Typecode()",
+                    "Unwritten method in CDROutputStream for TypeCode");
                 /*
 
                 // This code was used to print a stack trace in order
@@ -995,7 +999,11 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
 
         default:
-            Logger.error("Unwritten method in CDROutputStream write_value(org.omg.CORBA.TypeCode tc, org.omg.CORBA.portable.InputStream in) for kind " + kind);
+            ZenProperties.logger.log(
+                Logger.WARN,
+                "edu.uci.ece.zen.orb.CDROutputStream",
+                "write_value()",
+                "Unwritten method in CDROutputStream for Valuetype");
             break;
         }
     }

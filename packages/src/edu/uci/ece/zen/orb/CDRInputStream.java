@@ -576,7 +576,11 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
 
             default:
-                Logger.error("Unimplemented method in CDRInputStream for kind " + kind);
+                ZenProperties.logger.log(
+                    Logger.WARN,
+                    "edu.uci.ece.zen.orb.CDRInputStream",
+                    "read_value()",
+                    "Unwritten method in CDRInputStream for Valuetype");
                 try {
                     throw new org.omg.CORBA.NO_IMPLEMENT();
                 }
@@ -918,7 +922,11 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
         }
             
         default:
-            Logger.error("Unimplemented method in CDRInputStream for kind " + kind);
+            ZenProperties.logger.log(
+                Logger.WARN,
+                "edu.uci.ece.zen.orb.CDRInputStream",
+                "read_TypeCode()",
+                "Unwritten method in CDRInputStream for TypeCode");
             return null;
         }
     }
