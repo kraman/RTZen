@@ -135,7 +135,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     //public RTORB rtorb;
     //public PolicyManager policyManager;
     public ScopedMemory[] threadpoolList;
-    //public edu.uci.ece.zen.poa.POA rootPOA;
+    public edu.uci.ece.zen.poa.POA rootPOA;
     public Object orbRunningLock;
     public RTORBImpl rtorb;
 
@@ -332,14 +332,14 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         }else if(object_name.equals("RTCurrent")){
             return getRTCurrent();
         }else if(object_name.equals("RootPOA")){
-            throw new org.omg.CORBA.NO_IMPLEMENT();
-            /*
+            //throw new org.omg.CORBA.NO_IMPLEMENT();
+
             if( rootPOA == null ){
                 rootPOA = edu.uci.ece.zen.poa.POA.instance();
                 rootPOA.initAsRootPOA( this );
             }
             return rootPOA;
-            */
+
         }
         //org.omg.CORBA.Object ret = Resolver.resolve( this , object_name );
         //if( ret == null )

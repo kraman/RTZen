@@ -91,7 +91,8 @@ public abstract class MemoryArea{
     }
 
     public static MemoryArea getMemoryArea( Object obj ){
-        return HeapMemory.instance();
+        //return HeapMemory.instance();
+        return new LTMemory( 100 , 16*1024 );
     }
 
     public long size(){

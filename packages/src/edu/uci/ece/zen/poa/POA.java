@@ -472,7 +472,15 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             return child;
         }
         */
+
+
         throw new org.omg.CORBA.NO_IMPLEMENT();
+/*
+            POA newPoa = POA.instance();
+            newPoa.init( orb , adapter_name , policies , this , a_POAManager );
+            theChildren.put(adapter_name, child);
+            poaState = POA.CREATION_COMPLETE;
+            return child;*/
     }
 
     public org.omg.PortableServer.POA find_POA(final java.lang.String adapter_name,final boolean activate_it) throws AdapterNonExistent {

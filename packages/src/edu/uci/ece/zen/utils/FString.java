@@ -133,6 +133,10 @@ public class FString{
         return null;
     }
 
+    public String toString(){
+        return new String(getTrimData());
+    }
+
     public void reset(){
         currentSize = 0;
     }

@@ -26,8 +26,8 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
     protected POAImpl pimpl;
 
     // --Mutual exclusion lock for incarnate/etherealize
-    private Object mutex = new byte[0];            
-                
+    private Object mutex = new byte[0];
+
    /**
     * Initialize Strategy
     * @param retain ServantRetentionStrategy
@@ -35,13 +35,13 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
     * @param uniqunessStrategy IdUniquenessStrategy
     * @throws org.omg.PortableServer.POAPackage.InvalidPolicy
     */
-    public void init( ServantRetentionStrategy retain, ThreadPolicyStrategy threadStrategy, 
+    public void init( ServantRetentionStrategy retain, ThreadPolicyStrategy threadStrategy,
             IdUniquenessStrategy uniqunessStrategy , POAImpl pimpl , IntHolder exceptionValue ){
         if(!( retain instanceof RetainStrategy )){
             exceptionValue.value = POARunnable.InvalidPolicyException;
             return;
         }
-       
+
         this.retain = (RetainStrategy) retain;
         this.threadPolicyStrategy = threadStrategy;
         this.uniquenessStrategy = uniquenessStrategy;
@@ -80,7 +80,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
         else
             if( manager != null )
                 return manager;
-        
+
         exceptionValue.value = POARunnable.ObjNotActiveException;
         return null;
     }
@@ -114,7 +114,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
         } catch (Exception ex) {}
         */
     }
-    
+
    /**
     * Handle client request
     * @param request ServerRequest
@@ -122,7 +122,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
     * @param requests edu.uci.ece.zen.poa.SynchronizedInt
     * @return int
     */
-    public void handleRequest( RequestMessage request, edu.uci.ece.zen.poa.POA poa, 
+    public void handleRequest( RequestMessage request, edu.uci.ece.zen.poa.POA poa,
             edu.uci.ece.zen.poa.SynchronizedInt requests , IntHolder exceptionValue ) {
         exceptionValue.value = POARunnable.NoException;
         InvokeHandler invokeHandler = null;
@@ -130,7 +130,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
         FString oid = pimpl.getFString();
         request.getObjectKey( ok );
         ObjectKeyHelper.getId( ok , oid );
-        
+
         POAHashMap map = null;
 
         // first consult the AOM for the Request Processor
@@ -148,15 +148,15 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
 
             // --- INCARNATE ---
             exceptionValue.value = POARunnable.NoException;
-            
+
             invokeHandler = this.incarnate( ok , oid , poa , pimpl , exceptionValue );
-            if( exceptionValue.value == POARunnable.NoException ){            
+            if( exceptionValue.value == POARunnable.NoException ){
                 // Add the association in the AOM
                 map = pimpl.getPOAHashMap();
                 map.init( oid , (org.omg.PortableServer.Servant) invokeHandler );
                 this.retain.add(oid, map , exceptionValue );
             }
-            
+
             if( exceptionValue.value == POARunnable.ForwardRequestException ){
                 if(ZenProperties.devDbg) System.out.println("There is a forward request exception");
                 // Ask the ORB to handle the ForwardRequest Exception
@@ -173,7 +173,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
                 return;
             }
         }
-        
+
         map = this.retain.getHashMap( oid , exceptionValue );
 
         if (invokeHandler == null) {
@@ -186,7 +186,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
             requests.increment();
             map.incrementActiveRequests();
         }
-        
+
         ((edu.uci.ece.zen.poa.POACurrent)pimpl.poaCurrent.get()).init( poa , ok , (org.omg.PortableServer.Servant) invokeHandler );
 
         ResponseHandler responseHandler = new ResponseHandler( poa.getORB(), request );
@@ -194,7 +194,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
         this.threadPolicyStrategy.enter(invokeHandler);
         org.omg.PortableServer.Servant myServant = (org.omg.PortableServer.Servant)invokeHandler;
         CDROutputStream reply;
-        
+
         if (request.getOperation().equals("_is_a") )
         {
             boolean _result = myServant._is_a( request.getCDRInputStream().read_string() );
@@ -211,18 +211,18 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
         }
         else
         {
-            reply = (CDROutputStream) invokeHandler._invoke(request.getOperation(),(org.omg.CORBA.portable.InputStream) request.getCDRInputStream(), responseHandler);
+            reply = (CDROutputStream) invokeHandler._invoke(request.getOperation().toString(),(org.omg.CORBA.portable.InputStream) request.getCDRInputStream(), responseHandler);
         }
 
         this.threadPolicyStrategy.exit(invokeHandler);
-        
+
         synchronized (mutex) {
             requests.decrementAndNotifyAll( pimpl.self.processingState == POA.DESTRUCTION_APPARANT );
             try {
                 map.decrementActiveRequestsAndDeactivate();
             } catch (Exception ex) {}
         }
-        
+
         //send back reply
         //reply.sendUsing(request.getTransport());
 
@@ -260,7 +260,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
                 fre.printStackTrace();
             }
 
-            if (this.uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID) && 
+            if (this.uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID) &&
                     this.retain.servantPresent((org.omg.PortableServer.Servant) invokeHandler, exceptionValue)) {
                 exceptionValue.value = POARunnable.ObjAdapterException;
                 return null;

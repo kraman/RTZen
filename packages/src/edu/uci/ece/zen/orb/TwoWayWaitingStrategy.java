@@ -20,6 +20,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy{
         this.replyMsg = reply.getCDRInputStream();
 
         //TODO:handle service contexts here ... fix this... you can demarshall stuff here
+        /*
         ServiceContext[] contexts = ((ReplyMessage)reply).getServiceContexts();
 
         for(int i = 0; i < contexts.length; ++i){
@@ -35,7 +36,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy{
                 in1.free();
             }
         }
-
+*/
         //TODO:remember to release the message....u only have 1
 
         clientSem.release();

@@ -37,11 +37,11 @@ public class ReplyHeaderHelper
      * @param ostream the output stream
      * @param value ReplyHeader_1_0 value
      */
-    public static void write(org.omg.CORBA.portable.OutputStream ostream, org.omg.GIOP.ReplyHeader_1_0 value)
+    public static void write(org.omg.CORBA.portable.OutputStream ostream, ReplyHeader value)
     {
-        org.omg.IOP.ServiceContextListHelper.write(ostream,value.service_context);
-        ostream.write_ulong(value.request_id);
-        org.omg.GIOP.ReplyStatusType_1_0Helper.write(ostream,value.reply_status);
+        //org.omg.IOP.ServiceContextListHelper.write(ostream,value.service_context);
+        //ostream.write_ulong(value.request_id);
+        //org.omg.GIOP.ReplyStatusType_1_0Helper.write(ostream,value.reply_status);
     }
 
 }

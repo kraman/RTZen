@@ -10,7 +10,7 @@ import edu.uci.ece.zen.orb.transport.*;
 import edu.uci.ece.zen.orb.giop.type.*;
 
 /**
- * This class is a factory for creating GIOP messages for marshalling or 
+ * This class is a factory for creating GIOP messages for marshalling or
  * demarshalling messages.
  *
  * @author Krishna Raman
@@ -26,7 +26,7 @@ public final class GIOPMessageFactory
         buffer.init();
 
         GIOPHeaderInfo mainMsgHdr = (GIOPHeaderInfo) GIOPHeaderInfoHelper.instance();
-    
+
         edu.uci.ece.zen.orb.giop.GIOPMessage ret = null;
 
         do{
@@ -37,7 +37,7 @@ public final class GIOPMessageFactory
             buffer.setEndian( mainMsgHdr.isLittleEndian );
             buffer.appendFromStream( in , mainMsgHdr.messageSize );
 
-            System.err.println("Inside GIOPMessageFactory and mainMsgHdr: " + mainMsgHdr.toString() + " and giopMajorVersion: " + mainMsgHdr.giopMajorVersion + " and minorversion: " + mainMsgHdr.giopMinorVersion + " and messageType: " + mainMsgHdr.messageType);
+            if(ZenProperties.devDbg) System.err.println("Inside GIOPMessageFactory and mainMsgHdr: " + mainMsgHdr.toString() + " and giopMajorVersion: " + mainMsgHdr.giopMajorVersion + " and minorversion: " + mainMsgHdr.giopMinorVersion + " and messageType: " + mainMsgHdr.messageType);
             switch( mainMsgHdr.giopMajorVersion ){                   //GIOP major version (byte 4)
                 case 1:
                     switch( mainMsgHdr.giopMinorVersion ){           //GIOP minor version (byte 5)
@@ -158,9 +158,11 @@ public final class GIOPMessageFactory
                     break;
                 default:
                     throw new RuntimeException(""); //throw GIOP error here
-            }   
+            }
         }while( false );
+        if(ZenProperties.devDbg) System.out.println( "GMF parse stream 1" );
         ret.setTransport( (javax.realtime.ScopedMemory) javax.realtime.MemoryArea.getMemoryArea(trans) );
+        if(ZenProperties.devDbg) System.out.println( "GMF parse stream 2" );
         return ret;
     }
 
@@ -184,7 +186,7 @@ public final class GIOPMessageFactory
             buffer.setEndian( headerInfo.isLittleEndian );
             buffer.appendFromStream( in , headerInfo.messageSize );
             prevMessageBuffer.setNextBuffer(buffer);
-            
+
             moreFragments = headerInfo.nextMessageIsFragment;
             prevMessageBuffer = buffer;
        }
@@ -197,7 +199,7 @@ public final class GIOPMessageFactory
      * @param headerInfo is a reference to the header object that this method can use and modify.
      * @param firstFragmentBuffer ReadBuffer of the first fragment in set of fragments from a v1_2 Request or Reply
      */
-    private static void collectFragmentsv1_2( Transport trans, GIOPHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer, int requestId ) throws java.io.IOException { 
+    private static void collectFragmentsv1_2( Transport trans, GIOPHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer, int requestId ) throws java.io.IOException {
         // Read the fragment header
 
         boolean moreFragments = true;
@@ -228,7 +230,7 @@ public final class GIOPMessageFactory
 
     /**
      * Read the GIOP Message header from the Transport's stream.
-     * 
+     *
      * @param trans Transport stream
      * @param headerInfo GIOPHeaderInfo object to fill with data read from header
     */
@@ -237,7 +239,7 @@ public final class GIOPMessageFactory
         int read = 0;
         while( read < 12 )
             read += in.read( header , 0 , 12 );
-       
+
         // Bytes 0,1,2,3 should equal 'GIOP'
         //System.err.println( "----GIOP Message Header ----" );
         //System.err.write( header , 0 , 12 );
@@ -254,14 +256,14 @@ public final class GIOPMessageFactory
         headerInfo.giopMinorVersion = header[5];
         headerInfo.isLittleEndian = (header[6] & 0x01) == 1;   //Endian byte (byte 6)
 
-        
+
         headerInfo.nextMessageIsFragment=false;
         if ( headerInfo.giopMajorVersion == 1 && headerInfo.giopMinorVersion == 1) {
             headerInfo.nextMessageIsFragment = ( (header[6] & 0x02) == 1);
         }
-        
+
         headerInfo.messageType = header[7];      //Message type (byte 7)
-        
+
         headerInfo.messageSize = 0;
         if( headerInfo.isLittleEndian ){
             //System.out.println( "Little endian msg" );
@@ -321,19 +323,19 @@ public final class GIOPMessageFactory
         out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Reply );
         out.setLocationMemento();
         out.write_long(0);
-        
+
         switch( req.getGiopVersion() ){
             case 10:
-                org.omg.GIOP.ReplyHeader_1_0Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] , 
+                org.omg.GIOP.ReplyHeader_1_0Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] ,
                         req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.NO_EXCEPTION ));
                 break;
             case 11:
-                org.omg.GIOP.ReplyHeader_1_1Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] , 
-                        req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.NO_EXCEPTION ));                
+                org.omg.GIOP.ReplyHeader_1_1Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] ,
+                        req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.NO_EXCEPTION ));
                 break;
             case 12:
-                org.omg.GIOP.ReplyHeader_1_2Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_2( req.getRequestId() , 
-                        org.omg.GIOP.ReplyStatusType_1_2.NO_EXCEPTION , new org.omg.IOP.ServiceContext[0] ));       
+                org.omg.GIOP.ReplyHeader_1_2Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_2( req.getRequestId() ,
+                        org.omg.GIOP.ReplyStatusType_1_2.NO_EXCEPTION , new org.omg.IOP.ServiceContext[0] ));
                 break;
         }
         return out;
@@ -353,23 +355,23 @@ public final class GIOPMessageFactory
         out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Reply );
         out.setLocationMemento();
         out.write_long(0);
-        
+
         switch( req.getGiopVersion() ){
             case 10:
-                org.omg.GIOP.ReplyHeader_1_0Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] , 
+                org.omg.GIOP.ReplyHeader_1_0Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] ,
                         req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.USER_EXCEPTION ));
                 break;
             case 11:
-                org.omg.GIOP.ReplyHeader_1_1Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] , 
-                        req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.USER_EXCEPTION ));                
+                org.omg.GIOP.ReplyHeader_1_1Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] ,
+                        req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.USER_EXCEPTION ));
                 break;
             case 12:
-                org.omg.GIOP.ReplyHeader_1_2Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_2( req.getRequestId() , 
-                        org.omg.GIOP.ReplyStatusType_1_2.USER_EXCEPTION , new org.omg.IOP.ServiceContext[0] ));       
+                org.omg.GIOP.ReplyHeader_1_2Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_2( req.getRequestId() ,
+                        org.omg.GIOP.ReplyStatusType_1_2.USER_EXCEPTION , new org.omg.IOP.ServiceContext[0] ));
                 break;
         }
         return out;
-    }    
+    }
 
     /**
      * Read a CORBA long (Java int) from the input stream, using
@@ -383,7 +385,7 @@ public final class GIOPMessageFactory
         byte [] bytesOfLong = new byte [4];
         in.read(bytesOfLong, 0, 4);
         int readLong = 0;
-        
+
         if( !headerInfo.isLittleEndian ){
             readLong += ((short)(bytesOfLong[0] & 0xFF)) << 24;
             readLong += ((short)(bytesOfLong[1] & 0xFF)) << 16;

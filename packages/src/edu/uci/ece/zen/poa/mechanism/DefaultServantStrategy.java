@@ -17,15 +17,15 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
      * @throws org.omg.PortableServer.POAPackage.InvalidPolicy
      */
     public void initialize(ServantRetentionStrategy retain,
-            ThreadPolicyStrategy threadStrategy, IntHolder exceptionValue) 
+            ThreadPolicyStrategy threadStrategy, IntHolder exceptionValue)
     {
         exceptionValue.value = POARunnable.NoException;
-        if (retain instanceof ServantRetentionStrategy) 
+        if (retain instanceof ServantRetentionStrategy)
         {
             if(retain instanceof RetainStrategy)
                 this.retentionStrategy = (RetainStrategy) retain;
         }
-        else 
+        else
         {
             this.retentionStrategy = (NonRetainStrategy) retain;
             this.threadPolicyStrategy = threadStrategy;
@@ -81,7 +81,7 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
                 return this.servant;
             } else {
                 excpetionValue.value = POARunnable.ObjNotActiveException;
-               return null; 
+               return null;
             }
         } else {
             excpetionValue.value = POARunnable.WrongPolicyException;
@@ -102,12 +102,12 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
             handleIfRetain(request, poa, requests, exceptionValue);
         } // can thorw ObjectNotActive, ClassCastException and WrongPolicy
 
-        if (exceptionValue.value != 0) 
+        if (exceptionValue.value != 0)
         {
             //something happened here and nothing is done
             exceptionValue.value = POARunnable.NoException;
         }
-        
+
         POAImpl pimpl = (POAImpl) ((ScopedMemory)poa.poaMemoryArea).getPortal();
 
         FString okey = pimpl.getFString();
@@ -154,7 +154,7 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
         else
         {
             reply = (CDROutputStream)
-                invokeHandler._invoke(request.getOperation(),
+                invokeHandler._invoke(request.getOperation().toString(),
                 (org.omg.CORBA.portable.InputStream) request.getCDRInputStream(),
                 responseHandler);
         }
@@ -193,17 +193,17 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
         if (okey == null || !okey.isActive()) {
             exceptionValue.value = POARunnable.ObjNotExistException;
             pimpl.retFString( ok );
-            pimpl.retFString( oid );            
+            pimpl.retFString( oid );
             return;
         }
-        
+
         // --PRE-INVOKE
         synchronized (mutex) {
             okey.incrementActiveRequests();
             requests.increment();
         }
 
-        
+
         ((POACurrent)pimpl.poaCurrent.get()).init(poa,ok, okey.getServant() );
 
         ResponseHandler responseHandler = new ResponseHandler(poa.getORB(),request);
@@ -227,7 +227,7 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
         else
         {
             reply = (CDROutputStream)
-                invokeHandler._invoke(request.getOperation(),
+                invokeHandler._invoke(request.getOperation().toString(),
                 (org.omg.CORBA.portable.InputStream) request.getCDRInputStream(),
                 responseHandler);
         }

@@ -6,23 +6,23 @@ import edu.uci.ece.zen.orb.*;
 import javax.realtime.ImmortalMemory;
 
 /**
- * Reply messages as described in section 15.4.3 of the CORBA v3.0 Spec. 
+ * Reply messages as described in section 15.4.3 of the CORBA v3.0 Spec.
  * @author bmiller
  */
 
 public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
-    private ReplyHeader_1_0 header;
+    private ReplyHeader header;
     private static ReplyMessage rm;
-    
+
     public ReplyMessage() {}
     public ReplyMessage( ORB orb , ReadBuffer stream ){
         super( orb , stream );
-        header = ReplyHeader_1_0Helper.read( istream );  // read method initializes header variable
+        header = ReplyHeaderHelper.read( istream );  // read method initializes header variable
         messageBody = stream;
     }
     public void init( ORB orb , ReadBuffer stream ){
         super.init( orb , stream );
-        header = ReplyHeader_1_0Helper.read( istream );  // read method initializes header variable
+        header = ReplyHeaderHelper.read( istream );  // read method initializes header variable
         messageBody = stream;
     }
 
@@ -42,11 +42,11 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
 
     public int getRequestId() { return header.request_id; }
 
-    public int getReplyStatus() { return header.reply_status.value(); }
-    public org.omg.IOP.ServiceContext[] getServiceContexts() { return header.service_context; }
+    public int getReplyStatus() { return header.reply_status; }
+    public FString getServiceContexts() { return header.service_context; }
 
     public void marshal( CDROutputStream out ){
-        ReplyHeader_1_0Helper.write( out, header );
+        ReplyHeaderHelper.write( out, header );
     }
 
     public int getGiopVersion(){ return 10; }
