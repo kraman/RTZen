@@ -18,6 +18,7 @@ public class FString{
     public static FString instance(FString fs){
         if(fs == null){
             fs = fromImmortal();
+            System.out.println("new FString");
         } else {
             fs.reset();
         }
@@ -78,7 +79,10 @@ public class FString{
     }
 
     public void append( String str ){
-        append( str.getBytes() , 0 , str.length() );
+        for(int i = 0; i < str.length(); ++i)
+            append(str.charAt(i));
+        
+        //append( str.getBytes() , 0 , str.length() );
     }
 
     public void append( byte b ){
