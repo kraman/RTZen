@@ -51,7 +51,7 @@
       <jRate
             optimizeLevel="2"
             libDirs="${zen.jRateLibDir}"
-            additionalLinkOptions="-L${zen.libdir} -lZen"
+            additionalLinkOptions="-L ${zen.libdir} -lZen"
             destdir="${zen.libdir}"
             bootclasspath="${zen.rtbootclasspath}"
             classpath="${jRate_classpath}:${zen.classdir}"
