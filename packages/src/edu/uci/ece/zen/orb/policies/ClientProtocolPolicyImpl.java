@@ -16,7 +16,7 @@ public class ClientProtocolPolicyImpl
 
     public ClientProtocolPolicyImpl(){
         //right now there's only IIOP
-        protocols = new Protocol[1];
+        //protocols = new Protocol[1];
     }
 /*
     public ClientProtocolPolicyImpl(org.omg.RTCORBA.Protocol[] protocols){
@@ -56,7 +56,8 @@ public class ClientProtocolPolicyImpl
     }
 
     public void protocols(Protocol[] protocols){
-        this.protocols[0] = protocols[0];
+        //this.protocols[0] = protocols[0];
+        this.protocols = protocols;
     }
 
 }

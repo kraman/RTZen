@@ -23,6 +23,7 @@ import org.omg.CORBA.UNSUPPORTED_POLICY;
 import org.omg.CORBA.PolicyError;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.PolicyManager;
+import org.omg.CORBA.PolicyCurrent;
 
 /**
  * @author Krishna Raman
@@ -128,8 +129,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private WaiterRegistry waiterRegistry;
     private Queue executeInRunnableCache;
     public RTORB rtorb;
-    public PolicyManager policyManager;
+    //public PolicyManager policyManager;
     public MemoryArea [] threadpoolList;
+
 
     private byte orbId[];
     private int orbIdLen;
@@ -143,10 +145,11 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         waiterRegistry.init( 100 );
         executeInRunnableCache = new Queue();
         rtorb = new RTORBImpl(this);
-        policyManager = new PolicyManagerImpl(this);
+        //policyManager = new PolicyManagerImpl(this);
         threadpoolList = new MemoryArea[10];//KLUDGE: need to set up property for max TPs
         orbId = new byte[25];
         orbIdLen=0;
+
     }
 
     public ExecuteInRunnable getEIR(){
@@ -306,17 +309,89 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public org.omg.CORBA.Object resolve_initial_references(String object_name) throws org.omg.CORBA.ORBPackage.InvalidName {
         //return Resolver.resolve( object_name );
-
-        if(object_name.equals("RTORB"))
+        System.out.println( "======================Getting " + object_name + "=============================" );
+        if(object_name.equals("RTORB")){
             return rtorb;
-        else if(object_name.equals("ORBPolicyManager"))
-            return policyManager;
+        }else if(object_name.equals("ORBPolicyManager")){
+            return getPolicyManager();
+        }else if(object_name.equals("PolicyCurrent")){
+            PolicyCurrentRunnable prun = new PolicyCurrentRunnable(orbImplRegion);
+            internalResolve(prun);
+            return prun.val;
+        }else if(object_name.equals("RTCurrent")){
+            RTCurrentRunnable rtrun = new RTCurrentRunnable(orbImplRegion);
+            internalResolve(rtrun);
+            return rtrun.val;
+        }
 
         //else if(object_name.equals("RTCurrent"))
             //return policyManager;
 
         throw new org.omg.CORBA.ORBPackage.InvalidName(object_name + " resolver not implemented");
     }
+
+    private void internalResolve(Runnable runnable){
+        ExecuteInRunnable r = new ExecuteInRunnable();
+
+        r.init(runnable, orbImplRegion);
+        try{
+
+            parentMemoryArea.executeInArea( r );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.ORB",
+                "",
+                "" + e.toString()
+                );
+            System.exit(-1);
+        }
+    }
+
+    class PolicyManagerRunnable implements Runnable{
+        public PolicyManagerImpl val;
+        private ScopedMemory sm;
+        public PolicyManagerRunnable(ScopedMemory sm){
+            this.sm = sm;
+        }
+        public void run(){
+            val = ((ORBImpl)(sm.getPortal())).policyManager;
+        }
+    }
+
+    class RTCurrentRunnable implements Runnable{
+        public RTCurrent val;
+        private ScopedMemory sm;
+        public RTCurrentRunnable(ScopedMemory sm){
+            this.sm = sm;
+        }
+        public void run(){
+            val = ((ORBImpl)(sm.getPortal())).getRTCurrent();
+        }
+    }
+
+    class PolicyCurrentRunnable implements Runnable{
+        public PolicyCurrent val;
+        private ScopedMemory sm;
+        public PolicyCurrentRunnable(ScopedMemory sm){
+            this.sm = sm;
+        }
+        public void run(){
+            val = ((ORBImpl)(sm.getPortal())).getPolicyCurrent();
+        }
+    }
+
+    public RTORB getRTORB(){
+        return rtorb;
+    }
+
+    public PolicyManager getPolicyManager(){
+        PolicyManagerRunnable prun = new PolicyManagerRunnable(orbImplRegion);
+        internalResolve(prun);
+        return prun.val;
+    }
+
+
 
     public String object_to_string(org.omg.CORBA.Object obj) {
         ObjectImpl objectImpl = (ObjectImpl) obj;
@@ -330,7 +405,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         objImpl.init( ior );
 
         ORBStrToObjRunnable strToObjRunnable = new ORBStrToObjRunnable();
-        strToObjRunnable.init( ior , objImpl ); 
+        strToObjRunnable.init( ior , objImpl );
         System.out.println("yue1");
         ExecuteInRunnable r = new ExecuteInRunnable();
         System.out.println("yue2");
@@ -348,7 +423,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
         }
         System.out.println("yue4");
-	System.out.println("yue5");
+    System.out.println("yue5");
         return objImpl;
     }
 
@@ -414,13 +489,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         return acceptorRegistry;
     }
 
-    public RTORB getRTORB(){
-        return rtorb;
-    }
-
-    public PolicyManager getPolicyManager(){
-        return policyManager;
-    }
 
     ///////////////////////////////////////////////////////////////////////////
     ////////////////// DON'T CARE ABOUT THESE /////////////////////////////////

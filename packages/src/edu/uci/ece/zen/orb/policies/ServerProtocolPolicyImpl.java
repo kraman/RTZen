@@ -16,7 +16,7 @@ public class ServerProtocolPolicyImpl
 
     public ServerProtocolPolicyImpl(){
         //right now there's only IIOP
-        protocols = new Protocol[1];
+        //protocols = new Protocol[1];
     }
 /*
     public ServerProtocolPolicyImpl(org.omg.RTCORBA.Protocol[] protocols){
@@ -56,6 +56,6 @@ public class ServerProtocolPolicyImpl
     }
 
     public void protocols(Protocol[] protocols){
-        this.protocols[0] = protocols[0];
+        this.protocols = protocols;
     }
 }

@@ -1,4 +1,4 @@
-package org.omg.RTCORBA;
+package edu.uci.ece.zen.orb;
 
 /**
  * Interface definition : Current
@@ -11,6 +11,13 @@ public class RTCurrent
 {
 
     short priority;
+
+    ORB orb;
+
+    public void init(ORB orb){
+        //orbMemoryArea = RealtimeThread.getCurrentMemoryArea();
+        this.orb = orb;
+    }
 
     /**
      * Read accessor for the_priority attribute

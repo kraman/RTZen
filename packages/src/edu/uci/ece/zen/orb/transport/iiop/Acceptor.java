@@ -56,7 +56,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
             case 1:
                 //org.omg.IOP.TaggedComponent[] components = new org.omg.IOP.TaggedComponent[0];
                 //TODO: insert rt policy info and other tagged components
-                ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey, getComponents(orb));
+                ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey, getComponents());
                 ProfileBody_1_1Helper.write(out, pb11);
 
             break;
@@ -72,18 +72,20 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
         return tp;
     }
 
-    private TaggedComponent[] getComponents(edu.uci.ece.zen.orb.ORB orb){
-
+    private TaggedComponent[] getComponents(){
+        return new TaggedComponent[0];
+/*
         TaggedComponent[] tcarr = new TaggedComponent[1];
 
         //tcarr[0].tag = SERVER_PROTOCOL_POLICY_TYPE.value;
 
-        tcarr[0] = getPolicyComponent(orb);
+        tcarr[0] = getPolicyComponent();
 
         return tcarr;
+        */
     }
 
-    private TaggedComponent getPolicyComponent(edu.uci.ece.zen.orb.ORB orb){
+    private TaggedComponent getPolicyComponent(){
         TaggedComponent tc = new TaggedComponent();
         tc.tag = org.omg.IOP.TAG_POLICIES.value;
 
@@ -91,7 +93,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN
 
-        PolicyValueHelper.write(out, createServerProtocolPolicyValue(orb));
+        PolicyValueHelper.write(out, createServerProtocolPolicyValue());
 
         tc.component_data = new byte[(int)out.getBuffer().getLimit()];
         out.getBuffer().readByteArray(tc.component_data, 0 , (int)out.getBuffer().getLimit());
@@ -100,8 +102,8 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
         return tc;
     }
 
-    private PolicyValue createServerProtocolPolicyValue(edu.uci.ece.zen.orb.ORB orb){
-
+    private PolicyValue createServerProtocolPolicyValue(){
+/*
         ServerProtocolPolicy spp = ((RTORBImpl)(orb.getRTORB())).spp;
         PolicyValue pv = new PolicyValue();
         pv.ptype = spp.policy_type();
@@ -118,5 +120,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
         out.free();
 
         return pv;
+        */
+        return null;
     }
 }

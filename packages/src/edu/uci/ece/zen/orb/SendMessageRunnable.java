@@ -6,8 +6,11 @@ import edu.uci.ece.zen.utils.*;
 
 public class SendMessageRunnable implements Runnable{
     WriteBuffer msg;
+    ScopedMemory transScope;
 
-    public SendMessageRunnable(){}
+    public SendMessageRunnable(ScopedMemory transScope){
+        this.transScope = transScope;
+    }
 
     /**
      * Client upcall:
@@ -26,6 +29,7 @@ public class SendMessageRunnable implements Runnable{
      * </p>
      */
     public void run(){
+        //edu.uci.ece.zen.orb.transport.Transport trans = (edu.uci.ece.zen.orb.transport.Transport) transScope.getPortal();
         edu.uci.ece.zen.orb.transport.Transport trans = (edu.uci.ece.zen.orb.transport.Transport) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
         trans.send( msg );
     }

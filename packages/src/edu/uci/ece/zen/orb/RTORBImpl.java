@@ -116,6 +116,7 @@ public class RTORBImpl
      * Operation create_server_protocol_policy
      */
     public org.omg.RTCORBA.ServerProtocolPolicy create_server_protocol_policy(org.omg.RTCORBA.Protocol[] protocols){
+        ServerProtocolPolicyImpl spp = new ServerProtocolPolicyImpl();
         spp.protocols(protocols);
         return spp;
         //throw new org.omg.CORBA.NO_IMPLEMENT();
@@ -157,7 +158,7 @@ public class RTORBImpl
 
 
 
-    public ServerProtocolPolicyImpl spp;
+    //public ServerProtocolPolicyImpl spp;
     //ClientProtocolPolicyImpl cpp;
     //PrivateConnectionPolicy pcp;
     //public TCPProtocolProperties tcpPP;

@@ -22,7 +22,7 @@ public class PolicyManagerImpl
     //private MemoryArea orbMemoryArea;
     ORB orb;
 
-    public PolicyManagerImpl(ORB orb){
+    public void init(ORB orb){
         //orbMemoryArea = RealtimeThread.getCurrentMemoryArea();
         this.orb = orb;
     }

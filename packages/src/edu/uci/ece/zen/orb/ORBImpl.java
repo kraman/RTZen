@@ -3,6 +3,8 @@ package edu.uci.ece.zen.orb;
 import java.util.Properties;
 import edu.uci.ece.zen.utils.*;
 import javax.realtime.*;
+import org.omg.CORBA.PolicyCurrent;
+import edu.uci.ece.zen.orb.policies.*;
 
 public class ORBImpl{
     ZenProperties properties;
@@ -10,6 +12,9 @@ public class ORBImpl{
     ORBImplRunnable orbImplRunnable;
     public Hashtable cachedObjects;
     public ServerRequestHandler serverRequestHandler;
+    public ThreadLocal rtCurrent;
+    public ThreadLocal policyCurrent;
+    public PolicyManagerImpl policyManager;
 
 
     public ORBImpl( String args[] , Properties props, edu.uci.ece.zen.orb.ORB orbFacade ){
@@ -33,12 +38,50 @@ public class ORBImpl{
         nhrt.start();
         cachedObjects = new Hashtable();
         cachedObjects.init(5);
+
         try{
+            rtCurrent = (ThreadLocal)(orbFacade.parentMemoryArea.newInstance( ThreadLocal.class ));
+            policyCurrent = (ThreadLocal)(orbFacade.parentMemoryArea.newInstance( ThreadLocal.class ));
+            policyManager = (PolicyManagerImpl)(orbFacade.parentMemoryArea.newInstance( PolicyManagerImpl.class ));
+            policyManager.init(orbFacade);
+
             cachedObjects.put( "ExecuteInRunnable" , new Queue() );
             cachedObjects.put( "ConnectorRunnable" , new Queue() );
         }catch( Exception e ){
             e.printStackTrace();
         }
+    }
+
+    public PolicyCurrent getPolicyCurrent(){
+        PolicyCurrentImpl ret = (PolicyCurrentImpl)(policyCurrent.get());
+
+        if(ret == null){
+            try{
+                ret = (PolicyCurrentImpl)(orbFacade.parentMemoryArea.newInstance( PolicyCurrentImpl.class ));//new RTCurrentImpl(this);
+                ret.init(orbFacade);
+                policyCurrent.set(ret);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return ret;
+    }
+
+    public RTCurrent getRTCurrent(){
+        RTCurrent ret = (RTCurrent)(rtCurrent.get());
+
+        if(ret == null){
+            try{
+                ret = (RTCurrent)(orbFacade.parentMemoryArea.newInstance( RTCurrent.class ));//new RTCurrentImpl(this);
+                ret.init(orbFacade);
+                rtCurrent.set(ret);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return ret;
     }
 
     protected void handleInvocation(){
