@@ -175,8 +175,9 @@ public final class ActiveObjectMapOnlyStrategy extends
         sm.enter(msgr);
         retMSGR(msgr);
         poa.getORB().freeScopedRegion(sm);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(38);
         request.free();
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(33);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(39);
 
         /*
          * if (request.getOperation().equals("_is_a") ) { boolean _result =

@@ -303,7 +303,22 @@ public class FString {
     public String toString() {
         return new String(getTrimData());
     }
+    private String cachedString;
+    public String toCachedString() {
+        if(cachedString == null){
+            try{
+                java.lang.reflect.Constructor c = String.class.getConstructor(new Class [] {byte[].class});
+                cachedString =  
+                    (String) ImmortalMemory.instance().newInstance(c,new Object [] {getTrimData()});
+            }catch(Exception e){
+                ZenProperties.logger.log(Logger.SEVERE,
+                        getClass(), "getTrimdata",
+                        "Could not initialize cached String", e);
 
+            }
+        }
+        return cachedString;
+    }
     /**
      * Convert this FString into a string, using the inverse algorithm as in
      * stringToCDRByteArray

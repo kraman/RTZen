@@ -66,6 +66,6 @@ public abstract class GIOPMessage {
 
     public void free(){
         istream.free();
-        messageBody.free();    
+        //messageBody.free();    
     }
 }

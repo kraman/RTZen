@@ -15,7 +15,7 @@ public class ReadBuffer {
     private static int LONG = 4;
 
     private static int LONGLONG = 8;
-
+    private static int numFree = 0; //just to debug the number of free buffers
     static {
         try {
             bufferCache = (Queue) ImmortalMemory.instance().newInstance(
@@ -31,6 +31,8 @@ public class ReadBuffer {
             if (bufferCache.isEmpty()) return (ReadBuffer) ImmortalMemory
                     .instance().newInstance(ReadBuffer.class);
             else {
+                //Thread.dumpStack();
+                numFree--;
                 ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
                 ret.init();
                 return ret;
@@ -159,10 +161,24 @@ public class ReadBuffer {
     }
 
     public void free() {
+                //Thread.dumpStack();
+        numFree++;
+        edu.uci.ece.zen.utils.Logger.write(numFree);
+        edu.uci.ece.zen.utils.Logger.writeln();
+         edu.uci.ece.zen.utils.Logger.write(bufferCache.size());
+        edu.uci.ece.zen.utils.Logger.writeln();
+        
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(635);
         ByteArrayCache cache = ByteArrayCache.instance();
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(636);
         for (int i = 0; i < buffers.size(); i++)
             cache.returnByteArray((byte[]) buffers.elementAt(i));
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(637);
+        //buffers.removeAllElements();
+        //init();
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(638);
         ReadBuffer.release(this);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(639);
     }
 
     public void freeWithoutBufferRelease() {
