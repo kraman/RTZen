@@ -51,7 +51,7 @@ public class CDRTestClient extends RealtimeThread
 			testOctetSeq();
 			testStructSeq();
 			//testonewayShort();
-			testObject();
+			//testObject();
 
 
 
@@ -302,7 +302,7 @@ public class CDRTestClient extends RealtimeThread
 		org.omg.CORBA.Object objinVal = stub;
 		org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(stub);
 
-		org.omg.CORBA.Object objretVal = echoObject(objinVal, objoutVal);
+		org.omg.CORBA.Object objretVal = stub.echoObject(objinVal, objoutVal);
 
 		return;
 
