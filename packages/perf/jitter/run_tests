@@ -18,10 +18,13 @@ function printUsage() {
 	echo "                30 TAO servant remote     "
     echo "                4  RT Zen server on OVM interpreter"
     echo "                40 Simulated RT Zen server remote"
+    echo "                5  RT Zen server on OVM ahead-of-time compiler"
+    echo "                50 RT Zen server remote on OVM ahead-of-time compiler"        
 	echo "    clientType  1  simulated RT Zen client"
 	echo "                2  TimeSys RTZen client"
 	echo "                3  TAO Client             "
     echo "                4  RT Zen client on OVM interpreter"
+    echo "                5  RT Zen client on OVM ahead-of-time compiler"
 
 	exit -1;
 
