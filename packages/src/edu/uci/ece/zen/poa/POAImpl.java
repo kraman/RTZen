@@ -74,7 +74,7 @@ public class POAImpl{
 
     POAManager manager;
     int tpId;
-    
+
     public ThreadLocal poaCurrent;
 
     // --- POA Cached Objects ---
@@ -176,28 +176,28 @@ public class POAImpl{
         this.idAssignmentStrategy = edu.uci.ece.zen.poa.mechanism.IdAssignmentStrategy.init(policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
         System.out.println( "POAImpl init 7" );
-        
+
         this.uniquenessStrategy = edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy.init(policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
         System.out.println( "POAImpl init 8" );
-        
+
         this.retentionStrategy = edu.uci.ece.zen.poa.mechanism.ServantRetentionStrategy.init(policyList, this.uniquenessStrategy,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
         System.out.println( "POAImpl init 9" );
-        
+
         this.lifespanStrategy = edu.uci.ece.zen.poa.mechanism.LifespanStrategy.init(this.policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
         System.out.println( "POAImpl init 10" );
-        
+
         this.activationStrategy = edu.uci.ece.zen.poa.mechanism.ActivationStrategy.init(this.policyList, this.idAssignmentStrategy, this.retentionStrategy,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
         System.out.println( "POAImpl init 11" );
-        
-        this.requestProcessingStrategy = edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy.init(this.policyList, 
+
+        this.requestProcessingStrategy = edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy.init(this.policyList,
                 this.retentionStrategy, this.uniquenessStrategy, this.threadPolicyStrategy, this , ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
         System.out.println( "POAImpl init 12" );
-        
+
         poaImplRunnable = new POAImplRunnable( self.poaMemoryArea );
         self.poaMemoryArea.setPortal( this );
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,null,null,self.poaMemoryArea,null,poaImplRunnable );
@@ -210,8 +210,8 @@ public class POAImpl{
      * <p>
      *      Transport thread:<br/>
      *      <p>
-     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt; 
-     *              <b>POAImpl region</b> --ex in--&gt; ORBImpl scope --&gt; TP Region 
+     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt;
+     *              <b>POAImpl region</b> --ex in--&gt; ORBImpl scope --&gt; TP Region
      *      </p>
      *      TP Thread:<br/>
      *      <p>
@@ -221,10 +221,10 @@ public class POAImpl{
      */
     public void handleRequest( RequestMessage req , POARunnable prun ){
         IntHolder ih = getIntHolder();
-        
+
         if( this.poaCurrent.get() == null )
             this.poaCurrent.set( new POACurrent() );
-        
+
         validateProcessingState( ih ); // check for the state of the poa? if it is discarding then throw the transient exception...
         if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retIntHolder( ih ); return; }
 
@@ -251,7 +251,7 @@ public class POAImpl{
             HandleRequestRunnable hrr = (HandleRequestRunnable) requestScope.newInstance( HandleRequestRunnable.class );
             hrr.init( self , req );
             requestScope.setPortal( hrr );
-            
+
             orb.orbImplRegion.executeInArea( eir );
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here
@@ -303,7 +303,7 @@ public class POAImpl{
 
                     this.idAssignmentStrategy.nextId( oid , ih );
                     if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; break; }
-                        
+
                     POAHashMap map = getPOAHashMap();
                     map.init( oid, p_servant );
 
@@ -317,7 +317,7 @@ public class POAImpl{
                     int genCount = this.retentionStrategy.getGenCount( index , ih );
                     if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retPOAHashMap( map ); break; }
 
-                    this.lifespanStrategy.create( self.poaPath , oid, self.poaDemuxIndex , this.poaDemuxCount , index , genCount , okey ); 
+                    this.lifespanStrategy.create( self.poaPath , oid, self.poaDemuxIndex , this.poaDemuxCount , index , genCount , okey );
                     retVal = this.create_reference_with_object_key(okey, p_servant._all_interfaces(self, null)[0] , clientMemoryArea );
                     break;
                 }
@@ -337,7 +337,7 @@ public class POAImpl{
 
                 // Create the Object Key using the IdHint Strategy
                 this.lifespanStrategy.create(self.poaPath, oid, self.poaDemuxIndex , this.poaDemuxCount , index, count, okey );
-                
+
                 retVal = this.create_reference_with_object_key (okey, p_servant._all_interfaces(self, null)[0] , clientMemoryArea);
             }
         }
@@ -345,6 +345,7 @@ public class POAImpl{
         retFString( oid );
         retIntHolder( ih );
         System.out.println( "servant_to_reference " + retVal );
+        System.out.println( "servant_to_reference client area " + clientMemoryArea);
         return retVal;
     }
 
@@ -422,7 +423,7 @@ public class POAImpl{
         System.out.println( "create_reference_with_object_key 3" );
         try{
             orb.orbImplRegion.executeInArea(crwor);
-            return crwor.retVal; 
+            return crwor.retVal;
         }catch( Exception e ){
             e.printStackTrace();
             return null;
@@ -481,7 +482,7 @@ class HandleRequestRunnable implements Runnable{
         this.req = req;
         exceptionValue = new IntHolder(0);
     }
-    
+
     public void run(){
         POAImpl pimpl = ((POAImpl)poa.poaMemoryArea.getPortal());
         try{

@@ -25,7 +25,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     protected int poaDemuxIndex;
     public int processingState = POA.ACTIVE;
     private AdapterActivator adapterActivator;
-    
+
     protected FString poaName;
     protected FString poaPath;
 
@@ -109,7 +109,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
 
         theChildren.removeAll();
         numberOfCurrentRequests.reset();
-        
+
         POARunnable r = new POARunnable(POARunnable.INIT);
         r.addParam( orb );
         r.addParam( this );
@@ -128,8 +128,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
 
         poaState = POA.CREATION_COMPLETE;
     }
-    
-	public POA(){
+
+    public POA(){
         theChildren = new Hashtable();
         theChildren.init( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.maxNumPOAs" , "1" ) ) );
         numberOfCurrentRequests = new SynchronizedInt();
@@ -164,8 +164,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
      * <p>
      *      Transport thread:<br/>
      *      <p>
-     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; <b>Message</b> --ex in--&gt; ORBImpl scope --&gt; 
-     *              POAImpl region --ex in--&gt; ORBImpl scope --&gt; TP Region 
+     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; <b>Message</b> --ex in--&gt; ORBImpl scope --&gt;
+     *              POAImpl region --ex in--&gt; ORBImpl scope --&gt; TP Region
      *      </p>
      *      TP Thread:<br/>
      *      <p>
@@ -192,7 +192,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             case POARunnable.ObjAdapterException:
                 throw new org.omg.CORBA.OBJ_ADAPTER(1, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
             case POARunnable.ObjNotExistException:
-                throw new org.omg.CORBA.OBJECT_NOT_EXIST(2, org.omg.CORBA.CompletionStatus.COMPLETED_NO); 
+                throw new org.omg.CORBA.OBJECT_NOT_EXIST(2, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
         }
     }
 
@@ -200,6 +200,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         POARunnable r = new POARunnable(POARunnable.SERVANT_TO_REFERENCE);
         r.addParam( p_servant );
         r.addParam( RealtimeThread.getCurrentMemoryArea() );
+        System.out.println( "POA.servant_to_reference cur mem area: " + RealtimeThread.getCurrentMemoryArea() );
         ExecuteInRunnable eir1 = new ExecuteInRunnable();
         eir1.init( r , poaMemoryArea );
         ExecuteInRunnable eir2 = new ExecuteInRunnable();
@@ -250,7 +251,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         }
         return (byte[])r.retVal;
         */
-        throw new org.omg.CORBA.NO_IMPLEMENT(); 
+        throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
 
@@ -483,17 +484,17 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             return (POA) poa;
 
         if (activate_it)
-        {   
+        {
             boolean temp = false;
-		    try{
+            try{
                 temp = the_activator().unknown_adapter(this, adapter_name);
             }
-		    catch ( Exception ex ){
+            catch ( Exception ex ){
                 throw new org.omg.CORBA.OBJ_ADAPTER("AdapterActivator failed to activate POA",1,CompletionStatus.COMPLETED_NO);
             }
-		    if (temp)
-		    	return (POA) theChildren.get(adapter_name);
-		}
+            if (temp)
+                return (POA) theChildren.get(adapter_name);
+        }
         throw new org.omg.PortableServer.POAPackage.AdapterNonExistent()
         */
         throw new org.omg.CORBA.NO_IMPLEMENT();
@@ -505,7 +506,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             ThreadSpecificPOACurrent current = POATSS.tss.getCurrent();
 
             if (current != null && ((edu.uci.ece.zen.poa.POA) current.getPOA()).getORB() == this.orb) {
-                throw new org.omg.CORBA.BAD_INV_ORDER("The destroy is unsuccessful as the Current" + 
+                throw new org.omg.CORBA.BAD_INV_ORDER("The destroy is unsuccessful as the Current" +
                         "thread is in the InvocationContext", 3, CompletionStatus.COMPLETED_NO);
             }
         }
@@ -562,7 +563,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             // At this point the Apparent Destruction of the POA has occured.
             // Ethrealize the servants for each activeObject in the AOM
             this.poaState = POA.DESTRUCTION_APPARANT;
- 
+
             POARunnable r = new POARunnable(POARunnable.DESTROY);
             r.addParam( poa );
             ExecuteInRunnable eir1 = new ExecuteInRunnable();
@@ -829,13 +830,13 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
 
             // The POA is active.. Serailize the calls if Single threaded
             childMemory.enter(new Runnable(){ public void run(){
-															(((POAImpl)childMemory.getPortal()).getThreadPolicyStrategy()).enter(); 
-					}
-				});
+                                                            (((POAImpl)childMemory.getPortal()).getThreadPolicyStrategy()).enter();
+                    }
+                });
             //this.threadPolicyStrategy.enter();
             boolean success = the_activator().unknown_adapter(this, poaName);
             childMemory.enter(new Runnable() { public void run(){
-            										( (POAImpl)childMemory.getPortal()).getThreadPolicyStrategy().exit();}
+                                                    ( (POAImpl)childMemory.getPortal()).getThreadPolicyStrategy().exit();}
                                                                                       });
 
 

@@ -25,6 +25,7 @@ public class ThreadPoolRunnable implements Runnable{
 
     public void init(RTORBImpl rtorb, ORB orb, int stacksize, int static_threads, int dynamic_threads, short default_priority, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
         this.orb = orb;
+        this.rtorb = rtorb;
         this.stacksize = stacksize;
         this.staticThreads = static_threads;
         this.dynamicThreads = dynamic_threads;
@@ -37,6 +38,7 @@ public class ThreadPoolRunnable implements Runnable{
 
     public void init(RTORBImpl rtorb, ORB orb, int stacksize, org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allow_borrowing, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
         this.orb = orb;
+        this.rtorb = rtorb;
         this.stacksize = stacksize;
         this.lanes = lanes;
         this.allowBorrowing = allow_borrowing;

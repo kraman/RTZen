@@ -4,6 +4,7 @@ import org.omg.RTCORBA.*;
 import edu.uci.ece.zen.orb.policies.*;
 import edu.uci.ece.zen.utils.*;
 import javax.realtime.*;
+import edu.uci.ece.zen.orb.transport.iiop.AcceptorRunnable;
 
 /**
  * Implementation of the RTORB
@@ -15,15 +16,22 @@ public class RTORBImpl
         implements RTORB
 {
     private ORB orb;
+    private ORBImpl orbImpl;
     private ThreadPoolRunnable tpr;
+    private AcceptorRunnable acceptorRunnable;
 
-    public void init(ORB orb){
+
+    public void init(ORB orb, ORBImpl orbImpl){
         this.orb = orb;
+        this.orbImpl = orbImpl;
+
 
         //tpr = new ThreadPoolRunnable();
 
         try{
             tpr = (ThreadPoolRunnable)(orb.parentMemoryArea.newInstance( ThreadPoolRunnable.class ));
+            acceptorRunnable = (AcceptorRunnable)(orb.parentMemoryArea.newInstance( AcceptorRunnable.class ));
+            acceptorRunnable.init(orb,orbImpl);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -48,6 +56,8 @@ public class RTORBImpl
      * Operation create_threadpool
      */
     public int create_threadpool(int stacksize, int static_threads, int dynamic_threads, short default_priority, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
+        System.out.println("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_ CREATING THREADPOOL +_+_+_+_+_+_+_+_+_+_+_+_+_");
+        setUpAcceptor();
         tpr.init(this, orb, stacksize, static_threads, dynamic_threads, default_priority, allow_request_buffering, max_buffered_requests, max_request_buffer_size);
         return setUpThreadPool();
     }
@@ -56,8 +66,30 @@ public class RTORBImpl
      * Operation create_threadpool_with_lanes
      */
     public int create_threadpool_with_lanes(int stacksize, org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allow_borrowing, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
+        setUpAcceptor();
         tpr.init(this, orb, stacksize, lanes, allow_borrowing, allow_request_buffering, max_buffered_requests, max_request_buffer_size );
         return setUpThreadPool();
+    }
+
+    private void setUpAcceptor(){
+
+        ExecuteInRunnable r1 = new ExecuteInRunnable();
+        ExecuteInRunnable r2 = new ExecuteInRunnable();
+        ScopedMemory sm = orb.getScopedRegion();
+
+        r1.init( r2 , orb.orbImplRegion );
+        r2.init( acceptorRunnable, sm );
+        try{
+            orb.parentMemoryArea.executeInArea( r1 );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.RTORBImpl",
+                "create_threadpool",
+                "Could not create threadpool due to exception: " + e.toString()
+                );
+            System.exit(-1);
+        }
     }
 
     private int setUpThreadPool(){

@@ -39,6 +39,7 @@ public abstract class Acceptor{
 
     public TaggedProfile getProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion ){
         try{
+            System.out.println("Acceptor client region: " + clientRegion);
             ProfileRunnable runnable = (ProfileRunnable)(clientRegion.newInstance( ProfileRunnable.class ));
             runnable.init( iiopMajorVersion , iiopMinorVersion , objKey, this );
             clientRegion.executeInArea( runnable );
@@ -59,7 +60,7 @@ public abstract class Acceptor{
 
 class AcceptorLogic implements Runnable{
     Acceptor acc;
-    
+
     public AcceptorLogic( Acceptor acc ){
         this.acc=acc;
     }

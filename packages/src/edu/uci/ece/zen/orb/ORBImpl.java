@@ -45,7 +45,16 @@ public class ORBImpl{
             policyManager = (PolicyManagerImpl)(orbFacade.parentMemoryArea.newInstance( PolicyManagerImpl.class ));
             policyManager.init(orbFacade);
             rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance( RTORBImpl.class ));
-            rtorb.init(orbFacade);
+            rtorb.init(orbFacade, this);
+
+            rtorb.create_threadpool (0,//stacksize,
+                                   10,//static_threads,
+                                   0,//dynamic_threads,
+                                   (short)RealtimeThread.NORM_PRIORITY,//default_thread_priority,
+                                   false,//allow_request_buffering,
+                                   0,//max_buffered_requests,
+                                   0//max_request_buffer_size
+                                   );
         }catch( Exception e ){
             e.printStackTrace();
         }

@@ -10,7 +10,7 @@ public class AcceptorRegistry{
 
     private Vector list = new Vector();
 
-    public TaggedProfile[] getProfiles( FString objKey, MemoryArea clientArea) 
+    public TaggedProfile[] getProfiles( FString objKey, MemoryArea clientArea)
             throws IllegalAccessException,InstantiationException
     {
         TaggedProfile[] tpList = (TaggedProfile[]) clientArea.newArray(org.omg.IOP.TaggedProfile.class, list.size());
@@ -25,6 +25,10 @@ public class AcceptorRegistry{
 
         return tpList;
     }
+
+    public void addAcceptor(ScopedMemory acceptorArea){
+        list.add(acceptorArea);
+    }
 }
 
 class ARRunnable implements Runnable{
@@ -38,7 +42,7 @@ class ARRunnable implements Runnable{
 
     public void init(int ind, byte [] objKey, MemoryArea clientArea , TaggedProfile[] tpList ){
         index = ind;
-        this.ma = ma;
+        this.ma = clientArea;
         this.objKey = objKey;
         this.tpList = tpList;
     }

@@ -78,7 +78,7 @@ public class IOR
     public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID, FString objKey, MemoryArea clientArea)
             throws IllegalAccessException,InstantiationException
     {
-        System.out.println( "makeCORBAObject 1" );
+        System.out.println( "makeCORBAObject 1 -- client area: " + clientArea);
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea.newInstance(org.omg.IOP.IOR.class);
         ior.type_id = typeID;
         ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, clientArea);
