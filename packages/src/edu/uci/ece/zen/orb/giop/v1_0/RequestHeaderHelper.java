@@ -101,8 +101,10 @@ public class RequestHeaderHelper {
         if (ZenProperties.dbg) ZenProperties.logger.log("RequestHeader read -- response_expected: " + new_one.response_expected);
 
         new_one.object_key = FString.instance(new_one.object_key);
+
         //int object_key_length = istream.read_ulong();
         int object_key_length = istream.read_octet();
+
         if (ZenProperties.dbg) ZenProperties.logger.log("RequestHeader read -- ok len: " + object_key_length);
 
         new_one.object_key.read(istream, object_key_length);

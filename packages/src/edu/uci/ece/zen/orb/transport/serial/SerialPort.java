@@ -100,7 +100,7 @@ class SerialPortInputStream extends InputStream{
                 limit <<= 8;
                 limit |= tmpBuffer[2] & 0xFF;      
                 
-                System.out.println("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRREAD LIMIT: " + limit);
+                //System.out.println("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRREAD LIMIT: " + limit);
                 
             }
         }catch( IOException ioex ){
@@ -158,7 +158,7 @@ class SerialPortOutputStream extends OutputStream{
         //buffer[1] = (byte) pos;
         buffer[1] = (byte) ((pos >>> 8) & 0xFF);
         buffer[2] = (byte) (pos & 0xFF);        
-        System.out.println("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWrite POS: " + pos);
+        //System.out.println("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWrite POS: " + pos);
         if( pos > SerialPort.MAX_MESSAGE_LENGTH ){
             System.err.println( "Message is WAY TOO BIG. msg size: " + pos + " (Max supported:" + SerialPort.MAX_MESSAGE_LENGTH +")" );
             System.exit(-1);
@@ -179,8 +179,8 @@ class SerialPortOutputStream extends OutputStream{
     }
 
     public void write(byte[] buf,int start,int len) throws java.io.IOException{
-        ZenProperties.logger.log("-------------------------Serial port: write 2 " );
-        System.out.println(buf.length + " " + start + " " + buffer.length + " " + len);
+        //ZenProperties.logger.log("-------------------------Serial port: write 2 " );
+        //System.out.println(buf.length + " " + start + " " + buffer.length + " " + len);
         System.arraycopy( buf , start , buffer , pos , len );
         pos += len;
     }

@@ -340,8 +340,20 @@ public class ReadBuffer {
 
     public byte readByte() {
         checkReadPositionLimit(1);
+        /*
+        if(buffers != null){
+            ZenProperties.logger.log("RB read -- not null");
+            ZenProperties.logger.log("RB read " + buffers.size());
+        }
+        */
         //if (!inUse) System.out.println("IN USE:" + inUse);
-        byte[] curBuf = (byte[]) buffers.elementAt((int) (position / 1024));
+        byte[] curBuf = curBuf = (byte[]) buffers.elementAt((int) (position / 1024));
+        /*
+        try{
+         curBuf = (byte[]) buffers.elementAt((int) (position / 1024));
+        }catch(Exception e){
+            e.printStackTrace();   
+        }*/
         byte ret = curBuf[(int) (position % 1024)];
         position++;
         return ret;

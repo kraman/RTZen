@@ -35,7 +35,7 @@ public final class GIOPMessageFactory {
             throws java.io.IOException {
         ReadBuffer buffer = ReadBuffer.instance();
         buffer.init();
-
+edu.uci.ece.zen.utils.Logger.printMemStatsImm(77777770);
         GIOPHeaderInfo mainMsgHdr = (GIOPHeaderInfo) GIOPHeaderInfoHelper
                 .instance();
 
@@ -186,6 +186,7 @@ public final class GIOPMessageFactory {
         if(ZenProperties.devDbg) {
             ZenProperties.logger.log("parse stream messageId:"+ret.getRequestId());
         }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(77777771);
         return ret;
     }
 
@@ -326,7 +327,7 @@ public final class GIOPMessageFactory {
         headerInfo.messageSize <<= 8;
         headerInfo.messageSize |= header[2] & 0xFF;
 
-        System.out.println("header: " + edu.uci.ece.zen.utils.FString.byteArrayToString(header));
+        //System.out.println("header: " + edu.uci.ece.zen.utils.FString.byteArrayToString(header));
 
         //System.out.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM: " + headerInfo.messageSize);
     /*

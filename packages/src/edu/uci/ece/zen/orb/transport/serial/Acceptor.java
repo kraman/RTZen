@@ -32,9 +32,10 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
 
     protected void accept() {
         try {
-            synchronized(SerialPort.class){
+            
             System.err.println( "]]]]]]]]]]]]]]]]]]]]]]]]]Serial transport: accept() -- getting lock" );
-            sock.lock.acquire();            
+            sock.lock.acquire();    
+            synchronized(SerialPort.class){
             Transport t = new Transport(orb, orbImpl, sock);            
             registerTransport(t);           
             orb.getConnectionRegistry().putConnection((long)-TAG_SERIAL.value,(ScopedMemory) RealtimeThread.getCurrentMemoryArea());

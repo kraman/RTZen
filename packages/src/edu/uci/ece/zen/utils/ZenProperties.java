@@ -15,14 +15,14 @@ public final class ZenProperties {
      */
     public static final String installDir = "";
 
-    public static final boolean dbg = true;
+    public static final boolean dbg = false;
 
     public static final boolean devDbg = false;
 
     public static final boolean dbgThreadStack = false;
 
     /* set to true to allow printing about memory usage */
-    public static final boolean memDbg = false;
+    public static final boolean memDbg = true;
     public static final boolean memDbg1 = false;
     public static final int MEM_STAT_COUNT = 1;
 
