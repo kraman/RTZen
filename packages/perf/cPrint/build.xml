@@ -6,7 +6,7 @@
     <property name="package.dir" value="${zen.srcdir}/perf/cPrint"/>
     <property name="idl.src" value="cPrint.idl"/>
 
-    <target name="all" depends="compile, jRate"/>
+    <target name="all" depends="compile, compileC, jRate"/>
 
     <target name="openorb">
        <antcall target="idl">
@@ -40,7 +40,7 @@
       </javac>
 
       <jar 
-        jarfile="${zen.libdir}/perf_world.jar" 
+        jarfile="${zen.libdir}/perf_cPrint.jar" 
         basedir="${zen.classdir}" 
         includes="perf/cPrint/**"
         />
