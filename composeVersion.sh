@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CheckSVN=`svn --version | grep not`
+CheckSVN=`svn --version | grep version`
 RevDate="Unknown date"
 RevNum=-1
 
@@ -12,7 +12,7 @@ else
 fi
 
 DevJVM=$1
-echo "Building RTZen version ${RevNum} , Snapshot from ${RevDate}";
+echo "Building RTZen revision ${RevNum} , Snapshot from ${RevDate}";
 echo "RTZen will be compiled for the ${DevJVM} platform";
 
 echo "
