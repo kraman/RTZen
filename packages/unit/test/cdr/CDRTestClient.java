@@ -62,15 +62,18 @@ public class CDRTestClient extends RealtimeThread
 		ShortHolder shoutVal = new ShortHolder((short)101);
 	    short shretVal = stub.echoShort( shinVal, shoutVal);
 
-	    if(shretVal == 100){
-			System.out.println("return value wrong in echoShort()");
-		}
+	    if(shretVal != 100){
+		    System.out.println("return value wrong in echoShort()");
+		    System.out.println("The expected value is 100 and the actual value is "+shretVal);
+	    }
 
-		if(shoutVal.value == 102){
-			System.out.println("out value wrong in echoShort()");
-		}
-    }
-/*
+	    if(shoutVal.value != 102){
+		    System.out.println("out value wrong in echoShort()");
+		    System.out.println("The expected value is 100 and the actual value is "+shoutVal);
+
+	    }
+	}
+	/*
     public void testLong(){
 
 		int iinVal = 1000000;
