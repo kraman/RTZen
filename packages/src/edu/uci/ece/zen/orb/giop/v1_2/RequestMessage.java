@@ -14,10 +14,10 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
         super();
 
         // Default is no response expected, change if response is expected
-        byte responseFlag = 0x00; 
+        byte responseFlag = 0x00;
         if (clr.responseExpected) {
             // meaning of 0x03 is on page 15-36 of CORBA v3.0 spec
-            responseFlag = 0x03; 
+            responseFlag = 0x03;
         }
         org.omg.GIOP.TargetAddress targetAddress = new org.omg.GIOP.TargetAddress();
         targetAddress.object_key(clr.objectKey);
@@ -28,7 +28,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
                                         edu.uci.ece.zen.orb.giop.type.RequestMessage.reserved,
                                         targetAddress,
                                         clr.operation,
-                                        new org.omg.IOP.ServiceContext[0]
+                                        clr.contexts
                                         );
     }
 
