@@ -1,5 +1,3 @@
-<!-- $Id: build.xml,v 1.2 2004/02/25 08:15:16 kraman Exp $ -->
-
 <!--+
     |
     | This is the main ANT file for ZEN. Please make sure that you have read
@@ -10,7 +8,6 @@
     | File: build.xml
     | Author: Angelo Corsaro <corsaro@doc.ece.uci.edu>
     | Author: Krishna Raman
-    | Revision: $Date: 2004/02/25 08:15:16 $
     |
     +-->
 
@@ -22,7 +19,6 @@
       <ant antfile="configure.xml"/>
       <property file="zen-build-bootstrap.properties"/>
       <property file="zen-build.properties"/>
-      <property file="openorb.properties"/>
       <available file="TrackSize.class" property="track_size_prop" />
       <antcall target="version_update"/>
    </target>
@@ -30,10 +26,6 @@
    <target name="packages">
       <ant antfile="${zen.srcdir}/build.xml"/>
       <antcall target="track_size"/>
-   </target>
-
-   <target name="clover" depends="init">
-      <ant antfile="${zen.srcdir}/build.xml" target="clover"/>
    </target>
 
    <target name="track_size" if="track_size_prop">
@@ -108,34 +100,11 @@ public class VersionStamp{
         </java>
     </target>
 
-    <target name="changelog">
-        <property name="changelog.name" value="ChangeLog"/>
-        <cvschangelog destfile="${changelog.name}.xml" daysinpast="7">
-            <user userid="tharmon" displayname="Trevor Harmon"/>
-            <user userid="nshankar" displayname="Nishanth Shankaran"/>
-            <user userid="bmiller" displayname="Bruce Miller"/>
-            <user userid="kraman" displayname="Krishna Raman"/>
-            <user userid="mpanahi" displayname="Mark Panahi"/>
-            <user userid="spart" displayname="Spart Arguello"/>
-            <user userid="pmartini" displayname="Peter Martini"/>
-            <user userid="lcui" displayname="Lin Cui"/>
-            <user userid="hqliu" displayname="Leo Liu"/>
-            <user userid="malli" displayname="Mallikarjuna Reddy"/>
-        </cvschangelog>
-        <style in="${changelog.name}.xml" out="${changelog.name}.html" style="${ant.home}/etc/changelog.xsl">
-            <param name="title" expression="Zen ChangeLog"/>
-            <param name="module" expression="Zen"/>
-            <param name="cvsweb" expression="http://doc.ece.uci.edu/cvs/viewcvs.cgi/"/>
-        </style>
-    </target>
-
-
     <target name="clean" depends="init">
       <property file="zen-build-bootstrap.properties"/>
       <property file="zen-build.properties"/>
       <delete dir="docs/api"/>
       <ant antfile="${zen.srcdir}/build.xml" target="clean"/>
-      <!-- <ant antfile="${zen.gendir}/build.xml" target="clean"/> -->
       <delete dir="classes"/>
       <delete dir="lib"/>
 

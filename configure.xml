@@ -1,5 +1,3 @@
-<!-- $Id: configure.xml,v 1.1 2003/10/16 22:06:40 kraman Exp $ -->
-
 <!--+
     |
     | This file contains the ZEN XML configuration script. ZEN uses ANT
@@ -30,6 +28,14 @@
         <pathconvert targetos="unix" property="new.zen.basedir" refid="zen.os.base"/>
         <property name="config-file" value="zen-build-bootstrap.properties"/>
 
+        <!-- Find out which IDL compiler was selected and set a property for it -->
+        <condition property="zen.idl.compiler">
+            <equals arg1="${idl.compiler}" arg2="zen"/>
+        </condition>
+        <condition property="openorb.idl.compiler">
+            <equals arg1="${idl.compiler}" arg2="openorb"/>
+        </condition>
+
         <condition property="zen.rtbootclasspath" value="${timesys_ri_install}/lib/foundation.jar">
             <equals arg1="${zen.build.runtime}" arg2="timesys_ri"/>
         </condition>
@@ -46,6 +52,10 @@
 
         <condition property="zen.rtbootclasspath" value="${OVM_install}/src/syslib/user/ovm_rt_user.jar">
             <equals arg1="${zen.build.runtime}" arg2="OVM"/>
+        </condition>
+
+        <condition property="zen.rtbootclasspath" value="">
+            <equals arg1="${zen.build.runtime}" arg2="jvm"/>
         </condition>
 
         <property name="zen.win.exec" value="zen.bat"/>
@@ -73,7 +83,7 @@
             value="-Xbootclasspath/p:${zen.classpath} -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"/>
     </target>
 
-    <target name="all" depends="init, createConfigFile, body-zen, body-openorb, createDirectories, createScripts"/>
+    <target name="all" depends="init, createConfigFile, body-openorb, createDirectories, createScripts"/>
 
     <target name="createConfigFile">
        <echo file="${config-file}">
@@ -123,35 +133,18 @@ zen.jvm.properties = ${zen.jvm.properties}
 
 
    <target name="body-openorb" if="openorb.idl.compiler">
+   		<property name="openorb.basedir" value="${new.zen.basedir}/OpenORB-1.3.1"/>
+   		<property name="zen.srcdir" value="${new.zen.basedir}/packages"/>
         <echo  file="${config-file}" append="yes">
-#########################
-# IDL Compiler Selected #
-#########################
-openorb.gendir = ${zen.srcdir}/openorb-generated
+#################################
+# OpenORB IDL Compiler Selected #
+#################################
 idl2java.compiler = org.openorb.compiler.IdlCompiler
-openorb.idl.compiler
-idl.flag=-d
-openorb.basedir = ${new.zen.basedir}/OpenORB-1.3.1
-openorb.idl.dir = ${openorb.basedir}/idl
-openorb.class.path = ${zen.classpath}${path.separator}${openorb.basedir}/lib/avalon-framework.jar${path.separator}${openorb.basedir}/lib/excalibur-configuration.jar${path.separator}${openorb.basedir}/lib/junit.jar${path.separator}${openorb.basedir}/lib/logkit.jar${path.separator}${openorb.basedir}/lib/openorb-1.3.1.jar${path.separator}${openorb.basedir}/lib/openorb_tools-1.3.1.jar${path.separator}${openorb.basedir}/lib/xerces.jar
-classpath = ${openorb.class.path}
+idl.gendir = ${zen.srcdir}/openorb-generated
+idl.dir = ${zen.srcdir}/idl/omg/openorb-idl/idl
+idl.classpath = ${zen.classpath}${path.separator}${openorb.basedir}/lib/avalon-framework.jar${path.separator}${openorb.basedir}/lib/excalibur-configuration.jar${path.separator}${openorb.basedir}/lib/junit.jar${path.separator}${openorb.basedir}/lib/logkit.jar${path.separator}${openorb.basedir}/lib/openorb-1.3.1.jar${path.separator}${openorb.basedir}/lib/openorb_tools-1.3.1.jar${path.separator}${openorb.basedir}/lib/xerces.jar
         </echo>
     </target>
-
-
-    <target name="body-zen" if="zen.idl.compiler">
-        <echo  file="${config-file}" append="yes">
-##########################
-# IDL Compiler Selected  #
-##########################
-
-idl2java.compiler = edu.uci.ece.zen.xidl.Idl
-zen.idl.compiler
-idl.flag=-o
-classpath = ${zen.classpath}
-        </echo>
-    </target>
-
 
    <property name="args" value="$"/>
 

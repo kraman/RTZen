@@ -1,11 +1,13 @@
 <project name="Zen Source Packages" default="all" basedir="./..">
-   <property file="zen-build-bootstrap.properties"/>
-   <property file="zen-build.properties"/>
+    <property file="zen-build-bootstrap.properties"/>
+    <property file="zen-build.properties"/>
 
     <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"/>
     <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
 
     <import file="property_processor.xml"/>
+
+    <property name="idldepend.dir" value="${zen.anttaskdir}/idldepend"/>
 
     <patternset id="sources" >
         <!--*** OMG Sources ***-->
@@ -79,6 +81,14 @@
     <target name="all" depends="idl, compile, lib, jRate, naming_service, compile_perf"/>
 
     <target name="idl">
+        <!-- Compile the idldepend Ant task -->
+        <ant
+            antfile="${idldepend.dir}/build.xml"
+            dir="${idldepend.dir}"
+            target="compile">
+            <property name="build.dir" value="${zen.classdir}"/>
+        </ant>
+
         <echo message="Compiling IDL files"/>
         <ant antfile="${zen.srcdir}/idl/build.xml"/>
     </target>
@@ -155,6 +165,9 @@
     </target>
 
     <target name="clean">
+        <!-- Clean the idldepends Ant task -->
+        <ant antfile="${idldepend.dir}/build.xml" dir="${idldepend.dir}" target="clean"/>
+
         <echo message="Removing generated directory all its contents"/>
         <delete failonerror="false" dir="${zen.srcdir}/generated"/>
     </target>

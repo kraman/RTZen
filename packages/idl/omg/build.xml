@@ -1,15 +1,23 @@
-<!-- $Id: build.xml,v 1.1 2003/10/16 22:06:40 kraman Exp $ -->
+<project default="idl">
 
-<project name="Zen ORB" default="all" basedir="../../..">
+	<import file="../../../init.xml"/>
 
-   <property file="zen-build-bootstrap.properties"/>
-   <property file="zen-build.properties"/>
+	<target name="idl">
+		<mkdir dir="${zen.gendir}"/>
+		<idlc
+			verbose="quiet"
+			checkAll="true"
+			compiler="${idl.compiler}"
+			targetdir="${zen.gendir}"
+			file="${idl.dir}/Corba.idl">
+			<include>
+				<pathelement path="${idl.dir}"/>
+			</include>
+		</idlc>
+	</target>
 
    <!--<target name="all" depends="corba,giop,iiop,naming,messaging,imr"/>-->
-   <target name="all" depends="idlCheck"/>
-
-   <target name="idlCheck" depends="zen, openorb"/>
-
+<!--
    <target name="zen" if="zen.idl.compiler">
        <echo message="Using Zen's IDL compiler"/>
        <antcall target="imr">
@@ -20,7 +28,7 @@
        </antcall>
    </target>
 
-   <target name="openorb" if="openorb.idl.compiler">
+   <target name="idl">
        <echo message="Using OpenOrb's IDL compiler"/>
        <antcall target="Corba">
            <param name="idl.flags" value="-silence -all -d"/>
@@ -36,39 +44,41 @@
             <arg line="${idl.flags} ${gendir} ${idl.dir}/giop.idl"/>
         </java>
     </target>
-   
+
     <target name="iiop">
          <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
             <arg line="${idl.flags} ${gendir} ${idl.dir}/iiop.idl"/>
         </java>
     </target>
- 
+
     <target name="naming">
          <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
             <arg line="${idl.flags} ${gendir} ${idl.dir}/naming.idl"/>
         </java>
     </target>
- 
+
     <target name="messaging">
          <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
             <arg line="${idl.flags} ${gendir} ${idl.dir}/messaging.idl"/>
         </java>
     </target>
- 
+
     <target name="imr" depends="giop, iiop, naming, messaging">
          <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
             <arg line="${idl.flags} ${gendir} ${idl.dir}/imr.idl"/>
         </java>
     </target>
-    
+
     <target name="Corba">
          <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
              <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
         </java>
     </target>
-
+-->
     <target name="clean">
       <delete dir="${zen.gendir}/org/omg/CORBA/GIOP"/>
       <delete dir="${zen.gendir}/org/omg/IMR"/>
    </target>
+
 </project>
+
