@@ -37,6 +37,7 @@ module unit{
             boolean echoBoolean( in boolean inVal ,  out boolean outVal);
             string echoString( in string inVal ,  out string outVal);
             octet echoOctet( in octet inVal ,  out octet outVal ); 
+            Object echoObject( in Object inVal, out Object outVal);
             
             octetSeq echoOctetSeq ( in octetSeq inVal, out octetSeq outVal );
             strSeq echoStructSeq ( in strSeq inVal, out strSeq outVal );       
