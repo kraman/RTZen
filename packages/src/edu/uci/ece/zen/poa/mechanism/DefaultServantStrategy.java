@@ -225,7 +225,7 @@ public final class DefaultServantStrategy extends RequestProcessingStrategy
         // "");
         // if (ZenProperties.dbg)
         // ZenProperties.logger.log(pimpl.poaCurrent.get() + "");
-
+        /*
         try
         {
             if (pimpl.poaCurrent.get() == null)
@@ -236,6 +236,7 @@ public final class DefaultServantStrategy extends RequestProcessingStrategy
         }
 
         ((POACurrent) pimpl.poaCurrent.get()).init(poa, okey, myServant);
+        */
 
         CDROutputStream reply = null;
 

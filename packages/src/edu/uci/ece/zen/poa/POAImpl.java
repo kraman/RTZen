@@ -103,7 +103,7 @@ public class POAImpl {
 
     int threadPoolId = 0; // this default value means: "use the same thread pool of RootPOA (0)"
     
-    public ThreadLocal poaCurrent; //TODO It cannot be used.
+    //public ThreadLocal poaCurrent; //TODO It cannot be used.
         
 
     // --- POA Cached Objects ---
@@ -176,11 +176,11 @@ public class POAImpl {
         this.parent = parent;
         this.manager = manager;
         this.tpId = 0;
-        this.poaCurrent = new ThreadLocal();
-        this.poaCurrent.get();
         ZenProperties.logger.log("POAImpl init 2");
 
-        this.poaCurrent = new ThreadLocal(); //TODO It cannot be used.
+        //this.poaCurrent = new ThreadLocal(); //TODO It cannot be used.
+        //this.poaCurrent.get();
+
         ZenProperties.logger.log("POAImpl init 2");
 
         try

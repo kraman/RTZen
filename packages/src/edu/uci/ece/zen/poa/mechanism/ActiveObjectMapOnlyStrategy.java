@@ -157,7 +157,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         // if (ZenProperties.dbg) ZenProperties.logger.log(pimpl + "");
         // if (ZenProperties.dbg) ZenProperties.logger.log(pimpl.poaCurrent + "");
         // if (ZenProperties.dbg) ZenProperties.logger.log(pimpl.poaCurrent.get() + "");
-
+        /*
         try {
             if (pimpl.poaCurrent.get() == null) 
                 pimpl.poaCurrent.set(poa.poaMemoryArea.newInstance(POACurrent.class));
@@ -166,6 +166,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         }
 
         ((POACurrent) pimpl.poaCurrent.get()).init(poa, okey, myServant);
+        */
 
         CDROutputStream reply = null;
         synchronized (mutex) {
