@@ -66,7 +66,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     public CDROutputStream() {
     }
 
-    public void init(edu.uci.ece.zen.orb.ORB orb) {
+    public void init(edu.uci.ece.zen.orb.ORB orb ) {
         buffer = WriteBuffer.instance();
         buffer.init();
         buffer.setEndian(false);
@@ -76,6 +76,11 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     public WriteBuffer getBuffer() {
         return buffer;
     }
+
+    public void setAlignment( boolean enable ){
+        buffer.setAlignment( enable );
+    }
+    
 /*
     public void printWriteBuffer() {
         buffer.printBuffer();

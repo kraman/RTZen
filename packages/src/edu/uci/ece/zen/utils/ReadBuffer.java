@@ -9,17 +9,19 @@ public class ReadBuffer {
     private static Queue bufferCache;
 
     private static int BYTE = 1;
-
     private static int SHORT = 2;
-
     private static int LONG = 4;
-
     private static int LONGLONG = 8;
     private static int numFree = 0; //just to debug the number of free buffers
+    private boolean enableAlignment = true;
 
     private static Object [] vectorArgTypes;
     private static java.lang.reflect.Constructor vectorConstructor;
     private static int maxCap = 10;
+
+    public void setAlignment( boolean align ){
+        enableAlignment = align;
+    }
 
     static {
         try {
@@ -110,6 +112,7 @@ public class ReadBuffer {
         peekString = null;
         peekStringPos = -1;
         buffers.removeAllElements();
+        enableAlignment = true;
     }
 
     public void init(Vector buffers, int limit, int capacity) {
@@ -121,6 +124,7 @@ public class ReadBuffer {
         position = 0;
         this.capacity = capacity;
         this.limit = limit;
+        enableAlignment = true;
     }
 
     public void resetMessagePosition() {
@@ -312,23 +316,11 @@ public class ReadBuffer {
     }
 
     private void pad(int boundry) {
-        int extraBytesUsed = (int) ((position + 12) % boundry); // The CDR
-        // alignment
-        // should count
-        // from the
-        // beginning of
-        // GIOP header.
-        // But the GIOP
-        // header is
-        // excluded in
-        // CDRInputStream
-        // position. So
-        // 12 must be
-        // added. Yue
-        // Zhang on
-        // 09.22pm,
-        // 08/01/2004
+        if( !enableAlignment )
+            return;
 
+        int extraBytesUsed = (int) ((position + 12) % boundry); 
+        // The CDR alignment should count from the beginning of GIOP header.  But the GIOP header is excluded in CDRInputStream position. So 12 must be added. Yue Zhang on 09.22pm, 08/01/2004 
         if (extraBytesUsed != 0) {
             int incr = boundry - extraBytesUsed;
             checkReadPositionLimit(incr);

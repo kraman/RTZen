@@ -11,16 +11,18 @@ public class WriteBuffer {
     private static Queue bufferCache;
 
     private static int BYTE = 1;
-
     private static int SHORT = 2;
-
     private static int LONG = 4;
-
     private static int LONGLONG = 8;
 
     private static Object [] vectorArgTypes;
     private static java.lang.reflect.Constructor vectorConstructor;
     private static int maxCap = 10;
+    private static boolean enableAllignment = true;
+
+    public void setAlignment( boolean enable ){
+        enableAllignment = enable;
+    }
 
     static {
         try {
@@ -109,10 +111,10 @@ public class WriteBuffer {
     public void init() {
         position = limit = capacity = 0;
         buffers.removeAllElements();
+        enableAllignment = true;
     }
 
     public void free() {
-
         if(!inUse){
             ZenProperties.logger.log(Logger.WARN, WriteBuffer.class,
                 "free",
@@ -189,6 +191,8 @@ public class WriteBuffer {
     }
 
     private void pad(int boundry) {
+        if( !enableAllignment )
+            return;
         int extraBytesUsed = (int) (position % boundry);
 
         if (extraBytesUsed != 0) {
