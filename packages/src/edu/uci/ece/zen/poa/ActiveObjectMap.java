@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: ActiveObjectMap.java,v 1.1 2003/11/26 22:26:17 nshankar Exp $
+ * $Id: ActiveObjectMap.java,v 1.2 2004/03/11 19:31:34 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa;
@@ -12,7 +12,7 @@ package edu.uci.ece.zen.poa;
  * methods in the POA, two hash tables map ObjectIDs, Servants into a HashTable.
  * Here are some of the design/implementation notes
  *
- * 1) ObjectIds (represented as a byte-array) are not used directly for
+ * 1) ObjectIds (represented as a byte-array) are not used directly for 
  * hashing because the equalsTo method on arrays compares the references
  * and not the contents.  Hence we wrap the byte-array into an ObjectID
  * that implements the equals-to method the right way.  THe equalTo and 
@@ -35,7 +35,7 @@ public interface ActiveObjectMap {
      * @param key ObjectID that wraps the ObjectId for the Servant
      * @param map Map entry asspciated with this Object Id
      */
-    void add(byte[]key, POAHashMap map);
+    void add(byte[] key, POAHashMap map);
 
     /**
      * <code> getObjectID </code> returns the ObjectID associated with the
@@ -48,7 +48,7 @@ public interface ActiveObjectMap {
      * is only a single
      * Map present.
      */
-    byte[] getObjectID(org.omg.PortableServer.Servant st)
+    byte [] getObjectID(org.omg.PortableServer.Servant st)
         throws org.omg.PortableServer.POAPackage.ServantNotActive; 
 
     /**
@@ -67,7 +67,7 @@ public interface ActiveObjectMap {
      * @param key the ObjectID associated with the Servant.
      * @return Servant if the key is associated with a Servant, null otherwise
      */
-    org.omg.PortableServer.Servant getServant( byte[] key);
+    org.omg.PortableServer.Servant getServant(byte[] key);
 
     /**
      * <code> servantPresent </code> checks if there is a Servant Associated

@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: TransientStrategy.java,v 1.2 2004/02/25 06:12:46 nshankar Exp $
+ * $Id: TransientStrategy.java,v 1.4 2004/03/11 19:31:37 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;
@@ -7,6 +7,7 @@ package edu.uci.ece.zen.poa.mechanism;
 
 import edu.uci.ece.zen.poa.ActiveDemuxLoc;
 import edu.uci.ece.zen.poa.ActiveDemuxLocOperations;
+import edu.uci.ece.zen.poa.ObjectKey;
 
 public final class TransientStrategy extends LifespanStrategy {
 
@@ -44,7 +45,7 @@ public final class TransientStrategy extends LifespanStrategy {
     * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
     */
 
-    public edu.uci.ece.zen.poa.ObjectKey create(String path_name,
+    public byte[]  create(String path_name,
                                                 byte[] oid,
                                                 ActiveDemuxLoc index) {
           System.out.println("ok no servant loc here ");
@@ -61,7 +62,7 @@ public final class TransientStrategy extends LifespanStrategy {
     * @param servLoc servant index
     * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
     */
-    public edu.uci.ece.zen.poa.ObjectKey create(String path_name,
+    public byte[] create(String path_name,
             byte[] oid,
             ActiveDemuxLoc poaLoc,
             int index, int count) {
@@ -77,9 +78,9 @@ public final class TransientStrategy extends LifespanStrategy {
     * @param ok object Key
     * @throws org.omg.CORBA.OBJECT_NOT_EXIST
     */
-    public void validate(edu.uci.ece.zen.poa.ObjectKey ok)
+    public void validate(byte[] ok)
         throws org.omg.CORBA.OBJECT_NOT_EXIST {
-        if (!ok.compareTimeStamps(this.timeStamp) && ok.isPersistent()) {
+        if (! ObjectKey.compareTimeStamps(ok, this.timeStamp) && ObjectKey.isPersistent(ok) ) {
 
             // if (this.value != ok.timeStamp())
             throw new org.omg.CORBA.OBJECT_NOT_EXIST(2,

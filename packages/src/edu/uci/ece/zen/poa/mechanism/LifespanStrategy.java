@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: LifespanStrategy.java,v 1.2 2004/02/25 06:12:46 nshankar Exp $
+ * $Id: LifespanStrategy.java,v 1.3 2004/03/11 19:31:37 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;
@@ -28,10 +28,10 @@ abstract public class LifespanStrategy {
     public static String ephemeral = "poa.ephemeral";
 
     // -- Initialization Code ---
-    static {
+   /* static {
         LifespanStrategy.persistentStrategy = (PersistentStrategy)
                 POAPolicyFactory.createPolicy(ZenProperties.getProperty(LifespanStrategy.eternal));
-    }
+    }*/
 
     /**
      * <code> init </code> creates either a Persistent/Transient Strategy
@@ -41,15 +41,15 @@ abstract public class LifespanStrategy {
      */
     public static LifespanStrategy init(org.omg.CORBA.Policy[] policy) {
 
-        if (Util.useTransientPolicy(policy)) { 
+        //if (Util.useTransientPolicy(policy)) {
             return (LifespanStrategy) POAPolicyFactory.createPolicy(ZenProperties.getProperty(LifespanStrategy.ephemeral));
-        }
-        return LifespanStrategy.persistentStrategy;
+       // }
+        //return LifespanStrategy.persistentStrategy;
     }
 
     /**
      * <code> timeStamp </code> returns the Time Stamp associated in the ObjectKey.
-     *  
+     *
      */
 
     abstract public long timeStamp();
@@ -62,11 +62,11 @@ abstract public class LifespanStrategy {
      * @param poaLoc ActiveDemuxLoc
      */
 
-    abstract public edu.uci.ece.zen.poa.ObjectKey create(String path_name,
+    abstract public byte[] create(String path_name,
             byte[] oid,
             ActiveDemuxLoc poaLoc);
 
-    abstract public edu.uci.ece.zen.poa.ObjectKey create(String path_name,
+    abstract public byte[]  create(String path_name,
             byte[] oid,
             ActiveDemuxLoc poaLoc,
             int index, int count);
@@ -79,10 +79,10 @@ abstract public class LifespanStrategy {
      * @exception org.omg.CORBA.OBJECT_NOT_EXISTS if the test fails.
      */
     
-    abstract public void validate(edu.uci.ece.zen.poa.ObjectKey objectKey)
+    abstract public void validate(byte[] objectKey)
         throws org.omg.CORBA.OBJECT_NOT_EXIST;
 
     // --Persistent Strategy Singleton ---
-    protected static PersistentStrategy persistentStrategy;
+//    protected static PersistentStrategy persistentStrategy;
 }
 

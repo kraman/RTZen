@@ -1,20 +1,48 @@
 /* --------------------------------------------------------------------------*
- * $Id: POAHashMap.java,v 1.1 2003/11/26 22:26:23 nshankar Exp $
+ * $Id: POAHashMap.java,v 1.2 2004/03/11 19:31:34 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 
 package edu.uci.ece.zen.poa;
 
 import javax.realtime.*;
+import edu.uci.ece.zen.utils.*;
+import java.util.Properties;
+
+
+
+
+
 
 public class POAHashMap {
+	private static Queue unusedFacades;
+    	public static void init()
+    	{
 
-    public POAHashMap(byte[] oid,
+
+            //Set up Max No of servants
+            int numFacades = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.maxNumServants" , "1" ) );
+            unusedFacades = new Queue();;
+            for( int i=0;i<numFacades;i++ )
+                unusedFacades.enqueue( new POAHashMap() );
+
+    }
+
+    public static POAHashMap initialize(byte[] oid,
             org.omg.PortableServer.Servant servant) {
+
+            POAHashMap retVal =  (POAHashMap) unusedFacades.dequeue();
+
              if(MemoryArea.getMemoryArea(servant) instanceof ScopedMemory)
-			this.servantMemory = (ScopedMemory)MemoryArea.getMemoryArea(servant);
-              else this.servant = servant;
-	      this.objId = oid;
+			retVal.servantMemory = (ScopedMemory)MemoryArea.getMemoryArea(servant);
+              else retVal.servant = servant;
+	      retVal.objId = oid;
+              return retVal;
+    }
+
+    public static void enqueue( POAHashMap ret)
+    {
+    	unusedFacade.enqueue(ret);
     }
 
     /**

@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: ServantRetentionStrategy.java,v 1.1 2003/11/26 22:29:02 nshankar Exp $
+ * $Id: ServantRetentionStrategy.java,v 1.2 2004/03/11 19:31:37 nshankar Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
@@ -27,11 +27,11 @@ public abstract class ServantRetentionStrategy {
 
     // --- Initialization Code ----
 
-    static {
+    /*static {
         ServantRetentionStrategy.nonRetainStrategy = (NonRetainStrategy)
                 POAPolicyFactory.createPolicy(ZenProperties.getProperty(ServantRetentionStrategy.nonRetain));
 
-    }
+    }*/
     
     /**
      * <code> init </code> builds the appropriate RetentionStrategy based on the
@@ -45,16 +45,16 @@ public abstract class ServantRetentionStrategy {
     public static ServantRetentionStrategy init(
             org.omg.CORBA.Policy[] policy,
             IdUniquenessStrategy uniquenessStrategy) {
-        if (Util.useRetainPolicy(policy)) {
+       // if (Util.useRetainPolicy(policy)) {
 
             RetainStrategy retain;
 
             retain = (RetainStrategy) POAPolicyFactory.createPolicy(ZenProperties.getProperty(ServantRetentionStrategy.retain));
             retain.initialize(uniquenessStrategy);
             return retain;
-        } else {
-            return ServantRetentionStrategy.nonRetainStrategy;
-        }
+        //} else {
+           // return ServantRetentionStrategy.nonRetainStrategy;
+        //}
     }
 
     /**
@@ -160,6 +160,6 @@ public abstract class ServantRetentionStrategy {
     public static final int NON_RETAIN = 1;
 
     // ---Non RetainStrategy Singleton ---
-    private static NonRetainStrategy nonRetainStrategy;
+    //private static NonRetainStrategy nonRetainStrategy;
 }
 

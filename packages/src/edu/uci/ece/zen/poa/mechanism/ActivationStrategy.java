@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: ActivationStrategy.java,v 1.1 2003/11/26 22:28:47 nshankar Exp $
+ * $Id: ActivationStrategy.java,v 1.2 2004/03/11 19:31:37 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;
@@ -27,8 +27,8 @@ public abstract class ActivationStrategy {
     static {
         ActivationStrategy.implicitActivation = (ImplicitActivationStrategy)
                 POAPolicyFactory.createPolicy(ZenProperties.getProperty(ActivationStrategy.implicit));
-        ActivationStrategy.noImplicitActivation = (ExplicitActivationStrategy)
-                POAPolicyFactory.createPolicy(ZenProperties.getProperty(ActivationStrategy.explicit));
+        //ActivationStrategy.noImplicitActivation = (ExplicitActivationStrategy)
+           //     POAPolicyFactory.createPolicy(ZenProperties.getProperty(ActivationStrategy.explicit));
     }
 
 /**
@@ -43,19 +43,19 @@ public abstract class ActivationStrategy {
             ServantRetentionStrategy retentionStrategy)
         throws org.omg.PortableServer.POAPackage.InvalidPolicy {
 
-        if (Util.useImplicitActivationPolicy(policy)) {
-            try {
+        //if (Util.useImplicitActivationPolicy(policy)) {
+           // try {
                 // Check if the other policies are Retain and System Id
-                retentionStrategy.validate(ServantRetentionStrategy.RETAIN);
-                assignmentStrategy.validate(IdAssignmentStrategy.SYSTEM_ID);
+              //  retentionStrategy.validate(ServantRetentionStrategy.RETAIN);
+                //assignmentStrategy.validate(IdAssignmentStrategy.SYSTEM_ID);
 
                 return ActivationStrategy.implicitActivation;
-            } catch (Exception ex) {
-                throw new org.omg.PortableServer.POAPackage.InvalidPolicy();
-            }
-        }
+            //} catch (Exception ex) {
+               // throw new org.omg.PortableServer.POAPackage.InvalidPolicy();
+            //}
+        //}
 
-        return ActivationStrategy.noImplicitActivation;
+        //return ActivationStrategy.noImplicitActivation;
     }
 
     public abstract boolean validate(int name);
@@ -66,7 +66,7 @@ public abstract class ActivationStrategy {
 
     // --- Singleton references ---
     private static ImplicitActivationStrategy implicitActivation;
-    private static ExplicitActivationStrategy noImplicitActivation;
+    //private static ExplicitActivationStrategy noImplicitActivation;
 
 }
 

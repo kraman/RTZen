@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: DualMap.java,v 1.2 2004/02/25 06:12:43 nshankar Exp $
+ * $Id: DualMap.java,v 1.3 2004/03/11 19:31:34 nshankar Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa;
 
@@ -39,7 +39,6 @@ public class DualMap implements ActiveObjectMap {
      */
 
     public void add(byte[] key, POAHashMap map) {
-    	//System.out.println("Ok adding to the list");
         mapByObjectIDs.put(key, map);
         mapByServants.put(map.getServant(), key);
     }
@@ -74,9 +73,6 @@ public class DualMap implements ActiveObjectMap {
      * @return Servant
      */
     public org.omg.PortableServer.Servant getServant(byte[] key) {
-    	//System.out.println("Ok getting to the list");
-
-        //System.out.println("Ok getting from the dual to the list");
         return ((POAHashMap) mapByObjectIDs.get(key)).getServant();
     }
 
@@ -107,6 +103,8 @@ public class DualMap implements ActiveObjectMap {
         if (key instanceof byte[]) {
             org.omg.PortableServer.Servant st = getServant((byte[]) key);
 
+
+	    POAHashMap.enqueue( getHashMap( (byte[]) key) );
             mapByObjectIDs.remove((byte[]) key);
             mapByServants.remove(st);
         } else if (key instanceof org.omg.PortableServer.Servant) {
@@ -115,7 +113,7 @@ public class DualMap implements ActiveObjectMap {
             try {
                 okey = getObjectID((org.omg.PortableServer.Servant) key);
             } catch (Exception ex) {}
-
+	    POAHashMap.enqueue( getHashMap( (byte[]) okey) );
             mapByObjectIDs.remove(okey);
             mapByServants.remove((org.omg.PortableServer.Servant) key);
         } else {
@@ -129,7 +127,7 @@ public class DualMap implements ActiveObjectMap {
      * @return java.util.Enumeration Enumeration of all the servants.
      */
     public java.util.Enumeration elements() {
-        return temp.elements();
+        return mapByServants.elements();
     }
 
     /**
@@ -150,14 +148,13 @@ public class DualMap implements ActiveObjectMap {
             this.remove(ok);
             // edu.uci.ece.zen.orb.Logger.debug("Removing the objectKey from the"
             // + "MapbyObjectIDs");
-            this.mapByServants.remove(servant);
+            this.remove(servant);
             // edu.uci.ece.zen.orb.Logger.debug("Removing Key from the Map");
 
         }
     }
 
     /* ---------------- Private members ------------------------*/
-    private edu.uci.ece.zen.utils.ByteArrayHashtable mapByObjectIDs = new edu.uci.ece.zen.utils.ByteArrayHashtable(DualMap.initialCapacity);
-    private java.util.Hashtable  mapByServants = new java.util.Hashtable  (DualMap.initialCapacity);
-    private java.util.Hashtable temp = new java.util.Hashtable();
+    private java.util.Hashtable mapByObjectIDs = new java.util.Hashtable(DualMap.initialCapacity);
+    private java.util.Hashtable mapByServants = new java.util.Hashtable(DualMap.initialCapacity);
 }

@@ -48,7 +48,7 @@ public class Current extends org.omg.CORBA.LocalObject
                 org.omg.PortableServer.CurrentPackage.NoContext {
         ThreadSpecificPOACurrent obj = (ThreadSpecificPOACurrent) getInvocationContext();
 
-        return obj.getObjectKey().getId();
+        return ObjectKey.getId(obj.getObjectKey());
     }
 
     /**
@@ -65,11 +65,11 @@ public class Current extends org.omg.CORBA.LocalObject
 
         ThreadSpecificPOACurrent obj = (ThreadSpecificPOACurrent) getInvocationContext();
 
-        ObjectKey okey = obj.getObjectKey();
+        byte[] okey = obj.getObjectKey();
         edu.uci.ece.zen.poa.POA poa = (POA) get_POA();
 
         org.omg.PortableServer.Servant servant = this.get_servant();
-        String[] temp = servant._all_interfaces(poa, okey.getId());
+        String[] temp = servant._all_interfaces(poa, ObjectKey.getId(okey));
 
         return poa.create_reference_with_object_key(okey, temp[0]);
     }

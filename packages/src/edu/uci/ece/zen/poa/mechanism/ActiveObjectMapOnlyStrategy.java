@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: ActiveObjectMapOnlyStrategy.java,v 1.1 2003/11/26 22:28:50 nshankar Exp $
+ * $Id: ActiveObjectMapOnlyStrategy.java,v 1.2 2004/03/11 19:31:37 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;
@@ -14,6 +14,7 @@ import edu.uci.ece.zen.orb.ServerReply;
 import edu.uci.ece.zen.orb.ServerRequest;
 import edu.uci.ece.zen.poa.ActiveDemuxLoc;
 import edu.uci.ece.zen.poa.POAHashMap;
+import edu.uci.ece.zen.poa.ObjectKey;
 
 
 /**
@@ -100,23 +101,24 @@ public final class ActiveObjectMapOnlyStrategy extends
     public int handleRequest(ServerRequest request,
             edu.uci.ece.zen.poa.POA poa,
             edu.uci.ece.zen.poa.SynchronizedInt requests) {
-        edu.uci.ece.zen.poa.ObjectKey okey = request.getObjectKey();
+        byte[] okey = request.getObjectKey();
         // edu.uci.ece.zen.poa.ObjectID  oid  = new ObjectID(okey.getId());
-        ActiveDemuxLoc loc = okey.servDemuxIndex();
+        int locIndex= ObjectKey.servDemuxIndex(okey);
+        int locCount= ObjectKey.servDemuxCount(okey);
 
         if (this.servant == null) {
             throw new org.omg.CORBA.OBJ_ADAPTER(2, CompletionStatus.COMPLETED_NO);
         }
 
-        int count = this.retainStr.activeMap.getGenCount(loc.index);
-        POAHashMap map = this.retainStr.activeMap.mapEntry(loc.index);
+        int count = this.retainStr.activeMap.getGenCount(locIndex);
+        POAHashMap map = this.retainStr.activeMap.mapEntry(locIndex);
 
-        if (count != loc.count || !map.isActive()) {
+        if (count != locCount || !map.isActive()) {
             throw new org.omg.CORBA.OBJECT_NOT_EXIST(2,
                     CompletionStatus.COMPLETED_NO);
         }
 
-        org.omg.PortableServer.Servant myServant = this.retainStr.activeMap.mapEntry(loc.index).getServant();
+        org.omg.PortableServer.Servant myServant = this.retainStr.activeMap.mapEntry(locIndex).getServant();
         InvokeHandler invokeHandler = (InvokeHandler) myServant;
 
 

@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: IdUniquenessStrategy.java,v 1.1 2003/11/26 22:28:55 nshankar Exp $
+ * $Id: IdUniquenessStrategy.java,v 1.2 2004/03/11 19:31:37 nshankar Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
@@ -29,10 +29,10 @@ public abstract class IdUniquenessStrategy {
     static {
 
         IdUniquenessStrategy.uniqueId = (UniqueIdStrategy)
-                POAPolicyFactory.createPolicy(ZenProperties.getProperty(IdUniquenessStrategy.uniqueIdPath));
+               POAPolicyFactory.createPolicy(ZenProperties.getProperty(IdUniquenessStrategy.uniqueIdPath));
 
-        IdUniquenessStrategy.multipleId = (MultipleIdStrategy)
-                POAPolicyFactory.createPolicy(ZenProperties.getProperty(IdUniquenessStrategy.multipleIdPath));
+        //IdUniquenessStrategy.multipleId = (MultipleIdStrategy)
+           //     POAPolicyFactory.createPolicy(ZenProperties.getProperty(IdUniquenessStrategy.multipleIdPath));
     }
 
     /**
@@ -41,11 +41,11 @@ public abstract class IdUniquenessStrategy {
      * @return IdUniquenessStrategy create Id Uniqueness Strategy
      */
     public static IdUniquenessStrategy init(org.omg.CORBA.Policy[] policy) {
-        if (Util.useUniqueIdPolicy(policy)) {
+      //  if (Util.useUniqueIdPolicy(policy)) {
             return IdUniquenessStrategy.uniqueId;
-        } else {
-            return IdUniquenessStrategy.multipleId;
-        }
+        //} else {
+           // return IdUniquenessStrategy.multipleId;
+        //}
     }
 
     public abstract boolean validate(int  policyName);
@@ -55,7 +55,7 @@ public abstract class IdUniquenessStrategy {
     public static final int MULTIPLE_ID = 1;
 
     // ---Singleton Strategies ---
-    private static MultipleIdStrategy multipleId;
+    //private static MultipleIdStrategy multipleId;
     private static UniqueIdStrategy   uniqueId;
 }
 

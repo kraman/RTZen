@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: ActiveDemuxServantTable.java,v 1.1 2003/11/26 22:26:17 nshankar Exp $
+ * $Id: ActiveDemuxServantTable.java,v 1.2 2004/03/11 19:31:34 nshankar Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa;
 
@@ -12,7 +12,7 @@ import edu.uci.ece.zen.sys.ZenProperties;
  *
  * @author Arvind Krishna
  * @author Nishanth Shankaran
- * @version $Revision: 1.1 $ $Date: 2003/11/26 22:26:17 $
+ * @version $Revision: 1.2 $ $Date: 2004/03/11 19:31:34 $
  */
 
 final public class ActiveDemuxServantTable {
@@ -46,7 +46,7 @@ final public class ActiveDemuxServantTable {
      * Constructor for ActiveDemuxServantTable.
      */
     public ActiveDemuxServantTable() {
-        this.activeMap = new ActiveDemuxServantTableNode[ActiveDemuxServantTable.capacity];
+        this.activeMap = new Node[ActiveDemuxServantTable.capacity];
         this.freeList = new java.util.LinkedList();
     }
 
@@ -66,18 +66,11 @@ final public class ActiveDemuxServantTable {
             return place;
         }
 
-        // add it to the next available position
-        try {
-            int place = this.commitToMap(new ActiveDemuxServantTableNode(map));
-
-            // Logger.debug("ActiveDemux Servant Table: bind index = " + place);
-            return place;
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            // would need to do the rehash operation
-            this.rehash();
-            return this.commitToMap(new ActiveDemuxServantTableNode(map));
+        else
+        //Right now i am just returning -1. Need to find out wat exception to throw!
+        return -1;
         }
-    }
+
 
     /**
      * This method returns the location of the object in the POA map if present or else returns -1.
@@ -123,24 +116,25 @@ final public class ActiveDemuxServantTable {
     /**
      Commit the enrty to the table.
      */
-    protected int commitToMap(ActiveDemuxServantTableNode newNode) {
+     /*
+    protected int commitToMap(Node newNode) {
         this.activeMap[nextAvail] = newNode;
         return nextAvail++;
     }
-
+*/
      /**
      * Resize the map if capacit exceeds
      */
 
-
+/*
     protected void rehash() {
-        ActiveDemuxServantTableNode[] temp = new ActiveDemuxServantTableNode[this.activeMap.length + ActiveDemuxServantTable.increment];
+        Node[] temp = new Node[this.activeMap.length + ActiveDemuxServantTable.increment];
 
         // copy all the previous elements
         System.arraycopy(this.activeMap, 0, temp, 0, this.activeMap.length);
         this.activeMap = temp;
     }
-
+*/
     /**
      * Returns the POAHashMap presnt at the given location
      * @param place The location of the POAHashMap in the table.
@@ -170,19 +164,19 @@ final public class ActiveDemuxServantTable {
         return this.activeMap[index].active;
     }
 
-    // --- Array Slots for servants activated!
-    private ActiveDemuxServantTableNode[] activeMap;
-    private java.util.LinkedList freeList;
-    private int nextAvail = 0;
-}
-
-    class ActiveDemuxServantTableNode {
+    class Node {
         public int genCount = 0;
         public POAHashMap mapEntry;
         public boolean active = true;
 
-        public ActiveDemuxServantTableNode(POAHashMap mapEntry) {
+        public Node(POAHashMap mapEntry) {
             this.mapEntry = mapEntry;
         }
 
     }
+
+    // --- Array Slots for servants activated!
+    private Node[] activeMap;
+    private java.util.LinkedList freeList;
+    private int nextAvail = 0;
+}

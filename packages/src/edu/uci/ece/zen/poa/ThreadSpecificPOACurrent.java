@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: ThreadSpecificPOACurrent.java,v 1.1 2003/11/26 22:26:35 nshankar Exp $
+ * $Id: ThreadSpecificPOACurrent.java,v 1.2 2004/03/11 19:31:34 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa;
@@ -16,7 +16,7 @@ package edu.uci.ece.zen.poa;
 
 public class ThreadSpecificPOACurrent {
     public ThreadSpecificPOACurrent(org.omg.PortableServer.POA poa,
-            ObjectKey okey,
+            byte[] okey,
             org.omg.PortableServer.Servant servant) {
         this.poa = poa;
         this.objectKey = okey;
@@ -43,7 +43,7 @@ public class ThreadSpecificPOACurrent {
      *
      * @return ObejctKey
      */
-    public ObjectKey getObjectKey() {
+    public byte[] getObjectKey() {
         return this.objectKey;
     }
 
@@ -54,7 +54,7 @@ public class ThreadSpecificPOACurrent {
      * @param servant org.omg.PortableServer.Servant
      */
     public static void putInvocationContext(org.omg.PortableServer.POA poa,
-            ObjectKey ok,
+            byte[] ok,
             org.omg.PortableServer.Servant servant) {
         ThreadSpecificPOACurrent current = new ThreadSpecificPOACurrent(poa, ok,
                 servant);
@@ -64,7 +64,7 @@ public class ThreadSpecificPOACurrent {
 
     // --- PRIVATE VARIBLES ---
     private org.omg.PortableServer.POA poa;
-    private ObjectKey objectKey;
+    private byte[] objectKey;
     private org.omg.PortableServer.Servant servant;
 
 }

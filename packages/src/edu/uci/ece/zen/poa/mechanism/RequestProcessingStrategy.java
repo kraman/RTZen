@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: RequestProcessingStrategy.java,v 1.1 2003/11/26 22:28:56 nshankar Exp $
+ * $Id: RequestProcessingStrategy.java,v 1.2 2004/03/11 19:31:37 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;
@@ -43,7 +43,8 @@ public abstract class RequestProcessingStrategy {
             IdUniquenessStrategy uniquenessStrategy,
             ThreadPolicyStrategy threadStrategy)
         throws org.omg.PortableServer.POAPackage.InvalidPolicy {
-        if (Util.useServantManagerPolicy(policy)) {
+
+        /*if (Util.useServantManagerPolicy(policy)) {
             try {
                 retentionStrategy.validate(retentionStrategy.RETAIN);
                 ServantActivatorStrategy activator = (ServantActivatorStrategy)
@@ -51,7 +52,7 @@ public abstract class RequestProcessingStrategy {
 
                 activator.initialize(retentionStrategy, threadStrategy,
                         uniquenessStrategy);
-                return activator;    
+                return activator;
             } catch (Exception ex) {
                 try {
                     retentionStrategy.validate(retentionStrategy.NON_RETAIN);
@@ -80,7 +81,7 @@ public abstract class RequestProcessingStrategy {
             } catch (Exception ex2) {
                 throw new org.omg.PortableServer.POAPackage.InvalidPolicy();
             }
-        }
+        } */
 
         ActiveObjectMapOnlyStrategy aom = (ActiveObjectMapOnlyStrategy)
                 POAPolicyFactory.createPolicy(ZenProperties.getProperty

@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: POAServerRequestHandler.java,v 1.1 2003/11/26 22:26:32 nshankar Exp $
+ * $Id: POAServerRequestHandler.java,v 1.3 2004/03/11 19:31:34 nshankar Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa;
 
@@ -59,17 +59,17 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
     public void handleRequest(ServerRequest req) {
        // gt the index into the Active Map
 
-       int index = req.message.getObjectKey().poaIndex();
-       int genCount = req.message.getObjectKey().poaIndexGenCount();
+       int index = ObjectKey.poaIndex(req.message.getObjectKey());
+       int genCount = ObjectKey.poaIndexGenCount(req.message.getObjectKey());
 
        POA poa = null;
 
         if (this.demuxTable.getGenCount(index) == genCount) {
             //Logger.debug ("handleRequest:poa found in the ActiveDemux table");
             poa = this.demuxTable.mapEntry(index).poa;
-        } else if (req.message.getObjectKey().isPersistent()) {
+        } else if (ObjectKey.isPersistent( req.message.getObjectKey())) {
             // Logger.debug("handleRequest:POA not found in Active Demux map");
-            String poaName = req.message.getObjectKey().getPOAPathName();
+            String poaName = ObjectKey.getPOAPathName( req.message.getObjectKey());
 
             poa = this.find_POA(poaName);
         } else {
@@ -147,7 +147,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
 
     }
 
-    private String imrCall(ObjectKey okey) {
+   /* private String imrCall(ObjectKey okey) {
         // Logger.debug("In  IMR");
         String fileName = ZenProperties.getProperty("imr.ior_file");
 
@@ -177,7 +177,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
             return("ERROR");
         }
 
-    }
+    }*/
 
 
     /**
@@ -189,18 +189,18 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
     public LocateReplyMessage handleLocateRequest(LocateRequestMessage request) {
         // Logger.debug("locateRequest:request id=" + request.getRequestId());
         LocateReplyMessage reply = null;
-        ObjectKey okey = request.getObjectKey();
+        byte[] okey = request.getObjectKey();
         String fior;
         edu.uci.ece.zen.orb.CDROutputStream cdrtemp = new edu.uci.ece.zen.orb.CDROutputStream();
-        int index = okey.poaIndex();
-        int genCount = okey.poaIndexGenCount();
+        int index = ObjectKey.poaIndex( okey);
+        int genCount = ObjectKey .poaIndexGenCount(okey);
         int POAcount;
 
         try {
             POAcount = this.demuxTable.getGenCount(index);
         } catch (Exception e) {
             POAcount = 0;
-            try {
+            /*try {
                 String isIMR = System.getProperty("IMR");
 
                 if (isIMR.equals("TRUE")) {
@@ -232,7 +232,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
                 // Logger.debug("NOT hosting IMR");
                 return reply;
 
-            }
+            }*/
         }
         POA poa = null;
 
@@ -240,9 +240,9 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
 
             // Logger.debug("locateRequest:poa found in the ActiveDemux table");
             poa = this.demuxTable.mapEntry(index).poa;
-        } else if (okey.isPersistent()) {
+        } else if (ObjectKey.isPersistent(okey)) {
             // Logger.debug("locateRequest:POA not found in Active Demux map");
-            String poaName = okey.getPOAPathName();
+            String poaName = ObjectKey.getPOAPathName( okey);
 
             try {
                 poa = this.find_POA(poaName);
@@ -277,7 +277,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
         }
 
         try {
-            org.omg.PortableServer.Servant servant = poa.id_to_servant(okey.getId());
+            org.omg.PortableServer.Servant servant = poa.id_to_servant( ObjectKey.getId( okey));
         } catch (Exception e) {
             // Logger.debug("locateRequest:UNKNOWN OBJECT");
             reply = GIOPMessageFactory.createLocateReplyMessage(orb,
@@ -328,7 +328,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
      * @return ObjectLocatioin
      */
 
-    public ObjectLocation locateObject(ObjectKey key) {
+    public ObjectLocation locateObject(byte[]  key) {
         return new ObjectLocation(ObjectLocation.NOT_HERE);
     }
 
@@ -365,6 +365,8 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
 
     public boolean processorPresent(String poaName) {
 
+    	return true;
+        /*
         POA poa = (POA) POAMap.get(poaName);
 
         // Ask the POA to handle the request and return
@@ -374,10 +376,10 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
 
         // Logger.debug("poaPresent:ServerRequestHandler: POA not found in the Map!");
 
-        /*
+
          * The POA is not present in the map hence we need to
          * parse the poa path name and try activating the POA
-         */
+
 
         POA parent = (POA) this.getRoot();
         StringBuffer childPOAName = new StringBuffer();
@@ -413,7 +415,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
         } else {
             return false;
         }
-
+*/
     }
     /**
      * Given an Object Key locate the POA corresponding to that ObjectKey
@@ -421,15 +423,15 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
      * @return POA
      */
 
-    public POA find_POA(ObjectKey okey) {
+    public POA find_POA(byte[]okey) {
 
-        int index = okey.poaIndex();
-        int genCount = okey.poaIndexGenCount();
+        int index = ObjectKey.poaIndex( okey);
+        int genCount = ObjectKey.poaIndexGenCount( okey);
 
         if (this.demuxTable.getGenCount(index) == genCount) {
             return this.demuxTable.mapEntry(index).poa;
-        } else if (okey.isPersistent()) {
-            return find_POA(okey.getPOAPathName());
+        } else if (ObjectKey.isPersistent( okey)) {
+            return find_POA(ObjectKey.getPOAPathName( okey));
         }
 
         return null;

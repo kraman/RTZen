@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: IdHintStrategy.java,v 1.1 2003/11/26 22:28:54 nshankar Exp $
+ * $Id: IdHintStrategy.java,v 1.3 2004/03/11 19:31:37 nshankar Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
@@ -35,7 +35,7 @@ final public class IdHintStrategy {
  * @param servIndex byte[]
  * @return ObjectKey
  */
-    public static ObjectKey create(char prefix,
+    public static byte[] create(char prefix,
             byte[] objectId,
             byte[] time,
             byte[] poaIndex,
@@ -70,7 +70,7 @@ final public class IdHintStrategy {
         // Logger.debug("Okey Created: Transient Hint Strategy  = "
         // + new String(temp));
         // Logger.debug("Start = " + start);
-        return new ObjectKey(temp);
+        return temp;
     }
 
     // ObjectKey with hints around: Persistent
@@ -84,7 +84,7 @@ final public class IdHintStrategy {
  * @param servIndex byte[]
  * @return ObjectKey
  */
-    public static ObjectKey create(char prefix,
+    public static byte[] create(char prefix,
             String path_name,
             byte[] time,
             byte[] oid,
@@ -127,7 +127,7 @@ final public class IdHintStrategy {
         // copy the Object Id
         System.arraycopy(oid, 0, temp, start, oid.length);
 
-        return new ObjectKey(temp);
+        return temp;
     }
 
     private static int write_int(byte[]buffer, int start, int value) {

@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: ThreadPolicyStrategy.java,v 1.1 2003/11/26 22:29:04 nshankar Exp $
+ * $Id: ThreadPolicyStrategy.java,v 1.2 2004/03/11 19:31:37 nshankar Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
@@ -33,11 +33,11 @@ abstract public class ThreadPolicyStrategy {
 
     public static ThreadPolicyStrategy init(org.omg.CORBA.Policy[] policy) {
 
-        if (edu.uci.ece.zen.poa.Util.useSingleThreadedPolicy(policy)) {
-            return (ThreadPolicyStrategy) edu.uci.ece.zen.poa.POAPolicyFactory.createPolicy(ThreadPolicyStrategy.singleThreadClasspath);
-        } else {
+        //if (edu.uci.ece.zen.poa.Util.useSingleThreadedPolicy(policy)) {
+           // return (ThreadPolicyStrategy) edu.uci.ece.zen.poa.POAPolicyFactory.createPolicy(ThreadPolicyStrategy.singleThreadClasspath);
+        //} else {
             return ThreadPolicyStrategy.multiThreaded;
-        }
+        //}
     }
 
     public abstract void enter(org.omg.CORBA.portable.InvokeHandler

@@ -30,7 +30,7 @@ public class Run implements Runnable
 		thisArea = (ScopedMemory) RealtimeThread.getCurrentMemoryArea();
 	}
 
-
+/*
 	private void servant_to_id()
 	{
         	try{
@@ -45,7 +45,7 @@ public class Run implements Runnable
                 ex = e;
                 }
 	}
-
+*/
 	private void servant_to_reference()
 	{
         	try{
@@ -66,7 +66,7 @@ public class Run implements Runnable
 
 
 	}
-
+/*
 	private void reference_to_servant()
 	{
         	try{
@@ -113,7 +113,7 @@ public class Run implements Runnable
 
 
 	}
-
+*/
 	private void id_to_servant()
 	{
         	try{
@@ -141,7 +141,7 @@ public class Run implements Runnable
 
 
 	}
-
+/*
 	private void id_to_reference()
 	{
         	try{
@@ -311,7 +311,7 @@ public class Run implements Runnable
 	{
 		output = ((POAImpl)thisArea.getPortal()).create_reference_with_object_key( (edu.uci.ece.zen.poa.ObjectKey) input[0], (String) input[1] );
 	}
-
+*/
 
 	private void handleRequest()
 	{
@@ -351,7 +351,7 @@ public class Run implements Runnable
 
 		setMemory();
 
-
+	System.out.println("OK calling" + method);
 		switch(method)
 		{
 
@@ -362,12 +362,12 @@ public class Run implements Runnable
 						break;
 					}
 
-			case 1: {
+			/*case 1: {
                         			isException = false;
 						servant_to_id();
 						break;
 					}
-
+*/
 
 			case 2 : {
                         			isException = false;
@@ -375,7 +375,7 @@ public class Run implements Runnable
                                                  //System.out.println("Ok in run");
 						 break;
 					 }
-
+/*
 			case 3 : {
                         			isException = false;
 						 reference_to_servant();
@@ -387,13 +387,13 @@ public class Run implements Runnable
 						 reference_to_id();
 						 break;
 					 }
-
+*/
 			case 5 : {
                         			isException = false;
 						 id_to_servant();
 						 break;
 					 }
-
+/*
 			case 6 : {
                         			isException = false;
 						 id_to_reference();
@@ -462,7 +462,7 @@ public class Run implements Runnable
                                                 create_reference_with_object_key();
                                                 break;
                                           }
-
+*/
 
 
 		}

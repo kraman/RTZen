@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: IdAssignmentStrategy.java,v 1.1 2003/11/26 22:28:51 nshankar Exp $
+ * $Id: IdAssignmentStrategy.java,v 1.2 2004/03/11 19:31:37 nshankar Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
@@ -25,10 +25,10 @@ abstract public class IdAssignmentStrategy {
     protected static final String userId = "poa.userId";
 
     // --- Initialization Code ----
-    static {
+  /*  static {
         IdAssignmentStrategy.userIdStrategy = (UserIdStrategy)
                 POAPolicyFactory.createPolicy(ZenProperties.getProperty(IdAssignmentStrategy.userId));
-    }
+    }*/
 
 /**
  *
@@ -36,11 +36,11 @@ abstract public class IdAssignmentStrategy {
  * @return IdAssignmentStrategy
  */
     public static IdAssignmentStrategy init(org.omg.CORBA.Policy[] policy) {
-        if (Util.useSystemIdPolicy(policy)) {
+        //if (Util.useSystemIdPolicy(policy)) {
             return (IdAssignmentStrategy) POAPolicyFactory.createPolicy(ZenProperties.getProperty(IdAssignmentStrategy.systemId));
-        } else {
-            return IdAssignmentStrategy.userIdStrategy;
-        }
+        //else {
+           //eturn IdAssignmentStrategy.userIdStrategy;
+        //}
     }
 
     public abstract byte[] nextId()
@@ -58,6 +58,6 @@ abstract public class IdAssignmentStrategy {
     public static final int SYSTEM_ID = 1;
 
     // ---Singleton UserId Strategy ---
-    private static UserIdStrategy userIdStrategy;
+    //private static UserIdStrategy userIdStrategy;
 }
 
