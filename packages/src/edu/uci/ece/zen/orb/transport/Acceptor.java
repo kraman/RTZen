@@ -24,13 +24,20 @@ public abstract class Acceptor {
 
     protected RealtimeThread acceptorLogicThread;
 
+    protected int priority;
+
+    public  int threadPoolId;
+
     public Acceptor(edu.uci.ece.zen.orb.ORB orb,
-            edu.uci.ece.zen.orb.ORBImpl orbImpl) {
+            edu.uci.ece.zen.orb.ORBImpl orbImpl,
+            int threadPoolId ) {
         this.orb = orb;
         this.orbImpl = orbImpl;
+        this.threadPoolId = threadPoolId;
     }
 
     public final void startAccepting( int priority ) {
+        this.priority = priority;
         acceptorLogic = new AcceptorLogic(this);
         isActive = true;
         acceptorLogicThread = new NoHeapRealtimeThread( new PriorityParameters(priority) , null, null,
@@ -53,8 +60,7 @@ public abstract class Acceptor {
 
     protected final void registerTransport(Transport t) {
         ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(t);
-        RealtimeThread transportThread = new NoHeapRealtimeThread(null, null,
-                null, RealtimeThread.getCurrentMemoryArea(), null, t);
+        RealtimeThread transportThread = new NoHeapRealtimeThread( new PriorityParameters(this.priority) , null, null, RealtimeThread.getCurrentMemoryArea(), null, t);
         transportThread.start();
     }
 
@@ -65,16 +71,18 @@ public abstract class Acceptor {
     private ProfileRunnable prunnable;
 
     public synchronized TaggedProfile getProfile(byte iiopMajorVersion,
-            byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion) {
-        try {
-            if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor client region: " + clientRegion);
-            edu.uci.ece.zen.utils.Logger.printThreadStack();
-            if (prunnable == null) prunnable = new ProfileRunnable();
-            prunnable.init(iiopMajorVersion, iiopMinorVersion, objKey, this);
-            clientRegion.executeInArea(prunnable);
-            return prunnable.getRetVal();
-        } catch (Exception e) {
-            ZenProperties.logger.log(Logger.WARN, getClass(), "getProfile", e);
+            byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion, int threadPoolId) {
+        if( this.threadPoolId == threadPoolId ){
+            try {
+                if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor client region: " + clientRegion);
+                edu.uci.ece.zen.utils.Logger.printThreadStack();
+                if (prunnable == null) prunnable = new ProfileRunnable();
+                prunnable.init(iiopMajorVersion, iiopMinorVersion, objKey, this);
+                clientRegion.executeInArea(prunnable);
+                return prunnable.getRetVal();
+            } catch (Exception e) {
+                ZenProperties.logger.log(Logger.WARN, getClass(), "getProfile", e);
+            }
         }
         return null;
     }

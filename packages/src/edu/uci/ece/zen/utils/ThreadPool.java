@@ -24,10 +24,12 @@ public class ThreadPool {
 
     AcceptorRunnable acceptorRunnable;
 
+    int threadPoolId;
+
     public ThreadPool(int stackSize, int staticThreads, int dynamicThreads,
             short defaultPriority, boolean allowRequestBuffering,
             int maxBufferedRequests, int requestBufferSize, ORB orb,
-            AcceptorRunnable acceptorRunnable) {
+            AcceptorRunnable acceptorRunnable , int threadPoolId ) {
         //stackSize; //KLUDGE: ignored
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
@@ -36,18 +38,19 @@ public class ThreadPool {
         this.acceptorRunnable = acceptorRunnable;
 
         this.lanes = new Lane[1];
-        acceptorRunnable.init( orb , defaultPriority );
+        acceptorRunnable.init( orb , defaultPriority , threadPoolId );
         this.lanes[0] = new Lane(stackSize, staticThreads, dynamicThreads,
                 defaultPriority, this, allowBorrowing, allowRequestBuffering,
                 maxBufferedRequests, acceptorRunnable.acceptorArea);
         this.lanes[0].setLaneId(0);
         this.orb = orb;
+        this.threadPoolId = threadPoolId;
     }
 
     public ThreadPool(int stackSize, boolean allowRequestBuffering,
             int maxBufferedRequests, int requestBufferSize,
             org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allowBorrowing,
-            ORB orb, AcceptorRunnable acceptorRunnable) {
+            ORB orb, AcceptorRunnable acceptorRunnable , int threadPoolId ) {
         //stackSize; //KLUDGE: ignored
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
@@ -57,7 +60,7 @@ public class ThreadPool {
 
         this.lanes = new Lane[lanes.length];
         for (int i = 0; i < lanes.length; i++){
-            acceptorRunnable.init( orb , lanes[i].lane_priority );
+            acceptorRunnable.init( orb , lanes[i].lane_priority , threadPoolId );
             this.lanes[i] = new Lane(stackSize, lanes[i].static_threads,
                     lanes[i].dynamic_threads, lanes[i].lane_priority, this,
                     allowBorrowing, allowRequestBuffering, maxBufferedRequests,
@@ -68,6 +71,7 @@ public class ThreadPool {
         for (int i = 0; i < this.lanes.length; i++)
             this.lanes[i].setLaneId(i);
         this.orb = orb;
+        this.threadPoolId = threadPoolId;
     }
 
     public boolean borrowThreadAndExecute(RequestMessage task, int laneId) {
@@ -157,8 +161,7 @@ class Lane {
 
     private void newThread() {
         ThreadSleepRunnable r = new ThreadSleepRunnable(this);
-        NoHeapRealtimeThread thr = new NoHeapRealtimeThread(null, null, null,
-                RealtimeThread.getCurrentMemoryArea(), null, r);
+        NoHeapRealtimeThread thr = new NoHeapRealtimeThread(null, null, null, RealtimeThread.getCurrentMemoryArea(), null, r);
         thr.setPriority(priority);
         r.setThread(thr);
         r.setNativePriority(priority);

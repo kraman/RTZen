@@ -71,11 +71,11 @@ public class ThreadPoolRunnable implements Runnable {
                 tp = new ThreadPool(stacksize, staticThreads,
                     dynamicThreads, defaultPriority, allowRequestBuffering,
                     maxBufferedRequests, maxRequestBufferSize, orb, 
-                    rtorb.acceptorRunnable);
+                    rtorb.acceptorRunnable, rtorb.tpID );
             else 
                 tp = new ThreadPool(stacksize, allowRequestBuffering,
                     maxBufferedRequests, maxRequestBufferSize, lanes,
-                    allowBorrowing, orb, rtorb.acceptorRunnable);
+                    allowBorrowing, orb, rtorb.acceptorRunnable, rtorb.tpID );
 
             orb.threadpoolList[rtorb.tpID] = (ScopedMemory) RealtimeThread
                     .getCurrentMemoryArea();

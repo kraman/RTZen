@@ -21,10 +21,12 @@ import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
 
 public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
     private java.net.ServerSocket ssock;
+    private int threadPoolId;
 
     public Acceptor(edu.uci.ece.zen.orb.ORB orb,
-            edu.uci.ece.zen.orb.ORBImpl orbImpl) {
-        super(orb, orbImpl);
+            edu.uci.ece.zen.orb.ORBImpl orbImpl,
+            int threadPoolId) {
+        super(orb, orbImpl, threadPoolId);
         try {
             ssock = new java.net.ServerSocket(0, 0, orb.sockAddr);
 

@@ -722,7 +722,7 @@ public class POAImpl {
             ZenProperties.logger.log("create_reference_with_object_key 1");
             if (crwor == null) crwor = new CreateReferenceWithObjectRunnable();
             ZenProperties.logger.log("create_reference_with_object_key 2");
-            crwor.init(ok, intf, clientArea, orb);
+            crwor.init(ok, intf, clientArea, orb, threadPoolId);
             ZenProperties.logger.log("create_reference_with_object_key 3");
             try {
                 orb.orbImplRegion.executeInArea(crwor);
@@ -762,22 +762,24 @@ public class POAImpl {
 
         public int tcLen;
 
+        public int threadPoolId;
+
         public CreateReferenceWithObjectRunnable() {
         }
 
-        public void init(FString ok, String intf, MemoryArea ma, ORB orb) {
+        public void init(FString ok, String intf, MemoryArea ma, ORB orb, int threadPoolId ) {
             this.ok = ok;
             this.intf = intf;
             this.ma = ma;
             this.orb = orb;
             this.taggedComponents = WriteBuffer.instance();
             this.tcLen = 0;
+            this.threadPoolId = threadPoolId;
         }
 
         public void run() {
             try {
-                retVal = edu.uci.ece.zen.orb.IOR.makeCORBAObject(orb, intf, ok, ma,
-                        taggedComponents, tcLen);
+                retVal = edu.uci.ece.zen.orb.IOR.makeCORBAObject(orb, intf, ok, ma, taggedComponents, tcLen, threadPoolId);
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
             }

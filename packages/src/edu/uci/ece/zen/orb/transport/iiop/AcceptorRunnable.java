@@ -11,14 +11,16 @@ public class AcceptorRunnable implements Runnable {
     ORB orb;
     int priority;
     public ScopedMemory acceptorArea;
+    int threadPoolId;
 
     public AcceptorRunnable() {
 
     }
 
-    public void init(ORB orb, int priority ) {
+    public void init(ORB orb, int priority , int threadPoolId) {
         this.orb = orb;
         this.priority = priority;
+        this.threadPoolId = threadPoolId;
     }
 
     private int statCount = 0;
@@ -29,9 +31,8 @@ public class AcceptorRunnable implements Runnable {
         statCount++;
 
         acceptorArea = (ScopedMemory) RealtimeThread.getCurrentMemoryArea();
-        orb.getAcceptorRegistry().addAcceptor(acceptorArea);
-        Acceptor acceptor = new edu.uci.ece.zen.orb.transport.iiop.Acceptor(
-                orb, (ORBImpl) ((ScopedMemory) orb.orbImplRegion).getPortal());
+        orb.getAcceptorRegistry().addAcceptor(acceptorArea, threadPoolId);
+        Acceptor acceptor = new edu.uci.ece.zen.orb.transport.iiop.Acceptor( orb, (ORBImpl) ((ScopedMemory) orb.orbImplRegion).getPortal() , threadPoolId );
         acceptorArea.setPortal(acceptor);
         acceptor.startAccepting( priority );
     }
