@@ -114,20 +114,27 @@ class MessageProcessor implements Runnable{
 		}
         GIOPMessageRunnable gmr = new GIOPMessageRunnable( orb , trans );
          
-        ExecuteInRunnable eir = new ExecuteInRunnable();
+        //ExecuteInRunnable eir = new ExecuteInRunnable();
          
 
         while( isActive ){
              
-            ScopedMemory messageScope = ORB.getScopedRegion();
-             
-            gmr.setRequestScope( messageScope );
+		//ScopedMemory messageScope = ORB.getScopedRegion();
 
-            eir.init( gmr , messageScope );
+
+		// Check here to see if we allocate the memmory here
+
+
+            //ImmortalMemory messageScope = ORB.getScopedRegion();
+             
+            //gmr.setRequestScope( messageScope );
+
+            //eir.init( gmr , messageScope );
              
             try{
                 //messageScope.enter(gmr);
-                orb.orbImplRegion.executeInArea( eir );
+                //messageScope.enter(gmr);
+               gmr.run();
             }catch( Exception e ){
                 ZenProperties.logger.log(
                     Logger.SEVERE,
@@ -138,7 +145,7 @@ class MessageProcessor implements Runnable{
                 e.printStackTrace();
             }
             gmr.setRequestScope( null );
-            ORB.freeScopedRegion( messageScope );
+            //ORB.freeScopedRegion( messageScope );
         }
         synchronized( this ){
             this.notifyAll();
@@ -196,6 +203,9 @@ class GIOPMessageRunnable implements Runnable{
     public void setRequestScope( ScopedMemory requestScope ){
         this.requestScope = requestScope;
     }
+	
+
+
 
     /**
      * Call scoped region graph:
@@ -212,17 +222,9 @@ class GIOPMessageRunnable implements Runnable{
      */
     public void run(){
         try{
-			if(ZenProperties.devDbg) {
-				System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
-			}
-            edu.uci.ece.zen.utils.Logger.printThreadStack();
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
             if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
                
-                if(ZenProperties.devDbg) System.out.println( trans );
-                if(ZenProperties.devDbg) System.out.println( trans.orbImpl );
-                if(ZenProperties.devDbg) System.out.println( trans.orbImpl.getServerRequestHandler() );
-                if(ZenProperties.devDbg) System.out.println( message );
 
                 trans.orbImpl.getServerRequestHandler().handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) message );
             }
