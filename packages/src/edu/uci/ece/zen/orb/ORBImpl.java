@@ -14,7 +14,7 @@ import edu.uci.ece.zen.orb.policies.PolicyManagerImpl;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
-import edu.uci.ece.zen.utils.ThreadLocal;
+//import edu.uci.ece.zen.utils.ThreadLocal;
 
 public class ORBImpl {
     ZenProperties properties;
