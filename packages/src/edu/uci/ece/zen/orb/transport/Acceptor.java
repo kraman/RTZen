@@ -25,6 +25,7 @@ import org.omg.Messaging.PolicyValue;
 import org.omg.Messaging.PolicyValueHelper;
 
 import edu.uci.ece.zen.orb.CDROutputStream;
+import edu.uci.ece.zen.orb.PriorityMappingImpl;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
@@ -56,12 +57,11 @@ public abstract class Acceptor {
         this.threadPoolId = threadPoolId;
     }
 
-    public final void startAccepting( int priority ) {
-        //System.out.println("Priority="+priority);
+    public final void startAccepting( short priority ) {
         this.priority = priority;
         acceptorLogic = new AcceptorLogic(this);
         isActive = true;
-        acceptorLogicThread = new NoHeapRealtimeThread( new PriorityParameters(priority) , null, null,
+        acceptorLogicThread = new NoHeapRealtimeThread( new PriorityParameters(PriorityMappingImpl.toNative(priority)) , null, null,
                 RealtimeThread.getCurrentMemoryArea(), null, acceptorLogic);
         acceptorLogicThread.start();
     }

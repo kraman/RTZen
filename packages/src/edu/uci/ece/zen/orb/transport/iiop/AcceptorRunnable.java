@@ -9,7 +9,7 @@ import edu.uci.ece.zen.orb.ORBImpl;
 public class AcceptorRunnable implements Runnable {
 
     ORB orb;
-    int priority;
+    short priority;
     public ScopedMemory acceptorArea;
     int threadPoolId;
 
@@ -17,7 +17,7 @@ public class AcceptorRunnable implements Runnable {
 
     }
 
-    public void init(ORB orb, int priority , int threadPoolId) {
+    public void init(ORB orb, short priority , int threadPoolId) {
         this.orb = orb;
         this.priority = priority;
         this.threadPoolId = threadPoolId;

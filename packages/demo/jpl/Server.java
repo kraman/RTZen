@@ -33,7 +33,7 @@ public class Server extends RealtimeThread
     private static final int ITERATION_FACTOR_2 = 1;
     private static final int ITERATION_FACTOR_1 = 20;
     public String[] args;
-    private static boolean isClientPropagated = false;
+    private static boolean isClientPropagated = true;
     ORB orb;
     
     public static void main(String[] args) throws Exception
