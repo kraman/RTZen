@@ -7,6 +7,7 @@ import javax.realtime.MemoryArea;
 import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
 
+import org.omg.CORBA.Policy;
 import org.omg.IOP.TaggedProfile;
 
 import edu.uci.ece.zen.orb.transport.Acceptor;
@@ -38,7 +39,7 @@ public class AcceptorRegistry {
      * @return A array containing the list of transport profiles.
      */
     public TaggedProfile[] getProfiles(FString objKey, MemoryArea clientArea,
-             WriteBuffer taggedComponents, int tcLen , int threadPoolId )
+             Policy[] clientExposedPolicies, int tcLen , int threadPoolId )
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
         AcceptorCountRunnable acr = new AcceptorCountRunnable( threadPoolId );
@@ -46,7 +47,7 @@ public class AcceptorRegistry {
             ScopedMemory sm = (ScopedMemory) (list.get(i));
             sm.enter(acr);
         }
-                
+
         TaggedProfile[] tpList = (TaggedProfile[]) clientArea.newArray(
                 org.omg.IOP.TaggedProfile.class, acr.count);
         byte[] tempOKey = objKey.getTrimData(clientArea);
@@ -56,7 +57,7 @@ public class AcceptorRegistry {
         int index=0;
         for (int i = 0; i < list.size(); ++i) {
             ScopedMemory sm = (ScopedMemory) (list.get(i));
-            ar.init(index, tempOKey, clientArea, tpList, taggedComponents, tcLen , threadPoolId );
+            ar.init(index, tempOKey, clientArea, tpList, clientExposedPolicies, tcLen , threadPoolId );
             if( tpList[index] != null ) index++;
             sm.enter(ar);
         }
@@ -131,7 +132,7 @@ class ARRunnable implements Runnable {
     }
 
     public void init(int ind, byte[] objKey, MemoryArea clientArea,
-            TaggedProfile[] tpList, WriteBuffer taggedComponents, int tcLen, int threadPoolId) {
+            TaggedProfile[] tpList, Policy[] clientExposedPolicies, int tcLen, int threadPoolId) {
         index = ind;
         this.ma = clientArea;
         this.objKey = objKey;
@@ -143,6 +144,6 @@ class ARRunnable implements Runnable {
 
     public void run() {
         Acceptor acc = (Acceptor) ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
-        tpList[index] = acc.getProfile((byte) 1, ZenProperties.iiopMinor, objKey, ma, threadPoolId);
+        //tpList[index] = acc.getProfile((byte) 1, ZenProperties.iiopMinor, objKey, ma, threadPoolId);
     }
 }

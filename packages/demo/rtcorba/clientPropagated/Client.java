@@ -86,17 +86,20 @@ public class Client extends RealtimeThread
 
             if (!pmap.to_CORBA (native_priority, desired_priority))
                 System.out.println("[client] Cannot convert native priority " + native_priority + " to corba priority");
-
+            int minPrio = 0;
             for( int i=0;i<3;i++ ){
 
-                rtcur.the_priority(desired_priority.value);
+                //rtcur.the_priority(desired_priority.value);
+                rtcur.the_priority((short)minPrio);
 
-                if(rtcur.the_priority() != desired_priority.value)
-                    System.out.println("[client] ERROR: Unable to set thread priority to " + desired_priority.value);
+                //if(rtcur.the_priority() != desired_priority.value)
+               //     System.out.println("[client] ERROR: Unable to set thread priority to " + desired_priority.value);
 
-                server.test_method(desired_priority.value);
+                //server.test_method(desired_priority.value);
+                server.test_method((short)minPrio);
 
-                desired_priority.value++;
+                //desired_priority.value++;
+                minPrio += 1000;
             }
             
             System.exit(0);

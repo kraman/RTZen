@@ -1,5 +1,7 @@
 package edu.uci.ece.zen.orb;
 
+import edu.uci.ece.zen.utils.IntHashtable;
+import javax.realtime.ImmortalMemory;
 /**
  * Interface definition : Current
  * 
@@ -8,13 +10,34 @@ package edu.uci.ece.zen.orb;
 public class RTCurrent extends org.omg.CORBA.LocalObject implements
         org.omg.RTCORBA.Current {
 
-    short priority;
+    private static IntHashtable hash;
+    private static RTCurrent instance;
+            
+    //short priority;
 
-    ORB orb;
+    //ORB orb;
 
-    public void init(ORB orb) {
+    public static RTCurrent instance(){
+        if(instance == null){
+            try{
+                instance = (RTCurrent) (ImmortalMemory.instance().newInstance(RTCurrent.class));
+                instance.init();
+            }catch(Exception e){
+                e.printStackTrace();//TODO better error handling
+            }            
+        }
+        return instance;
+    }    
+    
+    private void init() {
         //orbMemoryArea = RealtimeThread.getCurrentMemoryArea();
-        this.orb = orb;
+        //this.orb = orb;
+        try{
+            hash = (IntHashtable) ImmortalMemory.instance().newInstance(IntHashtable.class);
+        }catch(Exception e){
+            e.printStackTrace();//TODO
+        }        
+        hash.init(1023);
     }
 
     /**
@@ -23,7 +46,7 @@ public class RTCurrent extends org.omg.CORBA.LocalObject implements
      * @return the attribute value
      */
     public short the_priority() {
-        return priority;
+        return (short)(hash.get(Thread.currentThread()));
     }
 
     /**
@@ -33,7 +56,7 @@ public class RTCurrent extends org.omg.CORBA.LocalObject implements
      *            the attribute value
      */
     public void the_priority(short value) {
-        priority = value;
+        hash.put(Thread.currentThread(), value);
     }
 
 }

@@ -25,27 +25,27 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
     public void replyReceived(Message reply) {
         this.replyMsg = reply.getCDRInputStream();
         if( replyMsg == null )
-            System.out.println ( "---------------------------------" );
+            if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log( "Reply Msg Null" );
 
         FString contexts = ((ReplyMessage)reply).getServiceContexts();
-        if (ZenBuildProperties.dbgInvocations) System.out.println("REPLY SC: " + contexts.decode());
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("REPLY SC: " + contexts.decode());
         ReadBuffer rb = contexts.toReadBuffer();
         //if (ZenBuildProperties.dbg) System.out.println("#############REPLY RB: " + rb.toString());
         int size = rb.readLong();
-        if(ZenBuildProperties.dbgInvocations) System.out.println("REPLY CONTEXT size: " + size);
+        if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("REPLY CONTEXT size: " + size);
         for(int i = 0; i < size; ++i){
             int id = rb.readLong();
-            if(ZenBuildProperties.dbgInvocations) System.out.println("REPLY CONTEXT id: " + id);
+            if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("REPLY CONTEXT id: " + id);
             if(id == org.omg.IOP.RTCorbaPriority.value){
-                if(ZenBuildProperties.dbgInvocations) System.out.println("REPLY CONTEXT id:RTCorbaPriority");
-                if(ZenBuildProperties.dbgInvocations) System.out.println("CUR thread priority: " + replyMsg.orb.getRTCurrent().the_priority());
+                if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("REPLY CONTEXT id:RTCorbaPriority");
+                if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("CUR thread priority: " + replyMsg.orb.getRTCurrent().the_priority());
                 rb.readLong(); //eat length
                 short priority = (short)rb.readLong();
-                if(ZenBuildProperties.dbgInvocations) System.out.println("RECEIVED thread priority: " + priority);
+                if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("RECEIVED thread priority: " + priority);
                 replyMsg.orb.getRTCurrent().the_priority(priority);
-                if(ZenBuildProperties.dbgInvocations) System.out.println("NEW thread priority: " + replyMsg.orb.getRTCurrent().the_priority());
+                if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("NEW thread priority: " + replyMsg.orb.getRTCurrent().the_priority());
             } else{ // just eat
-                if(ZenBuildProperties.dbgInvocations) System.out.println("Skipping unknown service context " + id);
+                if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("Skipping unknown service context " + id);
                 int byteLen = rb.readLong();
                 for(int i1 = 0; i1 < byteLen; ++i1)
                     rb.readByte();

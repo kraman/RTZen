@@ -15,6 +15,8 @@ import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.poa.POARunnable;
 import edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo;
+import edu.uci.ece.zen.utils.ReadBuffer;
+import edu.uci.ece.zen.utils.FString;
 
 public abstract class Transport implements Runnable {
     private Object waitObj;
@@ -205,7 +207,7 @@ class MessageProcessor implements Runnable {
                 gmr.run();
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", "Could not process message", e);
-        e.printStackTrace();
+                e.printStackTrace();
             }
             gmr.setRequestScope(null);
         }
@@ -278,7 +280,7 @@ class GIOPMessageRunnable implements Runnable {
 
             ZenProperties.logger.log("Inside GMR run");
             if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(RealtimeThread.getCurrentMemoryArea().toString());
-          
+
             message = edu.uci.ece.zen.orb.protocol.MessageFactory.parseStream(orb, trans);
             if( message == null )   //connection closed
             {
@@ -288,6 +290,47 @@ class GIOPMessageRunnable implements Runnable {
 
             if (message instanceof edu.uci.ece.zen.orb.protocol.type.RequestMessage) {
                 ZenProperties.logger.log("Inside GMR run: RequestMessage");
+                edu.uci.ece.zen.orb.protocol.type.RequestMessage rm = 
+                        (edu.uci.ece.zen.orb.protocol.type.RequestMessage)message;
+                ///// Parse service context here
+    
+                FString contexts = rm.getServiceContexts();
+                if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("GIOPMessageRunnable REQUEST SC: " + contexts.decode());
+                ReadBuffer rb = contexts.toReadBuffer();
+                //if (ZenBuildProperties.dInvocationsbg) System.out.println("#############REPLY RB: " + rb.toString());
+                int size = rb.readLong();
+    
+                if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("GIOPMessageRunnable REPLY CONTEXT size: " + size);
+                //orb.getRTCurrent().the_priority((short) javax.realtime.PriorityScheduler.instance().getNormPriority()); //kludge
+                for(int i = 0; i < size; ++i){
+    
+                    int id = rb.readLong();
+                    if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("GIOPMessageRunnable REPLY CONTEXT id: " + id);
+    
+                    if(id == org.omg.IOP.RTCorbaPriority.value){
+                        if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("GIOPMessageRunnable REPLY CONTEXT id:RTCorbaPriority");
+                        //if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable CUR thread priority: " + orb.getRTCurrent().the_priority());
+    
+                        rb.readLong(); //eat length
+                        short priority = (short)rb.readLong();
+                        if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("GIOPMessageRunnable RECEIVED thread priority: " + priority);
+    
+                        rm.setPriority(priority);
+                        orb.getRTCurrent().the_priority(priority);
+    
+                        if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("GIOPMessageRunnable NEW thread priority: " + orb.getRTCurrent().the_priority());
+    
+                    } else{ // just eat
+                        if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("GIOPMessageRunnable Skipping unknown service context " + id);
+                        int byteLen = rb.readLong();
+                        for(int i1 = 0; i1 < byteLen; ++i1)
+                            rb.readByte();
+                    }
+                }
+    
+                rb.free();
+                /////////// end parse service context       
+            
  //             edu.uci.ece.zen.utils.Logger.printMemStats(308);
                 trans.orbImpl.getServerRequestHandler().handleRequest( (edu.uci.ece.zen.orb.protocol.type.RequestMessage) message);
  //             edu.uci.ece.zen.utils.Logger.printMemStats(309);

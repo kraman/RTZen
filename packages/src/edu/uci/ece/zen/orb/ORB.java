@@ -57,22 +57,16 @@ import java.net.URL;
 
 public class ORB extends org.omg.CORBA_2_3.ORB {
     private static Queue unusedFacades;
-
     private static Hashtable orbTable;
-
     private static Queue unusedMemoryAreas;
-
     private static ImmortalMemory imm;
-
     private static long orbIdSeq;
-
     private static long scopeMemorySize;
-
     private static ORB orbSingleton;
-
     private static int maxSupportedConnections;
-
     public static java.net.InetAddress sockAddr;
+    private static RTCurrentRunnable rtrun;
+    
     static {
         try {
             try {
@@ -106,7 +100,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                     "doc.zen.orb.scopedMemorySize", "2097951"));    //Change by Alex...TODO: unknown reason
 
             int numMemAreas = Integer.parseInt(ZenProperties
-                .getGlobalProperty( "memarea.amount" , "20" ));
+                .getGlobalProperty( "memarea.amount" , "40" ));
 
             for (int i = 0; i < numMemAreas; i++)
                 unusedMemoryAreas.enqueue(new LTMemory(100, scopeMemorySize));
@@ -115,6 +109,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             maxSupportedConnections = Integer.parseInt(ZenProperties
                     .getGlobalProperty("doc.zen.orb.maxConnectionsPerORB",
                             "100"));
+                            
+            
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, ORB.class, "static <init>", e);
             System.exit(-1);
@@ -234,6 +230,11 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public void freeEIR(ExecuteInRunnable r) {
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("FreeEIR(): EIR from  " + MemoryArea.getMemoryArea(r));
+        if(MemoryArea.getMemoryArea(r) != ImmortalMemory.instance()){
+            if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("FreeEIR(): EIR not from immortal, but " + MemoryArea.getMemoryArea(r));
+            Thread.dumpStack();
+        }
         executeInRunnableCache.enqueue(r);
     }
 
@@ -260,7 +261,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         orbImplRegion = mem;
 
         executeInORBRegion(orbInitRunnable);
-
 
         /*
          * ExecuteInRunnable r = new ExecuteInRunnable(); r.init(
@@ -473,27 +473,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     }
 
-    class RTCurrentRunnable implements Runnable {
-        public RTCurrent val;
-
-        public boolean init;
-
-        public ThreadLocal tl;
-
-        private ScopedMemory sm;
-
-        public RTCurrentRunnable(ScopedMemory sm) {
-            this.sm = sm;
-        }
-
-        public void run() {
-            if (!init) tl = ((ORBImpl) (sm.getPortal())).rtCurrent;
-            else val = ((ORBImpl) (sm.getPortal())).getRTCurrent();
-        }
-    }
-
     public RTCurrent getRTCurrent() {
-        RTCurrentRunnable rtrun = new RTCurrentRunnable(orbImplRegion);
+        /*
+        RTCurrentRunnable rtrun = RTCurrentRunnable.instance(parentMemoryArea);
+        rtrun.init(orbImplRegion);
         executeInORBRegion(rtrun);
         if (!rtrun.init) {
             rtrun.init = true;
@@ -505,6 +488,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             executeInORBRegion(rtrun);
         }
         return rtrun.val;
+        */
+        return RTCurrent.instance();
     }
 
     class PolicyCurrentRunnable implements Runnable {
@@ -924,5 +909,48 @@ class ORBStrToObjRunnable implements Runnable {
         ORBImpl orbImpl = ((ORBImpl) ((ScopedMemory) RealtimeThread
                 .getCurrentMemoryArea()).getPortal());
         orbImpl.string_to_object(ior, objImpl);
+    }
+}
+
+class RTCurrentRunnable implements Runnable {
+    public RTCurrent val;
+    public boolean init;
+    public ThreadLocal tl;
+    private ScopedMemory sm;
+    private static RTCurrentRunnable instance;
+    
+    public static RTCurrentRunnable instance(MemoryArea parentMemoryArea){
+        if(instance == null){
+            try{
+                instance = (RTCurrentRunnable) (parentMemoryArea.newInstance(RTCurrentRunnable.class));
+            }catch(Exception e){
+                e.printStackTrace();//TODO better error handling
+            }            
+        }
+            
+        return instance;
+    }
+
+    private RTCurrentRunnable(){
+    }
+
+    public void init(ScopedMemory sm) {
+        this.sm = sm;
+    }
+
+    public void run() {
+        ZenProperties.logger.log("======================RTCurrentRunnable1");
+        Logger.printThreadStack();
+        if (!init) {
+            ZenProperties.logger.log("======================RTCurrentRunnable2");
+            Object o = sm.getPortal();
+            ZenProperties.logger.log("======================RTCurrentRunnable2.5");
+            tl = ((ORBImpl) o).rtCurrent;
+            
+            //tl = ((ORBImpl) (sm.getPortal())).rtCurrent;
+        } else {
+            ZenProperties.logger.log("======================RTCurrentRunnable3");
+            val = ((ORBImpl) (sm.getPortal())).getRTCurrent();
+        }
     }
 }

@@ -10,6 +10,7 @@ import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.poa.mechanism.PolicyUtils;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.utils.Logger;
 
 /**
@@ -106,14 +107,17 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
             org.omg.PortableServer.POAManager manager) {
         switch (manager.get_state().value()) {
             case State._HOLDING:
+                if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("checkPOAManagerState -- Exception1");
                 /*
                  * for now the queue length in the POAManager is 0. Should later
                  * be implemented.
                  */
                 return POARunnable.TransientException;
             case State._DISCARDING:
+                if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("checkPOAManagerState -- Exception2");
                 return POARunnable.TransientException;
             case State._INACTIVE:
+                if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("checkPOAManagerState -- Exception3");
                 return POARunnable.ObjAdapterException;
             default:
                 return POARunnable.NoException;
@@ -255,10 +259,17 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
     }
 
     protected void register(org.omg.PortableServer.POA poa) {
+
         synchronized (this) {
             for (int i = 0; i < numRegisteredPOAs; i++)
                 if (registeredPOAs[i].equals((edu.uci.ece.zen.poa.POA) poa)) return;
-            registeredPOAs[numRegisteredPOAs++] = poa;
+            
+            if(numRegisteredPOAs < registeredPOAs.length)
+                registeredPOAs[numRegisteredPOAs++] = poa;
+            else{
+                ZenProperties.logger.log(Logger.WARN, getClass(), "register", "Not enough POAManager slots. Please allocate more with doc.zen.poa.maxNumPOAManagers property.");
+                throw new RuntimeException("Not enough POAManager slots. Please allocate more with doc.zen.poa.maxNumPOAManagers property.");
+            }
         }
     }
 

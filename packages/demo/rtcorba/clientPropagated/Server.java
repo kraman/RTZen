@@ -15,6 +15,7 @@ import org.omg.PortableServer.POAManager;
 
 import org.omg.RTCORBA.RTORB;
 import org.omg.RTCORBA.RTORBHelper;
+import org.omg.RTCORBA.ThreadpoolLane;
 
 public class Server extends RealtimeThread
 {
@@ -42,7 +43,16 @@ public class Server extends RealtimeThread
     {
         try
         {
-            ZenProperties.iiopMinor = 2;
+            /*
+            for(int i = PriorityScheduler.instance().getMinPriority(); i < PriorityScheduler.instance().getMaxPriority(); ++i){
+                
+                short p = edu.uci.ece.zen.orb.PriorityMappingImpl.toNative(edu.uci.ece.zen.orb.PriorityMappingImpl.toCORBA((short)i));
+                
+                if(p != i)
+                    System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            }
+            */
+            //ZenProperties.iiopMinor = 2;
             System.out.println( "=====================Calling ORB Init in server============================" );
             ORB orb = ORB.init( args , null);
             System.out.println( "=====================ORB Init complete in server===========================" );
@@ -57,17 +67,23 @@ public class Server extends RealtimeThread
 
             // Create POA with CLIENT_PROPAGATED PriorityModelPolicy,
             // and register Test object with it.
-            org.omg.CORBA.Policy [] poa_policy_list = new org.omg.CORBA.Policy[1];
+            org.omg.CORBA.Policy [] poa_policy_list = new org.omg.CORBA.Policy[2];
 
-            //NON Standard -- using this until we can get some other stuff working
+            System.out.println("Max prio " + PriorityScheduler.instance().getMaxPriority() + ", " + RealtimeThread.MAX_PRIORITY);
+            System.out.println("Min prio " + PriorityScheduler.instance().getMinPriority() + ", " + RealtimeThread.MIN_PRIORITY);
+            System.out.println("Norm prio " + PriorityScheduler.instance().getNormPriority() + ", " + RealtimeThread.NORM_PRIORITY);
+            int minPrio = 0;
 
-            edu.uci.ece.zen.orb.transport.iiop.Acceptor.enableComponents = true;
-            edu.uci.ece.zen.orb.transport.iiop.Acceptor.serverPriority = 0;
-            edu.uci.ece.zen.orb.transport.iiop.Acceptor.priorityModel = org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED.value();
+            poa_policy_list[0] = rtorb.create_priority_model_policy (org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,(short)minPrio);
 
-            //for standard CORBA, this would be reenabled
-            ///poa_policy_list[0] = rtorb.create_priority_model_policy (org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,(short)0);
-            POA childPOA = rootPOA;///.create_POA ("Child_POA",poaManager,poa_policy_list);
+            ThreadpoolLane[] lanes = new ThreadpoolLane[3];
+            for(int i = 0; i < lanes.length; ++i)
+                lanes[i] = new ThreadpoolLane((short)((i+minPrio)*1000), 1, 1);
+            int threadPoolId = rtorb.create_threadpool_with_lanes(100, lanes, false, false, 10, 10);            
+
+            poa_policy_list[1] = rtorb.create_threadpool_policy(threadPoolId);
+            
+            POA childPOA = rootPOA.create_POA ("Child_POA",poaManager,poa_policy_list);
 
             TestImpl impl = new TestImpl(orb);
 
@@ -106,6 +122,7 @@ public class Server extends RealtimeThread
             else
                 System.out.println("Final priority of the servant thread" +
                         " = its initial priority");
+
 
         }
         catch (Exception e)

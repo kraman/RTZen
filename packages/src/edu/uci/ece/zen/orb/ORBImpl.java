@@ -64,16 +64,18 @@ public class ORBImpl {
                 orbFacade.orbImplRegion, (ProcessingGroupParameters)null, orbImplRunnable);
         if (ZenBuildProperties.dbgORB)
             ZenProperties.logger.log("======================starting nhrt in orb impl region=====================");
-
+        nhrt.setName("ORB Scope");
         nhrt.start();
         try {
-/*
-            rtCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
+            //rtCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
+
             //rtCurrent = new ThreadLocal();
-            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
+
+/*            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
+
             policyManager = (PolicyManagerImpl) (orbFacade.parentMemoryArea.newInstance(PolicyManagerImpl.class));
             policyManager.init(orbFacade);
-*/            
+*/
             /*
              * rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance(RTORBImpl.class ));
              * rtorb.init(orbFacade);
@@ -81,7 +83,8 @@ public class ORBImpl {
             orbFacade.getRTORB().create_threadpool(0,//stacksize,
                     1,//static_threads,
                     0,//dynamic_threads,
-                    (short) javax.realtime.PriorityScheduler.instance().getNormPriority(),//default_thread_priority,
+                    PriorityMappingImpl.toCORBA(
+                            (short) PriorityScheduler.instance().getNormPriority()),//default_thread_priority,
                     false,//allow_request_buffering,
                     0,//max_buffered_requests,
                     0//max_request_buffer_size
@@ -104,7 +107,7 @@ public class ORBImpl {
             r.init(this.orbFacade);
             orbFacade.setUpORBChildRegion( r );
         }*/
-        
+
     }
 
     public PolicyCurrent getPolicyCurrent() {
@@ -126,6 +129,7 @@ public class ORBImpl {
     }
 
     public RTCurrent getRTCurrent() {
+        /*
         RTCurrent ret = (RTCurrent) (rtCurrent.get());
 
         if (ret == null) {
@@ -141,6 +145,8 @@ public class ORBImpl {
         }
 
         return ret;
+        */
+        return null;
     }
 
     protected void handleInvocation() {

@@ -4,45 +4,75 @@ import javax.realtime.RealtimeThread;
 import org.omg.RTCORBA.PriorityMapping;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
+import edu.uci.ece.zen.utils.Logger;
+import org.omg.RTCORBA.maxPriority;
+import org.omg.RTCORBA.minPriority;
+import javax.realtime.PriorityScheduler;
 
 public class PriorityMappingImpl extends PriorityMapping {
+    
+    private static final int MAX_PRIORITY = PriorityScheduler.instance().getMaxPriority();
+    private static final int MIN_PRIORITY = PriorityScheduler.instance().getMinPriority();
 
     public boolean to_native(short corba_priority,
             org.omg.CORBA.ShortHolder native_priority) {
+                
+        if (corba_priority < minPriority.value 
+                || corba_priority > maxPriority.value) 
+            return false;
+        
+        native_priority.value = toNative(corba_priority);
 
-        if (corba_priority < 0 || corba_priority > 32767) return false;
-
-        //int range = RealtimeThread.MAX_PRIORITY -
-        // RealtimeThread.MIN_PRIORITY;
-
-        //double fract = (double)corba_priority/32767;
-
-        //int intval = (int)((corba_priority*(RealtimeThread.MAX_PRIORITY -
-        // RealtimeThread.MIN_PRIORITY))/32767.0 + RealtimeThread.MIN_PRIORITY);
-
-        //System.out.println("intval: " + intval);
-
-        native_priority.value = (short) ((corba_priority * (RealtimeThread.MAX_PRIORITY - RealtimeThread.MIN_PRIORITY)) / 32767.0 + RealtimeThread.MIN_PRIORITY);
-
-        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(/* "range: " + range + " fract: " + fract + */" native_priority.value: "
-                        + native_priority.value);
         return true;
+    }
+    
+    public static short toNative(short corba_priority) {
+
+        short nativePriority;
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("corba_priority: "
+                        + corba_priority);             
+        
+        if (corba_priority < minPriority.value || corba_priority > maxPriority.value){
+            ZenProperties.logger.log(Logger.WARN, PriorityMappingImpl.class, "toNative", "Cannot map requested priority. Assigning lowest value.");
+            nativePriority = (short) MIN_PRIORITY;  //TODO: make sure number doesn't change b/c of conversion
+        }else{
+            nativePriority = (short) Math.round((corba_priority * (MAX_PRIORITY - MIN_PRIORITY)) / (double)maxPriority.value + MIN_PRIORITY);
+        }
+        
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("native result: "
+                        + nativePriority);
+        
+        return nativePriority;
     }
 
     public boolean to_CORBA(short native_priority,
             org.omg.CORBA.ShortHolder corba_priority) {
-        if (native_priority < RealtimeThread.MIN_PRIORITY
-                || native_priority > RealtimeThread.MAX_PRIORITY) return false;
 
-        //double fract = (double)(native_priority -
-        // RealtimeThread.MIN_PRIORITY)/(RealtimeThread.MAX_PRIORITY -
-        // RealtimeThread.MIN_PRIORITY);
+        if (native_priority < MIN_PRIORITY
+                || native_priority > MAX_PRIORITY) 
+            return false;
 
-        corba_priority.value = (short) (((double) (native_priority - RealtimeThread.MIN_PRIORITY) / (RealtimeThread.MAX_PRIORITY - RealtimeThread.MIN_PRIORITY)) * 32767);
+        corba_priority.value = toCORBA(native_priority);
 
-        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(/* "range: " + range + " fract: " + fract + */" corba_priority.value: "
-                        + corba_priority.value);
+        return true;                
+    }
+    
+    public static short toCORBA(short native_priority) {
 
-        return true;
+        short corbaPriority;
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("native_priority: "
+                        + native_priority);   
+        
+        if (native_priority < MIN_PRIORITY || native_priority > MAX_PRIORITY){
+            ZenProperties.logger.log(Logger.WARN, PriorityMappingImpl.class, "toCORBA", "Cannot map requested priority. Assigning lowest value.");
+            corbaPriority =  minPriority.value;
+        }else{     
+            corbaPriority = (short) Math.round( ((double) (native_priority - MIN_PRIORITY) / (MAX_PRIORITY - MIN_PRIORITY))  * maxPriority.value );
+        }
+
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("corba result: "
+                        + corbaPriority);      
+        
+        return corbaPriority;
     }
 }
