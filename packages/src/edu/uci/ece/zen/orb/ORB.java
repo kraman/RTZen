@@ -137,6 +137,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     public ScopedMemory[] threadpoolList;
     public edu.uci.ece.zen.poa.POA rootPOA;
     public Object orbRunningLock;
+    public RTORBImpl rtorb;
 
     private FString orbId;
 
@@ -149,6 +150,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         waiterRegistry.init( 100 );
         executeInRunnableCache = new Queue();
         //rtorb = new RTORBImpl(this);
+        rtorb = new RTORBImpl();
+        rtorb.init(this);
         //policyManager = new PolicyManagerImpl(this);
         threadpoolList = new ScopedMemory[10];//KLUDGE: need to set up property for max TPs
         orbId = new FString();
@@ -327,7 +330,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             return getPolicyManager();
         }else if(object_name.equals("PolicyCurrent")){
             PolicyCurrentRunnable prun = new PolicyCurrentRunnable(orbImplRegion);
-            internalResolve(prun);
+            executeInORBRegion(prun);
             return prun.val;
         }else if(object_name.equals("RTCurrent")){
             return getRTCurrent();
@@ -346,24 +349,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             //return policyManager;
     }
 
-    private void internalResolve(Runnable runnable){
-        ExecuteInRunnable r = new ExecuteInRunnable();
-
-        r.init(runnable, orbImplRegion);
-        try{
-
-            parentMemoryArea.executeInArea( r );
-        }catch( Exception e ){
-            ZenProperties.logger.log(
-                Logger.FATAL,
-                "edu.uci.ece.zen.orb.ORB",
-                "",
-                "" + e.toString()
-                );
-            System.exit(-1);
-        }
-    }
-
     /**
         logic to retrieve policy manger from client memory
     */
@@ -380,10 +365,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public PolicyManager getPolicyManager(){
         PolicyManagerRunnable runnable = new PolicyManagerRunnable(orbImplRegion);
-        internalResolve(runnable);
+        executeInORBRegion(runnable);
         return runnable.val;
     }
-
+/*
     class RTORBRunnable implements Runnable{
         public RTORBImpl val;
         private ScopedMemory sm;
@@ -394,11 +379,14 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             val = ((ORBImpl)(sm.getPortal())).rtorb;
         }
     }
-
+*/
     public RTORB getRTORB(){
+        /*
         RTORBRunnable runnable = new RTORBRunnable(orbImplRegion);
-        internalResolve(runnable);
+        executeInORBRegion(runnable);
         return runnable.val;
+        */
+        return rtorb;
     }
 
     class RTCurrentRunnable implements Runnable{
@@ -419,14 +407,14 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public RTCurrent getRTCurrent(){
         RTCurrentRunnable rtrun = new RTCurrentRunnable(orbImplRegion);
-        internalResolve(rtrun);
+        executeInORBRegion(rtrun);
         if(!rtrun.init){
             rtrun.init = true;
-            //since ThreadLocal lazily creates the internal hash map every time 
+            //since ThreadLocal lazily creates the internal hash map every time
             //get() is called, we have to call it here from client scope and not
             //let it be created lazily from ORB scope
             rtrun.tl.get();
-            internalResolve(rtrun);
+            executeInORBRegion(rtrun);
         }
         return rtrun.val;
     }
@@ -527,6 +515,49 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public AcceptorRegistry getAcceptorRegistry(){
         return acceptorRegistry;
+    }
+
+    private void executeInORBRegion(Runnable runnable){
+        ExecuteInRunnable r = new ExecuteInRunnable();
+
+        r.init(runnable, orbImplRegion);
+        try{
+
+            parentMemoryArea.executeInArea( r );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.ORB",
+                "",
+                "" + e.toString()
+                );
+            System.exit(-1);
+        }
+    }
+
+    /**
+     * This is used to set up a child region of the ORB region
+     *
+    */
+    public void setUpORBChildRegion(Runnable runnable){
+
+        ExecuteInRunnable r1 = new ExecuteInRunnable();
+        ExecuteInRunnable r2 = new ExecuteInRunnable();
+        ScopedMemory sm = getScopedRegion();
+
+        r1.init( r2 , orbImplRegion );
+        r2.init( runnable, sm );
+        try{
+            parentMemoryArea.executeInArea( r1 );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.RTORBImpl",
+                "create_threadpool",
+                "Could not create threadpool due to exception: " + e.toString()
+                );
+            System.exit(-1);
+        }
     }
 
 
