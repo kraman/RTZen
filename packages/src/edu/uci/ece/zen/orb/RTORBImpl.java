@@ -30,13 +30,6 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
         tpr = new ThreadPoolRunnable();
         acceptorRunnable = new AcceptorRunnable();
         acceptorRunnable.init(orb);
-        /*
-         * try{ tpr = (ThreadPoolRunnable)(orb.parentMemoryArea.newInstance(
-         * ThreadPoolRunnable.class )); acceptorRunnable =
-         * (AcceptorRunnable)(orb.parentMemoryArea.newInstance(
-         * AcceptorRunnable.class )); acceptorRunnable.init(orb);
-         * }catch(Exception e){ e.printStackTrace(); }
-         */
     }
 
     /**
@@ -60,7 +53,6 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
             int dynamic_threads, short default_priority,
             boolean allow_request_buffering, int max_buffered_requests,
             int max_request_buffer_size) {
-        ZenProperties.logger.log("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_ CREATING THREADPOOL +_+_+_+_+_+_+_+_+_+_+_+_+_");
         orb.setUpORBChildRegion(acceptorRunnable);
         tpr.init(this, orb, stacksize, static_threads, dynamic_threads,
                 default_priority, allow_request_buffering,
@@ -132,7 +124,6 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
         ServerProtocolPolicyImpl spp = new ServerProtocolPolicyImpl();
         spp.protocols(protocols);
         return spp;
-        //throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     /**
@@ -143,14 +134,12 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
         ClientProtocolPolicyImpl cpp = new ClientProtocolPolicyImpl();
         cpp.protocols(protocols);
         return cpp;
-        //throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     /**
      * Operation create_private_connection_policy
      */
     public org.omg.RTCORBA.PrivateConnectionPolicy create_private_connection_policy() {
-        //return pcp;
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
@@ -160,7 +149,6 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
     public org.omg.RTCORBA.TCPProtocolProperties create_tcp_protocol_properties(
             int send_buffer_size, int recv_buffer_size, boolean keep_alive,
             boolean dont_route, boolean no_delay) {
-        //throw new org.omg.CORBA.NO_IMPLEMENT();
 
         TCPProtocolProperties tcpPP = new TCPProtocolPropertiesImpl();
         tcpPP.send_buffer_size(send_buffer_size);
@@ -171,40 +159,12 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
         return tcpPP;
     }
 
-    //public ServerProtocolPolicyImpl spp;
-    //ClientProtocolPolicyImpl cpp;
-    //PrivateConnectionPolicy pcp;
-    //public TCPProtocolProperties tcpPP;
-
     int tpID = 0;
 
     class RTORBInitRunnable implements Runnable {
 
         public void run() {
 
-            //spp = new ServerProtocolPolicyImpl();
-            //cpp = new ClientProtocolPolicyImpl();
-            //pcp = new PrivateConnectionPolicyImpl();
         }
     }
-
 }
-
-/*
- * privilieged aspect TCPProtocolPropertiesAspect{
- * edu.uci.ece.zen.orb.transport.iiop; void around():
- * execution(edu.uci.ece.zen.orb.transport.iiop.RTORBImpl.create_tcp_protocol_properties()) &&
- * args() { } int _send_buffer_size = 1024 * 64; int _recv_buffer_size = 1024 *
- * 64; boolean _keep_alive = false; boolean _dont_route = true; boolean
- * _no_delay = true; Object around(int send_buffer_size, int
- * recv_buffer_size,boolean keep_alive, boolean dont_route, boolean no_delay):
- * execution(org.omg.RTCORBA.TCPProtocolProperties
- * edu.uci.ece.zen.orb.RTORBImpl.create_tcp_protocol_properties( int, int,
- * boolean, boolean, boolean)) &&
- * args(send_buffer_size,recv_buffer_size,keep_alive,dont_route,no_delay) {
- * return new
- * org.omg.RTCORBA.TCPProtocolProperties(send_buffer_size,recv_buffer_size,keep_alive,dont_route,no_delay); }
- * Object around(): execution(org.omg.RTCORBA.ClientProtocolPolicy
- * edu.uci.ece.zen.orb.RTORBImpl.create_client_protocol_policy(..)) { return
- * false; } }
- */

@@ -76,17 +76,11 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     static {
         try {
             try {
-                if (ZenProperties.dbg) ZenProperties.logger.log("local address"
-                        + java.net.InetAddress.getLocalHost().getHostAddress());
-                //sockAddr = new
-                // java.net.InetSocketAddress(java.net.InetAddress.getLocalHost().getHostAddress(),0);
+                if (ZenProperties.dbg) ZenProperties.logger.log("local address" + java.net.InetAddress.getLocalHost().getHostAddress());
                 sockAddr = java.net.InetAddress.getLocalHost();
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, ORB.class, "static <init>", e);
             }
-
-//            if(edu.uci.ece.zen.utils.ZenProperties.memDbg)
-//                perf.cPrint.nativePrinter.print(0,0,0);
 
             imm = ImmortalMemory.instance();
             //Set up ORB Facades
@@ -103,8 +97,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
             //Set up storage for memoryAreas
             unusedMemoryAreas = (Queue) imm.newInstance(Queue.class);
-            scopeMemorySize = Integer.parseInt(ZenProperties.getGlobalProperty(
-                    "doc.zen.orb.scopedMemorySize", "2097951"));    //Change by Alex...TODO: unknown reason
+            scopeMemorySize = Integer.parseInt(ZenProperties.getGlobalProperty( "doc.zen.orb.scopedMemorySize", "2097951"));
 
             int numMemAreas = Integer.parseInt(ZenProperties
                 .getGlobalProperty( "memarea.amount" , "20" ));
@@ -113,9 +106,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                 unusedMemoryAreas.enqueue(new LTMemory(100, scopeMemorySize));
 
             //Set up connection registry
-            maxSupportedConnections = Integer.parseInt(ZenProperties
-                    .getGlobalProperty("doc.zen.orb.maxConnectionsPerORB",
-                            "100"));
+            maxSupportedConnections = Integer.parseInt(ZenProperties .getGlobalProperty("doc.zen.orb.maxConnectionsPerORB", "100"));
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, ORB.class, "static <init>", e);
             System.exit(-1);
@@ -645,6 +636,24 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         return acceptorRegistry;
     }
 
+    public class AcceptorCreatorRunnable implements Runnable{
+        private short priority;
+        public void init( short priority ){
+            this.priority = priority;
+        }
+        
+        public void run(){
+            ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
+            orbImpl.ensureAcceptorAtPriority( priority );
+        }
+    }
+
+    private AcceptorCreatorRunnable acceptorCreatorRunnable = new AcceptorCreatorRunnable();
+    public synchronized void ensureAcceptorAtPriority( short priority ){
+        acceptorCreatorRunnable.init( priority );
+        executeInORBRegion( acceptorCreatorRunnable );
+    }
+
     public void executeInORBRegion(Runnable runnable) {
         ExecuteInRunnable r = new ExecuteInRunnable();
 
@@ -937,7 +946,8 @@ class ORBInitRunnable implements Runnable {
             ORBImpl orbImpl = new ORBImpl(args, props, orbFacade);
             curMem.setPortal(orbImpl);
         } else {
-            ((ORBImpl) curMem.getPortal()).setProperties(args, props);
+            //((ORBImpl) curMem.getPortal()).setProperties(args, props);
+            //TODO: what happened to this piece of code? It used to work...
         }
     }
 }

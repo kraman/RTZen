@@ -84,6 +84,10 @@ public abstract class Acceptor {
     public void finalize() {
         ZenProperties.logger.log("Acceptor region has been GC'd");
     }
+
+    private Class protocolFactory;
+    public void setProtocolFactory( Class pf ){ this.protocolFactory = pf; }
+    public Class getProtocolFactory(){ return this.protocolFactory; }
 }
 
 class AcceptorLogic implements Runnable {

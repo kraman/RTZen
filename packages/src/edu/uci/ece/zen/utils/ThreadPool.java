@@ -81,7 +81,6 @@ public class ThreadPool {
         }
     }
 }
-
 class Lane {
     int stackSize; //ignored. No such provision in RTSJ 2.0
 
@@ -123,6 +122,7 @@ class Lane {
         this.numBuffered = 0;
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
+        tp.orb.ensureAcceptorAtPriority( priority );
 
         for (numThreads = 0; numThreads < maxStaticThreads; numThreads++) {
             newThread();
@@ -292,23 +292,13 @@ class ThreadSleepRunnable implements Runnable {
                 lane.returnToPool(this);
                 taskAvailableEvent.stall();
 
-                //process the task in the portal of the scoped region
                 ir.init(task);
-                //System.out.println( "HandleRequestRunnable finished in
-                // ThreadPool" );
-                //System.out.println( task.getAssociatedPOA() );
-                eir
-                        .init(ir, ((edu.uci.ece.zen.poa.POA) task
-                                .getAssociatedPOA()).poaMemoryArea);
-                //System.out.println( "Calling executeInArea on
-                // HandleRequestRunnable" );
+                eir.init(ir, ((edu.uci.ece.zen.poa.POA) task.getAssociatedPOA()).poaMemoryArea);
                 try {
                     lane.tp.orb.orbImplRegion.executeInArea(eir);
                 } catch (Exception e) {
                     ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
                 }
-                //System.out.println( "Returned executeInArea on
-                // HandleRequestRunnable" );
                 task = null;
             }
         } catch (InterruptedException e) {

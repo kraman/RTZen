@@ -19,12 +19,14 @@ import org.omg.RTCORBA.PriorityModel;
 import org.omg.RTCORBA.SERVER_PROTOCOL_POLICY_TYPE;
 import org.omg.RTCORBA.THREADPOOL_POLICY_TYPE;
 
+
 import edu.uci.ece.zen.orb.policies.PriorityModelPolicyImpl;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.FString;
+import edu.uci.ece.zen.orb.transport.TransportFactory;
 
 public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
@@ -105,8 +107,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         ZenProperties.logger.log("ObjRefDel init 1");
         System.out.println("++++++++++++++++++++++++++++++++++ObjRefDel no of prof:" + ior.profiles.length);
         //process all the tagged profiles
-        for (int i = 0; i < ior.profiles.length; i++) { //go through each
-            // tagged profile
+        for (int i = 0; i < ior.profiles.length; i++) {
             processTaggedProfile(ior.profiles[i], obj, orbImpl, isCollocated);
         }
         ZenProperties.logger.log("ObjRefDel init 2");
@@ -147,319 +148,14 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         ZenProperties.logger.log("ObjRefDel processTaggedProfile 1");
         switch (tag) {
             case TAG_INTERNET_IOP.value: //establish appropriate connections
+            case TAG_SERIAL.value:
                 ZenProperties.logger.log( "IIOP transport profile found" );
-            // and
-            // register them
-            {
-                boolean startSerialTransportAcceptor = ZenProperties.getGlobalProperty("serial.client.only" , "" ).equals("1");
-
-                if( startSerialTransportAcceptor && !isCollocated ){
-                //if( startSerialTransportAcceptor){
-
-                    ZenProperties.logger.log("+++++++++++++++++++++++++++++++++++++++++++++Skipping IIOP");
-                    return;
-                }
-                ZenProperties.logger.log("ObjRefDel processTaggedProfile IIOP 1");
-                byte[] data = profile.profile_data;
-
-                CDRInputStream in = CDRInputStream.fromOctetSeq(data, orb);
-                /*
-                 * ReadBuffer rb = ReadBuffer.instance(); rb.init();
-                 * rb.writeByteArray( data , 0 , data.length ); CDRInputStream
-                 * in = CDRInputStream.instance(); in.init( orb , rb );
-                 * in.setEndian( in.read_boolean() );
-                 */
-                byte iiopMinor = data[2];
-                if (ZenProperties.dbg) ZenProperties.logger.log("iiop minor " + iiopMinor);
-                switch (iiopMinor) {
-                    case 0: {
-                        ZenProperties.logger.log("ObjRefDel processTaggedProfile IIOPv1.0 1");
-                        /*
-                        TaggedProfileRunnable profRun = TaggedProfileRunnable.instance();
-                        profRun.init(in);
-                        ScopedMemory profScope = ORB.getScopedRegion();
-                        profScope.enter(profRun);
-
-                        ORB.freeScopedRegion(profScope);
-*/
-                        /////////////////////////
-
-                        //edu.uci.ece.zen.utils.Logger.printMemStats(400);
-                        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(500);
-                        in.read_octet(); //iiop major
-                        in.read_octet(); //iiop minor
-
-                        FString host = in.getBuffer().readFString(true);
-                        short port = in.read_ushort();
-
-                        FString object_key = in.getBuffer().readFString(false);
-                        //edu.uci.ece.zen.utils.Logger.printMemStats(402);
-                        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(502);
-
-                        ///////////////////
-                        //org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read(in);
-
-                        long connectionKey = ConnectionRegistry.ip2long(host, port);
-                        ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
-
-                        if (transportScope == null) {
-
-
-                            transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector
-                                    .instance().connect(host, port, orb, orbImpl);
-                            orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
-                            addLaneData(RealtimeThread.MIN_PRIORITY,
-                                    99/* RealtimeThread.MAX_PRIORITY */,
-                                    transportScope, object_key,
-                                    edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
-                        } else {
-                            FString.free(host);
-                        }
-                        ZenProperties.logger.log("ObjRefDel processTaggedProfile IIOPv1.0 2");
-                    }
-                        break;
-
-                    case 1:
-                    case 2: {
-
-                        in.read_octet(); //iiop major
-                        in.read_octet(); //iiop minor
-
-                        FString host = in.getBuffer().readFString(true);
-                        short port = in.read_ushort();
-
-                        FString object_key = in.getBuffer().readFString(false);
-                        //edu.uci.ece.zen.utils.Logger.printMemStats(402);
-                        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(502);
-
-                        ///////////////////
-                        //org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read(in);
-
-                        long connectionKey = ConnectionRegistry.ip2long(host, port);
-                        ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
-
-                        if (transportScope == null) {
-                            transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector
-                                    .instance().connect(host, port, orb, orbImpl);
-                            orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
-                        } else {
-                            FString.free(host);
-                        }
-
-                        int numComp = in.read_ulong();
-
-                        if (ZenProperties.devDbg) System.out.println(in.toString());
-
-                        if (ZenProperties.dbg) ZenProperties.logger.log("number of components: " + numComp);
-
-                        for (int i = 0; i < numComp; ++i) {
-                            //TaggedComponent tc = profilebody.components[i];
-
-                            int ctag = in.read_ulong();
-
-
-                            if (ZenProperties.dbg) ZenProperties.logger.log("found tag: " + ctag);
-
-                            if (ctag == org.omg.IOP.TAG_ORB_TYPE.value) {
-
-                                int byteLen = in.read_ulong();
-                                in.read_boolean(); //endianess
-
-                                int orbType = in.read_ulong();
-
-                                if (ZenProperties.dbg) ZenProperties.logger.log("ORB type: " + orbType);
-
-
-                            } else if (ctag == org.omg.IOP.TAG_CODE_SETS.value) {
-                                //just eat for now
-                                int byteLen = in.read_ulong();
-                                for(int i1 = 0; i1 < byteLen; ++i1)
-                                    in.read_octet();
-                                /*
-                                int codeId = in.read_ulong();
-                                if (ZenProperties.dbg) ZenProperties.logger.log("Code is: " + codeId);
-
-                                int arrSize = in.read_ulong();
-                                if (ZenProperties.dbg) ZenProperties.logger.log("arrSize: " + arrSize);
-
-                                for(int i1 = 0; i1 < arrSize; ++i1){
-                                    int tempCS = in.read_ulong();
-
-                                    if (ZenProperties.dbg) ZenProperties.logger.log("arrelem: " + tempCS);
-
-                                }
-
-                                codeId = in.read_ulong();
-                                if (ZenProperties.dbg) ZenProperties.logger.log("Code is: " + codeId);
-
-                                arrSize = in.read_ulong();
-                                if (ZenProperties.dbg) ZenProperties.logger.log("arrSize: " + arrSize);
-
-                                for(int i1 = 0; i1 < arrSize; ++i1){
-                                    int tempCS = in.read_ulong();
-
-                                    if (ZenProperties.dbg) ZenProperties.logger.log("arrelem: " + tempCS);
-
-                                }
-                                */
-
-                            } else if (ctag == org.omg.IOP.TAG_POLICIES.value) {
-
-                                int byteLen = in.read_ulong();
-                                in.read_boolean(); //endianess
-                                int numPol = in.read_ulong();
-
-                                //CDRInputStream in1 = CDRInputStream
-                                 //       .fromOctetSeq(tc.component_data, orb);
-
-                                //PolicyValue[] pvarr = PolicyValueSeqHelper
-                                //        .read(in1);
-                                //in1.free();
-
-                                if (ZenProperties.dbg) ZenProperties.logger.log("number of policies: " + numPol);
-
-                                for (int j = 0; j < numPol; ++j) {
-
-                                    int polType = in.read_ulong();
-
-                                    int byteLen1 = in.read_ulong();
-                                    in.read_boolean(); //endianess
-
-                                    if (ZenProperties.dbg) ZenProperties.logger.log("found policy value: " + polType);
-
-                                    //CDRInputStream in2 = CDRInputStream
-                                    //        .fromOctetSeq(pvarr[j].pvalue, orb);
-                                    //PriorityModelPolicyHelper.extract(in2.read_any());
-
-                                    switch (polType) {
-
-                                        case PRIORITY_MODEL_POLICY_TYPE.value:
-
-                                            ZenProperties.logger.log("\tPRIORITY_MODEL_POLICY_TYPE");
-                                            priorityModel = in.read_long();
-                                            serverPriority = in.read_short();
-                                            if (ZenProperties.dbg) ZenProperties.logger.log("\tpriority model: " + priorityModel);
-                                            if (ZenProperties.dbg) ZenProperties.logger.log("\tpriority: " + serverPriority);
-                                            break;
-
-                                        case THREADPOOL_POLICY_TYPE.value:
-                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
-                                                in.read_octet();
-                                            ZenProperties.logger.log("\tTHREADPOOL_POLICY_TYPE");
-                                            break;
-
-                                        case SERVER_PROTOCOL_POLICY_TYPE.value:
-                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
-                                                in.read_octet();
-                                            ZenProperties.logger.log("\tSERVER_PROTOCOL_POLICY_TYPE");
-                                            break;
-
-                                        case CLIENT_PROTOCOL_POLICY_TYPE.value:
-                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
-                                                in.read_octet();
-                                            ZenProperties.logger.log("\tCLIENT_PROTOCOL_POLICY_TYPE");
-                                            break;
-
-                                        case PRIVATE_CONNECTION_POLICY_TYPE.value:
-                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
-                                                in.read_octet();
-                                            ZenProperties.logger.log("\tPRIVATE_CONNECTION_POLICY_TYPE");
-                                            break;
-
-                                        case PRIORITY_BANDED_CONNECTION_POLICY_TYPE.value:
-                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
-                                                in.read_octet();
-                                            ZenProperties.logger.log("\tPRIORITY_BANDED_CONNECTION_POLICY_TYPE");
-                                            break;
-
-                                        default:
-                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
-                                                in.read_octet();
-                                            ZenProperties.logger.log("ERROR: Invalid policy type");
-
-                                    } //end switch
-
-                                    //in2.free();
-
-                                } //end for
-
-                            }else{
-                                //just eat if we don't know the type
-                                int byteLen = in.read_ulong();
-                                for(int i1 = 0; i1 < byteLen; ++i1)
-                                    in.read_octet();
-
-
-                            }
-
-                        }
-
-                        //TODO: process priority policies here and add the
-                        // appropriate
-                        // lanes
-                        addLaneData(RealtimeThread.MIN_PRIORITY, 99,
-                                transportScope, object_key,
-                                edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
-                    }
-                        break;
-                }
-                in.free();
-            }
+                TransportFactory.connect( tag , profile , obj , this , isCollocated );
                 break;
             case TAG_MULTIPLE_COMPONENTS.value: //process the tagged components
                 //TODO: Currently ignored because they are of no immediate use
                 ZenProperties.logger.log("TAG_MULTIPLE_COMPONENTS ignored");
                 break;
-            case TAG_SERIAL.value: //process serial 
-/*
-                System.out.println( "Serial transport profile found" );
-
-                if( isCollocated ){
-                    ZenProperties.logger.log("+++++++++++++++++++++++++++++++++++++++++++++Collocated object, Skipping Serial");
-                    return;
-                }
-
-                ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 1");
-
-                byte[] data = profile.profile_data;
-                if (ZenProperties.dbg) ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL prof data len:" + data.length);
-                CDRInputStream in = CDRInputStream.fromOctetSeq(data, orb);
-
-                //for(int i = 0 ; i < in.getBuffer().getLimit()/4; ++i)
-                //    if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + in.read_ulong());
-
-                FString object_key = in.getBuffer().readFString(false);
-                //if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + object_key.length());
-               // if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + object_key.decode());
-                long connectionKey = -TAG_SERIAL.value;
-                ScopedMemory transportScope = null;
-                synchronized(edu.uci.ece.zen.orb.transport.serial.SerialPort.class){
-                    transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
-                }
-                ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 2");
-                if( transportScope == null ){
-                    try{
-                        transportScope = edu.uci.ece.zen.orb.transport.serial.Connector
-                            .instance().connect(null, (short)0, orb, orbImpl);
-                        orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
-                }
-
-                if (transportScope != null) {
-                    System.out.println( "Serial connection succesful" );
-                    addLaneData(RealtimeThread.MIN_PRIORITY,
-                    99/ * RealtimeThread.MAX_PRIORITY * /,
-                    transportScope, object_key,
-                    edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
-                }else{
-                    System.out.println( "Serial connection unsuccesful" );
-                }
-                ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 3");
-                in.free();
-
-                break;*/
             default:
                 ZenProperties.logger.log(Logger.WARN, getClass(), "processTaggedProfile", "unhandled tag: " + tag);
         }
@@ -602,11 +298,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      * --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */
-    public org.omg.CORBA.portable.OutputStream request(
-            org.omg.CORBA.Object self, String operation,
-            boolean responseExpected) {
-        //return new ClientRequest( operation , responseExpected , (byte)1 ,
-        // (byte)0 , orb , this );
+    public org.omg.CORBA.portable.OutputStream request( org.omg.CORBA.Object self, String operation, boolean responseExpected) {
         ClientRequest cr = ClientRequest.instance();
         cr.init(operation, responseExpected, (byte) 1, (byte) 0, orb, this);
         return cr;
@@ -619,14 +311,9 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      * --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */
-    public org.omg.CORBA.portable.OutputStream request(
-            org.omg.CORBA.Object self, String operation,
-            boolean responseExpected, byte majorVersion, byte minorVersion) {
-        //return new ClientRequest( operation , responseExpected , majorVersion
-        // , minorVersion , orb , this );
+    public org.omg.CORBA.portable.OutputStream request( org.omg.CORBA.Object self, String operation, boolean responseExpected, byte majorVersion, byte minorVersion) {
         ClientRequest cr = ClientRequest.instance();
-        cr.init(operation, responseExpected, majorVersion, minorVersion, orb,
-                this);
+        cr.init(operation, responseExpected, majorVersion, minorVersion, orb, this);
         return cr;
     }
 
@@ -641,9 +328,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             org.omg.CORBA.portable.OutputStream os)
             throws org.omg.CORBA.portable.ApplicationException,
             org.omg.CORBA.portable.RemarshalException {
-        //        edu.uci.ece.zen.utils.Logger.printMemStats(302);
         org.omg.CORBA.portable.InputStream ret = ((ClientRequest) os).invoke();
-        //      edu.uci.ece.zen.utils.Logger.printMemStats(303);
         ((ClientRequest) os).free();
         return ret;
     }
@@ -654,8 +339,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////DII
-    // Stuff///////////////////////////////////
+    ///////////////////////////////////DII Stuff///////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
 
     public org.omg.CORBA.Request request(org.omg.CORBA.Object self,
@@ -686,8 +370,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////Local
-    // Invocations///////////////////////////
+    ///////////////////////////////////Local Invocations///////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
 
     public org.omg.CORBA.portable.ServantObject servant_preinvoke(
@@ -700,36 +383,3 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 }
-/*
-class TaggedProfileRunnable implements Runnable{
-    private static Queue queue = Queue.fromImmortal();
-
-    public org.omg.IIOP.Version iiop_version;
-
-    public FString host;
-
-    public short port;
-
-    public FString object_key;
-
-
-    CDRInputStream in;
-
-    public static TaggedProfileRunnable instance() {
-        return (TaggedProfileRunnable)ORB.getQueuedInstance(TaggedProfileRunnable.class,queue);
-    }
-
-    public void init(CDRInputStream in){
-        this.in = in;
-    }
-
-    public void run(){
-        org.omg.IIOP.ProfileBody_1_0 profilebody =
-                org.omg.IIOP.ProfileBody_1_0Helper.read(in);
-
-
-        port = profilebody.port;
-    }
-
-}
-*/

@@ -2,25 +2,29 @@ package edu.uci.ece.zen.orb;
 
 import java.util.Properties;
 
-//import javax.realtime.MemoryArea;
-//import javax.realtime.NoHeapRealtimeThread;
-//import javax.realtime.RealtimeThread;
-//import javax.realtime.ScopedMemory;
 import javax.realtime.*;
-
 import org.omg.CORBA.PolicyCurrent;
-
 import edu.uci.ece.zen.orb.policies.PolicyCurrentImpl;
 import edu.uci.ece.zen.orb.policies.PolicyManagerImpl;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
-//import edu.uci.ece.zen.utils.ThreadLocal;
+import org.omg.IOP.TaggedProfile;
+import org.omg.Messaging.PolicyValue;
+import org.omg.Messaging.PolicyValueSeqHelper;
+import org.omg.RTCORBA.CLIENT_PROTOCOL_POLICY_TYPE;
+import org.omg.RTCORBA.PRIORITY_BANDED_CONNECTION_POLICY_TYPE;
+import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
+import org.omg.RTCORBA.PRIVATE_CONNECTION_POLICY_TYPE;
+import org.omg.RTCORBA.PriorityModel;
+import org.omg.RTCORBA.SERVER_PROTOCOL_POLICY_TYPE;
+import org.omg.RTCORBA.THREADPOOL_POLICY_TYPE;
+import java.util.Vector;
 
 public class ORBImpl {
     ZenProperties properties;
 
-    edu.uci.ece.zen.orb.ORB orbFacade;
+    public edu.uci.ece.zen.orb.ORB orbFacade;
 
     ORBImplRunnable orbImplRunnable;
 
@@ -38,50 +42,39 @@ public class ORBImpl {
 
     public Queue crCache; //ConnectorRunnable cache
 
-    public ORBImpl(String args[], Properties props,
-            edu.uci.ece.zen.orb.ORB orbFacade) {
+    public Vector transportTags;    //List of all the transports that should be loaded for this orb
+
+    public ORBImpl(String args[], Properties props, edu.uci.ece.zen.orb.ORB orbFacade) {
         ZenProperties.logger.log("======================In orb impl region===================================");
         properties = new ZenProperties();
         properties.addPropertiesFromArgs(args);
         properties.addProperties(props);
+        transportTags = new Vector(10); //KLUDGE: how many transports to preallocate for?
         this.orbFacade = orbFacade;
         ZenProperties.logger.log("======================Setting portal variable==============================");
         orbFacade.orbImplRegion.setPortal(this);
         orbImplRunnable = new ORBImplRunnable(orbFacade.orbImplRegion);
         ZenProperties.logger.log("======================Creating nhrt sleeper thread=========================");
         if (ZenProperties.dbg) ZenProperties.logger.log(orbFacade.orbImplRegion.toString());
-        if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
-                .getMemoryArea(orbImplRunnable).toString());
-        if (ZenProperties.dbg) ZenProperties.logger.log(NoHeapRealtimeThread
-                .getCurrentMemoryArea().toString());
-        //NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,
-        // null,null,(ScopedMemory)orbFacade.orbImplRegion,null,(java.lang.Runnable
-        // )orbImplRunnable );
-        if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
-                .getMemoryArea(new Integer(42)).toString());
+        if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea .getMemoryArea(orbImplRunnable).toString());
+        if (ZenProperties.dbg) ZenProperties.logger.log(NoHeapRealtimeThread .getCurrentMemoryArea().toString());
+        if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea .getMemoryArea(new Integer(42)).toString());
         SchedulingParameters sp = null;
         ReleaseParameters rp = null;
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread(sp, rp, (MemoryParameters)null,
                 orbFacade.orbImplRegion, (ProcessingGroupParameters)null, orbImplRunnable);
+
+        edu.uci.ece.zen.orb.transport.TransportFactory.registerTransport( org.omg.IOP.TAG_INTERNET_IOP.value , 
+            new edu.uci.ece.zen.orb.transport.iiop.TransportFactory() , orbFacade.orbImplRegion );
         ZenProperties.logger.log("======================starting nhrt in orb impl region=====================");
 
         nhrt.start();
         try {
-
             rtCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
-            //rtCurrent = new ThreadLocal();
-/*            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
-            policyManager = (PolicyManagerImpl) (orbFacade.parentMemoryArea.newInstance(PolicyManagerImpl.class));
-            policyManager.init(orbFacade);
-*/
-            /*
-             * rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance(
-             * RTORBImpl.class )); rtorb.init(orbFacade);
-             */
             orbFacade.getRTORB().create_threadpool(0,//stacksize,
                     1,//static_threads,
                     0,//dynamic_threads,
-                    (short) RealtimeThread.NORM_PRIORITY,//default_thread_priority,
+                    (short) javax.realtime.PriorityScheduler.instance().getNormPriority(),//default_thread_priority,
                     false,//allow_request_buffering,
                     0,//max_buffered_requests,
                     0//max_request_buffer_size
@@ -92,20 +85,6 @@ public class ORBImpl {
 
         eirCache = new Queue();
         crCache = new Queue();
-
-        ZenProperties.logger.log("======================Performing post initialization steps====================");
-        boolean startSerialTransportAcceptor = this. properties.getProperty( "edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
-        //boolean startSerialTransportAcceptor = ZenProperties.getGlobalProperty("edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
-
-        /*
-        if( startSerialTransportAcceptor ){
-            ZenProperties.logger.log("**** STARTING SERIAL ACCEPTOR ****");
-            edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable r =
-                new edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable();
-            r.init(this.orbFacade);
-            orbFacade.setUpORBChildRegion( r );
-        }*/
-
     }
 
     public PolicyCurrent getPolicyCurrent() {
@@ -144,13 +123,67 @@ public class ORBImpl {
         return ret;
     }
 
-    protected void handleInvocation() {
+    public void processPolicyTagComponent( CDRInputStream in ){
+        int byteLen = in.read_ulong();
+        in.read_boolean(); //endianess
+        int numPol = in.read_ulong();
+        if (ZenProperties.dbg) ZenProperties.logger.log("number of policies: " + numPol);
+
+        for (int j = 0; j < numPol; ++j) {
+            int polType = in.read_ulong();
+            int byteLen1 = in.read_ulong();
+            in.read_boolean(); //endianess
+            if (ZenProperties.dbg) ZenProperties.logger.log("found policy value: " + polType);
+
+            switch (polType) {
+                case PRIORITY_MODEL_POLICY_TYPE.value:
+                    ZenProperties.logger.log("\tPRIORITY_MODEL_POLICY_TYPE");
+                    int priorityModel = in.read_long();
+                    int serverPriority = in.read_short();
+                    if (ZenProperties.dbg) ZenProperties.logger.log("\tpriority model: " + priorityModel);
+                    if (ZenProperties.dbg) ZenProperties.logger.log("\tpriority: " + serverPriority);
+                    break;
+
+                case THREADPOOL_POLICY_TYPE.value:
+                    for(int i1 = 0; i1 < byteLen-1; ++i1)
+                        in.read_octet();
+                    ZenProperties.logger.log("\tTHREADPOOL_POLICY_TYPE");
+                    break;
+
+                case SERVER_PROTOCOL_POLICY_TYPE.value:
+                    for(int i1 = 0; i1 < byteLen-1; ++i1)
+                        in.read_octet();
+                    ZenProperties.logger.log("\tSERVER_PROTOCOL_POLICY_TYPE");
+                    break;
+
+                case CLIENT_PROTOCOL_POLICY_TYPE.value:
+                    for(int i1 = 0; i1 < byteLen-1; ++i1)
+                        in.read_octet();
+                    ZenProperties.logger.log("\tCLIENT_PROTOCOL_POLICY_TYPE");
+                    break;
+
+                case PRIVATE_CONNECTION_POLICY_TYPE.value:
+                    for(int i1 = 0; i1 < byteLen-1; ++i1)
+                        in.read_octet();
+                    ZenProperties.logger.log("\tPRIVATE_CONNECTION_POLICY_TYPE");
+                    break;
+
+                case PRIORITY_BANDED_CONNECTION_POLICY_TYPE.value:
+                    for(int i1 = 0; i1 < byteLen-1; ++i1)
+                        in.read_octet();
+                    ZenProperties.logger.log("\tPRIORITY_BANDED_CONNECTION_POLICY_TYPE");
+                    break;
+
+                default:
+                    for(int i1 = 0; i1 < byteLen-1; ++i1)
+                        in.read_octet();
+                    ZenProperties.logger.log("ERROR: Invalid policy type");
+            }
+        }
     }
 
-    protected void setProperties(String[] args, Properties props) {
-    }
+    public synchronized void ensureAcceptorAtPriority( short priority ){
 
-    public void registerTransport(ScopedMemory mem) {
     }
 
     public void string_to_object(org.omg.IOP.IOR ior,
