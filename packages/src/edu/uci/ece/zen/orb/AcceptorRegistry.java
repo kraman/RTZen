@@ -11,14 +11,11 @@ public class AcceptorRegistry{
     private Vector list = new Vector();
     private TaggedProfile[] tpList;
 
-    public TaggedProfile[] getProfiles(byte [] objKey, int objKeyLength, MemoryArea clientArea) 
+    public TaggedProfile[] getProfiles( FString objKey, MemoryArea clientArea) 
             throws IllegalAccessException,InstantiationException
         {
         tpList = (TaggedProfile[]) clientArea.newArray(org.omg.IOP.TaggedProfile.class, list.size());
-        byte [] tempOKey = (byte[]) clientArea.newArray(java.lang.Byte.class, objKeyLength);
-
-        //kludge: assuming objKey.length >= objKeyLength
-        System.arraycopy(objKey, 0, tempOKey, 0, objKeyLength);
+        byte [] tempOKey = objKey.getTrimData( clientArea );
 
         for(int i = 0; i < list.size(); ++i){
             ScopedMemory sm = (ScopedMemory)(list.get(i));

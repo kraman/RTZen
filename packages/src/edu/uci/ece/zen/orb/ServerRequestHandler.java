@@ -1,5 +1,6 @@
 package edu.uci.ece.zen.orb;
 import edu.uci.ece.zen.orb.giop.type.*;
+import edu.uci.ece.zen.utils.*;
 
 public abstract class ServerRequestHandler {
     protected ORB orb;
@@ -7,7 +8,7 @@ public abstract class ServerRequestHandler {
         this.orb = orb;
     }
 
-    public abstract int addPOA(byte[] path, int poaPathLen, org.omg.PortableServer.POA poa);
+    public abstract int addPOA( FString path, org.omg.PortableServer.POA poa);
     
     /**
      * Call scoped region graph:

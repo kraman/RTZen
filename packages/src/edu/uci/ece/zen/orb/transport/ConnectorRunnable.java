@@ -6,21 +6,33 @@ import edu.uci.ece.zen.utils.*;
 
 public class ConnectorRunnable implements Runnable{
     public ConnectorRunnable(){
-        host = new byte[1024];
+        host = new FString();
+        try{
+            host.init(1024);
+        }catch( InstantiationException e1 ){
+             ZenProperties.logger.log(
+                Logger.SEVERE,
+                "edu.uci.ece.zen.orb.ConnectorRunnable",
+                "<init>",
+                "Could not initialize Connector due to exception: " + e1.toString()
+                );
+        }catch( IllegalAccessException e2 ){
+             ZenProperties.logger.log(
+                Logger.SEVERE,
+                "edu.uci.ece.zen.orb.ConnectorRunnable",
+                "<init>",
+                "Could not initialize Connector due to exception: " + e2.toString()
+                );
+        }
     }
 
-    private byte[] host;
-    private int hostLen;
+    private FString host;
     private short port;
     private Connector conn;
     private ORB orb;
     public void init( String host , short port , Connector conn , ORB orb ){
-        //byte[] hostBytes = new byte[]{'1','2','8','.','1','9','5','.','1','7','4','.','3','4'};
-        byte[] tmpBytes = host.getBytes();
-        byte[] hostBytes = new byte[tmpBytes.length];
-        System.arraycopy( tmpBytes , 0 , hostBytes , 0 , tmpBytes.length );
-        hostLen = host.length();
-        System.arraycopy( hostBytes , 0 , this.host , 0 , hostLen );
+        this.host.reset();
+        this.host.append( host );
         this.port = port;
         this.conn = conn;
         this.orb = orb;
@@ -29,10 +41,7 @@ public class ConnectorRunnable implements Runnable{
     public void run(){
         int iport = 0;
         iport |= port & 0xffff;
-        StringBuffer buf = new StringBuffer();
-        for( int i=0;i<hostLen;i++ )
-            buf.append( (char)host[i] );
-        String host2 = buf.toString();
+        String host2 = new String( this.host.getTrimData() );
         System.out.println("Yuez in ConnectorRunnable 1");
         Transport trans = conn.internalConnect( host2 , iport , orb , (ORBImpl) orb.orbImplRegion.getPortal() );
         System.out.println("Yuez in ConnectorRunnable 2");        

@@ -132,9 +132,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     //public PolicyManager policyManager;
     public MemoryArea [] threadpoolList;
 
-
-    private byte orbId[];
-    private int orbIdLen;
+    private FString orbId;
 
     public ORB(){
         orbImplRunnable = new ORBImplRunnable(orbImplRegion);
@@ -147,9 +145,26 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         //rtorb = new RTORBImpl(this);
         //policyManager = new PolicyManagerImpl(this);
         threadpoolList = new MemoryArea[10];//KLUDGE: need to set up property for max TPs
-        orbId = new byte[25];
-        orbIdLen=0;
-
+        orbId = new FString();
+        try{
+            orbId.init(25);
+        }catch( InstantiationException e1 ){
+             ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.ORB",
+                "<init>",
+                "Could not initialize ORB facade due to exception: " + e1.toString()
+                );
+             System.exit(-1);
+        }catch( IllegalAccessException e2 ){
+             ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.ORB",
+                "<init>",
+                "Could not initialize ORB facade due to exception: " + e2.toString()
+                );
+             System.exit(-1);
+        }
     }
 
     public ExecuteInRunnable getEIR(){
@@ -169,8 +184,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     private void internalInit( ScopedMemory mem , String orbId , String[] args , Properties props ){
-        System.arraycopy( orbId.getBytes() , 0 , this.orbId , 0 , orbId.length() );
-        this.orbIdLen = orbId.length();
+        this.orbId.reset();
+        this.orbId.append( orbId );
         System.out.println( "======================Assigning the parent memory area======================" );
         this.parentMemoryArea = RealtimeThread.getCurrentMemoryArea();
         System.out.println( "======================Filing ORBInitRunnable with values====================" );
@@ -289,9 +304,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     public String id() {
-        byte[] tmp = new byte[orbIdLen];
-        System.arraycopy( orbId , 0 , tmp , 0 , orbIdLen );
-        return new String(tmp);
+        return new String( orbId.getTrimData() );
     }
 
     /**

@@ -1,30 +1,44 @@
 package edu.uci.ece.zen.orb;
 
 import javax.realtime.*;
+import edu.uci.ece.zen.utils.*;
 
 class LaneInfo{
     public LaneInfo(){
-        objectKey = new byte[1024];
+        try{
+            objectKey = new FString();
+            objectKey.init(1024);
+        }catch( InstantiationException e1 ){
+             ZenProperties.logger.log(
+                Logger.SEVERE,
+                "edu.uci.ece.zen.orb.LaneInfo",
+                "<init>",
+                "Could not initialize Lane due to exception: " + e1.toString()
+                );
+        }catch( IllegalAccessException e2 ){
+             ZenProperties.logger.log(
+                Logger.SEVERE,
+                "edu.uci.ece.zen.orb.LaneInfo",
+                "<init>",
+                "Could not initialize Lane due to exception: " + e2.toString()
+                );
+        }
     }
 
     public int minPri;
     public int maxPri;
     public ScopedMemory transpScope;
+    private FString objectKey;
 
     public void init( int minPri , int maxPri , ScopedMemory transpScope , byte[] objKey ){
         this.minPri = minPri;
         this.maxPri = maxPri;
         this.transpScope = transpScope;
-        objectKeyLength = objKey.length;
-        System.arraycopy( objKey , 0 , objectKey , 0 , objectKeyLength );
+        objectKey.append( objKey , 0 , objKey.length );
     }
 
     public byte[] getObjectKey(){
-        byte[] ret = new byte[objectKeyLength];
-        System.arraycopy( objectKey , 0 , ret , 0 , objectKeyLength );
-        return ret;
+        return objectKey.getTrimData();
     }
 
-    private byte[] objectKey;
-    private int objectKeyLength;
 }

@@ -185,7 +185,7 @@ public class POAImpl{
         //NOTE: A ServantNotActive exception was being squelched here.
         */
 
-        byte[]  okey = null;
+        byte[] okey = null;
         byte[] oid = null;
 
         try{
