@@ -16,6 +16,7 @@ public class ReadBuffer {
     private boolean enableAlignment = true;
 
     private static int maxCap = 10;
+    private static int preAlloc = 10;
 
     public void setAlignment( boolean align ){
         enableAlignment = align;
@@ -24,12 +25,28 @@ public class ReadBuffer {
     static {
         try {
             maxCap = Integer.parseInt(ZenProperties.getGlobalProperty( "readbuffer.size" , "20" ));
+            preAlloc = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.readBuffer.preAllocate" , "20" ) );
             bufferCache = (Queue) ImmortalMemory.instance().newInstance( Queue.class);
+            ReadBuffer.preAllocate( preAlloc );
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, "static <init>", e);
             System.exit(-1);
         }
     }
+
+    private static void preAllocate( int num ){
+        try{
+            for( int i=0;i<num;i++ ){
+                ZenProperties.logger.log(Logger.INFO, ReadBuffer.class, "preAllocate", "Creating new instance.");
+                ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
+                rb.id = idgen++;
+                bufferCache.enqueue( rb );
+            }
+        }catch( Exception e ){
+            ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, "preAllocate", "Unable to pre-allocate");
+        }
+    }
+    
     static int idgen = 0;
     int id;
 

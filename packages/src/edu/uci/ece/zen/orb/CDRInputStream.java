@@ -25,11 +25,23 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     static {
         try {
-            cdrInputStreamCache = (Queue) ImmortalMemory.instance()
-                    .newInstance(Queue.class);
+            cdrInputStreamCache = (Queue) ImmortalMemory.instance().newInstance(Queue.class);
+            int preAlloc = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.cdr.preAllocate" , "5" ) );
+            CDRInputStream.preAllocate( preAlloc );
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, CDRInputStream.class, "static <init>", e);
             System.exit(-1);
+        }
+    }
+    
+    private static void preAllocate( int num ){
+        try{
+            for( int i=0;i<num;i++ ){
+                ZenProperties.logger.log(Logger.INFO, CDRInputStream.class, "preAllocate", "Creating new instance.");
+                cdrInputStreamCache.enqueue( ImmortalMemory.instance().newInstance(CDRInputStream.class) );
+            }
+        }catch( Exception e ){
+            ZenProperties.logger.log(Logger.WARN, CDRInputStream.class, "preAllocate", "Unable to pre-allocate");
         }
     }
 

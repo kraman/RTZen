@@ -36,6 +36,14 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         return cr;
     }
 
+    public ClientRequest(){
+        contexts = FString.instance();
+    }
+
+    public void finalize(){
+        FString.free( contexts );
+    }
+
     /**
      * Client upcall:
      * <p>
@@ -67,11 +75,9 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         ZenProperties.logger.log("ClientRequest 7");
 
         //TODO:Assemble and write message header and policies here
-
-        contexts = ServiceContext.instance(contexts);
+        contexts.reset();
 
         //ZenProperties.logger.log("Sending CLIENT PROPAGATED service context" + contexts);
-
         //contexts.append(0); //empty list
         if (del.priorityModel == PriorityModel._CLIENT_PROPAGATED
                 && del.serverPriority >= 0) {

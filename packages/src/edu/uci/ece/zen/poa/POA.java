@@ -148,24 +148,11 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
      */
     public POA() {
         theChildren = new Hashtable();
-        theChildren.init(Integer.parseInt(ZenProperties.getGlobalProperty(
-                "doc.zen.poa.maxNumPOAs", "5")));
+        theChildren.init(Integer.parseInt(ZenProperties.getGlobalProperty("doc.zen.poa.maxNumPOAs", "5")));
         numberOfCurrentRequests = new SynchronizedInt();
         createDestroyPOAMutex = new Integer(0);
-
-        poaName = new FString();
-        poaPath = new FString();
-        try {
-            poaName.init(Integer.parseInt(ZenProperties.getGlobalProperty(
-                    "doc.zen.poa.MaxPOANameLen", "32")));
-            poaPath.init((Integer.parseInt(ZenProperties.getGlobalProperty(
-                    "doc.zen.poa.MaxPOAPathLen", "255"))));
-        } catch (Exception e2) {
-            ZenProperties.logger.log(Logger.FATAL, getClass(),
-                    "<init>",
-                    "Could not initialize POA facade", e2);
-            System.exit(-1);
-        }
+        poaName = FString.instance();
+        poaPath = FString.instance();
     }
 
     /**

@@ -84,8 +84,8 @@ public class RequestHeaderHelper {
     public static RequestHeader read(org.omg.CORBA.portable.InputStream istream, RequestHeader new_one) {
         ZenProperties.logger.log( "Read RequestHeader_1_0" );
 
-        new_one.service_context = edu.uci.ece.zen.orb.protocol.IOP.ServiceContextListHelper
-                .read(istream, FString.instance(new_one.service_context));
+        new_one.service_context.reset();
+        new_one.service_context = edu.uci.ece.zen.orb.protocol.IOP.ServiceContextListHelper.read(istream, new_one.service_context);
 
         new_one.request_id = istream.read_ulong();
         //System.out.println("RequestHeader read -- req id: " + new_one.request_id);
@@ -93,13 +93,12 @@ public class RequestHeaderHelper {
         //System.out.println("RequestHeader read -- response_expected: " +
         // new_one.response_expected);
 
-        new_one.object_key = FString.instance(new_one.object_key);
+        new_one.object_key.reset();
         int object_key_length = istream.read_ulong();
         //new_one.object_key.append(object_key_length);
         //System.out.println("RequestHeader read -- ok len: " + object_key_length);
         new_one.object_key.read(istream, object_key_length);
-
-        new_one.operation = FString.instance(new_one.operation);
+        new_one.operation.reset();
         int op_length = istream.read_ulong() - 1;
         //new_one.operation.append(op_length);
         new_one.operation.read(istream, op_length);
@@ -111,8 +110,7 @@ public class RequestHeaderHelper {
         //istream.read_octet_array(new_one.requesting_principal, 0,
         // new_one.requesting_principal_length);
 
-        new_one.requesting_principal = FString
-                .instance(new_one.requesting_principal);
+        new_one.requesting_principal.reset();
         int rp_length = istream.read_ulong();
         //new_one.requesting_principal.append(rp_length);
         new_one.requesting_principal.read(istream, rp_length);

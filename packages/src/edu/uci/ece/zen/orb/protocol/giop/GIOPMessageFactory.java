@@ -419,8 +419,7 @@ public final class GIOPMessageFactory extends MessageFactory{
         rm.free();
     }
 
-    public CDROutputStream constructReplyMessageImpl(ORB orb,
-            RequestMessage req) {
+    public CDROutputStream constructReplyMessageImpl(ORB orb, RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
 
@@ -440,11 +439,8 @@ public final class GIOPMessageFactory extends MessageFactory{
 
         switch (req.getVersion()) {
             case 10:
-                edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader
-                        .instance();
-                rh.init(FString.instance(rh.service_context), req
-                        .getRequestId(),
-                        org.omg.GIOP.ReplyStatusType_1_0._NO_EXCEPTION);
+                edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader.instance();
+                rh.init(req.getRequestId(),org.omg.GIOP.ReplyStatusType_1_0._NO_EXCEPTION);
 
                 // add Reply service context here, should probably be factored out
 
@@ -536,9 +532,7 @@ public final class GIOPMessageFactory extends MessageFactory{
             case 10:
                 edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader
                         .instance();
-                rh.init(FString.instance(rh.service_context), req
-                        .getRequestId(),
-                        org.omg.GIOP.ReplyStatusType_1_0._USER_EXCEPTION);
+                rh.init(req.getRequestId(), org.omg.GIOP.ReplyStatusType_1_0._USER_EXCEPTION);
                 rh.service_context.append(0);
                 edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeaderHelper.write(out, rh);
                 rh.free();

@@ -5,6 +5,7 @@ import javax.realtime.ScopedMemory;
 import edu.uci.ece.zen.orb.CDRInputStream;
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.orb.PriorityMappingImpl;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 
@@ -21,8 +22,7 @@ public abstract class Message {
     protected CDRInputStream istream;
     protected ScopedMemory scope;
     protected ReadBuffer messageBody;
-    private static final short defaultPriority = 
-        (short) javax.realtime.PriorityScheduler.instance().getNormPriority();
+    private static final short defaultPriority = PriorityMappingImpl.toCORBA( (short) javax.realtime.PriorityScheduler.instance().getNormPriority() );
     protected short priority;
         
 
