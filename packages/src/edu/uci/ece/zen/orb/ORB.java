@@ -39,6 +39,11 @@ import edu.uci.ece.zen.utils.Hashtable;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.net.URL;
+
 //import edu.uci.ece.zen.utils.ThreadLocal;
 
 /**
@@ -449,7 +454,25 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     public NamingContextExt getNaming(){
         if (cachedNamingReference == null) {
-            cachedNamingReference = NamingContextExtHelper.narrow(string_to_object(ZenProperties.getGlobalProperty("naming.ior_file.for_reading","")));
+            if (ZenProperties.dbg){
+                System.out.println("The location for reading naming service is "+ZenProperties.getGlobalProperty("naming.ior_file.for_reading",""));
+            }
+            String namingIOR = "";
+            try{
+                URL namingURL = new URL(ZenProperties.getGlobalProperty("naming.ior_file.for_reading",""));                
+                File namingIORFile = new File(namingURL.getFile());
+                BufferedReader br = new BufferedReader( new FileReader(namingIORFile) );
+                namingIOR = br.readLine();
+                br.close();
+            }
+            catch(Exception ex){
+                ex.printStackTrace();
+                System.exit(-1);
+            }
+
+            org.omg.CORBA.Object namingObject = string_to_object(namingIOR);
+
+            cachedNamingReference = NamingContextExtHelper.unchecked_narrow(namingObject); //Current the ObjRefDelegate._is_a() hasn't been implemented, so it use unchecked_narrow, not narrow
         }
 
         return cachedNamingReference;  // must return same refrence for each call
@@ -511,6 +534,14 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public synchronized org.omg.CORBA.Object string_to_object(String str) {
+        if (ZenProperties.dbg){
+            System.out.println("The IOR for naming service is...");
+            if(str.equals("")){
+                System.out.println("Empty naming service string");
+            }else
+                System.out.println(str);
+        }
+
         org.omg.IOP.IOR ior = IOR.parseString(this, str);
         edu.uci.ece.zen.orb.ObjectImpl objImpl = new ObjectImpl();
         objImpl.init(ior);
