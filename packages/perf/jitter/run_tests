@@ -10,21 +10,21 @@ function printUsage() {
 	echo "    stopServer  only stop the server"
 	echo "    client      run muliple tests on the client side"
 	echo ""
-	echo "    serverType  1  Regular Zen server"
-    echo "                10 Regular Zen servant remote" 
-	echo "                2  RTZen servant on TimeSys         "
-	echo "                20 RTZen servant remote on TimeSys "
+	echo "    serverType  1  Simulated RTZEN server on regular JVM"
+        echo "                10 Simulated RTZEN servant remote on regular JVM" 
+	echo "                2  RTZEN servant on TimeSys         "
+	echo "                20 RTZEN servant remote on TimeSys "
 	echo "                3  TAO servant            "
 	echo "                30 TAO servant remote     "
-    echo "                4  RT Zen server on OVM interpreter"
-    echo "                40 Simulated RT Zen server remote"
-    echo "                5  RT Zen server on OVM ahead-of-time compiler"
-    echo "                50 RT Zen server remote on OVM ahead-of-time compiler"        
-	echo "    clientType  1  simulated RT Zen client"
+        echo "                4  RTZEN server on OVM interpreter"
+        echo "                40 RTZEN server remote on OVM interpreter"
+        echo "                5  RTZEN server on OVM ahead-of-time compiler"
+        echo "                50 RTZEN server remote on OVM ahead-of-time compiler"        
+	echo "    clientType  1  Simulated RTZEN client on regular JVM"
 	echo "                2  TimeSys RTZen client"
 	echo "                3  TAO Client             "
-    echo "                4  RT Zen client on OVM interpreter"
-    echo "                5  RT Zen client on OVM ahead-of-time compiler"
+        echo "                4  RTZEN client on OVM interpreter"
+        echo "                5  RTZEN client on OVM ahead-of-time compiler"
 
 	exit -1;
 
@@ -40,7 +40,7 @@ STOPFNAME=$PROGNAME.stopToken
 
 
 # startup types 
-TESTSIZES="4 32 128 512 2048 8192"
+TESTSIZES="4 32 128 512 1024 2048 4096 8192"
 SERVERTYPE=1
 CLIENTTYPE=1
 TESTTYPE=1
@@ -154,13 +154,19 @@ function startServer(){
         $EXEC_CMD&
         #echo $! > $STOPFNAME
         elif [ $1 -eq 4 ]; then
-        # start ZEN server in OVM interpreter
-        EXEC_CMD="sh ./OVMServer_INT/run.sh $1"
-        echo "Exec cmd:"
-        echo $EXEC_CMD
-        $EXEC_CMD&
-        echo $! > $STOPFNAME
-
+                # start ZEN server in OVM interpreter
+                EXEC_CMD="sh ./OVMServer_INT/run.sh $1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD&
+                echo $! > $STOPFNAME
+        elif [ $1 -eq 5 ]; then
+                # start ZEN server in OVM ahead_of_time compiler
+                EXEC_CMD="sh ./OVMServer_NAT/run.sh $1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD&
+                 echo $! > $STOPFNAME
     else
         printUsage "startServer, unknown server type '$1'"
             fi
@@ -172,7 +178,7 @@ function startServer(){
 function stopServer(){
 	echo "stop server "
 
-	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 ]; then
+	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 $1 -eq 4 $1 -eq 5]; then
 	
 		if [ -f $STOPFNAME ]; then
 		
@@ -211,6 +217,23 @@ function stopServer(){
 		echo $EXEC_CMD
 		$EXEC_CMD
 		#echo $! > $STOPFNAME	
+
+    elif [ $1 -eq 40 ]; then
+                # OVM on node 0
+                # Start RTZEN server in OVM interpreter
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 4 $1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD
+                #echo $! > $STOPFNAME
+    elif [ $1 -eq 50 ]; then
+                # OVM on node 0
+                # Start RTZEN server in OVM ahead-of-time compiler
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 5 $1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD
+                #echo $! > $STOPFNAME
     else
         printUsage "unknown server type"
 	fi
@@ -236,13 +259,18 @@ function startClient(){
 	elif [ $1 -eq 3 ]; then
 		EXEC_CMD="tao/client -l $3"
 		echo "Exec cmd:"
-        echo $EXEC_CMD
-        $EXEC_CMD
+                echo $EXEC_CMD
+                $EXEC_CMD
         elif [ $1 -eq 4 ]; then
-        EXEC_CMD="$OVM_INT_START perf.jitter.OVMClient $2 $3"
-        echo "Exec cmd:"
-        echo $EXEC_CMD
-        $EXEC_CMD
+                EXEC_CMD="sh ./OVMClient_INT/run_client.sh $2 $3"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD
+        elif [ $1 -eq 5 ]; then
+                EXEC_CMD="sh ./OVMClient_NAT/run_client.sh $2 $3"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD
 
         elif [ $1 -eq 9 ]; then
         EXEC_CMD="$TJVM_START perf.jitter.Client 1 $3"
