@@ -4,7 +4,7 @@ clear;
 close all;
 
 fNameBase='timeRecords.1.';
-title('Roundtrip Latency/Jitter, constant size (128 bytes), Single Host Emulab');
+title('Roundtrip Latency/Jitter, constant size (128 bytes), Single Host');
 
 noOfBins = 999;
 difference = 2;
@@ -23,9 +23,10 @@ xIndex = index * difference;
 
 	fileName = strcat(fNameBase, num2str(round(index)),'.', num2str(round(index )),'.', num2str(round(128)), '.txt');
         s = load(fileName);
-	s = diff(s(:, 3));
-
-	minS = min(s);
+	%s = diff(s(:, 3));
+    s = s(:,3);
+	
+    minS = min(s);
 	maxS = max(s);
 	averageS = mean(s);
 
@@ -57,7 +58,7 @@ xIndex = index * difference;
 end
 
 ylabel('Roundtrip Latency [seconds] ');
-xlabel('ORB Implementation');
+%xlabel('ORB Implementation');
 
 set(gca, 'xtick', [2 4]);
 set(gca,'XTickLabel',{'Low Priority';'High Priority'})
