@@ -2,8 +2,8 @@ package edu.uci.ece.zen.orb;
 
 import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
-
 import edu.uci.ece.zen.utils.ThreadPool;
+import edu.uci.ece.zen.orb.transport.iiop.AcceptorRunnable;
 
 public class ThreadPoolRunnable implements Runnable {
 
@@ -67,12 +67,15 @@ public class ThreadPoolRunnable implements Runnable {
         //make sure this has been initialized
         if (stacksize >= 0) {
             ThreadPool tp;
-            if (lanes == null) tp = new ThreadPool(stacksize, staticThreads,
+            if (lanes == null) 
+                tp = new ThreadPool(stacksize, staticThreads,
                     dynamicThreads, defaultPriority, allowRequestBuffering,
-                    maxBufferedRequests, maxRequestBufferSize, orb);
-            else tp = new ThreadPool(stacksize, allowRequestBuffering,
+                    maxBufferedRequests, maxRequestBufferSize, orb, 
+                    rtorb.acceptorRunnable);
+            else 
+                tp = new ThreadPool(stacksize, allowRequestBuffering,
                     maxBufferedRequests, maxRequestBufferSize, lanes,
-                    allowBorrowing, orb);
+                    allowBorrowing, orb, rtorb.acceptorRunnable);
 
             orb.threadpoolList[rtorb.tpID] = (ScopedMemory) RealtimeThread
                     .getCurrentMemoryArea();

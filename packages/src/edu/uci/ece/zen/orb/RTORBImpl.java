@@ -22,14 +22,13 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
 
     private ThreadPoolRunnable tpr;
 
-    private AcceptorRunnable acceptorRunnable;
+    public AcceptorRunnable acceptorRunnable;
 
     public void init(ORB orb) {
         this.orb = orb;
 
         tpr = new ThreadPoolRunnable();
         acceptorRunnable = new AcceptorRunnable();
-        acceptorRunnable.init(orb);
         /*
          * try{ tpr = (ThreadPoolRunnable)(orb.parentMemoryArea.newInstance(
          * ThreadPoolRunnable.class )); acceptorRunnable =
@@ -61,7 +60,6 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
             boolean allow_request_buffering, int max_buffered_requests,
             int max_request_buffer_size) {
         ZenProperties.logger.log("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_ CREATING THREADPOOL +_+_+_+_+_+_+_+_+_+_+_+_+_");
-        orb.setUpORBChildRegion(acceptorRunnable);
         tpr.init(this, orb, stacksize, static_threads, dynamic_threads,
                 default_priority, allow_request_buffering,
                 max_buffered_requests, max_request_buffer_size);
@@ -76,7 +74,6 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
             org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allow_borrowing,
             boolean allow_request_buffering, int max_buffered_requests,
             int max_request_buffer_size) {
-        orb.setUpORBChildRegion(acceptorRunnable);
         tpr.init(this, orb, stacksize, lanes, allow_borrowing,
                 allow_request_buffering, max_buffered_requests,
                 max_request_buffer_size);

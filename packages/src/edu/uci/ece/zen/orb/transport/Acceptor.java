@@ -11,6 +11,7 @@ import org.omg.IOP.TaggedProfile;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
+import javax.realtime.PriorityParameters;
 
 public abstract class Acceptor {
     protected edu.uci.ece.zen.orb.ORB orb;
@@ -29,10 +30,10 @@ public abstract class Acceptor {
         this.orbImpl = orbImpl;
     }
 
-    public final void startAccepting() {
+    public final void startAccepting( int priority ) {
         acceptorLogic = new AcceptorLogic(this);
         isActive = true;
-        acceptorLogicThread = new NoHeapRealtimeThread(null, null, null,
+        acceptorLogicThread = new NoHeapRealtimeThread( new PriorityParameters(priority) , null, null,
                 RealtimeThread.getCurrentMemoryArea(), null, acceptorLogic);
         acceptorLogicThread.start();
     }
