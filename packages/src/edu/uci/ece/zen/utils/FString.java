@@ -49,6 +49,14 @@ public class FString{
         append( data , 0 , data.length );
     }
 
+    public void read( ReadBuffer istream, int length ){
+        if( currentSize + length < maxSize ){
+            //KLUDGE: ERROR here
+        }
+        istream.readByteArray(data, currentSize, length);
+        currentSize += length;
+    }
+
     public void read( org.omg.CORBA.portable.InputStream istream, int length ){
         if( currentSize + length < maxSize ){
             //KLUDGE: ERROR here
@@ -79,6 +87,11 @@ public class FString{
 
     public void append( char c ){
         data[currentSize++] = (byte) c;
+    }
+
+    public void append( short value ){
+        data[currentSize++] = (byte) ((value >>> 8) & 0xFF);
+        data[currentSize++] = (byte) (value & 0xFF);
     }
 
     public void append( int value ){
@@ -137,6 +150,11 @@ public class FString{
         return new String(getTrimData());
     }
 
+    public String decode(){
+        return byteArrayToString(getTrimData());
+    }
+
+
     public void reset(){
         currentSize = 0;
     }
@@ -153,4 +171,89 @@ public class FString{
         }
         return false;
     }
+
+    /**
+     * Convert an array of bytes into a string, using the inverse
+     * algorithm as in stringToCDRByteArray
+     */
+    public static String byteArrayToString(byte[] b)
+    {
+        int bLen = b.length;
+        int resultLen = 4 + 2 * b.length;
+        StringBuffer result = new StringBuffer(resultLen);
+
+
+        for (int src = 0; src < bLen; src++)
+        {
+            byte c = b[src];
+
+            result.append(intToHexChar((c >> 4) & 0xF));
+            result.append(intToHexChar(c & 0xF));
+            result.append(" ");
+        }
+
+        return result.toString();
+    }
+
+    /**
+     * Convert a numeric value in the [0:15] range into its hex digit.
+     */
+    private static char intToHexChar(int i)
+    {
+        switch (i)
+        {
+            case 0 :
+                return '0';
+
+            case 1 :
+                return '1';
+
+            case 2 :
+                return '2';
+
+            case 3 :
+                return '3';
+
+            case 4 :
+                return '4';
+
+            case 5 :
+                return '5';
+
+            case 6 :
+                return '6';
+
+            case 7 :
+                return '7';
+
+            case 8 :
+                return '8';
+
+            case 9 :
+                return '9';
+
+            case 10 :
+                return 'A';
+
+            case 11 :
+                return 'B';
+
+            case 12 :
+                return 'C';
+
+            case 13 :
+                return 'D';
+
+            case 14 :
+                return 'E';
+
+            case 15 :
+                return 'F';
+
+            default :
+
+                return '0';
+        }
+    }
+
 }

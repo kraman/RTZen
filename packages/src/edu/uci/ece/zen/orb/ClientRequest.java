@@ -5,7 +5,7 @@ import edu.uci.ece.zen.orb.giop.*;
 import edu.uci.ece.zen.utils.*;
 import org.omg.RTCORBA.*;
 import org.omg.Messaging.*;
-//import org.omg.IOP.*;
+import org.omg.IOP.*;
 import edu.uci.ece.zen.orb.giop.IOP.ServiceContext;
 
 public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
@@ -60,27 +60,61 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
 
         contexts = ServiceContext.instance();
 
+            //contexts.append(0); //empty list
         if(del.priorityModel == PriorityModel._CLIENT_PROPAGATED && del.serverPriority >= 0){
+
+            if(ZenProperties.devDbg) System.out.println( "Sending CLIENT PROPAGATED service context");
+
             contexts.append(1); //list size
-            //TODO: I'll do this later
-            /*
-            contexts = new ServiceContext[1]; //kludge: of course there will be more than just 1
-            contexts[0] = new ServiceContext();
-            contexts[0].context_id = RTCorbaPriority.value;
+
+            contexts.append(org.omg.IOP.RTCorbaPriority.value);
+            //contexts.append((byte)0); //big endian
+            contexts.append(4); //length of data
+            contexts.append((int)orb.getRTCurrent().the_priority());
+/*            
             CDROutputStream out1 = CDROutputStream.create(orb);
             short priority = orb.getRTCurrent().the_priority();
             out1.write_short(priority);
 
             int lim = (int)out1.getBuffer().getLimit();
-            contexts[0].context_data = new byte[lim];
-            out1.getBuffer().getReadBuffer().readByteArray(contexts[0].context_data, 0 , lim);
+            contexts.read(out1.getBuffer().getReadBuffer(), lim);
+
+            if(ZenProperties.devDbg) System.out.println( "sc data Lim: " + lim);
+            //contexts[0].context_data = new byte[lim];
+            //out1.getBuffer().getReadBuffer().readByteArray(contexts[0].context_data, 0 , lim);
 
             //System.out.println("data " + contexts[0].context_data[0] + "-" + contexts[0].context_data[1] + "-" +
             //                             contexts[0].context_data[2] + "-" + contexts[0].context_data[3]);
 
             if(ZenProperties.devDbg) System.out.println("CLIENT_PROPAGATED policy -- Sending priority: " + priority);
             out1.free();
-            */
+*/
+/*
+            {
+            org.omg.IOP.ServiceContext [] contexts1 = new org.omg.IOP.ServiceContext[1]; //kludge: of course there will be more than just 1
+            contexts1[0] = new org.omg.IOP.ServiceContext();
+            contexts1[0].context_id = RTCorbaPriority.value;
+            CDROutputStream out1 = CDROutputStream.create(orb);
+            short priority = orb.getRTCurrent().the_priority();
+            out1.write_short(priority);
+
+            int lim = (int)out1.getBuffer().getLimit();
+            contexts1[0].context_data = new byte[lim];
+            out1.getBuffer().getReadBuffer().readByteArray(contexts1[0].context_data, 0 , lim);
+
+            //System.out.println("data " + contexts[0].context_data[0] + "-" + contexts[0].context_data[1] + "-" +
+            //                             contexts[0].context_data[2] + "-" + contexts[0].context_data[3]);
+
+            if(ZenProperties.devDbg) System.out.println("CLIENT_PROPAGATED policy -- Sending priority: " + priority);
+            out1.free();
+
+            
+            CDROutputStream out2 = CDROutputStream.create(orb);
+            org.omg.IOP.ServiceContextListHelper.write(out2,contexts1);
+            byte [] test = new byte[(int)out2.getBuffer().getLimit()];
+            out2.getBuffer().getReadBuffer().readByteArray(test, 0 , (int)out2.getBuffer().getLimit());
+            System.out.println("what it should be: " + FString.byteArrayToString(test));
+            }*/
         }else{
             contexts.append(0); //empty list
              //contexts = new ServiceContext[0];
