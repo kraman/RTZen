@@ -691,10 +691,15 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public static Object getQueuedInstance(Class cls, Queue q) {
+
         if(q == null){
             ZenProperties.logger.log(Logger.FATAL, cls, "getQueuedInstance",
                     "Queue not created");
             return null;
+        }
+
+        if(ZenProperties.devDbg) {;
+            System.out.println(cls.toString() + " current queue size: " + q.size());
         }
 
         Object ret = q.dequeue();
