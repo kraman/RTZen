@@ -104,22 +104,30 @@ main (int argc, char *argv[])
 	  for (int i = 0; i < length; i++) {
 		(*pOctetSeq)[i] = (CORBA::Octet) (i & 0xFF);
 	  }
+	  
+	  gettimeofday(&begin_time, NULL);
+	  int index = 0;  
 
 
       ACE_DEBUG ((LM_DEBUG, "============= warm up \n"));
       for (int j = 0; j < nWarmUpIterations; ++j)
         {
-          (void) roundtrip->putOctetSeq (*pOctetSeq ACE_ENV_ARG_PARAMETER);
-          ACE_TRY_CHECK;
+		gettimeofday(&start_time, NULL);
+		(void) roundtrip->putOctetSeq (*pOctetSeq ACE_ENV_ARG_PARAMETER);
+		gettimeofday(&end_time, NULL);
+		record_list[index].pos = 21;
+                record_list[index++].time_stamp = (start_time.tv_sec-begin_time.tv_sec)*1000000 + (start_time.tv_usec-begin_time.tv_usec);
+          
+                record_list[index].pos = 21;
+                record_list[index++].time_stamp = (end_time.tv_sec-begin_time.tv_sec)*1000000 + (end_time.tv_usec-begin_time.tv_usec);
+		ACE_TRY_CHECK;
         }
 
       ACE_DEBUG ((LM_DEBUG, "============= performance test BYTE\n"));
 
       //ACE_hrtime_t test_start = ACE_OS::gethrtime ();
 
-      int index = 0;
-
-      gettimeofday(&begin_time, NULL);
+          
  
       for (int i = 0; i < niterations; ++i)
         {
