@@ -199,7 +199,7 @@ class GIOPMessageRunnable implements Runnable {
 
     ScopedMemory requestScope;
 
-    WaitingStratergyNotifyRunnable wsnr;
+    WaitingStrategyNotifyRunnable wsnr;
 
     ExecuteInRunnable eir;
 
@@ -207,7 +207,7 @@ class GIOPMessageRunnable implements Runnable {
         this.orb = orb;
         this.trans = trans;
         eir = new ExecuteInRunnable();
-        wsnr = new WaitingStratergyNotifyRunnable();
+        wsnr = new WaitingStrategyNotifyRunnable();
     }
 
     public void setRequestScope(ScopedMemory requestScope) {
@@ -221,7 +221,7 @@ class GIOPMessageRunnable implements Runnable {
     //private static final String name = "Trans: ";
     public void run() {
         edu.uci.ece.zen.orb.giop.GIOPMessage message = null;
-        
+
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(2220);
         try {
 
@@ -259,11 +259,11 @@ class GIOPMessageRunnable implements Runnable {
         } catch (java.io.IOException ioex) {
             //TODO: do something here
         }
-        
+
     }
 }
 
-class WaitingStratergyNotifyRunnable implements Runnable {
+class WaitingStrategyNotifyRunnable implements Runnable {
     edu.uci.ece.zen.orb.giop.GIOPMessage message;
 
     ScopedMemory waiterRegion;
@@ -283,7 +283,7 @@ class WaitingStratergyNotifyRunnable implements Runnable {
      * </p>
      * </p>
      */
-    public WaitingStratergyNotifyRunnable() {
+    public WaitingStrategyNotifyRunnable() {
     }
 
     public void init(edu.uci.ece.zen.orb.giop.GIOPMessage message,
