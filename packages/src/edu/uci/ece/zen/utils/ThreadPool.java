@@ -5,7 +5,6 @@ import edu.uci.ece.zen.orb.*;
 
 public class ThreadPool{
     Lane lanes[];
-    Hashtable priorityLaneMap;
     boolean allowRequestBuffering;
     int maxBufferedRequests;
     int requestBufferSize;

@@ -18,7 +18,7 @@ public class ActiveDemuxTable{
     Node freeList;
 
     private void push( Node idx ){
-        synchronized( freeList ){
+        synchronized( data ){
             idx.data = null;
             idx.inUse = false;
             idx.genCount++;
@@ -28,7 +28,7 @@ public class ActiveDemuxTable{
     }
 
     private int pop(){
-        synchronized( freeList ){
+        synchronized( data ){
             int idx = freeList.idx;
             freeList = freeList.next;
             data[idx].next = null;
@@ -48,6 +48,7 @@ public class ActiveDemuxTable{
         for( int i=0;i<numEntries;i++ ){
             data[i] = new Node();
             data[i].idx = i;
+            push( data[i] );
         }
     }
 
@@ -70,6 +71,8 @@ public class ActiveDemuxTable{
     }
 
     public Object mapEntry( int idx ){
+        if( idx < 0 || idx > data.length )
+            return null;
         return data[idx].data;
     }
 

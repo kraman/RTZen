@@ -463,7 +463,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         System.out.println("yue3");
         try{
             parentMemoryArea.executeInArea( r );
-
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.SEVERE,
@@ -471,9 +470,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 "string_to_object",
                 "Could not get object due to exception: " + e.toString()
                 );
+            e.printStackTrace();
         }
         System.out.println("yue4");
-    System.out.println("yue5");
+        System.out.println("yue5");
         return objImpl;
     }
 
