@@ -33,7 +33,7 @@ public class CDRTestClient extends RealtimeThread
 			String ior = br.readline();
 
 			omg.org.CORBA.Object obj = orb.string_to_object( ior );
-			stub = DateTypesHelper.unchecked_narrow( obj );
+			stub = DataTypesHelper.unchecked_narrow( obj );
 
 			testShort();
 			//testLong();
