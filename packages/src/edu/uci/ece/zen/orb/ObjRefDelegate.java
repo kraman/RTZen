@@ -151,8 +151,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             {
                 boolean startSerialTransportAcceptor = ZenProperties.getGlobalProperty("serial.client.only" , "" ).equals("1");
 
-                //if( startSerialTransportAcceptor && !isCollocated ){
-                if( startSerialTransportAcceptor){    
+                if( startSerialTransportAcceptor && !isCollocated ){
+                //if( startSerialTransportAcceptor){
 
                     ZenProperties.logger.log("+++++++++++++++++++++++++++++++++++++++++++++Skipping IIOP");
                     return;

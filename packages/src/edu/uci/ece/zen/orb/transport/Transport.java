@@ -116,7 +116,7 @@ public abstract class Transport implements Runnable {
 
         //System.out.println("\n------------------------------");
         //if (ZenProperties.dbg) ZenProperties.logger.log(msg.toString());
-        //System.out.println(msg.toString());
+        System.out.println(msg.toString());
         //System.out.println("\n------------------------------");
 
             out.flush();

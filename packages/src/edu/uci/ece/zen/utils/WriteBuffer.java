@@ -189,6 +189,7 @@ public class WriteBuffer {
     }
 
     private void pad(int boundry) {
+        /*
         int extraBytesUsed = (int) (position % boundry);
 
         if (extraBytesUsed != 0) {
@@ -197,6 +198,7 @@ public class WriteBuffer {
             position += incr;
             if (limit < position) limit = position;
         }
+        */
     }
 
     public long getPosition() {
@@ -429,13 +431,13 @@ public class WriteBuffer {
         position = mementoPosition;
         //System.out.println( "\n\nlen to write: " + val );
         //writeByte((byte) (val & 0xff));
-        
+
         byte b1 = (byte) ((val >>> 8) & 0xFF);
-        byte b2 = (byte) (val & 0xFF);        
-        
+        byte b2 = (byte) (val & 0xFF);
+
         writeByte(b1);
         writeByte(b2);
-        
+
         position = tmp;
     }
 }

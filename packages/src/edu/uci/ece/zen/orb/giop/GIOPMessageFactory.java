@@ -320,12 +320,14 @@ public final class GIOPMessageFactory {
         headerInfo.messageType = header[0]; //Message type (byte 7)
 
         //headerInfo.messageSize = header[1];
-        
+
         headerInfo.messageSize = 0;
         headerInfo.messageSize |= header[1] & 0xFF;
         headerInfo.messageSize <<= 8;
-        headerInfo.messageSize |= header[2] & 0xFF;            
-        
+        headerInfo.messageSize |= header[2] & 0xFF;
+
+        System.out.println("header: " + edu.uci.ece.zen.utils.FString.byteArrayToString(header));
+
         //System.out.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM: " + headerInfo.messageSize);
     /*
         if (headerInfo.isLittleEndian) {
@@ -379,8 +381,14 @@ public final class GIOPMessageFactory {
         out.setLocationMemento();
         //out.write_long(0);
         //out.write_octet((byte)0);
+
+        /*  padding?*/
         out.write_octet((byte)0);
         out.write_octet((byte)0);
+
+        //added for padding issue
+        out.write_octet((byte)0);
+
 
         //(new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId
         // )).marshal( out );

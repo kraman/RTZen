@@ -312,6 +312,7 @@ public class ReadBuffer {
     }
 
     private void pad(int boundry) {
+        /*
         int extraBytesUsed = (int) ((position + 12) % boundry); // The CDR
         // alignment
         // should count
@@ -334,6 +335,7 @@ public class ReadBuffer {
             checkReadPositionLimit(incr);
             position += incr;
         }
+        */
     }
 
     public byte readByte() {

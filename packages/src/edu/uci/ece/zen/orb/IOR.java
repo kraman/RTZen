@@ -81,7 +81,7 @@ public class IOR {
 
     /**
      * Factory method to create a CORBA object.
-     * 
+     *
      * @param orb
      *            The ORB reference used to create this object. This orb
      *            reference contains the connector and acceptor registries used
@@ -129,12 +129,14 @@ public class IOR {
         result.append('0');
         result.append('0');
         //padding : 3 bytes
+        /*
         result.append('0');
         result.append('0');
         result.append('0');
         result.append('0');
         result.append('0');
         result.append('0');
+        */
 
         for (int src = 0; src < len; src++) {
             byte c = rd.readByte();

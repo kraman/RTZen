@@ -13,12 +13,57 @@ import edu.uci.ece.zen.utils.Logger;
  * @author <a href="mailto:mpanahi@doc.ece.uci.edu">Mark Panahi</a>
  * @version 1.0
  */
+//import java.io.ByteArrayOutputStream;
+
 
 public class Client extends RealtimeThread
 {
 
     public static String iorfile = "ior.txt";
     static ORB orb;
+
+
+//////////////
+/*
+just to test if there is padding and alignment in Java -- turns out there isn't
+    private static MyByteArrayOutputStream byteArrayToGS_  = null;
+    private static DataOutputStream dataToGS_              = null;
+
+    public static void main(String[] args) throws Exception
+    {
+
+        byteArrayToGS_      = new MyByteArrayOutputStream(100);
+
+        dataToGS_           = new DataOutputStream(byteArrayToGS_);
+
+
+        dataToGS_.writeInt(1);
+        dataToGS_.writeShort((short)2);
+        dataToGS_.writeInt(3);
+        dataToGS_.writeShort((short)4);
+        dataToGS_.writeInt(5);
+        dataToGS_.writeShort((short)6);
+
+        System.out.println(edu.uci.ece.zen.utils.FString.byteArrayToString(byteArrayToGS_.getBuffer()));
+
+    }
+
+    static class MyByteArrayOutputStream extends ByteArrayOutputStream
+    {
+        public MyByteArrayOutputStream(int size)
+        {
+            super(size);
+        }
+
+        public byte[] getBuffer()
+        {
+            return this.buf;
+        }
+    }
+
+*/
+//////////////////////
+
     public static void main(String[] args) throws Exception
     {
         //if(args.length > 0)

@@ -93,7 +93,7 @@ public class RequestHeaderHelper {
         //new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper
         //        .read(istream, FString.instance(new_one.service_context));
 
-        new_one.request_id = istream.read_ulong();
+        new_one.request_id = 0;//istream.read_ulong();
         if (ZenProperties.dbg) ZenProperties.logger.log("RequestHeader read -- req id: " + new_one.request_id);
 
         new_one.response_expected = false;
@@ -101,15 +101,16 @@ public class RequestHeaderHelper {
         if (ZenProperties.dbg) ZenProperties.logger.log("RequestHeader read -- response_expected: " + new_one.response_expected);
 
         new_one.object_key = FString.instance(new_one.object_key);
-        int object_key_length = istream.read_ulong();
-        //int object_key_length = istream.read_octet();
+        //int object_key_length = istream.read_ulong();
+        int object_key_length = istream.read_octet();
         if (ZenProperties.dbg) ZenProperties.logger.log("RequestHeader read -- ok len: " + object_key_length);
 
         new_one.object_key.read(istream, object_key_length);
         if (ZenProperties.dbg) ZenProperties.logger.log("RequestHeader read -- ok: " + new_one.object_key.decode());
 
         new_one.operation = FString.instance(new_one.operation);
-        int op_length = istream.read_ulong() - 1;
+        //int op_length = istream.read_ulong() - 1;
+        int op_length = istream.read_octet() - 1;
         if (ZenProperties.dbg) ZenProperties.logger.log( "Op len: " + op_length );
 
         new_one.operation.read(istream, op_length);
@@ -149,13 +150,14 @@ public class RequestHeaderHelper {
         ////if (ZenProperties.dbg) ZenProperties.logger.log("sc len: " + value.service_context.length());
         ////if (ZenProperties.dbg) ZenProperties.logger.log("sc: " + value.service_context.decode());
         //ostream.write_ulong(0);
-
-        ostream.write_ulong(value.request_id);
+//System.out.println(ostream.toString());
+        //ostream.write_ulong(value.request_id);
+//System.out.println(ostream.toString());
         //ostream.write_boolean(value.response_expected);
 
         //System.out.println("RequestHeader write -- ok len: " + value.object_key.length());
-        ostream.write_ulong(value.object_key.length());
-        //ostream.write_octet((byte)value.object_key.length());
+        //ostream.write_ulong(value.object_key.length());
+        ostream.write_octet((byte)value.object_key.length());
         value.object_key.write(ostream);
 
         if (ZenProperties.dbg) ZenProperties.logger.log("ok len: " + value.object_key.length());
@@ -166,7 +168,8 @@ public class RequestHeaderHelper {
         //ostream.write_string(value.operation1);
         if (ZenProperties.dbg) ZenProperties.logger.log( "Op len: " + value.operation.length() );
         if (ZenProperties.dbg) ZenProperties.logger.log("operation: " + value.operation.toString());
-        ostream.write_ulong(value.operation.length() + 1);
+        //ostream.write_ulong(value.operation.length() + 1);
+        ostream.write_octet((byte)(value.operation.length() + 1));
         value.operation.write(ostream);
         ostream.write_octet((byte) 0);
 /*

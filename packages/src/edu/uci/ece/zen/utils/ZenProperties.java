@@ -15,11 +15,11 @@ public final class ZenProperties {
      */
     public static final String installDir = "";
 
-    public static final boolean dbg = false;
+    public static final boolean dbg = true;
 
     public static final boolean devDbg = false;
-    
-    public static final boolean dbgThreadStack = false;    
+
+    public static final boolean dbgThreadStack = false;
 
     /* set to true to allow printing about memory usage */
     public static final boolean memDbg = false;
@@ -168,7 +168,7 @@ public final class ZenProperties {
      * loaded) 2) zen.properties in the user home directory (Loaded when Class
      * is loaded) 3) zen.properties in the current directory (Loaded when Class
      * is loaded)
-     * 
+     *
      * @param property
      *            The property that is required
      * @return The value of the property if it is set in props or
@@ -194,7 +194,7 @@ public final class ZenProperties {
      * is loaded) 3) zen.properties in the current directory (Loaded when Class
      * is loaded) 4) System properties (Loaded from command line by Java) 5)
      * properties specified at ORB.init 6) properties set using set_parameter
-     * 
+     *
      * @param property
      *            The property that is required
      * @return The value of the property if it is set in props or
