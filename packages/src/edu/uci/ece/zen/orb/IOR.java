@@ -8,6 +8,7 @@ import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 public class IOR {
     private static final char[] intToHex = {
@@ -101,7 +102,7 @@ public class IOR {
             int threadPoolId)
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
-        if (ZenProperties.dbg) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea
                 .newInstance(org.omg.IOP.IOR.class);
         ior.type_id = typeID;

@@ -12,6 +12,7 @@ import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.utils.Logger;
 
 /**
@@ -50,37 +51,37 @@ public class MSGRunnable implements Runnable {
 
             FString contexts = rm.getServiceContexts();
 
-            if (ZenProperties.dbg) System.out.println("MSGRunnable REQUEST SC: " + contexts.decode());
+            if (ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable REQUEST SC: " + contexts.decode());
 
             ReadBuffer rb = contexts.toReadBuffer();
 
-            //if (ZenProperties.dbg) System.out.println("#############REPLY RB: " + rb.toString());
+            //if (ZenBuildProperties.dInvocationsbg) System.out.println("#############REPLY RB: " + rb.toString());
 
             int size = rb.readLong();
 
-            if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT size: " + size);
+            if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable REPLY CONTEXT size: " + size);
 
             for(int i = 0; i < size; ++i){
 
                 int id = rb.readLong();
-                if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT id: " + id);
+                if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable REPLY CONTEXT id: " + id);
 
                 if(id == org.omg.IOP.RTCorbaPriority.value){
-                    if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT id:RTCorbaPriority");
-                    if(ZenProperties.devDbg) System.out.println("MSGRunnable CUR thread priority: " + orb.getRTCurrent().the_priority());
+                    if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable REPLY CONTEXT id:RTCorbaPriority");
+                    if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable CUR thread priority: " + orb.getRTCurrent().the_priority());
 
                     rb.readLong(); //eat length
 
                     short priority = (short)rb.readLong();
 
-                    if(ZenProperties.devDbg) System.out.println("MSGRunnable RECEIVED thread priority: " + priority);
+                    if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable RECEIVED thread priority: " + priority);
 
                     orb.getRTCurrent().the_priority(priority);
 
-                    if(ZenProperties.devDbg) System.out.println("MSGRunnable NEW thread priority: " + orb.getRTCurrent().the_priority());
+                    if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable NEW thread priority: " + orb.getRTCurrent().the_priority());
 
                 } else{ // just eat
-                    if(ZenProperties.devDbg) System.out.println("MSGRunnable Skipping unknown service context " + id);
+                    if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable Skipping unknown service context " + id);
                     int byteLen = rb.readLong();
                     for(int i1 = 0; i1 < byteLen; ++i1)
                         rb.readByte();
@@ -119,7 +120,7 @@ public class MSGRunnable implements Runnable {
                 WriteBuffer wb = reply.getBuffer();
 
                 /*
-                   if(ZenProperties.devDbg) {
+                   if(ZenBuildProperties.dbgInvocations) {
                    ZenProperties.logger.log("wbdbg__Servant2: " + servant.toString() + " id: " + rm.getRequestId() + " reply: " + reply.toString());
                    ZenProperties.logger.log("wbdbg__Servant2: " + servant.toString() + " id: " + rm.getRequestId() + " wb: " + wb.toString());
                    }*/

@@ -61,15 +61,16 @@ public abstract class Logger{
     }
 
     public static void printMemStats(){
-        printMemStats(999999,ImmortalMemory.instance());
+        printMemStats(ZenBuildProperties.dbgImmortalId,ImmortalMemory.instance());
     }
 
     public static void printMemStatsImm(int code){
-        if(ZenProperties.memDbg1) printMemStats(code, ImmortalMemory.instance());
+        if( ZenBuildProperties.dbgImmortal ){
+            printMemStats(code, ImmortalMemory.instance());
+        }
     }
 
     public static void printMemStats(int code){
-
         MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
         printMemStats(code, ma);
 
@@ -104,69 +105,39 @@ public abstract class Logger{
         writeln();
     }
 
+    private static long memAreaSizes[];
     synchronized public static void printMemStats(int code, MemoryArea ma){
-
-        //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());
-        if(edu.uci.ece.zen.utils.ZenProperties.memDbg){
-            long mem = ma.memoryConsumed();
-            long rem = ma.memoryRemaining();
-            write(code);
+        if( !ZenBuildProperties.dbgMap[code] )
+            return;
+        if( memAreaSizes == null )
+            memAreaSizes = new long[10];
+        long mem = ma.memoryConsumed();
+        long rem = ma.memoryRemaining();
+        if( memAreaSizes[code] >= mem )
+            return;
+        memAreaSizes[code] = mem;
+        write(code);
+        System.out.write( ',' );
+        write(mem);
+        System.out.write( ',' );
+        write(rem);
+        if(ma instanceof ScopedMemory){
             System.out.write( ',' );
-            write(mem);
-            System.out.write( ',' );
-            write(rem);
-            if(ma instanceof ScopedMemory){
-                System.out.write( ',' );
-                write(((ScopedMemory)ma).getReferenceCount());
-            }
-            System.out.write( '\n' );
-            System.out.write( '\n' );
-
-        /*
-          mem = ma.memoryConsumed();
-         rem = ma.memoryRemaining();
-
-             write(code);
-        System.out.write( '\n' );
-            write(mem);
-        System.out.write( '\n' );
-            write(rem);
-        System.out.write( '\n' );
-        System.out.write( '\n' );
-          mem = ma.memoryConsumed();
-         rem = ma.memoryRemaining();
-
-             write(code);
-        System.out.write( '\n' );
-            write(mem);
-        System.out.write( '\n' );
-            write(rem);
-        System.out.write( '\n' );
-        System.out.write( '\n' );
-          */
-        System.out.flush();
-
-           /*
-            if(ma instanceof ScopedMemory){
-               perf.cPrint.nativePrinter.print(code,(int)mem,((ScopedMemory)ma).getReferenceCount());
-            } else {
-               perf.cPrint.nativePrinter.print(code,(int)mem,0);
-            }*/
+            write(((ScopedMemory)ma).getReferenceCount());
         }
+        System.out.write( '\n' );
+        System.out.write( '\n' );
+        System.out.flush();
     }
 
     public static void printMemStats(edu.uci.ece.zen.orb.ORB orb){
         printMemStats(0,orb.parentMemoryArea);
         printMemStats(1,orb.orbImplRegion);
         printMemStats();
-        //System.out.println("orb,"+orb.orbImplRegion.memoryConsumed()+","+orb.orbImplRegion.memoryRemaining());
-        //System.out.println("client,"+orb.parentMemoryArea.memoryConsumed()+","+orb.parentMemoryArea.memoryRemaining());
-
     }
 
     public static void printThreadStack(){
-
-        if (edu.uci.ece.zen.utils.ZenProperties.dbgThreadStack)
+        if (edu.uci.ece.zen.utils.ZenBuildProperties.dbgThreadStack)
         {
             System.out.println("Current thread is " + RealtimeThread.currentRealtimeThread());
             System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());

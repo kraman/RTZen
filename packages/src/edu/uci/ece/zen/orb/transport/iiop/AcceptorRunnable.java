@@ -25,7 +25,7 @@ public class AcceptorRunnable implements Runnable {
 
     private int statCount = 0;
     public void run() {
-        if (statCount % edu.uci.ece.zen.utils.ZenProperties.MEM_STAT_COUNT == 0) {
+        if (statCount % edu.uci.ece.zen.utils.ZenBuildProperties.MEM_STAT_COUNT == 0) {
             edu.uci.ece.zen.utils.Logger.printMemStats(7);
         }
         statCount++;

@@ -86,8 +86,8 @@ public class ThreadPool {
 
     public void execute(RequestMessage task, short minPriority, short maxPriority) {
         statCount++;
-        if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
-            edu.uci.ece.zen.utils.Logger.printMemStats(4);
+        if (statCount % ZenBuildProperties.MEM_STAT_COUNT == 0) {
+            edu.uci.ece.zen.utils.Logger.printMemStats(ZenBuildProperties.dbgTransportScopeId);
         }
 
         //TODO: Have to improve performance here

@@ -2,6 +2,7 @@ package edu.uci.ece.zen.orb.protocol.giop.v1_0;
 
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 /**
  * Helper class for : RequestHeader_1_0
@@ -132,8 +133,8 @@ public class RequestHeaderHelper {
         ZenProperties.logger.log("Write RequestHeader_1_0");
         //edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
         value.service_context.write(ostream);
-        if (ZenProperties.dbg) ZenProperties.logger.log("sc len: " + value.service_context.length());
-        if (ZenProperties.dbg) ZenProperties.logger.log("sc: " + value.service_context.decode());
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("sc len: " + value.service_context.length());
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("sc: " + value.service_context.decode());
         //ostream.write_ulong(0);
 
         ostream.write_ulong(value.request_id);
@@ -143,13 +144,13 @@ public class RequestHeaderHelper {
         ostream.write_ulong(value.object_key.length());
         value.object_key.write(ostream);
         
-        if (ZenProperties.dbg) ZenProperties.logger.log("ok len: " + value.object_key.length());
-        if (ZenProperties.dbg) ZenProperties.logger.log("ok: " + value.object_key.decode());        
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("ok len: " + value.object_key.length());
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("ok: " + value.object_key.decode());        
         //ostream.write_octet_array(value.object_key1,
         // 0,value.object_key1.length);
 
         //ostream.write_string(value.operation1);
-        if (ZenProperties.dbg) ZenProperties.logger.log("operation: " + value.operation.toString());
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("operation: " + value.operation.toString());
         ostream.write_ulong(value.operation.length() + 1);
         value.operation.write(ostream);
         ostream.write_octet((byte) 0);

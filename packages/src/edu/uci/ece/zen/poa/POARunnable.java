@@ -124,7 +124,7 @@ public class POARunnable implements Runnable {
                     pimpl.servant_to_id((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
                     break;
                 case SERVANT_TO_REFERENCE:
-                    System.out.println(portal); // delete it
+                    //System.out.println(portal); // delete it
                     retVal = pimpl.servant_to_reference((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
                     break;
                 case REFERENCE_TO_SERVANT:

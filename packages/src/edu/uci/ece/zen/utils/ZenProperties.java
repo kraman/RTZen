@@ -14,32 +14,23 @@ public final class ZenProperties {
      * String installDir = null;
      */
     public static final String installDir = "";
-
-    public static final boolean dbg = false;
-
-    public static final boolean devDbg = false;
-
-    public static final boolean dbgThreadStack = false;
-
-    public static final boolean CAN_USE_STRINGS = false;
+    //public static final boolean dbg = false;
+    //public static final boolean devDbg = false;
+    //public static final boolean dbgThreadStack = false;
+    public static final boolean CAN_USE_STRINGS = true;
 
     /* set to true to allow printing about memory usage */
-
-    public static final boolean memDbg = false;
+    //public static final boolean memDbg = false;
+    //public static final boolean memDbg1 = false;
+    //public static final int MEM_STAT_COUNT = 1;
 
     /* configure the memory debugger   */
-    public static final float trim = (float)0.5; //To what extent we will trim the data
-    public static final int groupSize = 7; //How many scopes we need to group
-
-    public static final boolean memDbg1 = false;
-    public static final int MEM_STAT_COUNT = 1;
+    //public static final float trim = (float)0.8; //To what extent we will trim the data
+    //public static final int groupSize = 7; //How many scopes we need to group
 
     public static final ImmortalMemory immortalMem = ImmortalMemory.instance();
-
     public static final HeapMemory heapMem = HeapMemory.instance();
-
     public static final Logger logger = Logger.instance();
-
     public static byte iiopMinor = 0;
 
     public static final String zenVersion = "Zen RT Corba ORB Version 1.1, UNSTABLE\n"
@@ -74,7 +65,7 @@ public final class ZenProperties {
     private static boolean isInit = false;
 
     private static synchronized void init() {
-        if (ZenProperties.dbg) System.out
+        if (ZenBuildProperties.dbgZenProperties) System.out
                 .println("The current memory region in ZenProperties.init() is "
                         + javax.realtime.RealtimeThread.getCurrentMemoryArea());
         if (isInit) return;
@@ -83,7 +74,7 @@ public final class ZenProperties {
 
         Properties tmpProperties = new Properties();
         try {
-            if (ZenProperties.dbg) System.out
+            if (ZenBuildProperties.dbgZenProperties) System.out
                     .println("Loading zen.properties from " + installDir
                             + File.separator + "zen.properties");
 
@@ -91,13 +82,13 @@ public final class ZenProperties {
                     + File.separator + "zen.properties"));
             tmpProperties.load(in);
         } catch (Exception exception) {
-            if (ZenProperties.dbg) System.out
+            if (ZenBuildProperties.dbgZenProperties) System.out
                     .println("Unable to load default properties from the installation directory. ("
                             + installDir + ")");
         }
 
         try {
-            if (ZenProperties.dbg) System.out
+            if (ZenBuildProperties.dbgZenProperties) System.out
                     .println("Loading zen.properties from "
                             + System.getProperty("user.home") + File.separator
                             + "zen.properties");
@@ -107,13 +98,13 @@ public final class ZenProperties {
                     + File.separator + "zen.properties"));
             tmpProperties.load(in);
         } catch (Exception exception) {
-            if (ZenProperties.dbg) System.out
+            if (ZenBuildProperties.dbgZenProperties) System.out
                     .println("Unable to load default properties from the user home directory. ("
                             + System.getProperty("user.home") + ")");
         }
 
         try {
-            if (ZenProperties.dbg) System.out
+            if (ZenBuildProperties.dbgZenProperties) System.out
                     .println("Loading zen.properties from "
                             + System.getProperty("user.dir") + File.separator
                             + "zen.properties");
@@ -123,7 +114,7 @@ public final class ZenProperties {
                     + File.separator + "zen.properties"));
             tmpProperties.load(in);
         } catch (Exception exception) {
-            if (ZenProperties.dbg) System.out
+            if (ZenBuildProperties.dbgZenProperties) System.out
                     .println("Unable to load default properties from the working directory. ("
                             + System.getProperty("user.dir") + ")");
         }
@@ -157,7 +148,7 @@ public final class ZenProperties {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        if (ZenProperties.dbg) System.out
+        if (ZenBuildProperties.dbgZenProperties) System.out
                 .println("Global properties have been loaded");
         System.out.flush();
         //All properties loaded

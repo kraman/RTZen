@@ -1,7 +1,7 @@
 package edu.uci.ece.zen.orb;
 
 import edu.uci.ece.zen.utils.ZenProperties;
-
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 public class ObjectImpl extends org.omg.CORBA.portable.ObjectImpl {
     public org.omg.IOP.IOR ior;
@@ -15,7 +15,7 @@ public class ObjectImpl extends org.omg.CORBA.portable.ObjectImpl {
     public void init(org.omg.IOP.IOR ior) {
         this.ior = ior;
         ids[0] = ior.type_id;
-        if (ZenProperties.dbg){
+        if (ZenBuildProperties.dbgIOR){
             System.out.println("It's in ObjectImpl.init() and the type id is "+ids[0]);
         }
     }

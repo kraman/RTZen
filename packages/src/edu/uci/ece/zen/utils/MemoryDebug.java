@@ -34,7 +34,7 @@ public class MemoryDebug{
 
             /*Start to trim off the unneeded information*/ 
 
-            float trimValue= edu.uci.ece.zen.utils.ZenProperties.trim;
+            float trimValue=ZenBuildProperties.observeLastXPercent/100.0f;
             int unuseful= (int)(allInfo.size()*trimValue);
             int useful = allInfo.size()-unuseful;
 
@@ -44,7 +44,7 @@ public class MemoryDebug{
                 usefulInfo.addElement((String)allInfo.elementAt(unuseful+i));
             }
             /*Start to group the useful info */
-            int groupSize = edu.uci.ece.zen.utils.ZenProperties.groupSize;
+            int groupSize = 6;
             Vector[] memoryConsumed = new Vector[groupSize];
             Vector[] memoryRemaining = new Vector[groupSize];
             for(int j = 0; j<groupSize; j++){

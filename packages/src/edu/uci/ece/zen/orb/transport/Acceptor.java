@@ -28,6 +28,7 @@ import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
 
@@ -92,7 +93,7 @@ public abstract class Acceptor {
             byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion, int threadPoolId) {
         if( this.threadPoolId == threadPoolId ){
             try {
-                if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor client region: " + clientRegion);
+                if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Acceptor client region: " + clientRegion);
                 edu.uci.ece.zen.utils.Logger.printThreadStack();
                 if (prunnable == null) prunnable = new ProfileRunnable();
                 prunnable.init(iiopMajorVersion, iiopMinorVersion, objKey, this);

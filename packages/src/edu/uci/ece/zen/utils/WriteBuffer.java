@@ -116,7 +116,7 @@ public class WriteBuffer {
     public void free() {
 	//System.out.println( "WriteBuffer.free()" );
         if(!inUse){
-	Thread.dumpStack();
+            Thread.dumpStack();
             ZenProperties.logger.log(Logger.WARN, WriteBuffer.class, "free", "Buffer already freed.");
                 //System.exit(-1);
                 //still deciding what to do here
@@ -131,19 +131,30 @@ public class WriteBuffer {
             ba--;
         }
 
-         if(ZenProperties.memDbg1) System.out.write('b');
-         if(ZenProperties.memDbg1) System.out.write('w');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(ba);
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(buffers.size());
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(bs);
+        if(ZenBuildProperties.dbgDataStructures){
+            System.out.write('w');
+            System.out.write('b');
+            System.out.write('u');
+            System.out.write('f');
+            edu.uci.ece.zen.utils.Logger.write(ba);
+            System.out.write(',');
+            edu.uci.ece.zen.utils.Logger.write(buffers.size());
+            System.out.write(',');
+            edu.uci.ece.zen.utils.Logger.writeln(bs);
+        }
 
         buffers.removeAllElements();
         init();
         WriteBuffer.release(this);
         numFree++;
 
-        if(ZenProperties.memDbg1) System.out.write('w');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(numFree);
+        if(ZenBuildProperties.dbgDataStructures){
+            System.out.write('w');
+            System.out.write('b');
+            System.out.write('u');
+            System.out.write('f');
+            edu.uci.ece.zen.utils.Logger.writeln(numFree);
+        }
 
        inUse = false;
     }
@@ -372,7 +383,6 @@ public class WriteBuffer {
 
         pad(WriteBuffer.LONGLONG);
         byte b1 = (byte) ((v >>> 56) & 0xFF);
-        if (ZenProperties.dbg) ZenProperties.logger.log(b1 + "");
         byte b2 = (byte) ((v >>> 48) & 0xFF);
         byte b3 = (byte) ((v >>> 40) & 0xFF);
         byte b4 = (byte) ((v >>> 32) & 0xFF);

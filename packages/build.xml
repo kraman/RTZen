@@ -50,6 +50,7 @@
             <exclude name="src/edu/uci/ece/zen/orb/transport/serial/**"/>
             <exclude name="src/edu/uci/ece/zen/orb/protocol/giop/v1_1/**"/>
             <exclude name="src/edu/uci/ece/zen/orb/protocol/giop/v1_2/**"/>
+            <exclude name="src/edu/uci/ece/zen/orb/protocol/giop_lite/**"/>
 
             <include name="src/edu/uci/ece/zen/orb/portableInterceptor/**"  if="zen.aspects.pi"/>
             <include name="generated/org/omg/PortableInterceptor/**/"  if="zen.aspects.pi"/>

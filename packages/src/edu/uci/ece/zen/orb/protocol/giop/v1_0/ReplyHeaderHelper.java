@@ -2,6 +2,7 @@ package edu.uci.ece.zen.orb.protocol.giop.v1_0;
 
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 /**
  * Helper class for : ReplyHeader_1_0
@@ -20,10 +21,10 @@ public class ReplyHeaderHelper {
     public static ReplyHeader read(org.omg.CORBA.portable.InputStream istream) {
         ReplyHeader new_one = ReplyHeader.instance();
 
-        if (ZenProperties.dbg) ZenProperties.logger.log(" *****ReplyHeader: " + istream.toString());
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log(" *****ReplyHeader: " + istream.toString());
         new_one.service_context = edu.uci.ece.zen.orb.protocol.IOP.ServiceContextListHelper
                 .read(istream, FString.instance(new_one.service_context));
-        if (ZenProperties.dbg) ZenProperties.logger.log(" *****ReplyHeader: " + new_one.service_context.decode());
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log(" *****ReplyHeader: " + new_one.service_context.decode());
 
         new_one.request_id = istream.read_ulong();
 

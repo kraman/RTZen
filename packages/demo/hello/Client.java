@@ -50,7 +50,7 @@ public class Client extends RealtimeThread
             System.out.println( "===================Trying to establish connection==========================" );
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
             System.out.println( "===================Connection established...sending request================" );
-            System.out.println( server.getMessage() );
+            System.out.println( "Servant returned: " + server.getMessage() );
 
 /*
             // Create a scope for running requests in, so that we don't waste the scope we are in.

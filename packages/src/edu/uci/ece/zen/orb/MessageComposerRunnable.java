@@ -40,13 +40,7 @@ public class MessageComposerRunnable implements Runnable {
      * <b>Message scope/Waiter region </b> --&gt; Transport scope
      * </p>
      */
-    private int statCount = 0;
     public void run() {
-        if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
-            edu.uci.ece.zen.utils.Logger.printMemStats(6);
-        }
-        statCount++;
-
         //setup waiting straterg
         WaitingStrategy waitingStrategy = null;
         if (clr.responseExpected) {

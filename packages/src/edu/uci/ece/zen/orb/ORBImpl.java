@@ -15,6 +15,7 @@ import edu.uci.ece.zen.orb.policies.PolicyManagerImpl;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 //import edu.uci.ece.zen.utils.ThreadLocal;
 
 public class ORBImpl {
@@ -40,30 +41,29 @@ public class ORBImpl {
 
     public ORBImpl(String args[], Properties props,
             edu.uci.ece.zen.orb.ORB orbFacade) {
-        ZenProperties.logger.log("======================In orb impl region===================================");
+        if (ZenBuildProperties.dbgORB)
+            ZenProperties.logger.log("======================In orb impl region===================================");
         properties = new ZenProperties();
         properties.addPropertiesFromArgs(args);
         properties.addProperties(props);
         this.orbFacade = orbFacade;
-        ZenProperties.logger.log("======================Setting portal variable==============================");
+        if (ZenBuildProperties.dbgORB)
+            ZenProperties.logger.log("======================Setting portal variable==============================");
         orbFacade.orbImplRegion.setPortal(this);
         orbImplRunnable = new ORBImplRunnable(orbFacade.orbImplRegion);
-        ZenProperties.logger.log("======================Creating nhrt sleeper thread=========================");
-        if (ZenProperties.dbg) ZenProperties.logger.log(orbFacade.orbImplRegion.toString());
-        if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
-                .getMemoryArea(orbImplRunnable).toString());
-        if (ZenProperties.dbg) ZenProperties.logger.log(NoHeapRealtimeThread
-                .getCurrentMemoryArea().toString());
-        //NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,
-        // null,null,(ScopedMemory)orbFacade.orbImplRegion,null,(java.lang.Runnable
-        // )orbImplRunnable );
-        if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
-                .getMemoryArea(new Integer(42)).toString());
+        if (ZenBuildProperties.dbgORB){
+            ZenProperties.logger.log("======================Creating nhrt sleeper thread=========================");
+            ZenProperties.logger.log(orbFacade.orbImplRegion.toString());
+            ZenProperties.logger.log(MemoryArea.getMemoryArea(orbImplRunnable).toString());
+            ZenProperties.logger.log(NoHeapRealtimeThread.getCurrentMemoryArea().toString());
+            ZenProperties.logger.log(MemoryArea.getMemoryArea(new Integer(42)).toString());
+        }
         SchedulingParameters sp = null;
         ReleaseParameters rp = null;
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread(sp, rp, (MemoryParameters)null,
                 orbFacade.orbImplRegion, (ProcessingGroupParameters)null, orbImplRunnable);
-        ZenProperties.logger.log("======================starting nhrt in orb impl region=====================");
+        if (ZenBuildProperties.dbgORB)
+            ZenProperties.logger.log("======================starting nhrt in orb impl region=====================");
 
         nhrt.start();
         try {
@@ -75,8 +75,8 @@ public class ORBImpl {
             policyManager.init(orbFacade);
 */            
             /*
-             * rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance(
-             * RTORBImpl.class )); rtorb.init(orbFacade);
+             * rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance(RTORBImpl.class ));
+             * rtorb.init(orbFacade);
              */
             orbFacade.getRTORB().create_threadpool(0,//stacksize,
                     1,//static_threads,
@@ -189,13 +189,10 @@ class ORBImplRunnable implements Runnable {
     }
 
     public void run() {
-        if (ZenProperties.dbg) ZenProperties.logger.log("getting portal for: "
-                + sm);
-        if (ZenProperties.dbg) ZenProperties.logger.log("inner thread: "
-                + Thread.currentThread().toString());
-
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("getting portal for: " + sm);
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("inner thread: " + Thread.currentThread().toString());
         ORBImpl orbImpl = (ORBImpl) sm.getPortal();
-        if (ZenProperties.dbg) ZenProperties.logger.log("orb impl is " + orbImpl);
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("orb impl is " + orbImpl);
         synchronized (orbImpl) {
             try {
                 while (active) {

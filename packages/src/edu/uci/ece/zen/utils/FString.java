@@ -148,7 +148,6 @@ public class FString {
      *
      */
     public ReadBuffer toReadBuffer() {
-
         ReadBuffer readBuf = ReadBuffer.instance();
         readBuf.init();
         readBuf.setEndian(false);

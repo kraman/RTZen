@@ -40,6 +40,37 @@ Mackinac_install = /opt/mackinac
 #Portable Interceptors
 #zen.aspects.pi
 
+#Debug Settings
+zen.debug.memory.immortal = true
+zen.debug.memory.scoped.application = true
+zen.debug.memory.scoped.orb = true
+zen.debug.memory.scoped.poa = true
+zen.debug.memory.scoped.transport = true
+zen.debug.memory.scoped.threadpool = true
+
+zen.debug.memory.immortal.id = 9
+zen.debug.memory.scoped.application.id = 0
+zen.debug.memory.scoped.orb.id = 1
+zen.debug.memory.scoped.poa.id = 2
+zen.debug.memory.scoped.transport.id = 3
+zen.debug.memory.scoped.threadpool.id = 4
+
+zen.debug.memory.mem_stat_count = 100
+#basic idea is that if there is no memory leak in the last x% of the data then
+#it is safe to assume that there is no memory leak at all
+zen.debug.memory.observe_last_x_percent = 50
+
+zen.debug.invocations = true
+zen.debug.ior = true
+zen.debug.poa = true
+zen.debug.orb = true
+zen.debug.tp = true
+zen.debug.zenproperties = false
+zen.debug.datastructures = true
+zen.debug.threadstack = true
+
+
+
 ###############################################################################
 ###############################################################################
 ############## END OF RTZEN CONFIG OPTIONS. Please do not touch  ##############
