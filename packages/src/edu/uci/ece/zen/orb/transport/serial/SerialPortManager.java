@@ -5,6 +5,11 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/**
+Manages the serial port by providing utility methods for getting and receiving
+messages through the serial port. Sends out connection requests and listens for
+responses to them.
+*/
 public class SerialPortManager
 {
     private static final SerialPortManager instance = new SerialPortManager();
@@ -20,6 +25,8 @@ public class SerialPortManager
 
     private SerialPort serialPort;
     private SerialPortListener serialPortListener;
+
+    private byte[] buffer = new byte[SerialPort.MAX_MESSAGE_LENGTH];
 
     private SerialPortManager()
     {
@@ -64,6 +71,7 @@ public class SerialPortManager
         // iterating over it
         synchronized (listeningConnections)
         {
+            System.out.println("SerialPortManager: connect: trying to find a listening local connection to " + host);
             // Search for a listening local connection...
             for (Iterator i = listeningConnections.iterator(); i.hasNext(); )
             {
@@ -74,6 +82,7 @@ public class SerialPortManager
                 {
                     i.remove();
                     connections.add(listeningConnection);
+                    System.out.println("SerialPortManager: connect: found local connection! binding...");
 
                     listeningConnection.connect(socket, fromLocalHost, serialPort);
 
@@ -93,9 +102,16 @@ public class SerialPortManager
 
                 requestedConnections.add(requestedConnection);
 
-                serialPort.sendMessage(SerialPortProtocol.encodeConnectionRequested(requestedConnection));
+                synchronized (buffer)
+                {
+                    int messageLength = SerialPortProtocol.encodeConnectionRequested(requestedConnection, buffer);
+                    System.out.println("SerialPortManager: connect: couldn't find local listener, sending request to remote host...");
+                    serialPort.sendMessage(buffer, messageLength);
+                }
 
+                System.out.println("SerialPortManager: connect: waiting for response from remote host...");
                 requestedConnection.waitForConnection();
+                System.out.println("SerialPortManager: connect: response from remote host received!");
 
                 return requestedConnection;
             }
@@ -105,13 +121,15 @@ public class SerialPortManager
             }
         }
 
+        System.out.println("SerialPortManager: connect: no connections found, returning...");
+
         // The requested host could not be found, or it had no sockets open for connections.
         return null;
     }
 
     private class SerialPortListener extends Thread
     {
-        private static final int LISTEN_INTERVAL = 50;
+        private byte[] message = new byte[SerialPort.MAX_MESSAGE_LENGTH];
 
         public void run()
         {
@@ -121,9 +139,10 @@ public class SerialPortManager
 
                 try
                 {
-                    sleep(LISTEN_INTERVAL);
-
-                    byte[] message = serialPort.getMessage();
+                    // Block until a message is available
+System.out.println("SerialPortListener: run: calling serialPort.getMessage...");
+                    int messageLength = serialPort.getMessage(message);
+System.out.println("SerialPortListener: run: got a message! " + messageLength + " bytes long");
 
                     if (message != null)
                     {
@@ -133,7 +152,8 @@ public class SerialPortManager
                         switch (SerialPortProtocol.getMessageType(message))
                         {
                             case SerialPortProtocol.CONNECTION_REQUESTED:
-                                requestedConnection = SerialPortProtocol.decodeConnectionRequested(message);
+                                System.out.println("SerialPortListener: run: it's a connection request");
+                                requestedConnection = SerialPortProtocol.decodeConnectionRequested(message, messageLength);
 
                                 socket = new Socket();
                                 if (connect(requestedConnection.getPort(),
@@ -141,20 +161,25 @@ public class SerialPortManager
                                             socket,
                                             false) != null)
                                 {
-                                    serialPort.sendMessage(
-                                        SerialPortProtocol.encodeConnectionAccepted(requestedConnection, socket));
+                                    messageLength = SerialPortProtocol.encodeConnectionAccepted(
+                                        requestedConnection, socket, buffer);
+                                    System.out.println("SerialPortListener: run: sending connection accept message back to caller");
+                                    serialPort.sendMessage(buffer, messageLength);
                                 }
                                 else
                                 {
-                                    serialPort.sendMessage(
-                                        SerialPortProtocol.encodeConnectionDenied(requestedConnection, socket));
+                                    messageLength = SerialPortProtocol.encodeConnectionDenied(
+                                        requestedConnection, socket, buffer);
+                                    System.out.println("SerialPortListener: run: sending connection denied message back to caller");
+                                    serialPort.sendMessage(buffer, messageLength);
                                 }
 
                                 break;
 
                             case SerialPortProtocol.CONNECTION_ACCEPTED:
+                                System.out.println("SerialPortListener: run: it's a connection accept");
                                 SerialPortConnection acceptedConnection = new SerialPortConnection();
-                                byte socketID = SerialPortProtocol.decodeConnectionAccepted(message, acceptedConnection);
+                                byte socketID = SerialPortProtocol.decodeConnectionAccepted(message, messageLength, acceptedConnection);
                                 boolean connectionFound = false;
 
                                 // Walk through the list of requested connections and find the one that was accepted
@@ -169,6 +194,7 @@ public class SerialPortManager
 
                                         requestedConnection.getSocket().setID(socketID);
 
+                                        System.out.println("SerialPortListener: run: found socket awaiting acceptance, connecting...");
                                         requestedConnection.connect(requestedConnection.getSocket(), false, serialPort);
 
                                         connectionFound = true;
@@ -186,7 +212,10 @@ public class SerialPortManager
                                 break;
 
                             case SerialPortProtocol.CONNECTION_DENIED:
-                                connection = SerialPortProtocol.decodeConnectionDenied(message);
+                                System.out.println("SerialPortListener: run: it's a connection denied");
+                                connection = SerialPortProtocol.decodeConnectionDenied(message, messageLength);
+                                // FIXME: We should interrupt the waiting connection here. Otherwise, it will
+                                // block forever, waiting for waitForConnection to return.
                                 edu.uci.ece.zen.utils.ZenProperties.logger.log(
                                     edu.uci.ece.zen.utils.Logger.WARN,
                                     getClass(), "run",
@@ -194,6 +223,7 @@ public class SerialPortManager
                                 break;
 
                             case SerialPortProtocol.SOCKET_DATA:
+                                System.out.println("SerialPortListener: run: it's socket data");
                                 byte id = SerialPortProtocol.getSocketID(message);
                                 boolean foundSocket = false;
 
@@ -205,9 +235,8 @@ public class SerialPortManager
                                     {
                                         foundSocket = true;
 
-                                        RemoteSerialPortStream remoteStream =
-                                            (RemoteSerialPortStream) connection.getStream();
-                                        SerialPortProtocol.decodeSocketData(message, remoteStream.inputBuffer);
+                                        SerialPortProtocol.decodeSocketData(
+                                            message, messageLength, (RemoteSerialPortStream)connection.getStream());
                                         break;
                                     }
                                 }
@@ -221,6 +250,18 @@ public class SerialPortManager
                                 }
 
                                 break;
+
+                            default:
+                                System.out.println("SerialPortListener: run: unknown message! message="+Integer.toHexString(SerialPortProtocol.getMessageType(message)));
+                                for (int i = 0; i < messageLength; i++)
+                                {
+                                    System.out.print(message[i] + " ");
+                                }
+                                System.out.println();
+                                edu.uci.ece.zen.utils.ZenProperties.logger.log(
+                                    edu.uci.ece.zen.utils.Logger.WARN,
+                                    getClass(), "run",
+                                    "Received socket data from remote host, but message type is unknown.");
                         }
                     }
                 }
@@ -243,281 +284,6 @@ public class SerialPortManager
                         getClass(), "run", "SerialPortListener was interrupted while sleeping or while waiting for data to become available", e);
                 }
             }
-        }
-    }
-}
-
-
-class SerialPortConnection
-{
-    private int port;
-    private InetAddress address;
-    private SerialPortStream stream;
-    private Socket socket;
-
-    SerialPortConnection()
-    {
-        // No implementation; use empty values
-    }
-
-    SerialPortConnection(int port, InetAddress address)
-    {
-        this.port = port;
-        this.address = address;
-    }
-
-    SerialPortConnection(int port, String host) throws UnknownHostException
-    {
-        this.port = port;
-        address = InetAddress.getByName(host);
-    }
-
-    // This function needs to be synchronized for wait/notify
-    synchronized void connect(Socket socket, boolean local, SerialPort serialPort)
-    {
-        this.socket = socket;
-        socket.setConnection(this);
-
-        if (socket.getID() == 0)
-        {
-            socket.setID(Socket.NEXT_AVAILABLE_ID);
-        }
-
-        if (local)
-        {
-            stream = new LocalSerialPortStream();
-        }
-        else
-        {
-            stream = new RemoteSerialPortStream(socket, serialPort);
-        }
-
-        notify();
-    }
-
-    // This function needs to be synchronized for wait/notify
-    synchronized Socket waitForConnection() throws InterruptedException
-    {
-        SerialPortManager.instance().addListeningConnection(this);
-
-        wait();
-
-        return socket;
-    }
-
-    int getPort()
-    {
-        return port;
-    }
-
-    void setPort(int port)
-    {
-        this.port = port;
-    }
-
-    InetAddress getAddress()
-    {
-        return address;
-    }
-
-    void setAddress(InetAddress address)
-    {
-        this.address = address;
-    }
-
-    SerialPortStream getStream()
-    {
-        return stream;
-    }
-
-    void setStream(SerialPortStream stream)
-    {
-        this.stream = stream;
-    }
-
-    Socket getSocket()
-    {
-        return socket;
-    }
-
-    void setSocket(Socket socket)
-    {
-        this.socket = socket;
-    }
-
-    public boolean equals(Object o)
-    {
-        if (o instanceof SerialPortConnection)
-        {
-            SerialPortConnection c = (SerialPortConnection) o;
-            return c.port == port && c.address.equals(address);
-        }
-
-        return false;
-    }
-
-    public String toString()
-    {
-        return address + ":" + port;
-    }
-}
-
-interface SerialPortStream
-{
-    InputStream getInputStream();
-    OutputStream getOutputStream();
-}
-
-class LocalSerialPortStream implements SerialPortStream
-{
-    private edu.oswego.cs.dl.util.concurrent.BoundedBuffer queue;
-    private IS inputStream;
-    private OS outputStream;
-
-    LocalSerialPortStream()
-    {
-        // FIXME: How do we choose a good capacity?
-        queue = new edu.oswego.cs.dl.util.concurrent.BoundedBuffer(1024);
-        inputStream = new IS();
-        outputStream = new OS();
-    }
-
-    public InputStream getInputStream()
-    {
-        return inputStream;
-    }
-
-    public OutputStream getOutputStream()
-    {
-        return outputStream;
-    }
-
-    class IS extends InputStream
-    {
-        // FIXME: When (if ever) must we return -1 here?
-        public int read() throws IOException
-        {
-            try
-            {
-                Integer n = (Integer) queue.take();
-                return n.intValue() & 0xFF;
-            }
-            catch (InterruptedException e)
-            {
-                IOException ioex = new IOException();
-                ioex.initCause(e);
-                throw ioex;
-            }
-        }
-
-        public int available() throws IOException
-        {
-            return queue.size();
-        }
-    }
-
-    class OS extends OutputStream
-    {
-        public void write(int b) throws IOException
-        {
-            try
-            {
-                queue.put(new Integer(b));
-            }
-            catch (InterruptedException e)
-            {
-                IOException ioex = new IOException();
-                ioex.initCause(e);
-                throw ioex;
-            }
-        }
-    }
-}
-
-class RemoteSerialPortStream implements SerialPortStream
-{
-    private IS inputStream;
-    private OS outputStream;
-    private SerialPort serialPort;
-    private Socket socket;
-
-    edu.oswego.cs.dl.util.concurrent.BoundedBuffer inputBuffer; // Not private so the serial port listener can access it
-
-    RemoteSerialPortStream(Socket socket, SerialPort serialPort)
-    {
-        this.socket = socket;
-        this.serialPort = serialPort;
-
-        inputBuffer = new edu.oswego.cs.dl.util.concurrent.BoundedBuffer(1024);
-
-        inputStream = new IS();
-        outputStream = new OS();
-    }
-
-    public InputStream getInputStream()
-    {
-        return inputStream;
-    }
-
-    public OutputStream getOutputStream()
-    {
-        return outputStream;
-    }
-
-    class IS extends InputStream
-    {
-        // FIXME: When (if ever) must we return -1 here?
-        public int read() throws IOException
-        {
-            try
-            {
-                Integer n = (Integer) inputBuffer.take();
-                return n.intValue() & 0xFF;
-            }
-            catch (InterruptedException e)
-            {
-                IOException ioex = new IOException();
-                ioex.initCause(e);
-                throw ioex;
-            }
-        }
-
-        public int read(byte[] b, int off, int len) throws IOException
-        {
-            int bytesRead = super.read(b, off, len);
-            return bytesRead;
-        }
-
-        public int available() throws IOException
-        {
-            return inputBuffer.size();
-        }
-    }
-
-    class OS extends OutputStream
-    {
-        private List outputBuffer;
-
-        OS()
-        {
-            outputBuffer = new LinkedList();
-        }
-
-        public void write(int b) throws IOException
-        {
-            outputBuffer.add(new Integer(b & 0xFF));
-        }
-
-        public void write(byte b[], int off, int len) throws IOException
-        {
-            super.write(b, off, len);
-            flush();
-        }
-
-        public void flush() throws IOException
-        {
-            serialPort.sendMessage(SerialPortProtocol.encodeSocketData(socket, outputBuffer));
-            outputBuffer.clear();
         }
     }
 }

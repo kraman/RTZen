@@ -20,7 +20,10 @@ public class ServerSocket
     {
         try
         {
-            return connection.waitForConnection();
+            System.out.println("ServerSocket: accept: waiting for connections to " + connection);
+            Socket sock = connection.waitForConnection();
+            System.out.println("ServerSocket: accept: connection accepted to " + connection);
+            return sock;
         }
         catch (InterruptedException e)
         {

@@ -5,9 +5,9 @@ import java.rmi.registry.*;
 import java.io.*;
 import java.net.InetAddress;
 
-public interface RMISerialPort extends Remote
+interface RMISerialPort extends Remote
 {
-    void sendMessage(byte[] buffer, String id) throws RemoteException;
+    void sendMessage(byte[] message, int bufferLength, String id) throws RemoteException;
     byte[] getMessage(String id) throws RemoteException;
 }
 
@@ -30,11 +30,17 @@ class RMISerialPortClient implements SerialPort
         }
     }
 
-    public void sendMessage(byte[] buffer) throws IOException
+    public void sendMessage(byte[] buffer, int bufferLength) throws IOException
     {
         try
         {
-            rmiSerialPort.sendMessage(buffer, InetAddress.getLocalHost().getHostAddress());
+            /*
+String msg = "";
+for (int i = 0; i < bufferLength; i++)
+    msg += Integer.toHexString(buffer[i]) + " ";
+
+            System.out.println("RMISerialPortClient: sendMessage: sending message: " + msg);*/
+            rmiSerialPort.sendMessage(buffer, bufferLength, InetAddress.getLocalHost().getHostAddress());
         }
         catch (Exception e)
         {
@@ -44,11 +50,21 @@ class RMISerialPortClient implements SerialPort
         }
     }
 
-    public byte[] getMessage() throws IOException
+    public int getMessage(byte[] buffer) throws IOException
     {
         try
         {
-            return rmiSerialPort.getMessage(InetAddress.getLocalHost().getHostAddress());
+            /*
+            System.out.println("RMISerialPortClient: getMessage: waiting for message from server...");
+            */
+            byte[] message = rmiSerialPort.getMessage(InetAddress.getLocalHost().getHostAddress());
+            System.arraycopy(message, 0, buffer, 0, message.length);
+            /*
+String msg = "";
+for (int i = 0; i < message.length; i++)
+    msg += Integer.toHexString(message[i]) + " ";
+            System.out.println("RMISerialPortClient: getMessage: got a message: " + msg);*/
+            return message.length;
         }
         catch (Exception e)
         {
