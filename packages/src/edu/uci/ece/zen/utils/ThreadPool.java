@@ -5,7 +5,7 @@ import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
 import javax.realtime.InaccessibleAreaException;
 import javax.realtime.MemoryArea;
-//import javax.realtime.ScopedMemory;
+import javax.realtime.ImmortalMemory;
 
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.CDRInputStream;
@@ -182,16 +182,16 @@ public class ThreadPool {
      * @return A array containing the list of transport profiles.
      *///TODO Leaks mem
     public /*TaggedProfile[]*/ void getProfiles(FString objKey, MemoryArea clientArea,
-                POA poa, org.omg.IOP.IOR ior, CDROutputStream out)
+                POA poa, CDROutputStream out)
             {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("-----TP.getProfiles0");
 
-        GetProfilesRunnable1 gpr1 = new GetProfilesRunnable1(); //TODO -- static? per TP?
+        GetProfilesRunnable1 gpr1 = GetProfilesRunnable1.instance();//new GetProfilesRunnable1(); //TODO -- static? per TP?
         out.write_ulong(lanes.length);
         try{
             for(int i = 0; i < lanes.length; ++i){
                 ScopedMemory accArea = lanes[i].getAcceptorArea();
-                gpr1.init(i, accArea, objKey, clientArea, poa, ior, out); 
+                gpr1.init(i, accArea, objKey, clientArea, poa, out);
                 orb.executeInORBRegion(gpr1);
             }
         }catch(Exception e){
@@ -214,23 +214,35 @@ class GetProfilesRunnable1 implements Runnable{
     FString objKey;
     MemoryArea clientArea; 
     POA poa;
-    org.omg.IOP.IOR ior;
     int i;
     CDROutputStream out;
+    
+    private static GetProfilesRunnable1 instance;
+
+    public static GetProfilesRunnable1 instance(){
+        if(instance == null){
+            try{
+                instance = (GetProfilesRunnable1) (ImmortalMemory.instance().newInstance(GetProfilesRunnable1.class));
+            }catch(Exception e){
+                e.printStackTrace();//TODO better error handling
+            }
+        }
+        return instance;
+    }    
 
     public GetProfilesRunnable1() {
     }
 
     public void init(int i, ScopedMemory accArea, FString objKey, MemoryArea clientArea, 
-            POA poa, org.omg.IOP.IOR ior, CDROutputStream out) {
+            POA poa, CDROutputStream out) {
          this.i = i; this.accArea = accArea; this.clientArea = clientArea;
-         this.poa = poa; this.ior = ior; this.objKey = objKey; this.out = out;
+         this.poa = poa; this.objKey = objKey; this.out = out;
     }
 
     public void run() {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable1 6");
-        GetProfilesRunnable2 gpr2 = new GetProfilesRunnable2();//TODO -- static? per TP?
-        gpr2.init(i, objKey, clientArea, poa, ior, out); 
+        GetProfilesRunnable2 gpr2 = GetProfilesRunnable2.instance();//new GetProfilesRunnable2();//TODO -- static? per TP?
+        gpr2.init(i, objKey, clientArea, poa, out); 
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable1 7");
         accArea.enter(gpr2);
     }    
@@ -241,16 +253,28 @@ class GetProfilesRunnable2 implements Runnable{
     FString objKey;
     MemoryArea clientArea; 
     POA poa;
-    org.omg.IOP.IOR ior;
     int i;
     CDROutputStream out;
+
+    private static GetProfilesRunnable2 instance;
+
+    public static GetProfilesRunnable2 instance(){
+        if(instance == null){
+            try{
+                instance = (GetProfilesRunnable2) (ImmortalMemory.instance().newInstance(GetProfilesRunnable2.class));
+            }catch(Exception e){
+                e.printStackTrace();//TODO better error handling
+            }
+        }
+        return instance;
+    }        
     
     public GetProfilesRunnable2() {
     }   
 
     public void init(int i, FString objKey, MemoryArea clientArea, 
-            POA poa, org.omg.IOP.IOR ior, CDROutputStream out) {
-         this.clientArea = clientArea; this.poa = poa; this.ior = ior;
+            POA poa, CDROutputStream out) {
+         this.clientArea = clientArea; this.poa = poa; 
          this.objKey = objKey; this.out = out;
     }
 
@@ -258,7 +282,6 @@ class GetProfilesRunnable2 implements Runnable{
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 6");
         Acceptor acc = (Acceptor)((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 7");
-        //ior.profiles[i] = 
         TaggedProfileHelper.write(out, acc.getProfile((byte) 1, ZenProperties.iiopMinor, 
                 objKey.getTrimData(clientArea), clientArea, poa));
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 8");

@@ -2,6 +2,7 @@ package edu.uci.ece.zen.orb;
 
 import javax.realtime.InaccessibleAreaException;
 import javax.realtime.MemoryArea;
+import javax.realtime.ImmortalMemory;
 import javax.realtime.ScopedMemory;
 import javax.realtime.RealtimeThread;
 
@@ -21,6 +22,7 @@ import org.omg.IOP.TaggedProfileHelper;
 import edu.uci.ece.zen.orb.transport.Acceptor;
 
 public class IOR {
+
     private static final char[] intToHex = {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
             'D', 'E', 'F'
@@ -108,7 +110,7 @@ public class IOR {
      *            This object's IOR.
      * @return The CORBA object.
      */
-    public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID,
+    public synchronized static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID,
             FString objKey, MemoryArea clientArea, POA poa, int threadPoolId)
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
@@ -122,8 +124,8 @@ public class IOR {
         ScopedMemory tpRegion = orb.getThreadPoolRegion(threadPoolId);
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 1.5 " + MemoryArea.getMemoryArea(objKey));
         //final org.omg.IOP.IOR tempior = ior;
-        IORRunnable iorRun = new IORRunnable();
-        iorRun.init(objKey, clientArea, poa, ior, out);
+        IORRunnable iorRun = IORRunnable.instance();//new IORRunnable();
+        iorRun.init(objKey, clientArea, poa, out);
         tpRegion.enter(iorRun);
 
         ZenProperties.logger.log("makeCORBAObject 2");
@@ -204,11 +206,36 @@ class IORRunnable implements Runnable {
     org.omg.IOP.IOR ior;
     CDROutputStream out;
 
+    private static IORRunnable instance;
+
+    public static IORRunnable instance(){
+        if(instance == null){
+            try{
+                instance = (IORRunnable) (ImmortalMemory.instance().newInstance(IORRunnable.class));
+            }catch(Exception e){
+                e.printStackTrace();//TODO better error handling
+            }
+        }
+        return instance;
+    }
+    /*
+    public static IORRunnable instance(IORRunnable inst){
+        if(inst == null){
+            try{
+                inst = (IORRunnable) (RealtimeThread.getCurrentMemoryArea().newInstance(IORRunnable.class));
+            }catch(Exception e){
+                e.printStackTrace();//TODO better error handling
+            }
+        }
+
+        return inst;
+    }    
+*/
     public IORRunnable() {
     }
 
     public void init(FString objKey, MemoryArea clientArea, 
-            POA poa, org.omg.IOP.IOR ior, CDROutputStream out) {
+            POA poa, CDROutputStream out) {
 
          if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 2");
         this.clientArea = clientArea;
@@ -216,8 +243,6 @@ class IORRunnable implements Runnable {
         this.poa = poa;
          if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 4");
         this.ior = ior;
-         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 5");
-         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 1");
         this.objKey = objKey;
         this.out = out;
     }
@@ -225,6 +250,6 @@ class IORRunnable implements Runnable {
     public void run() {
         ThreadPool tp = (ThreadPool)((ScopedMemory) RealtimeThread
                 .getCurrentMemoryArea()).getPortal();
-        tp.getProfiles(objKey, clientArea, poa, ior, out);
+        tp.getProfiles(objKey, clientArea, poa, out);
     }
 }
