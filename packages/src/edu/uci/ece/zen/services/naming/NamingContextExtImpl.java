@@ -4,6 +4,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import edu.uci.edu.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 import org.omg.CORBA.*;
 import org.omg.CosNaming.*;
@@ -624,7 +625,14 @@ public class NamingContextExtImpl extends NamingContextExtPOA {
 		catch (UnsupportedEncodingException e)
 		{
 			String unencodedURL = "corbaloc:" + addr + "/" + sn;
-			Logger.error("UTF-8 encoding is not supported by the current runtime system. URL will be returned without encoding: " + unencodedURL);
+			ZenProperties.logger.log(
+			                Logger.SEVERE,
+			                "edu.uci.ece.zen.services.naming.NamingContextExImpl",
+			                "<to_url>",
+			                "UTF-8 encoding is not supported by the current runtime system. URL will be returned without encoding: " + unencodedURL
+			                );
+			//Logger.error("UTF-8 encoding is not supported by the current runtime system. URL will be returned without encoding: " + unencodedURL);
+
 			return unencodedURL;
 		}
 	}
