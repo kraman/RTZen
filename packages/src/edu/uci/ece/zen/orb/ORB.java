@@ -119,6 +119,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private AcceptorRegistry acceptorRegistry;
     private WaiterRegistry waiterRegistry;
     private String orbId;
+    private RTORB rtorb;
 
     public ORB(){
         orbInitRunnable = new ORBInitRunnable();
@@ -129,6 +130,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         acceptorRegistry = new AcceptorRegistry();
         waiterRegistry = new WaiterRegistry();
         waiterRegistry.init( 100 );
+        rtorb = new RTORBImpl();
     }
 
     private void internalInit( ScopedMemory mem , String orbId , String[] args , Properties props ){
@@ -276,6 +278,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public org.omg.CORBA.Object resolve_initial_references(String object_name) throws org.omg.CORBA.ORBPackage.InvalidName {
         //return Resolver.resolve( object_name );
+
+        if(object_name.equals("RTORB"))
+            return rtorb;
+
         return null;
     }
 
@@ -351,17 +357,17 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         }
     }
 
-    public static ScopedMemory getScopedRegion(){ 
+    public static ScopedMemory getScopedRegion(){
         ScopedMemory mem = null;
         if( unusedMemoryAreas.isEmpty() ){
             mem = new javax.realtime.LTMemory( scopeMemorySize , scopeMemorySize );
         }else{
             mem = (ScopedMemory) unusedMemoryAreas.dequeue();
         }
-        return mem; 
+        return mem;
     }
 
-    public static void freeScopedRegion( ScopedMemory sm ){ 
+    public static void freeScopedRegion( ScopedMemory sm ){
         unusedMemoryAreas.enqueue( sm );
     };
 
@@ -454,7 +460,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                         String[] members) {
         return new edu.uci.ece.zen.orb.TypeCode(id, name, members);
     }
-    
+
     public org.omg.CORBA.TypeCode create_alias_tc(String id, String name,
                         org.omg.CORBA.TypeCode original_type) {
         return new edu.uci.ece.zen.orb.TypeCode(id, name, original_type);
