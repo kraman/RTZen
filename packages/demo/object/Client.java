@@ -30,7 +30,8 @@ public class Client extends RealtimeThread
         //super(null,new LTMemory(3000,300000));
     }
 */
-    public static int runNum = 3;
+    public static int warmUp = 10000;
+    public static int runNum = 10000;
 
     public void run()
     {
@@ -46,7 +47,7 @@ public class Client extends RealtimeThread
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
             ior = br.readLine();
             System.out.println( "===========================IOR1 read========================================" );
-            org.omg.CORBA.Object object1 = orb.string_to_object(ior);
+            final org.omg.CORBA.Object object1 = orb.string_to_object(ior);
             System.out.println( "===================Connect to TestObject Server1" );
             final TestObject server1 = TestObjectHelper.unchecked_narrow(object1);
             String name1 = server1.getName(); //name1 should be "Mary"
@@ -57,7 +58,7 @@ public class Client extends RealtimeThread
             br = new BufferedReader( new FileReader(iorfile) );
             ior = br.readLine();
             System.out.println( "===========================IOR2 read========================================" );
-            org.omg.CORBA.Object object2 = orb.string_to_object(ior);
+            final org.omg.CORBA.Object object2 = orb.string_to_object(ior);
             System.out.println( "===================Connect to TestObject Server2");
             final TestObject server2 = TestObjectHelper.unchecked_narrow(object2);
             String name2 = server2.getName(); //name2 should be "Roby"
@@ -73,9 +74,32 @@ public class Client extends RealtimeThread
             System.out.println( "===================Connect to HandleObject server==========================" );
             final HandleObject server3 = HandleObjectHelper.unchecked_narrow(object3);
             br.close();
+             org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(object2); //objoutVal will be changed to object1 after the echoObject call
+             
+            System.out.println("======Begin the warmUp loop to test on passing org.omg.CORBA.Object as the parameter======");
 
-            System.out.println("Begin the loop to test on passing org.omg.CORBA.Object as the parameter...");
-            org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(object2); //objoutVal will be changed to object1 after the echoObject call   
+            for (int i = 0; i<warmUp; i++){
+
+                //System.out.println("Begin to test on passing org.omg.CORBA.Object as the parameter...");
+                org.omg.CORBA.Object objinVal = object1;
+                objoutVal.value = object2; //objoutVal will be changed to object1 after the echoObject call
+                org.omg.CORBA.Object objretVal = server3.echoObject(objinVal, objoutVal); //objretVal should also be object1 after the echoObject call
+
+                TestObject server4 = TestObjectHelper.unchecked_narrow( objretVal );
+                TestObject server5 = TestObjectHelper.unchecked_narrow(objoutVal.value);                    if(server4.getName().equals(name1) && server5.getName().equals(name1)){ //Check if objoutVal and objretVal are set to correct value
+                    //System.out.println("Pass the test");
+                }
+                if(!server4.getName().equals(name1)){ //objretVal is not correct
+
+                    System.out.println("objretVal String Should be "+name1+" but get "+server4.getName());
+                }
+                if(!server5.getName().equals(name1)){ //objoutVal is not correct
+                    System.out.println("objoutVal String Should be "+name1+" but get "+server5.getName());
+                }
+                objoutVal.value = object2; //objoutVal will be changed to object1 after the echoObject call
+            }
+
+            System.out.println("======Begin the benchmark loop to test on passing org.omg.CORBA.Object as the parameter======");
 
             for (int i = 0; i<runNum; i++){
 
