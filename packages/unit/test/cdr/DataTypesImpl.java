@@ -72,6 +72,35 @@ public class DataTypesImpl extends DataTypesPOA
 		ooutVal.value = (byte)102;
 		return oretVal;
 	}
+	
+	
+	public int[] echoOctetSeq(byte[] oseqinVal , test.cdr.OctetSeqHolder oseqoutVal)
+    {
+    	
+    	if(oseqinVal.length != 2){
+		System.out.println("in value length wrong in testOctetSeq");
+		System.out.println("The expected lenght is 2 and the actual lenght is "+oseqinVal.length); 
+	}
+	
+	if(oseqinVal[0] != 100){
+		System.out.println("in value wrong in testOctetSeq");
+		System.out.println("The expected value at positon 0 is 100 and the actual lenght is "+oseqinVal[0]); 
+	}
+	
+	if(oseqinVal[1] != 101){
+		System.out.println("in value wrong in testOctetSeq");
+		System.out.println("The expected value at positon 1 is 101 and the actual lenght is "+oseqinVal[1]); 
+	}
+
+	    byte[] oseqoutArr = {105,106,107};
+        
+        byte[] oseqretVal = oseqinVal;
+
+        oseqoutVal.value = oseqoutArr;
+
+        return oseqretVal;
+
+    }
 
 
 	/*

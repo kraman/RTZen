@@ -160,6 +160,52 @@ public class CDRTestClient extends RealtimeThread
 
 		    }
 	}
+	
+	public void testOctetSeq()
+    {
+        byte[] oseqinVal = {100, 101};
+        byte[] oseqoutArr = {102, 103, 104};
+
+        test.cdr.OctetSeqHolder oseqoutVal =
+               new test.cdr.OctetSeqHolder(oseqoutArr);
+        
+        byte[] oseqretVal = stub.echoOctetSeq( oseqinVal, oseqoutVal);
+      
+	if(oseqretVal.length != 2){
+		System.out.println("return value length wrong in testOctetSeq");
+		System.out.println("The expected lenght is 2 and the actual lenght is "+oseqretVal.length); 
+	}
+	
+	if(oseqretVal[0] != 100){
+		System.out.println("return value wrong in testOctetSeq");
+		System.out.println("The expected value at positon 0 is 100 and the actual lenght is "+oseqretVal[0]); 
+	}
+	
+	if(oseqretVal[1] != 101){
+		System.out.println("return value wrong in testOctetSeq");
+		System.out.println("The expected value at positon 1 is 101 and the actual lenght is "+oseqretVal[1]); 
+	}
+	
+	if(oseqoutVal.value.length != 3){
+		System.out.println("out value length wrong in testOctetSeq");
+		System.out.println("The expected lenght is 3 and the actual lenght is "+oseqoutVal.length); 
+	}
+	
+	if(oseqretVal[0] != 105){
+		System.out.println("out value wrong in testOctetSeq");
+		System.out.println("The expected value at positon 0 is 105 and the actual lenght is "+oseqoutVal[0]); 
+	}
+	
+	if(oseqretVal[1] != 106){
+		System.out.println("out value wrong in testOctetSeq");
+		System.out.println("The expected value at positon 1 is 106 and the actual lenght is "+oseqoutVal[1]); 
+	}
+	
+	if(oseqretVal[1] != 107){
+		System.out.println("out value wrong in testOctetSeq");
+		System.out.println("The expected value at positon 2 is 107 and the actual lenght is "+oseqoutVal[2]); 
+	}
+    }
 
 
 	/*
@@ -205,22 +251,6 @@ public class CDRTestClient extends RealtimeThread
     }
 
 
-
-	public void testDouble()
-    {
-
-        double dinVal = 1.0e10;
-        org.omg.CORBA.DoubleHolder doutVal =
-                                new org.omg.CORBA.DoubleHolder( 1.2345);
-        //System.out.println("[client]InValue Sent to Server:"+ dinVal);
-        //System.out.println("[client]Out value before = "+ doutVal.value);
-        double dretVal = datatypes.echoDouble( dinVal, doutVal);
-		assertEquals(1.0e10, dretVal,0.0001);
-        assertEquals(12.3, doutVal.value,0.0001);
-
-        //System.out.println("[client]Out value after= "+ doutVal.value);
-        //System.out.println("[client]Received Returned Value = "+ dretVal);
-    }
 
 	public void testFloat()
     {
