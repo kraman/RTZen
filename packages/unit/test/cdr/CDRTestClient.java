@@ -212,23 +212,23 @@ public class CDRTestClient extends RealtimeThread
 
 	public void testStructSeq(){
 
-		unit.test.cdr.DataTypes.str str1= new unit.test.cdr.DataTypes.str(100,true);
-		unit.test.cdr.DataTypes.str str2= new unit.test.cdr.DataTypes.str(101,true);
+		unit.test.cdr.DataTypesPackage.str str1= new unit.test.cdr.DataTypesPackage.str((byte)100,true);
+		unit.test.cdr.DataTypesPackage.str str2= new unit.test.cdr.DataTypesPackage.str((byte)101,true);
 
-		unit.test.cdr.DataTypes.str[] strseqinVal = new unit.test.cdr.DataTypes.str[2];
+		unit.test.cdr.DataTypesPackage.str[] strseqinVal = new unit.test.cdr.DataTypesPackage.str[2];
 		strseqinVal[0] = str1;
 		strseqinVal[1] = str2;
 
-		unit.test.cdr.DataTypes.str str3= new unit.test.cdr.DataTypes.str(102,false);
-		unit.test.cdr.DataTypes.str str4= new unit.test.cdr.DataTypes.str(103,false);
+		unit.test.cdr.DataTypesPackage.str str3= new unit.test.cdr.DataTypesPackage.str((byte)102,false);
+		unit.test.cdr.DataTypesPackage.str str4= new unit.test.cdr.DataTypesPackage.str((byte)103,false);
 
-		unit.test.cdr.DataTypes.str[] strseqArr = new unit.test.cdr.DataTypes.str[2];
+		unit.test.cdr.DataTypesPackage.str[] strseqArr = new unit.test.cdr.DataTypesPackage.str[2];
 		strseqArr[0] = str3;
 		strseqArr[1] = str4;
 
-		unit.test.cdr.DataTypes.strSeqHolder strseqoutVal=  new unit.test.cdr.DataTypes.strSeqHolder(strseqArr);
+		unit.test.cdr.DataTypesPackage.strSeqHolder strseqoutVal=  new unit.test.cdr.DataTypesPackage.strSeqHolder(strseqArr);
 
-		unit.test.cdr.DataTypes.str[] strseqretVal = stub.echoStructSeq( strseqinVal, strseqoutVal);
+		unit.test.cdr.DataTypesPackage.str[] strseqretVal = stub.echoStructSeq( strseqinVal, strseqoutVal);
 
 		if(strseqretVal.length != 2){
 			System.out.println("return value length wrong in echoStructSeq");
@@ -255,7 +255,7 @@ public class CDRTestClient extends RealtimeThread
 			System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqretVal[1].b);
 		}
 
-		if(strseqoutVal.value.length ! = 2){
+		if(strseqoutVal.value.length != 2){
 			System.out.println("out value length wrong in echoStructSeq");
 			System.out.println("The expected lenght is 2 and the actual lenght is "+strseqoutVal.value.length);
 		}
@@ -497,6 +497,6 @@ public class CDRTestClient extends RealtimeThread
 
     } */
 
-
+}
 
 

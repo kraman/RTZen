@@ -129,14 +129,14 @@ public class DataTypesImpl extends DataTypesPOA
 			System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqinVal[1].b);
 		}
 
-		unit.test.cdr.DataTypes.str str1= new unit.test.cdr.DataTypes.str(104,true);
-		unit.test.cdr.DataTypes.str str2= new unit.test.cdr.DataTypes.str(105,true);
+		unit.test.cdr.DataTypesPackage.str str1= new unit.test.cdr.DataTypesPackage.str((byte)104,true);
+		unit.test.cdr.DataTypesPackage.str str2= new unit.test.cdr.DataTypesPackage.str((byte)105,true);
 
-		unit.test.cdr.DataTypes.str strArr[] = new unit.test.cdr.DataTypes.str[2];
+		unit.test.cdr.DataTypesPackage.str strArr[] = new unit.test.cdr.DataTypesPackage.str[2];
 		strArr[0] = str1;
 		strArr[1] = str2;
 
-		unit.test.cdr.DataTypes.str strseqretVal[] = strseqInVal;
+		unit.test.cdr.DataTypesPackage.str strseqretVal[] = strseqinVal;
 
 		strseqoutVal.value = strArr;
 
