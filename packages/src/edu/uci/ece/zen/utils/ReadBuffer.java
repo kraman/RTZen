@@ -180,6 +180,10 @@ public class ReadBuffer{
     public long getPosition(){
         return position;
     }
+   
+/*    public void setPosition(int pos){
+        position = pos;        
+    }*/
 
     public long getLimit(){
         return limit;
@@ -190,7 +194,7 @@ public class ReadBuffer{
     }
 
     private void pad( int boundry ){
-        int extraBytesUsed = (int)(position % boundry);
+        int extraBytesUsed = (int)((position+12) % boundry); // The CDR alignment should count from the beginning of GIOP header. But the GIOP header is excluded in CDRInputStream position. So 12 must be added. Yue Zhang on 09.22pm, 08/01/2004
 
         if (extraBytesUsed != 0) {
             int incr = boundry - extraBytesUsed;
