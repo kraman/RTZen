@@ -22,7 +22,12 @@ class DataProcTao{
 
     public static void main(String[] args){
         try{
-            BufferedReader br = new BufferedReader(new FileReader("timeRecords.txt"));
+            if(args[0] == null){
+                System.err.println("Usage: java perf.jitter.DataProcTao <name of the txt file to be processed>");
+                System.exit(-1);
+            }
+            System.out.println("Start to process "+args[0]);
+            BufferedReader br = new BufferedReader(new FileReader(args[0]));
             String s;
             int id;
 
@@ -39,6 +44,7 @@ class DataProcTao{
                              Double db1 = new Double(Double.parseDouble(st.nextToken()));
                              v1.addElement(db1);
                              break;
+                    case 21: break;
                     default:System.err.println("Unrecogzied position id "+id);
                             System.exit(-1);
                 }
@@ -55,12 +61,14 @@ class DataProcTao{
             }
 
 
-            PrintWriter out1 = new PrintWriter(new BufferedWriter(new FileWriter("timeRecords.1.2.2.128.txt")));
+            PrintWriter out1 = new PrintWriter(new BufferedWriter(new FileWriter(args[0])));
             for(int i=0; i<v1Proc.size();i++){
                 out1.println(((Double)v1Proc.elementAt(i)).doubleValue());
             }
             out1.flush();
             out1.close();
+            System.out.println("Finish processing "+args[0]);
+
         }
         catch(Exception ex){
             ex.printStackTrace();
