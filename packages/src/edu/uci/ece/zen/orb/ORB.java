@@ -570,6 +570,13 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
 
+    /** Called in GIOP 1.0 and 1.1 to cancel a request.
+     * @param request_id numerical identifier of Request or LocateRequest to cancel
+     */
+    // LEFT FOR KRISHNA TO IMPLEMENT
+    public void cancelRequest(int request_id) {}
+
+
 }
 
 class ORBInitRunnable implements Runnable{
