@@ -327,7 +327,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         in.init(orb, ior.getReadBuffer());
         org.omg.IOP.IOR ret = org.omg.IOP.IORHelper.read(in);
         in.free();
-        return null;
+        return ret;
     }
 
     public String toString() {
