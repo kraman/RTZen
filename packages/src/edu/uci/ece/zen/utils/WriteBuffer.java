@@ -98,7 +98,6 @@ public class WriteBuffer {
     private void ensureCapacity(int size) {
         if (size <= 0) return;
         while (position + size > capacity) {
-        Thread.dumpStack();
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
             capacity += byteArray.length;
             buffers.addElement(byteArray);
