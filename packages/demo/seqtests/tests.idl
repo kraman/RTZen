@@ -1,0 +1,25 @@
+module demo
+{
+	module seqtests 
+	{
+		typedef sequence<octet>   OctetSeq;
+                typedef sequence<short>   ShortSeq;
+		typedef sequence<long>   LongSeq;
+		typedef sequence<string>   StringSeq;
+		typedef sequence<double>   DoubleSeq;
+		typedef sequence<boolean> BoolSeq;
+		typedef sequence<char> CharSeq;
+		
+		interface HelloWorld
+		{
+			OctetSeq putOctetSeq(in OctetSeq oSeq);
+                        ShortSeq putShortSeq(in ShortSeq shSeq);
+			LongSeq putLongSeq(in LongSeq lSeq);
+			StringSeq putStringSeq(in StringSeq sSeq);
+			DoubleSeq putDoubleSeq(in DoubleSeq dSeq);
+			BoolSeq putBoolSeq(in BoolSeq bSeq);
+			CharSeq putCharSeq(in CharSeq cSeq);
+		};
+	};
+};
+

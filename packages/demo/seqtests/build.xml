@@ -1,0 +1,28 @@
+<project default="compile">
+
+    <property name="package.dir" value="demo/seqtests"/>
+    <property name="idl.src" value="tests.idl"/>
+    <property name="zen.srcdir" value="C:/RTZen4/trunk/packages"/>
+
+	<import file="../../../init.xml"/>
+	<import file="../demo_tasks.xml"/>
+    
+    <target name="compile">
+		<idlc file="${zen.srcdir}/${package.dir}/${idl.src}"/>
+		<demo.compile/>
+    </target>
+
+    <target name="server">
+        <demo.run classname="demo.tests.Server"/>
+    </target> 
+
+    <target name="client">
+        <demo.run classname="demo.tests.Client"/>
+    </target> 
+
+    <target name="clean">
+		<demo.delete/>
+    </target>
+
+</project>
+
