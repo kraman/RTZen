@@ -20,7 +20,7 @@ public class RMISerialPortServer extends UnicastRemoteObject implements RMISeria
 
         if (messageQueue == null)
         {
-            messageQueue = new ArrayList(10);
+            messageQueue = new ArrayList(10000);
             messageTable.put(id, messageQueue);
         }
 

@@ -2,6 +2,7 @@ package edu.uci.ece.zen.orb.transport.serial;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 interface SerialPort
 {
@@ -95,12 +96,42 @@ class SerialPortProtocol
 
     static SerialPortConnection decodeConnectionDenied(byte[] message) throws UnknownHostException
     {
-        byte[] address = new byte[message[1]];
-        System.arraycopy(message, 2, address, 0, address.length);
+        byte[] address = new byte[message[2]];
+        System.arraycopy(message, 3, address, 0, address.length);
 
         int port = (message[message.length - 2] << 8) + message[message.length - 1];
 
         return new SerialPortConnection(port, InetAddress.getByAddress(address));
+    }
+
+    static byte[] encodeSocketData(Socket socket, List outputBuffer)
+    {
+        byte[] message = new byte[2 + outputBuffer.size()];
+
+        message[0] = SOCKET_DATA;
+        message[1] = socket.getID();
+        int offset = 2;
+
+        for (Iterator i = outputBuffer.iterator(); i.hasNext(); )
+        {
+            Integer data = (Integer) i.next();
+            message[offset++] = data.byteValue();
+        }
+
+        return message;
+    }
+
+    static void decodeSocketData(byte[] message, List inputBuffer)
+    {
+        for (int i = 2; i < message.length; i++)
+        {
+            inputBuffer.add(new Integer(message[i]));
+        }
+    }
+
+    static byte getSocketID(byte[] message)
+    {
+        return message[1];
     }
 
     static byte getMessageType(byte[] message)
