@@ -48,6 +48,7 @@ public class CDRTestClient extends RealtimeThread
 			testBoolean();
 			testString();
 			testOctet();
+                        testOctetSeq();
 			//test();
 			//testUShort();
 
@@ -166,8 +167,8 @@ public class CDRTestClient extends RealtimeThread
         byte[] oseqinVal = {100, 101};
         byte[] oseqoutArr = {102, 103, 104};
 
-        test.cdr.OctetSeqHolder oseqoutVal =
-               new test.cdr.OctetSeqHolder(oseqoutArr);
+        unit.test.cdr.DataTypesPackage.octetSeqHolder oseqoutVal =
+               new unit.test.cdr.DataTypesPackage.octetSeqHolder(oseqoutArr);
         
         byte[] oseqretVal = stub.echoOctetSeq( oseqinVal, oseqoutVal);
       
@@ -188,22 +189,23 @@ public class CDRTestClient extends RealtimeThread
 	
 	if(oseqoutVal.value.length != 3){
 		System.out.println("out value length wrong in testOctetSeq");
-		System.out.println("The expected lenght is 3 and the actual lenght is "+oseqoutVal.length); 
+		System.out.println("The expected lenght is 3 and the actual lenght is "+oseqoutVal.value.length); 
 	}
 	
-	if(oseqretVal[0] != 105){
+	if(oseqoutVal.value[0] != 105){
+
 		System.out.println("out value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 0 is 105 and the actual lenght is "+oseqoutVal[0]); 
+		System.out.println("The expected value at positon 0 is 105 and the actual lenght is "+oseqoutVal.value[0]); 
 	}
 	
-	if(oseqretVal[1] != 106){
+	if(oseqoutVal.value[1] != 106){
 		System.out.println("out value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 1 is 106 and the actual lenght is "+oseqoutVal[1]); 
+		System.out.println("The expected value at positon 1 is 106 and the actual lenght is "+oseqoutVal.value[1]); 
 	}
 	
-	if(oseqretVal[1] != 107){
+	if(oseqoutVal.value[2] != 107){
 		System.out.println("out value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 2 is 107 and the actual lenght is "+oseqoutVal[2]); 
+		System.out.println("The expected value at positon 2 is 107 and the actual lenght is "+oseqoutVal.value[2]); 
 	}
     }
 

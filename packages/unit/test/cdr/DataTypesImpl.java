@@ -74,7 +74,7 @@ public class DataTypesImpl extends DataTypesPOA
 	}
 	
 	
-	public int[] echoOctetSeq(byte[] oseqinVal , test.cdr.OctetSeqHolder oseqoutVal)
+	public byte[] echoOctetSeq(byte[] oseqinVal , unit.test.cdr.DataTypesPackage.octetSeqHolder oseqoutVal)
     {
     	
     	if(oseqinVal.length != 2){
