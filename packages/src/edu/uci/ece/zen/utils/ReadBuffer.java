@@ -27,7 +27,7 @@ public class ReadBuffer {
                     .getConstructor(new Class [] {int.class});
             vectorArgTypes = new Object[1];
             maxCap = Integer.parseInt(ZenProperties
-                .getGlobalProperty( "readbuffer.size" , "10" ));
+                .getGlobalProperty( "readbuffer.size" , "20" ));
             vectorArgTypes[0] = new Integer(maxCap);
             bufferCache = (Queue) ImmortalMemory.instance().newInstance(
                     Queue.class);

@@ -12,8 +12,10 @@ public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
             edu.uci.ece.zen.orb.ORBImpl orbImpl) {
         System.err.println( "Serial transport: internalConnect() " );
         try{
-            if( !NativeSerialPort.instance().lock.attempt(0) )
+            if( !NativeSerialPort.instance().lock.attempt(0) ){
+                System.out.println( "Serial port is already in use....cannot connect" );
                 return null;              
+            }
         }catch(java.lang.InterruptedException ie){
             ie.printStackTrace();
         }
