@@ -12,7 +12,7 @@ make sure the IOR is encoded with a literal IP address instead of the DNS
 name. Otherwise you will get an error. Be sure to change to your own IP
 address.
 
--ORBEndpoint iiop://1.2@128.195.174.182
+-ORBListenEndpoints iiop://1.2@128.195.174.182/hostname_in_ior=128.195.174.182
 
 These examples assume the ior files are in the same directory as the client.
 Please check the timesys.sh file to see what files are expected.

@@ -14,29 +14,31 @@ import org.omg.Messaging.*;
  * @version 1.0
  */
 
-public class Client implements Runnable
+public class Client extends RealtimeThread
 {
     String [] args;
     int iterations = 6;
     int id = 0;
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         if(args.length < 2){
             System.out.println("need to pass in an ior and an id");
             System.exit(-1);
         }
 
-
-
         System.out.println( "[client] =====================Creating RT Thread in client==========================" );
-        RealtimeThread rt = new RealtimeThread((java.lang.Object)null,(java.lang.Object)null,(java.lang.Object)null,
-                            new LTMemory(3000,30000),(java.lang.Object)null,new Client(args));
+        
+        Client rt = (Client) ImmortalMemory.instance().newInstance( Client.class );
+        rt.init(args);
+        
+        //RealtimeThread rt = new RealtimeThread((java.lang.Object)null,(java.lang.Object)null,(java.lang.Object)null,
+        //                    new LTMemory(3000,30000),(java.lang.Object)null,new Client(args));
         System.out.println( "[client] =====================Starting RT Thread in client==========================" );
         rt.start();
     }
 
-    public Client(String [] args){
+    public void init(String [] args){
         this.args = args;
     }
 
