@@ -15,7 +15,7 @@
             <include name="generated/org/omg/IIOP/**/"/>
             <include name="omg-01-02-01/org/omg/IOP_N/**/" if="_zen.aspects.pi"/>
             <include name="omg-01-02-01/org/omg/RTCORBA/**" if="zen.rtcorba"/>
-            <include name="omg-01-02-01/org/omg/RTPortableServer/**"/>
+            <!--include name="omg-01-02-01/org/omg/RTPortableServer/**"/-->
             <include name="omg-01-02-01/org/omg/PortableServer/**"/>
 
             <include name="generated/org/omg/CORBA/**"/>
@@ -25,6 +25,7 @@
             <include name="generated/org/omg/IOP/**"/>
             <include name="generated/org/omg/GIOP/**"/>
             <include name="generated/org/omg/PortableServer/**"/>
+            <include name="generated/org/omg/RTPortableServer/**"/>
             <include name="generated/org/omg/Messaging/**"/>
             <include name="generated/org/omg/TimeBase/**"/>
             <include name="generated/org/omg/CosNaming/**"/>
