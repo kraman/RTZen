@@ -58,19 +58,19 @@ these two emulab nodes).
 
 2) Generating Graphs
 Generating the graphs uses octave and gnuplot. Perform the following command
-to generate the graphs:
+to generate the graphs(You may need to change the script to generate the result related to the ORBs you tested):
 
   octave <scriptName>
 
 
 The following scripts are available
 
-gen_tput.m  generates 4 graphs with for latency/throughput local/remote 
+gen_tput.m  generates graphs with for latency/throughput local/remote 
             comparing each implementation
 get_summary.m  gives the raw statistical data for all tests. output into text 
 	           file
 
-gen_jitter.m  generates 6 graphs one for each implementation/location. 
+gen_jitter.m  generates graphs one for each implementation/location. 
               Showing the jitter over increasing size.
 
 gen_local.m   compares the jitter for a fixed length over the different
