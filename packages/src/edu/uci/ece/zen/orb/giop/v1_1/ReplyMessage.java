@@ -6,8 +6,11 @@ import org.omg.GIOP.ReplyHeader_1_0Helper;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.ReadBuffer;
 
-// Is same as v1_0 reply message.
-
+/**
+ * Reply messages as described in section 15.4.3 of the CORBA v3.0 Spec. 
+ * @author bmiller
+ */
+// Is same as v1_1 reply message.
 public class ReplyMessage extends edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage { 
     // v1_1 uses the same reply header type as v1_0.
     private ReplyHeader_1_0 header;

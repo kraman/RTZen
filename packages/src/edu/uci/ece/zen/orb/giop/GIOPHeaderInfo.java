@@ -11,6 +11,3 @@ public class GIOPHeaderInfo {
     byte giopMinorVersion;
     byte messageType;
 }
-
-
-

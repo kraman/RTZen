@@ -4,7 +4,7 @@ import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.orb.*;
 
-public class RequestMessage extends edu.uci.ece.zen.orb.giop.v1_0.RequestMessage {
+public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessage {
     private RequestHeader_1_1 header;
 
     protected static final byte reserved[] = { 0x00, 0x00, 0x00 };
@@ -16,11 +16,11 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.v1_0.RequestMessage
     /** Do not directly call this method It is provided only to give
      * access to the default constructor of GIOPMessage.
      */
+/*
     public RequestMessage() {
         super();
     };
-
-
+*/
     public RequestMessage ( ClientRequest clr,  int messageId ) {
         //edu.uci.ece.zen.orb.giop.GIOPMessage();
         super();
@@ -36,12 +36,16 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.v1_0.RequestMessage
                                         );
     }
 
-
     public RequestMessage( ORB orb, ReadBuffer stream ) {
         super( orb, stream );
         header = RequestHeader_1_1Helper.read( istream );
         messageBody = stream;
     }
+
+    public int getRequestId() { return header.request_id; }
+
+    public int getReplyStatus() { return -1; }
+    public org.omg.IOP.ServiceContext[] getServiceContexts() { return header.service_context; }
 
     public void marshal( CDROutputStream out ) {
         RequestHeader_1_1Helper.write( out, header );

@@ -4,7 +4,7 @@ import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.orb.*;
 
-public class RequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage{
+public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessage {
     private RequestHeader_1_0 header;
     
     ///////////////////////////////////////////////////////////////////////////
@@ -15,10 +15,10 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage{
     /** Do not directly call this method It is provided only to give
      * access to the default constructor of GIOPMessage.
      */
-    public RequestMessage() {
+/*    public RequestMessage() {
         super();
     };
-
+*/
     public RequestMessage( ClientRequest clr , int messageId ){
         super();
         header = new RequestHeader_1_0(
@@ -36,12 +36,10 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage{
         messageBody = stream;
     }
 
-    public int getRequestId(){ return header.request_id; }
-    public int getReplyStatus(){ return -1; }
-    public org.omg.IOP.ServiceContext[] getServiceContexts(){ return header.service_context; }
+    public int getRequestId() { return header.request_id; }
 
-    public boolean isRequest(){ return true; }
-    public boolean isReply(){ return false; }
+    public int getReplyStatus() { return -1; }
+    public org.omg.IOP.ServiceContext[] getServiceContexts(){ return header.service_context; }
 
     public void marshal( CDROutputStream out ){
         RequestHeader_1_0Helper.write( out , header );

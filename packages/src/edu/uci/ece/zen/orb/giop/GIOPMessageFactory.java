@@ -25,7 +25,7 @@ public final class GIOPMessageFactory
 
         GIOPHeaderInfo mainMsgHdr = new GIOPHeaderInfo();
     
-        GIOPMessage ret = null;
+        edu.uci.ece.zen.orb.giop.GIOPMessage ret = null;
 
         do{
             java.io.InputStream in = trans.getInputStream();
@@ -77,6 +77,8 @@ public final class GIOPMessageFactory
                                     }
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._LocateRequest :
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.LocateRequestMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
                                     // A cancel request header is just the request id to cancel.
@@ -87,7 +89,7 @@ public final class GIOPMessageFactory
                                 case org.omg.GIOP.MsgType_1_1._Fragment :
                                     throw new org.omg.CORBA.NO_IMPLEMENT("Fragment read out of order"); //BM
                             }
-                        case 2: // No newer version than MsgType_1_1 is generated for RTZen
+                        case 2: // No newer version of MsgType classes than MsgType_1_1 is generated for RTZen
                         case 3:
                             switch( mainMsgHdr.messageType ){
                                 case org.omg.GIOP.MsgType_1_1._Request:
@@ -107,6 +109,8 @@ public final class GIOPMessageFactory
                                     }
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._LocateRequest :
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_2.LocateRequestMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
                                     throw new org.omg.CORBA.BAD_CONTEXT("CancelRequest Cannot be called in GIOP 1.2 and higher");

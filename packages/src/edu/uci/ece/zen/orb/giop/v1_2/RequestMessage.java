@@ -4,7 +4,7 @@ import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.orb.*;
 
-public class RequestMessage extends edu.uci.ece.zen.orb.giop.v1_1.RequestMessage {
+public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessage {
     private RequestHeader_1_2 header;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -34,18 +34,21 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.v1_1.RequestMessage
     }
 
 
+    public int getRequestId() {
+        return header.request_id;
+    }
+
     public RequestMessage( ORB orb, ReadBuffer stream ) {
         super( orb, stream );
         header = RequestHeader_1_2Helper.read( istream );
         messageBody = stream;
     }
 
+    public int getReplyStatus() { return -1; }
+    public org.omg.IOP.ServiceContext[] getServiceContexts() { return header.service_context; }
+
     public void marshal( CDROutputStream out ) {
         RequestHeader_1_2Helper.write( out, header );
-    }
-
-    public int getRequestId() {
-        return header.request_id;
     }
 
 }
