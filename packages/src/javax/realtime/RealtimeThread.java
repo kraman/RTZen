@@ -11,5 +11,11 @@ public class RealtimeThread extends Thread{
             currentMem = HeapMemory.instance();
         memHash.put(Thread.currentThread(),currentMem);  
     }
-    public static MemoryArea getCurrentMemoryArea(){ return (MemoryArea)memHash.get(Thread.currentThread());}
+    public static MemoryArea getCurrentMemoryArea(){ 
+        MemoryArea mem = (MemoryArea)memHash.get(Thread.currentThread());
+        if( mem == null )
+            return HeapMemory.instance();
+        else
+            return mem;
+    }
 }

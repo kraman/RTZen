@@ -3,40 +3,35 @@ package edu.uci.ece.zen.orb;
 import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.orb.giop.*;
 import javax.realtime.*;
+import edu.oswego.cs.dl.util.concurrent.*;
 
 public class TwoWayWaitingStrategy extends WaitingStrategy{
-    Object waitObj;
-    GIOPMessage replyMsg;
+    Semaphore clientSem;
+    Semaphore transpSem;
+    CDRInputStream replyMsg;
 
     TwoWayWaitingStrategy(){
-         waitObj = new Integer(0);
+        clientSem = new Semaphore(0);
+        transpSem = new Semaphore(0);
     }
     
     public void replyReceived( GIOPMessage reply ){
-        this.replyMsg = reply;
-        synchronized( waitObj ){
-            waitObj.notify();
-        }
+        this.replyMsg = reply.getCDRInputStream();
+        clientSem.release();
         try{
-            synchronized( this ){
-                this.wait();
-            }
-        }catch( InterruptedException ie ){
-            ie.printStackTrace();
+            transpSem.acquire();
+        }catch( Exception e ){
+            e.printStackTrace();
         }
     }
 
-    public GIOPMessage waitForReply(){
-        ReplyMessageRunnable rmr = new ReplyMessageRunnable( this );
+    public CDRInputStream waitForReply(){
         try{
-            synchronized( waitObj ){
-                waitObj.wait();
-            }
-        }catch( InterruptedException ie ){
-            ie.printStackTrace();
+            clientSem.acquire();
+        }catch( Exception e ){
+            e.printStackTrace();
         }
-        ScopedMemory replyScope = replyMsg.getScope();
-        replyScope.enter( rmr );
+        transpSem.release();
         return replyMsg;
     }
 }

@@ -144,16 +144,16 @@ public class WriteBuffer{
 
     private void dumpByteArray( byte[] arr , int off , int len , java.io.OutputStream out ) throws java.io.IOException{
         out.write( arr , off , len );
-        System.err.write( arr , off , len );
+        //System.err.write( arr , off , len );
     }
 
     public void dumpBuffer( java.io.OutputStream out ) throws java.io.IOException{
-        System.err.println( "----BEGIN GIOP MESSAGE----" );
+        //System.err.println( "----BEGIN GIOP MESSAGE----" );
         for( int i=0;i<limit/1024-1;i++ ){
             dumpByteArray( (byte[])buffers.elementAt(i) , 0 , 1024 , out );
         }
         dumpByteArray( (byte[])buffers.elementAt(((int)(limit/1024))) , 0 , (int)(limit%1024) , out );
-        System.err.println( "\n----END GIOP MESSAGE----" );
+        //System.err.println( "\n----END GIOP MESSAGE----" );
     }
 
     public void readByteArray( byte[] v , int offset , int length ){

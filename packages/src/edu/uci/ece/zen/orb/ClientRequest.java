@@ -19,7 +19,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
     /**
      * Client upcall:
      * <p>
-     *     <b>Client scope</b> --&gt; Message scope/Waiter region --ex in --&gt; Immortal --&gt; Transport scope
+     *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */   
     public ClientRequest( String operation , boolean responseExpected , byte giopMajor , byte giopMinor , ORB orb , ObjRefDelegate del )
@@ -40,28 +40,55 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         //TODO:Assemble and write message header and policies here
         messageId = WaitingStrategy.newMessageId();
         edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructMessage( this , messageId , out );
-        System.err.println( "Message header assembled" );
+        //System.err.println( "Message header assembled" );
     }
 
     /**
      * Client upcall:
      * <p>
-     *     <b>Client scope</b> --&gt; Message scope/Waiter region --ex in --&gt; Immortal --&gt; Transport scope
+     *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */   
     public CDRInputStream invoke(){
         out.updateLength();
-        System.err.println( "Sending message" );
+        //System.err.println( "Sending message" );
         MessageComposerRunnable mcr = new MessageComposerRunnable( this );
         ScopedMemory messageScope = orb.getScopedRegion();
-        messageScope.enter( mcr );
+
+        ExecuteInRunnable erOrbMem = ExecuteInRunnable.instance();
+        ExecuteInRunnable erMsgMem = ExecuteInRunnable.instance();
+
+        erOrbMem.init( erMsgMem , orb.orbImplRegion );
+        erMsgMem.init( mcr, messageScope );
+
+        try{
+            orb.parentMemoryArea.executeInArea( erOrbMem );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.SEVERE,
+                "edu.uci.ece.zen.orb.ClientRequest",
+                "invoke()",
+                "Could not invoke remote object due to exception: " + e.toString()
+                );
+        }
+        erOrbMem.free();
+        erMsgMem.free();
+                
         orb.freeScopedRegion( messageScope );
-        return mcr.getReply();
+        if( mcr.success )
+            return mcr.getReply();
+        else
+            throw new org.omg.CORBA.TRANSIENT();
     }
 
     public void registerWaiter(){
-        System.err.println( "Waiter registered for req id: " + messageId );
+        //System.err.println( "Waiter registered for req id: " + messageId );
         orb.registerWaiter( messageId );
+    }
+
+    public void releaseWaiter(){
+        //System.err.println( "Waiter registered for req id: " + messageId );
+        orb.releaseWaiter( messageId );
     }
 
     //Redirect OutputStream methods to CDROutputStream
@@ -101,12 +128,13 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
 
 class MessageComposerRunnable implements Runnable{
     ClientRequest clr;
-    GIOPMessage reply;
+    CDRInputStream reply;
+    boolean success;
 
     /**
      * Client upcall:
      * <p>
-     *     <b>Client scope</b> --&gt; Message scope/Waiter region --ex in --&gt; Immortal --&gt; Transport scope
+     *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */   
     public MessageComposerRunnable( ClientRequest clr ){
@@ -116,7 +144,7 @@ class MessageComposerRunnable implements Runnable{
     /**
      * Client upcall:
      * <p>
-     *     Client scope --&gt; <b>Message scope/Waiter region</b> --ex in --&gt; Immortal --&gt; Transport scope
+     *     Client scope --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; <b>Message scope/Waiter region</b> --&gt; Transport scope
      * </p>
      */
     public void run(){
@@ -126,22 +154,38 @@ class MessageComposerRunnable implements Runnable{
             waitingStrategy = new TwoWayWaitingStrategy();
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( waitingStrategy );
         clr.registerWaiter();
-        System.err.println( "Waiter registered" );
+        //System.err.println( "Waiter registered" );
 
-        ExecuteInRunnable eir = new ExecuteInRunnable();
+        ExecuteInRunnable eir = ExecuteInRunnable.instance();
         eir.init( new SendMessageRunnable( clr.out.getBuffer() ) , clr.transportScope );
-        ImmortalMemory.instance().executeInArea( eir );
-        clr.out.free();
-        System.err.println( "Message sent" );
+        success = true;
+        try{
+            clr.orb.orbImplRegion.executeInArea( eir );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.SEVERE,
+                "edu.uci.ece.zen.orb.MessageComposerRunnable",
+                "run",
+                "Could not sent message on transport due to exception: " + e.toString()
+                );
+            clr.releaseWaiter();
+            waitingStrategy = null;
+            success = false;
+        }finally{
+            eir.free();
+            clr.out.free();
+            //System.err.println( "Message sent" );
+        }
 
         if( waitingStrategy != null ){
-            System.err.println( "Waiting for a reply" );
+            //System.err.println( "Waiting for a reply" );
             reply = waitingStrategy.waitForReply();
-            System.err.println( "Got a reply...woohoo: " + reply );
+            clr.releaseWaiter();
+            //System.err.println( "Got a reply...woohoo: " + reply );
         }
     }
 
-    public CDRInputStream getReply(){ return reply.getCDRInputStream(); }
+    public CDRInputStream getReply(){ return reply; }
 }
 
 class SendMessageRunnable implements Runnable{
@@ -150,7 +194,7 @@ class SendMessageRunnable implements Runnable{
     /**
      * Client upcall:
      * <p>
-     *     Client scope --&gt; <b>Message scope/Waiter region</b> --ex in --&gt; Immortal --&gt; Transport scope
+     *     Client scope --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; <b>Message scope/Waiter region</b> --&gt; Transport scope
      * </p>
      */
     public SendMessageRunnable( WriteBuffer buffer ){
@@ -160,25 +204,11 @@ class SendMessageRunnable implements Runnable{
     /**
      * Client upcall:
      * <p>
-     *     Client scope --&gt; Message scope/Waiter region --ex in --&gt; Immortal --&gt; <b>Transport scope</b>
+     *     Client scope --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; <b>Transport scope</b>
      * </p>
      */
     public void run(){
         edu.uci.ece.zen.orb.transport.Transport trans = (edu.uci.ece.zen.orb.transport.Transport) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
         trans.send( msg );
-    }
-}
-
-class ExecuteInRunnable implements Runnable{
-    Runnable runnable;
-    MemoryArea ma;
-
-    public ExecuteInRunnable(){}
-    public void init( Runnable runnable , MemoryArea ma ){
-        this.runnable = runnable;
-        this.ma = ma;
-    }
-    public void run(){
-        ma.enter( runnable );
     }
 }

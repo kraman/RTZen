@@ -321,7 +321,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
      */
     public void write_CDROutputStream(CDROutputStream cdr) {
         write_long( (int) cdr.buffer.getLimit() );
-        cdr.buffer.dumpBuffer( buffer );
+        //cdr.buffer.dumpBuffer( buffer );
     }
 
     public boolean equals( CDROutputStream rhs ){

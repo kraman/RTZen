@@ -33,7 +33,7 @@ public abstract class WaitingStrategy {
      * NOTE: it seems like only TwoWay invocations need this method,
      * may want to drop it.
      */
-    public abstract GIOPMessage waitForReply();
+    public abstract CDRInputStream waitForReply();
 
     private static int messageId=0;
     public static synchronized int newMessageId(){

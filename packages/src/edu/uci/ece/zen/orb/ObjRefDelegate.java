@@ -54,7 +54,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         CDROutputStream out = CDROutputStream.instance();
         out.init( orb );
         org.omg.IOP.IORHelper.write( out , ior );
-        out.getBuffer().dumpBuffer( this.ior );
+        //out.getBuffer().dumpBuffer( this.ior );
         out.free();
 
         //process all the tagged profiles
@@ -65,7 +65,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     public synchronized void addLaneData( int min , int max , ScopedMemory transport , byte[] objectKey ){
-        System.out.println( "New lane info: " + min + " <--> " + max + "  :  " + transport );
+        //System.out.println( "New lane info: " + min + " <--> " + max + "  :  " + transport );
         priorityLanes[numLanes++].init( min , max , transport , objectKey );
     }
 
@@ -108,7 +108,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                 case 1:{
                                     org.omg.IIOP.ProfileBody_1_1 profilebody = org.omg.IIOP.ProfileBody_1_1Helper.read( in );
                                     long connectionKey = ConnectionRegistry.ip2long( profilebody.host , profilebody.port );
-                                    System.err.println( orb );
+                                    //System.err.println( orb );
                                     ScopedMemory transportScope = orb.getConnectionRegistry().getConnection( connectionKey );
                                     if( transportScope == null ){
                                         transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector.instance().connect( profilebody.host , profilebody.port , orb );
@@ -258,7 +258,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     /**
      * Client upcall:
      * <p>
-     *     <b>Client scope</b> --&gt; Message scope/Waiter region --ex in --&gt; Immortal --&gt; Transport scope
+     *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */
     public org.omg.CORBA.portable.OutputStream request(org.omg.CORBA.Object self, String operation, boolean responseExpected) {
@@ -268,7 +268,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     /**
      * Client upcall:
      * <p>
-     *     <b>Client scope</b> --&gt; Message scope/Waiter region --ex in --&gt; Immortal --&gt; Transport scope
+     *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */
     public org.omg.CORBA.portable.OutputStream request(org.omg.CORBA.Object self, String operation, boolean responseExpected, byte majorVersion, byte minorVersion) {
@@ -278,7 +278,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     /**
      * Client upcall:
      * <p>
-     *     <b>Client scope</b> --&gt; Message scope/Waiter region --ex in --&gt; Immortal --&gt; Transport scope
+     *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */
     public org.omg.CORBA.portable.InputStream invoke(org.omg.CORBA.Object self, org.omg.CORBA.portable.OutputStream os)

@@ -60,9 +60,9 @@ public final class GIOPMessageFactory
                 messageSize += ((short)(header[8] & 0xFF)) << 0;
             }
             nextMessageIsFragment=false;
-            System.err.println( "----GIOP Message Header ----" );
-            System.err.write( header , 0 , 12 );
-            System.err.println( "---- ----" );
+            //System.err.println( "----GIOP Message Header ----" );
+            //System.err.write( header , 0 , 12 );
+            //System.err.println( "---- ----" );
 
             
             buffer.appendFromStream( in , messageSize );

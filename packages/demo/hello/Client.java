@@ -26,9 +26,17 @@ public class Client
             ior = br.readLine();
             System.out.println("[Client] " + ior);
             org.omg.CORBA.Object object = orb.string_to_object(ior);
-            System.out.println( orb.object_to_string( object ) );
+            //System.out.println( orb.object_to_string( object ) );
             HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
-            System.out.println( server.getMessage() );
+
+            for( int i=0;i<10000;i++ )
+                server.getMessage();
+
+            long start = System.currentTimeMillis();
+            for( int i=0;i<10000;i++ )
+                server.getMessage();
+            long end = System.currentTimeMillis();
+            System.out.println( ((end-start)/1000) + " sec = " + (10000.0/((end-start)/1000.0)) + " req/sec" );
             System.exit(0);
 		}
 		catch (Exception e)

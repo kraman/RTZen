@@ -45,10 +45,11 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     private static synchronized long nextOrbId(){
-        return orbIdSeq++;
+        orbIdSeq = (orbIdSeq + 1) % (Long.MAX_VALUE-1);
+        return orbIdSeq;
     }
 
-    public static org.omg.CORBA.ORB init(String[] args, java.util.Properties props) {
+    public static synchronized org.omg.CORBA.ORB init(String[] args, java.util.Properties props) {
         if( props == null )
             props = new Properties();
 
@@ -65,16 +66,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         }else{
             edu.uci.ece.zen.orb.ORB retVal = (edu.uci.ece.zen.orb.ORB) orbTable.get( orbId );
             if( retVal == null ){
-                ScopedMemory mem = null;
-                if( unusedMemoryAreas.isEmpty() ){
-                    mem = new javax.realtime.LTMemory( scopeMemorySize , scopeMemorySize );
-                }else{
-                    mem = (ScopedMemory) unusedMemoryAreas.dequeue();
-                }
-
                 if( unusedFacades.isEmpty() ){
                     throw new RuntimeException( "ORB number limit reached. Cannot create more ORB's. Please increase the number of ORB's in the zen.properties file." );
                 }
+                ScopedMemory mem = getScopedRegion();
                 retVal = (edu.uci.ece.zen.orb.ORB) unusedFacades.dequeue();
                 retVal.internalInit( mem , orbId , args , props );
             }
@@ -100,7 +95,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
     */
 
-    private ScopedMemory orbImplRegion;
+    public ScopedMemory orbImplRegion;
+    public MemoryArea parentMemoryArea;
     private ORBInitRunnable orbInitRunnable;
     private ORBImplRunnable orbImplRunnable;
     private ORBStrToObjRunnable strToObjRunnable;
@@ -122,9 +118,24 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     private void internalInit( ScopedMemory mem , String orbId , String[] args , Properties props ){
         this.orbId = orbId;
+        this.parentMemoryArea = RealtimeThread.getCurrentMemoryArea();
         orbInitRunnable.init( args , props , this );
-        mem.enter( orbInitRunnable );
         orbImplRegion = mem;
+
+        ExecuteInRunnable r = ExecuteInRunnable.instance();
+        r.init( orbInitRunnable , mem);
+        try{
+            parentMemoryArea.executeInArea( r );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.ORB",
+                "internalInit",
+                "Could not initialize ORB due to exception: " + e.toString()
+                );
+            System.exit(-1);
+        }
+        r.free();
     }
 
     private void isNotDestroyed(){
@@ -142,13 +153,41 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public void set_parameters(String args[], java.util.Properties props) {
         orbInitRunnable.init( args , props , this );
-        orbImplRegion.enter( orbInitRunnable );
+
+        ExecuteInRunnable r = ExecuteInRunnable.instance();
+        r.init( orbInitRunnable , this.orbImplRegion );
+        try{
+            parentMemoryArea.executeInArea( r );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.ORB",
+                "set_parameters",
+                "Could not initialize ORB due to exception: " + e.toString()
+                );
+            System.exit(-1);
+        }
+        r.free();
     }
 
     //For Multithreaded ORB's
     public void run(){
         isActive();
-        orbImplRegion.enter( orbImplRunnable );
+
+        ExecuteInRunnable r = ExecuteInRunnable.instance();
+        r.init( orbImplRunnable , this.orbImplRegion );
+        try{
+            parentMemoryArea.executeInArea( r );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.ORB",
+                "set_parameters",
+                "Could not run in ORB due to exception: " + e.toString()
+                );
+            System.exit(-1);
+        }
+        r.free();
     }
 
     public void shutdown(boolean wait_for_completion) {
@@ -235,12 +274,28 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         org.omg.IOP.IOR ior = IOR.parseString( this , str );
         org.omg.CORBA.portable.ObjectImpl objImpl = new ObjectImpl( ior );
         strToObjRunnable.init( ior , orbImplRegion , objImpl );
-        orbImplRegion.enter( strToObjRunnable );
+
+        ExecuteInRunnable r = ExecuteInRunnable.instance();
+        r.init( strToObjRunnable , this.orbImplRegion );
+        try{
+            parentMemoryArea.executeInArea( r );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.SEVERE,
+                "edu.uci.ece.zen.orb.ORB",
+                "string_to_object",
+                "Could not get object due to exception: " + e.toString()
+                );
+        }
+        r.free();
+
         return strToObjRunnable.getRetVal();
     }
 
     public org.omg.CORBA.portable.OutputStream create_output_stream() {
-        return edu.uci.ece.zen.orb.CDROutputStream.instance();
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(this);
+        return out;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -264,8 +319,28 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         }
     }
 
-    public static ScopedMemory getScopedRegion(){ return new LTMemory(2048*2048 , 2048*2048); }
-    public static void freeScopedRegion( ScopedMemory sm ){ };
+    public void releaseWaiter( int key ){
+        try{
+            waiterRegistry.remove( key );
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
+    }
+
+    public static ScopedMemory getScopedRegion(){ 
+        ScopedMemory mem = null;
+        if( unusedMemoryAreas.isEmpty() ){
+            mem = new javax.realtime.LTMemory( scopeMemorySize , scopeMemorySize );
+        }else{
+            mem = (ScopedMemory) unusedMemoryAreas.dequeue();
+        }
+        return mem; 
+    }
+
+    public static void freeScopedRegion( ScopedMemory sm ){ 
+        unusedMemoryAreas.enqueue( sm );
+    };
+
     public ConnectionRegistry getConnectionRegistry(){
         return connectionRegistry;
     }
@@ -351,18 +426,6 @@ class ORBInitRunnable implements Runnable{
     }
 }
 
-class ORBExecuteInRunnable implements Runnable{
-    Runnable runnable;
-    ORB orb;
-
-    public ORBExecuteInRunnable(){}
-    public void init( Runnable runnable , edu.uci.ece.zen.orb.ORB orb ){
-        this.runnable = runnable;
-    }
-    public void run(){
-    }
-}
-
 class ORBStrToObjRunnable implements Runnable{
     org.omg.IOP.IOR ior;
     org.omg.CORBA.portable.ObjectImpl objImpl;
@@ -377,6 +440,7 @@ class ORBStrToObjRunnable implements Runnable{
         this.ior = ior;
         this.orbImplRegion = orbImplRegion;
         this.objImpl = objImpl;
+        this.retval = null;
     }
 
     public org.omg.CORBA.Object getRetVal(){ return retval; }

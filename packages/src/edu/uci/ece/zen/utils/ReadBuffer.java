@@ -99,29 +99,29 @@ public class ReadBuffer{
         try{
             ensureCapacity(numBytes);
             while( numBytes > 0 ){
-                System.err.println( "Still need to read " + numBytes + " bytes" );
+                //System.err.println( "Still need to read " + numBytes + " bytes" );
                 int readBytes = numBytes;
                 if( readBytes > 1024 - (int)(limit%1024) )
                     readBytes = 1024 - (int)(limit%1024);
-                System.err.println( "Going to read " + readBytes + " to fill buffer" );
+                //System.err.println( "Going to read " + readBytes + " to fill buffer" );
                 numBytes -= readBytes;
 
                 while( readBytes > 0 ){
                     int read = stream.read( (byte[]) buffers.elementAt((int)(limit/1024)) , ((int)limit%1024) , readBytes );
-                    System.err.println( "Read " + read + " ... " );
+                    //System.err.println( "Read " + read + " ... " );
                     readBytes -= read;
                     limit += read;
                 }
 
             }
 
-            System.err.println( "---BEGIN Incomming GIOP message---" );
-            for( int i=0;i<limit/1024-1;i++ ){
-                System.err.write( (byte[])buffers.elementAt(i) , 0 , 1024 );
-            }
-            System.err.write( (byte[])buffers.elementAt(((int)(limit/1024))) , 0 , (int)(limit%1024) );
-            System.err.println( "\n---END Incomming GIOP message---" );
-            System.out.println( "Limit is " + limit );
+            //System.err.println( "---BEGIN Incomming GIOP message---" );
+            //for( int i=0;i<limit/1024-1;i++ ){
+            //    System.err.write( (byte[])buffers.elementAt(i) , 0 , 1024 );
+            // }
+            //System.err.write( (byte[])buffers.elementAt(((int)(limit/1024))) , 0 , (int)(limit%1024) );
+            //System.err.println( "\n---END Incomming GIOP message---" );
+            //System.out.println( "Limit is " + limit );
 
         }catch( java.io.IOException ioex ){
             ioex.printStackTrace();
@@ -257,7 +257,7 @@ public class ReadBuffer{
             ret |= b2 & 0xFF;
             ret <<= 8;
             ret |= b1 & 0xFF;
-            System.err.println( "Crap ...little endian...Long is " + ret );
+            //System.err.println( "Crap ...little endian...Long is " + ret );
             return ret;
         }else{
             ret |= b1 & 0xFF;
@@ -267,7 +267,7 @@ public class ReadBuffer{
             ret |= b3 & 0xFF;
             ret <<= 8;
             ret |= b4 & 0xFF;
-            System.err.println( "Long is " + ret );
+            //System.err.println( "Long is " + ret );
             return ret;
         }
     }
@@ -320,7 +320,7 @@ public class ReadBuffer{
         byte buf[] = new byte[len];
         readByteArray( buf , 0 , len );
         readByte();
-        System.err.println( "Long is " + new String( buf ) );
+        //System.err.println( "Long is " + new String( buf ) );
         return new String( buf );
     }
 

@@ -37,8 +37,6 @@ public final class ZenProperties{
     //1) global properties
     //2) memory regions
     static{
-        System.out.println( zenStartupMessage );
-        System.out.flush();
         init();
     }
 
@@ -83,7 +81,7 @@ public final class ZenProperties{
 
         try{
             globalProperties = (Properties) immortalMem.newInstance( Properties.class );
-            System.out.println( "#" + globalProperties );
+            //System.out.println( "#" + globalProperties );
             java.util.Enumeration propsEnum = tmpProperties.propertyNames();
             Class[] refArgs = new Class[]{ String.class };
             java.lang.reflect.Constructor refConstr = String.class.getConstructor( refArgs );

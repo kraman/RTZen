@@ -63,15 +63,132 @@ all:
 
 compile:
      [echo] Compiling OMG and Zen sources with the AspectJ compiler
-     [iajc] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/TracerAspect.java:162 no match for this type name: edu$uci$ece$zen$orb$any$pluggable$Any [Xlint:invalidAbsoluteTypeName]
-
-     [iajc] 1 warning
 
 
 
-all:
+lib:
+   [delete] Deleting directory /home/kraman/RTZen/classes/src
+     [exec] Parsing edu/uci/ece/zen/orb/TypeCodeAspect.class... Generating src/edu/uci/ece/zen/orb/TypeCodeAspect.java
+     [exec] Couldn't fully decompile method aspectOf
+     [exec] Parsing edu/uci/ece/zen/orb/ConnectionRegistry.class... Generating src/edu/uci/ece/zen/orb/ConnectionRegistry.java
+     [exec] Parsing edu/uci/ece/zen/orb/ORBImpl.class... Generating src/edu/uci/ece/zen/orb/ORBImpl.java
+     [exec] Parsing edu/uci/ece/zen/orb/ORB.class... Generating src/edu/uci/ece/zen/orb/ORB.java
+     [exec] Parsing edu/uci/ece/zen/orb/ORBTable.class... Generating src/edu/uci/ece/zen/orb/ORBTable.java
+     [exec] Parsing edu/uci/ece/zen/orb/SendMessageRunnable.class... Generating src/edu/uci/ece/zen/orb/SendMessageRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/ORBImplRunnable.class... Generating src/edu/uci/ece/zen/orb/ORBImplRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/TwoWayWaitingStrategy.class... Generating src/edu/uci/ece/zen/orb/TwoWayWaitingStrategy.java
+     [exec] Parsing edu/uci/ece/zen/orb/WaiterRegistry.class... Generating src/edu/uci/ece/zen/orb/WaiterRegistry.java
+     [exec] Parsing edu/uci/ece/zen/orb/ClientRequest.class... Generating src/edu/uci/ece/zen/orb/ClientRequest.java
+     [exec] Parsing edu/uci/ece/zen/orb/CDRInputStream.class... Generating src/edu/uci/ece/zen/orb/CDRInputStream.java
+     [exec] Parsing edu/uci/ece/zen/orb/AcceptorRegistry.class...Parsing inner class edu/uci/ece/zen/orb/AcceptorRegistry$ARRunnable.class... Generating src/edu/uci/ece/zen/orb/AcceptorRegistry.java
+     [exec] Parsing edu/uci/ece/zen/orb/TypeCode.class... Generating src/edu/uci/ece/zen/orb/TypeCode.java
+     [exec] Parsing edu/uci/ece/zen/orb/ORBStrToObjRunnable.class... Generating src/edu/uci/ece/zen/orb/ORBStrToObjRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/CDROutputStream.class... Generating src/edu/uci/ece/zen/orb/CDROutputStream.java
+     [exec] Parsing edu/uci/ece/zen/orb/IOR.class... Generating src/edu/uci/ece/zen/orb/IOR.java
+     [exec] Parsing edu/uci/ece/zen/orb/ReplyMessageRunnable.class... Generating src/edu/uci/ece/zen/orb/ReplyMessageRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/ObjRefDelegate.class... Generating src/edu/uci/ece/zen/orb/ObjRefDelegate.java
+     [exec] Parsing edu/uci/ece/zen/orb/LaneInfo.class... Generating src/edu/uci/ece/zen/orb/LaneInfo.java
+     [exec] Parsing edu/uci/ece/zen/orb/ORBInitRunnable.class... Generating src/edu/uci/ece/zen/orb/ORBInitRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/ObjectImpl.class... Generating src/edu/uci/ece/zen/orb/ObjectImpl.java
+     [exec] Parsing edu/uci/ece/zen/orb/MessageComposerRunnable.class... Generating src/edu/uci/ece/zen/orb/MessageComposerRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/WaitingStrategy.class... Generating src/edu/uci/ece/zen/orb/WaitingStrategy.java
+     [exec] Parsing edu/uci/ece/zen/orb/Resolver.class... Generating src/edu/uci/ece/zen/orb/Resolver.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/WaitingStratergyNotifyRunnable.class... Generating src/edu/uci/ece/zen/orb/transport/WaitingStratergyNotifyRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/AcceptorRunnable.class... Generating src/edu/uci/ece/zen/orb/transport/AcceptorRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/ProfileRunnable.class... Generating src/edu/uci/ece/zen/orb/transport/ProfileRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/MessageProcessor.class... Generating src/edu/uci/ece/zen/orb/transport/MessageProcessor.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/Transport.class... Generating src/edu/uci/ece/zen/orb/transport/Transport.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/GIOPMessageRunnable.class... Generating src/edu/uci/ece/zen/orb/transport/GIOPMessageRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/Acceptor.class... Generating src/edu/uci/ece/zen/orb/transport/Acceptor.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/Connector.class... Generating src/edu/uci/ece/zen/orb/transport/Connector.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/ConnectorRunnable.class... Generating src/edu/uci/ece/zen/orb/transport/ConnectorRunnable.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/iiop/Acceptor.class... Generating src/edu/uci/ece/zen/orb/transport/iiop/Acceptor.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/iiop/Connector.class... Generating src/edu/uci/ece/zen/orb/transport/iiop/Connector.java
+     [exec] Parsing edu/uci/ece/zen/orb/transport/iiop/Transport.class... Generating src/edu/uci/ece/zen/orb/transport/iiop/Transport.java
+     [exec] Parsing edu/uci/ece/zen/orb/giop/GIOPMessageFactory.class... Generating src/edu/uci/ece/zen/orb/giop/GIOPMessageFactory.java
+     [exec] Parsing edu/uci/ece/zen/orb/giop/GIOPMessage.class... Generating src/edu/uci/ece/zen/orb/giop/GIOPMessage.java
+     [exec] Parsing edu/uci/ece/zen/orb/giop/v1_0/RequestMessage.class... Generating src/edu/uci/ece/zen/orb/giop/v1_0/RequestMessage.java
+     [exec] Parsing edu/uci/ece/zen/orb/giop/v1_0/ReplyMessage.class... Generating src/edu/uci/ece/zen/orb/giop/v1_0/ReplyMessage.java
+     [exec] Parsing edu/uci/ece/zen/orb/any/AnyStrategy.class... Generating src/edu/uci/ece/zen/orb/any/AnyStrategy.java
+     [exec] Parsing edu/uci/ece/zen/orb/any/Any.class... Generating src/edu/uci/ece/zen/orb/any/Any.java
+     [exec] Parsing edu/uci/ece/zen/orb/any/monolithic/Any.class... Generating src/edu/uci/ece/zen/orb/any/monolithic/Any.java
+     [exec] Parsing edu/uci/ece/zen/orb/policies/ThreadpoolPolicyImpl.class... Generating src/edu/uci/ece/zen/orb/policies/ThreadpoolPolicyImpl.java
+     [exec] Parsing edu/uci/ece/zen/orb/policies/PriorityModelPolicyImpl.class... Generating src/edu/uci/ece/zen/orb/policies/PriorityModelPolicyImpl.java
+     [exec] Parsing edu/uci/ece/zen/utils/HashtableOverflowException.class... Generating src/edu/uci/ece/zen/utils/HashtableOverflowException.java
+     [exec] Parsing edu/uci/ece/zen/utils/Hashtable.class... Generating src/edu/uci/ece/zen/utils/Hashtable.java
+     [exec] Parsing edu/uci/ece/zen/utils/EventVariable.class... Generating src/edu/uci/ece/zen/utils/EventVariable.java
+     [exec] Parsing edu/uci/ece/zen/utils/Lane.class... Generating src/edu/uci/ece/zen/utils/Lane.java
+     [exec] Parsing edu/uci/ece/zen/utils/QueueNode.class... Generating src/edu/uci/ece/zen/utils/QueueNode.java
+     [exec] Parsing edu/uci/ece/zen/utils/WriteBuffer.class... Generating src/edu/uci/ece/zen/utils/WriteBuffer.java
+     [exec] Parsing edu/uci/ece/zen/utils/Logger.class... Generating src/edu/uci/ece/zen/utils/Logger.java
+     [exec] Parsing edu/uci/ece/zen/utils/ZenProperties.class... Generating src/edu/uci/ece/zen/utils/ZenProperties.java
+     [exec] Parsing edu/uci/ece/zen/utils/ReadBuffer.class... Generating src/edu/uci/ece/zen/utils/ReadBuffer.java
+     [exec] Parsing edu/uci/ece/zen/utils/CountableEventVariable.class... Generating src/edu/uci/ece/zen/utils/CountableEventVariable.java
+     [exec] Parsing edu/uci/ece/zen/utils/ObjectCache.class...Parsing inner class edu/uci/ece/zen/utils/ObjectCache$ListNode.class... Generating src/edu/uci/ece/zen/utils/ObjectCache.java
+     [exec] Parsing edu/uci/ece/zen/utils/ExecuteInRunnable.class... Generating src/edu/uci/ece/zen/utils/ExecuteInRunnable.java
+     [exec] Parsing edu/uci/ece/zen/utils/ThreadPool.class... Generating src/edu/uci/ece/zen/utils/ThreadPool.java
+     [exec] Parsing edu/uci/ece/zen/utils/ThreadSleepRunnable.class... Generating src/edu/uci/ece/zen/utils/ThreadSleepRunnable.java
+     [exec] Parsing edu/uci/ece/zen/utils/ByteArrayCache.class... Generating src/edu/uci/ece/zen/utils/ByteArrayCache.java
+     [exec] Parsing edu/uci/ece/zen/utils/Queue.class... Generating src/edu/uci/ece/zen/utils/Queue.java
+     [exec] Parsing edu/uci/ece/zen/utils/ConsoleLogger.class... Generating src/edu/uci/ece/zen/utils/ConsoleLogger.java
+     [exec] Parsing edu/uci/ece/zen/utils/NullLogger.class... Generating src/edu/uci/ece/zen/utils/NullLogger.java
 
-all:
 
-BUILD SUCCESSFUL
-Total time: 2 minutes 17 seconds
+     [copy] Copying 85 files to /home/kraman/RTZen/classes/src/edu/oswego
+     [copy] Copying 182 files to /home/kraman/RTZen/classes/src/org
+     [copy] Copying 1186 files to /home/kraman/RTZen/classes/src/org
+    [javac] Compiling 1516 source files to /home/kraman/RTZen/lib
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:91: error: Constructor invocation must be first thing in a constructor.
+    [javac]            super();
+    [javac]                   ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:98: error: Constructor invocation must be first thing in a constructor.
+    [javac]            super();
+    [javac]                   ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:105: error: Constructor invocation must be first thing in a constructor.
+    [javac]            super();
+    [javac]                   ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:112: error: Constructor invocation must be first thing in a constructor.
+    [javac]            super();
+    [javac]                   ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:119: error: Constructor invocation must be first thing in a constructor.
+    [javac]            super();
+    [javac]                   ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:126: error: Constructor invocation must be first thing in a constructor.
+    [javac]            super();
+    [javac]                   ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCode.java:133: error: Constructor invocation must be first thing in a constructor.
+    [javac]            super();
+    [javac]                   ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:435: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 434.
+    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
+    [javac]                               ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:457: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 456.
+    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
+    [javac]                               ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:488: error: Variable `id' is already defined in this method and was declared `String id' at line 486.
+    [javac]                String id = cdr.read_string();
+    [javac]                       ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:504: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 503.
+    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
+    [javac]                               ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:517: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 516.
+    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
+    [javac]                               ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:529: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 528.
+    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
+    [javac]                               ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:552: error: Variable `cdr' is already defined in this method and was declared `CDRInputStream cdr' at line 551.
+    [javac]                CDRInputStream cdr = ajc$interMethodDispatch1$edu_uci_ece_zen_orb_TypeCodeAspect$edu_uci_ece_zen_orb_CDRInputStream$openEncapsulation(arg0);
+    [javac]                               ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:717: error: Variable `i' is already defined in this method and was declared `int i' at line 713.
+    [javac]                    for(int i = 0; i < memCount; i++)
+    [javac]                            ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:1982: error: ':' expected.
+    [javac]            ajc$perSingletonInstance;
+    [javac]                                    ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:1983: error: Invalid expression statement.
+    [javac]            if(ajc$perSingletonInstance == null) goto _L2; else goto _L1
+    [javac]                                                 ^
+    [javac] /home/kraman/RTZen/classes/src/edu/uci/ece/zen/orb/TypeCodeAspect.java:1985: confused by earlier errors, bailing out
+
+

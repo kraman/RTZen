@@ -58,9 +58,15 @@
             <include name="src/edu/uci/ece/zen/orb/giop/v1_0/**.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ServerRequest.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
+            <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
+            <exclude name="src/edu/uci/ece/zen/orb/TracerAspect.java"/>
+
+        <!--*** Zen support packages ***-->
+            <include name="src/org/**"/>
+        
     </patternset>
 
-    <target name="all" depends="idl, compile"/>
+    <target name="all" depends="idl, compile, lib"/>
 
     <target name="idl">
 
@@ -77,7 +83,7 @@
             srcdir="${zen.srcdir}/src/"
             destdir="${zen.classdir}"
             includes="org/apache/**"/>
-        <exec dir="${zen.classdir}" executable="/home/kraman/jad-1.5.8e/jad" >
+        <exec dir="${zen.classdir}" executable="/home/kraman/jad" >
             <arg line="-s java -r -dsrc edu/uci/ece/**/*.class"/>
         </exec>
         <copy todir="${zen.classdir}/src/edu/oswego">
@@ -96,7 +102,7 @@
         <javac
             srcdir="${zen.classdir}/src/"
             destdir="${zen.libdir}"
-            executable="/root/jRate-gcc/bin/jRate-gcj"
+            executable="/usr/java/jRate-gcc/bin/jRate-gcj"
             compiler="org.apache.tools.ant.taskdefs.compilers.jRateGcj"
             includeAntRuntime="false"
             includeJavaRuntime="false"
