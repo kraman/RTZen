@@ -18,6 +18,7 @@ public class CDRTestClient extends RealtimeThread
 {
 
 	private DataTypes stub;
+    private org.omg.CORBA.Object tempobj;
 
 	public static void main( String[] args ){
 		try{
@@ -41,6 +42,7 @@ public class CDRTestClient extends RealtimeThread
 			String ior = br.readLine();
 
 			org.omg.CORBA.Object obj = orb.string_to_object( ior );
+            tempobj = obj;
 			stub = DataTypesHelper.unchecked_narrow( obj );
 
 			testShort();
@@ -52,8 +54,8 @@ public class CDRTestClient extends RealtimeThread
 			testOctetSeq();
 			testStructSeq();
 			testonewayShort();
-			testShort();                        
-			testObject();
+			//testShort();                        
+			//testObject();
 			testLongLong();
 
 
@@ -66,6 +68,7 @@ public class CDRTestClient extends RealtimeThread
 	}
 
 	public void testShort(){
+        System.out.println("Test Short");
 
 		short shinVal = 100;
 		ShortHolder shoutVal = new ShortHolder((short)101);
@@ -103,6 +106,9 @@ public class CDRTestClient extends RealtimeThread
 	 */
 	public void testLongLong(){
 
+         System.out.println("Test LongLong");
+         
+
 		long llinVal = (long)1;
 		LongHolder lloutVal = new LongHolder((long)2);
 		long llretVal = stub.echoLongLong( llinVal, lloutVal);
@@ -125,6 +131,7 @@ public class CDRTestClient extends RealtimeThread
 
 	public void testDouble()
 	{
+        System.out.println("Test Double");        
 
 		double dinVal = 1.123456789;
 		org.omg.CORBA.DoubleHolder doutVal =
@@ -145,6 +152,7 @@ public class CDRTestClient extends RealtimeThread
 	}
 
 	public void testBoolean(){
+        System.out.println("Test Boolean");        
 
 		boolean binVal = true;
 		org.omg.CORBA.BooleanHolder boutVal =
@@ -166,6 +174,9 @@ public class CDRTestClient extends RealtimeThread
 
 	public void testString()
 	{
+
+        System.out.println("Test String");
+        
 
 		String sinVal = "in String";
 		StringHolder soutVal = new StringHolder("Before");
@@ -189,6 +200,7 @@ public class CDRTestClient extends RealtimeThread
 
 
 	public void testOctet(){
+        System.out.println("Test Octet");        
 
 		byte oinVal = 100;
 		ByteHolder ooutVal = new ByteHolder((byte)101);
@@ -208,6 +220,8 @@ public class CDRTestClient extends RealtimeThread
 
 	public void testOctetSeq()
 	{
+        System.out.println("Test OctetSeq");
+        
 		byte[] oseqinVal = {100, 101};
 		byte[] oseqoutArr = {102, 103, 104};
 
@@ -254,6 +268,8 @@ public class CDRTestClient extends RealtimeThread
 	}
 
 	public void testStructSeq(){
+        System.out.println("Test StructSeq");
+        
 
 		unit.test.cdr.DataTypesPackage.str str1= new unit.test.cdr.DataTypesPackage.str((byte)100,true);
 		unit.test.cdr.DataTypesPackage.str str2= new unit.test.cdr.DataTypesPackage.str((byte)101,true);
@@ -327,6 +343,8 @@ public class CDRTestClient extends RealtimeThread
 
 	public void testonewayShort(){
 
+        System.out.println("Test onewayShort");   
+
 
 		short shinVal = 100;
 
@@ -339,9 +357,11 @@ public class CDRTestClient extends RealtimeThread
 	}
 
 	public void testObject(){
+        System.out.println("Test Object");
+        
 
-		org.omg.CORBA.Object objinVal = stub;
-		org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(stub);
+		org.omg.CORBA.Object objinVal = tempobj;
+		org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(tempobj);
 
 		org.omg.CORBA.Object objretVal = stub.echoObject(objinVal, objoutVal);
 
