@@ -5,6 +5,7 @@ import org.omg.CORBA.CompletionStatus;
 import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.utils.*;
 import org.omg.PortableServer.POAPackage.*;
+import org.omg.PortableServer.*;
 
 public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.POA {
 
@@ -69,7 +70,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     }
 
     private static void release( edu.uci.ece.zen.poa.POA poa ){
-        queue.enqueue( poa );
+        unusedFacades.enqueue( poa );
     }
 
     public void free(){
@@ -77,7 +78,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     }
 
     public void initAsRootPOA( final edu.uci.ece.zen.orb.ORB orb ){
-        this.init( orb , rootPoaString , null , null , null , null , null );
+        this.init( orb , rootPoaString , null , null , null );
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -97,10 +98,12 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         byte[] poaPathBytes;
         if( parent == null )
             poaPathBytes = new byte[0];
-        else
-            poaPathBytes = parent.poaPath;
-        System.arraycopy( poaPathBytes , 0 , this.poaPath , 0 , poaPathBytes.length );
-        poaPathLen = poaPathLen.length;
+        else{
+            System.arraycopy( poaPathBytes , 0 , parent.poaPathBytes , 0 , parent.poaPathLength );
+            poaPathLen = parent.poaPathLen;
+            poaPath[poaPathLen]='/';
+            poaPathLen++;
+        }
         System.arraycopy( poaNameBytes , 0 , this.poaName , poaPathLen , poaName.length() );
         poaPathLen += poaNameLen;
         poaPath[poaPathLen]='/';
@@ -210,7 +213,6 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             case 2:
                 throw new WrongPolicy();
         }
-        return (org.omg.CORBA.Object)r.retVal;
     }
 
 
@@ -439,8 +441,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public org.omg.PortableServer.POA create_POA( java.lang.String adapter_name, POAManager a_POAManager, org.omg.CORBA.Policy[] policies)
-            throws AdapterAlreadyExists,InvalidPolicy {
+    public org.omg.PortableServer.POA create_POA(String adapter_name, org.omg.PortableServer.POAManager a_POAManager, org.omg.CORBA.Policy[] policies)
+            throws org.omg.PortableServer.POAPackage.AdapterAlreadyExists, org.omg.PortableServer.POAPackage.InvalidPolicy;
         /*
 
         synchronized (createDestroyPOAMutex) {

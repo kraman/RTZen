@@ -29,17 +29,26 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         this.operation = operation;
         this.responseExpected = responseExpected;
         out = CDROutputStream.instance();
+        System.out.println( "ClientRequest 1" );
         out.init( orb );
+        System.out.println( "ClientRequest 2" );
         this.giopMajor = giopMajor;
         this.giopMinor = giopMinor;
+        System.out.println( "ClientRequest 3" );
         int threadJavaPriority = Thread.currentThread().getPriority();
+        System.out.println( "ClientRequest 4" );
         LaneInfo ln = del.getLane();
+        System.out.println( "ClientRequest 5" );
         transportScope = ln.transpScope;
+        System.out.println( "ClientRequest 6" );
         objectKey = ln.getObjectKey();
+        System.out.println( "ClientRequest 7" );
 
         //TODO:Assemble and write message header and policies here
         messageId = WaitingStrategy.newMessageId();
+        System.out.println( "ClientRequest 8" );
         edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructMessage( this , messageId , out );
+        System.out.println( "ClientRequest 9" );
     }
 
     /**

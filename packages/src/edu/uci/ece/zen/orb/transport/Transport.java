@@ -100,6 +100,7 @@ class MessageProcessor implements Runnable{
     private boolean isActive;
 
     public MessageProcessor( Transport trans , edu.uci.ece.zen.orb.ORB orb ){
+        System.out.println( "MessageProcessor Kr 1: " + RealtimeThread.getCurrentMemoryArea() );
         this.trans = trans;
         this.orb = orb;
     }

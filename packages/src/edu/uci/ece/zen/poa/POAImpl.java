@@ -101,13 +101,11 @@ public class POAImpl{
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy If the policies of the POA dont contain RETAIN and UNIQUE_ID/MYULTIPLE_ID policies.
      * @return The object reference for that particular servant.
      */
-    public org.omg.CORBA.Object servant_to_reference(
-            final org.omg.PortableServer.Servant p_servant)
-        throws
-                org.omg.PortableServer.POAPackage.ServantNotActive,
-                org.omg.PortableServer.POAPackage.WrongPolicy {
+    public org.omg.CORBA.Object servant_to_reference( final org.omg.PortableServer.Servant p_servant , MemoryArea clientMemoryArea )
+        throws org.omg.PortableServer.POAPackage.ServantNotActive, org.omg.PortableServer.POAPackage.WrongPolicy {
 
         //check if this method is being called as a part of an upcall
+        /* KLUDGE: Ignore current for now.
         org.omg.PortableServer.Current current = null;
         try {
             current = (org.omg.PortableServer.Current) Current.currentInit();
@@ -123,6 +121,8 @@ public class POAImpl{
         // method was invoked outside the invocation context: Check if the
         // POA has the RETAIN and UNIQUE_ID in place.
         //NOTE: A ServantNotActive exception was being squelched here.
+        */
+
         byte[]  okey = null;
         byte[] oid = null;
 
@@ -137,14 +137,13 @@ public class POAImpl{
             okey = this.lifespanStrategy.create(this.poaPath, oid,
                     this.poaDemuxIndex, index, count);
 
-            return this.create_reference_with_object_key
-                    (okey, p_servant._all_interfaces(this, null)[0]);
+            return this.create_reference_with_object_key (okey, p_servant._all_interfaces(this, null)[0]);
         }catch( org.omg.PortableServer.POAPackage.ServantNotActive sna ){
             // Servant is not present and the POA has retain policy: Check if
             // Multiple Id and Implicit Activation are permitted next
             if (this.activationStrategy.validate(edu.uci.ece.zen.poa.mechanism.ActivationStrategy.IMPLICIT_ACTIVATION)
-                    || this.uniquenessStrategy.validate
-                            (edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy.MULTIPLE_ID)) {
+                    || this.uniquenessStrategy.validate(edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy.MULTIPLE_ID)) {
+
                 oid =  ((this.idAssignmentStrategy.nextId()));
                 POAHashMap map = POAHashMap.initialize(oid, p_servant);
 
@@ -158,16 +157,11 @@ public class POAImpl{
                 // + " loc = " + genCount);
                 //ActiveDemuxLoc servLoc = new ActiveDemuxLoc(index, genCount);
 
-                okey = this.lifespanStrategy.create(this.poaPath, oid,
-                        this.poaDemuxIndex, index,genCount);
-
-                return this.create_reference_with_object_key(okey,
-                        p_servant._all_interfaces(this, null)[0]);
-
+                okey = this.lifespanStrategy.create(this.poaPath, oid, this.poaDemuxIndex, index,genCount); 
+                return this.create_reference_with_object_key(okey, p_servant._all_interfaces(this, null)[0]);
             }
             throw sna;
         }
-
     }
 
 
@@ -261,16 +255,16 @@ public class POAImpl{
         return -1;
     }
 
-    org.omg.CORBA.Object create_reference_with_object_key(
-            final byte[]  ok,
-            final String intf) {
-        edu.uci.ece.zen.orb.protocols.ProfileList list = 
-            ((edu.uci.ece.zen.poa.POAManager) this.poaManager).getAcceptorRegistry().findMatchingProfiles(ok);
-        // this.orb.getAcceptorRegistry().findMatchingProfiles (ok);
-
-        IOR ior = new IOR(list, intf);
-
-        return edu.uci.ece.zen.orb.ior.IOR.makeCORBAObject(this.orb, ior);
+    org.omg.CORBA.Object synchronized create_reference_with_object_key( final byte[]  ok, final String intf, MemoryArea clientArea ) {
+        CreateReferenceWithObjectRunnable r = CreateReferenceWithObjectRunnable.instance();       
+        r.init( ok , intf );
+        try{
+            clientArea.executeInArea( r );
+        }catch( Exception e ){
+            e.printStackTrace();
+            return null;
+        }
+        return r.retVal();
     }
 
     private void activate_object_with_id_and_return_contents(
@@ -370,4 +364,28 @@ public class POAImpl{
 
     private transient edu.uci.ece.zen.poa.mechanism.ActivationStrategy
             activationStrategy;
+}
+
+class CreateReferenceWithObjectRunnable implements Runnable{
+
+    public static _instance;
+    
+    public CreateReferenceWithObjectRunnable instance(){
+        if( _instance == null )
+            _instance = new CreateReferenceWithObjectRunnable();
+        return _instance;
+    }
+
+    public org.omg.CORBA.Object retVal;
+    public byte[] ok;
+    public String intf;
+
+    public void init( byte[] ok , String intf ){
+        this.ok = ok;
+        this.intf = intf;
+    }
+
+    public void run(){
+        //create object and set it to retVal
+    }
 }
