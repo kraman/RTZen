@@ -21,7 +21,11 @@ public final class ZenProperties{
     public static final ImmortalMemory immortalMem = ImmortalMemory.instance();
     public static final HeapMemory heapMem = HeapMemory.instance();
     public static final Logger logger = Logger.instance();
-    public static final String zenVersion = "Zen RT Corba ORB Version 1.1, UNSTABLE";
+    public static final String zenVersion = 
+        "Zen RT Corba ORB Version 1.1, UNSTABLE\n"+
+        "Build Revision: " + VersionStamp.versionRev +"\n"+
+        "Build Date: " + VersionStamp.versionDate + "\n"+
+        "Platform: " + VersionStamp.devJVM + "\n";
     public static final String zenStartupMessage = 
          zenVersion + "\n" +
         "Developed at:\n" + 
@@ -32,6 +36,7 @@ public final class ZenProperties{
     //Global properties [install dir,user dir,working dir]
     //allocated in immortal memory because it doesnt change after loading.
     protected static Properties globalProperties;// = new Properties();
+    protected static int bufferSize = 9*1024;
 
     //Orb specific properties
     //Allocated in orb specific memory
@@ -111,6 +116,7 @@ public final class ZenProperties{
     //1) global properties
     //2) memory regions
     static{
+        System.out.println( zenStartupMessage );
         init();
     }
 
