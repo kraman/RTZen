@@ -41,7 +41,10 @@
              classpath="${classpath}"
              debug="${zen.debug}"
              optimize="${zen.optimization}"
-             includes="demo/hello/**.java">
+             includes="demo/hello/**.java"
+            target="1.1"
+            bootclasspath="/home/kraman/OpenVM/OpenVM_bin/src/syslib/user/ovm_rt_user.jar"
+             >
              
              <patternset>
                 <include name="src/edu/uci/ece/zen/util/TracerAspect.java" if="zen.aspects.trace"/>

@@ -3,6 +3,7 @@ package edu.uci.ece.zen.orb.transport;
 import javax.realtime.*;
 import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.utils.*;
+import java.net.*;
 
 public abstract class Connector{
     public Connector(){
@@ -19,7 +20,7 @@ public abstract class Connector{
         ConnectorRunnable connRunnable = (ConnectorRunnable) orbImpl.crCache.dequeue();
         if( connRunnable == null )
             connRunnable = new ConnectorRunnable();
-        
+       
         ScopedMemory transportMem = orb.getScopedRegion();
         connRunnable.init( host , port , this , orb );
         eir.init( eir2 , orb.orbImplRegion );
@@ -35,5 +36,6 @@ public abstract class Connector{
         return transportMem;
     }
 
-    protected abstract Transport internalConnect( String host , int port , edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl );
+    protected abstract Transport internalConnect( InetAddress host , int port , edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl );
 }
+

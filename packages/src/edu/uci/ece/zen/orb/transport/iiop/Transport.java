@@ -1,6 +1,7 @@
 package edu.uci.ece.zen.orb.transport.iiop;
 
 import edu.uci.ece.zen.utils.*;
+import java.net.*;
 import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.orb.policies.*;
 
@@ -27,10 +28,12 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
         }
     }
 
-    public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl , String host , int port ){
+    public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl , InetAddress host , int port ){
         super( orb , orbImpl );
         try{
             if(ZenProperties.devDbg) System.out.println( "Connecting to " + host + ":" + port );
+            if(ZenProperties.devDbg) System.out.println( "Current transport thread is of type " + javax.realtime.RealtimeThread.currentRealtimeThread() );
+
             sock = new java.net.Socket( host , port );
             if(ZenProperties.devDbg) System.out.println( "Connected" );
             //setSockProps(sock, orb);
@@ -71,8 +74,6 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
         }catch(java.net.SocketException se){
             se.printStackTrace();
         }
-
-
     }
-
 }
+

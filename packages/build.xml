@@ -81,10 +81,8 @@
     <target name="all" depends="idl, compile, lib"/>
 
     <target name="idl">
-
         <echo message="Compiling IDL files"/>
-        <ant antfile="${zen.srcdir}/idl/build.xml"/>
-    
+        <!--<ant antfile="${zen.srcdir}/idl/build.xml"/>-->
     </target>    
 
     <target name="lib">
@@ -114,12 +112,13 @@
     <target name="compile">
         <echo message="Compiling OMG and Zen sources"/>
       
-        <iajc  
+        <javac  
             destdir="${zen.classdir}"          
             srcdir="${zen.srcdir}"
             failonerror = "true"
             fork = "true"
-            maxmem="${build.maxmem}"
+            target="1.1"
+            bootclasspath="/home/kraman/OpenVM/OpenVM_bin/src/syslib/user/ovm_rt_user.jar"
             >
               
             
@@ -132,7 +131,7 @@
             <classpath>
                 <pathelement location="${zen.classpath}"/> 
             </classpath>
-        </iajc>
+        </javac>
     </target>
 
     <target name="zenlib" if="zen.lib">

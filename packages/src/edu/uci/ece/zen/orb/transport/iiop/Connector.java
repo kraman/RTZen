@@ -4,7 +4,7 @@ public class Connector extends edu.uci.ece.zen.orb.transport.Connector{
     public Connector(){
     }
     
-    protected edu.uci.ece.zen.orb.transport.Transport internalConnect( String host , int port , edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl ){
+    protected edu.uci.ece.zen.orb.transport.Transport internalConnect( java.net.InetAddress host , int port , edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl ){
         return new Transport( orb , orbImpl , host , port );
     }
 
