@@ -6,6 +6,7 @@ import javax.realtime.ScopedMemory;
 
 import org.omg.IOP.TAG_INTERNET_IOP;
 import org.omg.IOP.TAG_MULTIPLE_COMPONENTS;
+import org.omg.IOP.TAG_SERIAL;
 import org.omg.IOP.TaggedComponent;
 import org.omg.IOP.TaggedProfile;
 import org.omg.Messaging.PolicyValue;
@@ -26,8 +27,7 @@ import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.FString;
 
 public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
-    public static final int TAG_SERIAL = 177;
-    
+
     private static Queue objRefDelegateCache;
     static {
         try {
@@ -319,16 +319,20 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 //TODO: Currently ignored because they are of no immediate use
                 ZenProperties.logger.log("TAG_MULTIPLE_COMPONENTS ignored");
                 break;
-            case TAG_SERIAL: //process serial
+            case TAG_SERIAL.value: //process serial
                 byte[] data = profile.profile_data;
                 CDRInputStream in = CDRInputStream.fromOctetSeq(data, orb);
                 FString object_key = in.getBuffer().readFString(false);
-                long connectionKey = -TAG_SERIAL;
+                long connectionKey = -TAG_SERIAL.value;
                 ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
         
                 if (transportScope == null) {
-                    transportScope = edu.uci.ece.zen.orb.transport.serial.Connector
-                            .instance().connect(orb, orbImpl);
+                    try{ 
+                        transportScope = edu.uci.ece.zen.orb.transport.serial.Connector
+                                .instance().connect(null, (short)0, orb, orbImpl);
+                    }catch(Exception e){
+                        e.printStackTrace();   
+                    }
                     orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
 
                     addLaneData(RealtimeThread.MIN_PRIORITY,

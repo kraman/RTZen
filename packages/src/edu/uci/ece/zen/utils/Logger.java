@@ -37,8 +37,7 @@ public abstract class Logger{
             }catch( Exception e ){
 				System.err.println("Logger.instance(): " +
 					"Unable to load logger of type " + loggerType + ". Loading NullLogger.");
-				//instance = new NullLogger();
-				instance = new ScopeSafeConsoleLogger();			
+				instance = new NullLogger();		
 				e.printStackTrace();
             }
             instance.setLevel(level);

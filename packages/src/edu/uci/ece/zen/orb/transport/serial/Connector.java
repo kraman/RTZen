@@ -10,8 +10,13 @@ public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
     protected edu.uci.ece.zen.orb.transport.Transport internalConnect(
             String host, int port, edu.uci.ece.zen.orb.ORB orb,
             edu.uci.ece.zen.orb.ORBImpl orbImpl) {
-        if( !NativeSerialPort.instance().lock.attempt(0) )
-            return null;
+        try{
+            if( !NativeSerialPort.instance().lock.attempt(0) )
+                return null;              
+        }catch(java.lang.InterruptedException ie){
+            ie.printStackTrace();
+        }
+                    
         return new Transport(orb, orbImpl);
     }
 

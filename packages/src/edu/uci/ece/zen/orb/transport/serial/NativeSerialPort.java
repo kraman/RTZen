@@ -15,8 +15,19 @@ class NativeSerialPort
     }
 
     public synchronized static NativeSerialPort instance(){
-        if( _instance == null )
-            _instance = (NativeSerialPort) ImmortalMemory.instance().newInstance( NativeSerialPort.class );
+        
+        if (_instance == null)
+        {
+            try{
+                _instance = (NativeSerialPort) javax.realtime.ImmortalMemory.instance().newInstance( NativeSerialPort.class );
+            }catch(java.lang.IllegalAccessException e){
+                //for some reason, non-rt jvm comes here
+                _instance = new NativeSerialPort();
+            }catch(java.lang.InstantiationException e){
+                e.printStackTrace();
+            }
+        }
+
         return _instance;
     }
 
@@ -40,6 +51,7 @@ class NativeSerialPort
         }catch( Exception e ){
             e.printStackTrace();
         }
+        return null;
     }
 
     public InputStream getInputStream(){ return null; }

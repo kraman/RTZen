@@ -30,7 +30,13 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     //Connector
     public Transport(edu.uci.ece.zen.orb.ORB orb, edu.uci.ece.zen.orb.ORBImpl orbImpl) {
         this( orb , orbImpl , NativeSerialPort.instance() );
-        NativeSerialPort.instance().lock.acquire();
+        try{
+            NativeSerialPort.instance().lock.acquire();            
+        }catch(java.lang.InterruptedException ie){
+            ZenProperties.logger.log(Logger.WARN,
+                    getClass(), "<init>",
+                    "Error ", ie);      
+        }
     }
 
     public java.io.InputStream getInputStream() {
@@ -48,7 +54,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
 
         PolicyManagerImpl pm = (PolicyManagerImpl) (orb.getPolicyManager());
 
-        try {
+        //try {
             if (pm.recv_buffer_size > 0) {
                 ZenProperties.logger.log("Setting socket props. No properties supported.");
                 //sock.setReceiveBufferSize(pm.recv_buffer_size);
@@ -57,9 +63,9 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
                 //sock.setKeepAlive(pm.keep_alive);
                 //don't know how to set dont_route
             }
-        } catch (java.net.SocketException se) {
-            ZenProperties.logger.log(Logger.WARN, getClass(), "setSockProps", se);
-        }
+        //} catch (java.net.SocketException se) {
+        //    ZenProperties.logger.log(Logger.WARN, getClass(), "setSockProps", se);
+        //}
     }
 
     public void finalize(){

@@ -6,6 +6,7 @@ import org.omg.IIOP.ProfileBody_1_1;
 import org.omg.IIOP.ProfileBody_1_1Helper;
 import org.omg.IIOP.Version;
 import org.omg.IOP.TAG_INTERNET_IOP;
+import org.omg.IOP.TAG_SERIAL;
 import org.omg.IOP.TaggedComponent;
 import org.omg.IOP.TaggedProfile;
 import org.omg.Messaging.PolicyValue;
@@ -25,12 +26,12 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
     }
 
     protected void accept() {
-        try {
+        //try {
             Transport t = new Transport(orb, orbImpl, sock.accept());
             registerTransport(t);
-        } catch (java.io.IOException ioex) {
-            ZenProperties.logger.log(Logger.WARN, getClass(), "accept", ioex);
-        }
+        //} catch (java.io.IOException ioex) {
+        //    ZenProperties.logger.log(Logger.WARN, getClass(), "accept", ioex);
+        //}
     }
 
     protected void internalShutdown() {
@@ -41,14 +42,19 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN
-        edu.uci.ece.zen.utils.Logger.printThreadStack();
+        //edu.uci.ece.zen.utils.Logger.printThreadStack();
 
         TaggedProfile tp = new TaggedProfile();
         tp.tag = TAG_SERIAL.value;
-        tp.profile_data = new byte[2];
-        tp.profile_data[0] = iiopMinorVersion;
-        tp.profile_data[1] = iiopMajorVersion;
+        tp.profile_data = new byte[objKey.length];
+        //tp.profile_data[0] = iiopMinorVersion;
+        //tp.profile_data[1] = iiopMajorVersion;
+        out.write_octet_array(objKey, 0, objKey.length);
 
+        out.getBuffer().readByteArray(tp.profile_data, 0,
+                (int) out.getBuffer().getLimit());
+        out.free();        
+        
         return tp;
     }
 
