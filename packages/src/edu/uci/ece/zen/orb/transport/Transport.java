@@ -143,11 +143,10 @@ class MessageProcessor implements Runnable{
             }catch( Exception e ){
                 ZenProperties.logger.log(
                     Logger.SEVERE,
-                    "edu.uci.ece.zen.orb.transport.MessageProcessor",
+                    getClass(),
                     "run()",
-                    "Could not process message due to exception: " + e.toString()
-                    );
-                e.printStackTrace();
+                    "Could not process message",
+					e);
             }
             gmr.setRequestScope( null );
             //ORB.freeScopedRegion( messageScope );
@@ -215,10 +214,10 @@ class GIOPMessageRunnable implements Runnable{
                 }catch( Exception e ){
                     ZenProperties.logger.log(
                         Logger.SEVERE,
-                        "edu.uci.ece.zen.orb.transport.GIOPMessageRunnable",
+                        getClass(),
                         "run()",
-                        "Could not process reply message due to exception: " + e.toString()
-                        );
+                        "Could not process reply message",
+						e);
                 }
             }
         }catch( java.io.IOException ioex ){
