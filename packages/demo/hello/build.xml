@@ -47,18 +47,21 @@
     </target>
 
     <target name="jRate" if="compiler_jRate">
-      <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate"/>
+      <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
       <jRate
             optimizeLevel="2"
             libDirs="${zen.jRateLibDir}"
             additionalLinkOptions="-L${zen.libdir} -lZen"
-            destdir="${package.dir}"
+            destdir="${zen.libdir}"
+            bootclasspath="${zen.rtbootclasspath}"
+            classpath="${jRate_classpath}:${zen.classdir}"
             out="${package.dir}/client"
             main="demo.hello.Client"
             debug="true">
             <fileset dir="${zen.srcdir}">
                 <patternset>
                     <include name="demo/hello/**.java"/>
+                    <exclude name="demo/hello/Server.java"/>
                 </patternset>
             </fileset>
             <fileset dir="${zen.gendir}">
