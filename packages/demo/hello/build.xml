@@ -3,12 +3,12 @@
     <property name="package.dir" value="demo/hello"/>
     <property name="idl.src" value="hello.idl"/>
 
-	<import file="../../../init.xml"/>
-	<import file="../demo_tasks.xml"/>
+    <import file="../../../init.xml"/>
+    <import file="../demo_tasks.xml"/>
 
     <target name="compile">
-		<idlc file="${zen.srcdir}/${package.dir}/${idl.src}"/>
-		<demo.compile/>
+        <idlc file="${zen.srcdir}/${package.dir}/${idl.src}"/>
+        <demo.compile/>
         <jar
             jarfile="${zen.libdir}/hello_world.jar"
             basedir="${zen.classdir}"
@@ -31,13 +31,37 @@
     <target name="server">
         <demo.run classname="demo.hello.Server"/>
     </target>
-
+    
     <target name="client">
         <demo.run classname="demo.hello.Client"/>
-    </target>
+    </target>    
+    
+     <target name="server_jacorb">
+         <java classname="demo.hello.Server" fork="yes">
+             <jvmarg line="-Xbootclasspath/p:/JacORB_2_2/lib/jacorb_orig.jar;C:/Zen/RTZen/classes;c:/JacORB_2_2/lib/logkit-1.2.jar;c:/JacORB_2_2/lib/avalon-framework-4.1.5.jar -Djacorb.home=${basedir} -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=orb.jacorb.orb.ORBSingleton"/>
+         </java>
+    </target>  
+
+     <target name="client_jacorb">
+         <java classname="demo.hello.Client" fork="yes">
+             <jvmarg line="-Xbootclasspath/p:/JacORB_2_2/lib/jacorb_orig.jar;C:/Zen/RTZen/classes;c:/JacORB_2_2/lib/logkit-1.2.jar;c:/JacORB_2_2/lib/avalon-framework-4.1.5.jar -Djacorb.home=${basedir} -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=orb.jacorb.orb.ORBSingleton"/>
+         </java>
+    </target>   
+    
+     <target name="server_zen">
+         <java classname="demo.hello.Server" fork="yes">
+             <jvmarg line="-Xbootclasspath/p:C:/Zen/Zen/classes; -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"/>
+         </java>
+    </target>  
+
+     <target name="client_zen">
+         <java classname="demo.hello.Client" fork="yes">
+             <jvmarg line="-Xbootclasspath/p:C:/Zen/Zen/classes; -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"/>
+         </java>
+    </target>       
 
     <target name="clean">
-		<demo.clean/>
+        <demo.clean/>
     </target>
 
 </project>
