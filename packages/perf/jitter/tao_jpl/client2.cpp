@@ -37,7 +37,7 @@ typedef struct _Record{
 }Record;
 
 Record record_list[size_of_record];
-int index = 0;  
+int index_id = 0;  
 
 struct timeval begin_time, start_time, end_time; //Ed Pla's timestamping can't be used on Solaris
 
@@ -275,11 +275,11 @@ int Task::svc (void)
             server->getMessage (2 , *array ACE_ENV_ARG_PARAMETER);
 	    gettimeofday(&end_time, NULL);	    
             ACE_TRY_CHECK;
-	    record_list[index].pos = 21;
-            record_list[index++].time_stamp = (start_time.tv_sec-begin_time.tv_sec)*1000000 + (start_time.tv_usec-begin_time.tv_usec);
+	    record_list[index_id].pos = 21;
+            record_list[index_id++].time_stamp = (start_time.tv_sec-begin_time.tv_sec)*1000000 + (start_time.tv_usec-begin_time.tv_usec);
           
-            record_list[index].pos = 21;
-            record_list[index++].time_stamp = (end_time.tv_sec-begin_time.tv_sec)*1000000 + (end_time.tv_usec-begin_time.tv_usec);
+            record_list[index_id].pos = 21;
+            record_list[index_id++].time_stamp = (end_time.tv_sec-begin_time.tv_sec)*1000000 + (end_time.tv_usec-begin_time.tv_usec);
 	    
             //server->test_method (priority ACE_ENV_ARG_PARAMETER);
            // ACE_TRY_CHECK;
@@ -297,11 +297,11 @@ int Task::svc (void)
             server->getMessage (2 , *array ACE_ENV_ARG_PARAMETER);
 	    gettimeofday(&end_time, NULL);	    
             ACE_TRY_CHECK;
-	    record_list[index].pos = 22;
-            record_list[index++].time_stamp = (start_time.tv_sec-begin_time.tv_sec)*1000000 + (start_time.tv_usec-begin_time.tv_usec);
+	    record_list[index_id].pos = 22;
+            record_list[index_id++].time_stamp = (start_time.tv_sec-begin_time.tv_sec)*1000000 + (start_time.tv_usec-begin_time.tv_usec);
           
-            record_list[index].pos = 22;
-            record_list[index++].time_stamp = (end_time.tv_sec-begin_time.tv_sec)*1000000 + (end_time.tv_usec-begin_time.tv_usec);
+            record_list[index_id].pos = 22;
+            record_list[index_id++].time_stamp = (end_time.tv_sec-begin_time.tv_sec)*1000000 + (end_time.tv_usec-begin_time.tv_usec);
             ACE_TRY_CHECK;
             //server->test_method (priority ACE_ENV_ARG_PARAMETER);
             //ACE_TRY_CHECK;
@@ -494,11 +494,11 @@ int main (int argc, char *argv[])
             server2->getMessage (2 , *array ACE_ENV_ARG_PARAMETER);
 	    gettimeofday(&end_time, NULL);	    
             ACE_TRY_CHECK;
-	    record_list[index].pos = 21;
-            record_list[index++].time_stamp = (start_time.tv_sec-begin_time.tv_sec)*1000000 + (start_time.tv_usec-begin_time.tv_usec);
+	    record_list[index_id].pos = 21;
+            record_list[index_id++].time_stamp = (start_time.tv_sec-begin_time.tv_sec)*1000000 + (start_time.tv_usec-begin_time.tv_usec);
           
-            record_list[index].pos = 21;
-            record_list[index++].time_stamp = (end_time.tv_sec-begin_time.tv_sec)*1000000 + (end_time.tv_usec-begin_time.tv_usec);
+            record_list[index_id].pos = 21;
+            record_list[index_id++].time_stamp = (end_time.tv_sec-begin_time.tv_sec)*1000000 + (end_time.tv_usec-begin_time.tv_usec);
             
 		//server2->test_method (server2_priority ACE_ENV_ARG_PARAMETER);
                 //ACE_TRY_CHECK;
@@ -516,11 +516,11 @@ int main (int argc, char *argv[])
             server2->getMessage (2 , *array ACE_ENV_ARG_PARAMETER);
 	    gettimeofday(&end_time, NULL);	    
             ACE_TRY_CHECK;
-	    record_list[index].pos = 22;
-            record_list[index++].time_stamp = (start_time.tv_sec-begin_time.tv_sec)*1000000 + (start_time.tv_usec-begin_time.tv_usec);
+	    record_list[index_id].pos = 22;
+            record_list[index_id++].time_stamp = (start_time.tv_sec-begin_time.tv_sec)*1000000 + (start_time.tv_usec-begin_time.tv_usec);
           
-            record_list[index].pos = 22;
-            record_list[index++].time_stamp = (end_time.tv_sec-begin_time.tv_sec)*1000000 + (end_time.tv_usec-begin_time.tv_usec);
+            record_list[index_id].pos = 22;
+            record_list[index_id++].time_stamp = (end_time.tv_sec-begin_time.tv_sec)*1000000 + (end_time.tv_usec-begin_time.tv_usec);
             ACE_TRY_CHECK;
 
                 
@@ -545,9 +545,9 @@ int main (int argc, char *argv[])
               $$$*/
     }
     
-    FILE* _file = fopen("timeRecords.1.4.4.128.txt","w+");
+    FILE* _file = fopen("timeRecords.1.2.2.128.txt","w+");
 
-    for(int i=0; i<index; i++)
+    for(int i=0; i<index_id; i++)
     {
           fprintf(_file, "%d,%d,%f\n", i, record_list[i].pos, record_list[i].time_stamp);
     }
