@@ -14,10 +14,14 @@ public class FString{
     int currentSize;
     byte[] data;
 
-    public void init( int maxSize ) throws InstantiationException,IllegalAccessException,InaccessibleAreaException{
+    public void init( int maxSize ){// throws InstantiationException,IllegalAccessException,InaccessibleAreaException{
         this.maxSize = maxSize;
         this.currentSize = 0;
-        this.data = (byte[]) MemoryArea.getMemoryArea(this).newArray( byte.class , maxSize );
+        try{
+            this.data = (byte[]) MemoryArea.getMemoryArea(this).newArray( byte.class , maxSize );
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
     }
 
     public void append( byte[] data ){
