@@ -52,35 +52,6 @@
                 <include name="${package.rel.dir}/**.java"/>
              </patternset> 
       </javac>
-
-<!--
-
-      <jar 
-        jarfile="${zen.libdir}/hello_world.jar" 
-        basedir="${zen.classdir}" 
-        includes="demo/hello/**"
-        />
-
-      <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate"/>
-      <jRate
-            optimizeLevel="2"
-            libDirs="${zen.jRateLibDir}"
-            additionalLinkOptions="-L${zen.libdir} -lZen"
-            destdir="${package.dir}"
-            out="${package.dir}/client"
-            main="demo.hello.Client"
-            debug="true">
-            <fileset dir="${zen.srcdir}">
-                <patternset>
-                    <include name="demo/hello/**.java"/>
-                </patternset>
-            </fileset>
-            <fileset dir="${zen.gendir}">
-                <patternset>
-                    <include name="demo/hello/**.java"/>
-                </patternset>
-            </fileset>
-      </jRate>-->
    </target>
 
     <target name="server">

@@ -18,13 +18,19 @@ import org.omg.Messaging.*;
 
 public class Client implements Runnable
 {
+    String [] args;
+
     public static void main(String[] args)
     {
         System.out.println( "[client] =====================Creating RT Thread in client==========================" );
         RealtimeThread rt = new RealtimeThread((java.lang.Object)null,(java.lang.Object)null,(java.lang.Object)null,
-                            new LTMemory(3000,30000),(java.lang.Object)null,new Client());
+                            new LTMemory(3000,30000),(java.lang.Object)null,new Client(args));
         System.out.println( "[client] =====================Starting RT Thread in client==========================" );
         rt.start();
+    }
+
+    public Client(String [] args){
+        this.args = args;
     }
 
     public void run()
@@ -33,38 +39,11 @@ public class Client implements Runnable
         {
             System.out.println( "[client] =====================Calling ORB Init in client============================" );
             ORB orb = ORB.init((String[])null, null);
-            System.out.println( "[client] =====================ORB Init complete in client===========================" );
-
-            RTORB rtorb = RTORBHelper.narrow(orb.resolve_initial_references ("RTORB"));
-
-            ProtocolProperties tcp_properties = rtorb.create_tcp_protocol_properties (
-                    64 * 1024, // send buffer
-                    64 * 1024, // recv buffer
-                    false, // keep alive
-                    true, // dont_route
-                    true); // no_delay
-
-            Protocol[] plist = new Protocol[1];
-            //plist[0].protocol_type = MY_PROTOCOL_TAG;
-            //plist[0].trans_protocol_props =// Use implementation specific interface
-            plist[0] = new Protocol(org.omg.IOP.TAG_INTERNET_IOP.value, null, tcp_properties);
-            ClientProtocolPolicy cpp = rtorb.create_client_protocol_policy(plist);
-
-            Policy[] policies = new Policy[1];
-            policies[0] = cpp;
-
-
-            PolicyManager policyManager = PolicyManagerHelper.narrow(orb.resolve_initial_references ("ORBPolicyManager"));
-            //can be ADD_OVERRIDE or SET_OVERRIDE
-            policyManager.set_policy_overrides(policies,SetOverrideType.ADD_OVERRIDE);
-
-
-            System.out.println( "[client] =====================Policy creation complete===========================" );
-
 
             String ior = "";
             //File iorfile = new File( "ior.txt" );
-            File iorfile = new File( "C:\\ACE_wrappers\\TAO\\tests\\RTCORBA\\Client_Propagated\\Release\\test.ior");
+            //File iorfile = new File( "C:\\ACE_wrappers\\TAO\\tests\\RTCORBA\\Client_Propagated\\Release\\test.ior");
+            File iorfile = new File( "C:/ACE_wrappers/TAO/tests/RTCORBA/Client_Propagated/Release/test.ior");
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
             ior = br.readLine();
             org.omg.CORBA.Object object = orb.string_to_object(ior);
@@ -80,16 +59,6 @@ public class Client implements Runnable
 
             //should create a better way of getting the PriorityMapping
             PriorityMapping pmap = new edu.uci.ece.zen.orb.PriorityMappingImpl();
-/*
-            for(int i = 0; i < 13; ++i){
-                pmap.to_CORBA ((short)(i), new org.omg.CORBA.ShortHolder());
-                //pmap.to_native ((short)(i*1), new org.omg.CORBA.ShortHolder());
-            }
-            for(int i = 0; i < 400; ++i){
-                //pmap.to_CORBA ((short)(i*1), new org.omg.CORBA.ShortHolder());
-                pmap.to_native ((short)(i*100), new org.omg.CORBA.ShortHolder());
-            }
-*/
 
             org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(orb.resolve_initial_references("RTCurrent"));
 
@@ -100,7 +69,6 @@ public class Client implements Runnable
             if (!pmap.to_CORBA (native_priority, desired_priority))
                 System.out.println("[client] Cannot convert native priority " + native_priority + " to corba priority");
 
-            long start = System.currentTimeMillis();
             for( int i=0;i<3;i++ ){
 
                 rtcur.the_priority(desired_priority.value);
@@ -111,11 +79,7 @@ public class Client implements Runnable
                 server.test_method(desired_priority.value);
 
                 desired_priority.value++;
-
             }
-            long end = System.currentTimeMillis();
-
-            System.err.println( 10000/((end-start)/1000.0) );
             System.exit(0);
         }
         catch (Exception e)
