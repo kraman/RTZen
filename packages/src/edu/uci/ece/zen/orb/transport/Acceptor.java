@@ -10,6 +10,7 @@ import org.omg.IOP.TaggedProfile;
 
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 public abstract class Acceptor {
     protected edu.uci.ece.zen.orb.ORB orb;
@@ -44,7 +45,7 @@ public abstract class Acceptor {
             try {
                 acceptorLogic.wait();
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, getClass(), "shutdown", e);
             }
         }
     }
@@ -71,8 +72,8 @@ public abstract class Acceptor {
             prunnable.init(iiopMajorVersion, iiopMinorVersion, objKey, this);
             clientRegion.executeInArea(prunnable);
             return prunnable.getRetVal();
-        } catch (Exception iae) {
-            iae.printStackTrace();
+        } catch (Exception e) {
+            ZenProperties.logger.log(Logger.WARN, getClass(), "getProfile", e);
         }
         return null;
     }
@@ -101,7 +102,7 @@ class AcceptorLogic implements Runnable {
                 eir.init(runnable, transportMem);
                 acc.orb.orbImplRegion.executeInArea(eir);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
             }
         }
 

@@ -1,5 +1,8 @@
 package edu.uci.ece.zen.orb.transport.iiop;
 
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
+
 public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
     public Connector() {
     }
@@ -20,7 +23,7 @@ public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
                         .newInstance(
                                 edu.uci.ece.zen.orb.transport.iiop.Connector.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, Connector.class, "instance", e);
             }
         }
         return _instance;

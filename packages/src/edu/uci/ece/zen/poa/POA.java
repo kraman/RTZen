@@ -101,7 +101,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
                 unusedFacades.enqueue(imm
                         .newInstance(edu.uci.ece.zen.poa.POA.class));
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, POA.class, "static <init>", e);
             System.exit(-1);
         }
     }
@@ -170,7 +170,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
         try {
             orb.parentMemoryArea.executeInArea(eir2);
         } catch (Exception e2) {
-            e2.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "init", e2);
         }
 
         poaState = POA.CREATION_COMPLETE;
@@ -243,7 +243,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
         try {
             orb.orbImplRegion.executeInArea(eir1);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", e);
         }
         //TODO: Cant throw exceptions here....marchall the exception into a
         // reply message and send back
@@ -278,7 +278,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
         try {
             orb.parentMemoryArea.executeInArea(eir2);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "servant_to_reference", e);
         }
         switch (r.exception) {
             case POARunnable.NoException:

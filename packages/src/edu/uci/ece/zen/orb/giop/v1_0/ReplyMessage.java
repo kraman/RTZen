@@ -6,6 +6,8 @@ import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 /**
  * Reply messages as described in section 15.4.3 of the CORBA v3.0 Spec.
@@ -41,7 +43,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
                     .newInstance(ReplyMessage.class);
             return rm;
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, ReplyMessage.class, "getMessage", e);
         }
         return null;
     }

@@ -5,6 +5,8 @@ import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
 
 import edu.uci.ece.zen.utils.WriteBuffer;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 public class SendMessageRunnable implements Runnable {
     WriteBuffer msg;
@@ -19,7 +21,7 @@ public class SendMessageRunnable implements Runnable {
                 inst = (SendMessageRunnable) ImmortalMemory.instance()
                         .newInstance(SendMessageRunnable.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, SendMessageRunnable.class, "instance", e);
             }
         }
         return inst;

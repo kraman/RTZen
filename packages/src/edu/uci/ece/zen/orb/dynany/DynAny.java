@@ -354,7 +354,7 @@ public class DynAny extends org.omg.CORBA.LocalObject implements org.omg.Dynamic
         }
         // Shouldn't happen
         catch (org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode it) {
-            it.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "copy", e);
             return null;
         }
     }
@@ -500,7 +500,7 @@ public class DynAny extends org.omg.CORBA.LocalObject implements org.omg.Dynamic
         }
         // Never happens, for type.length() method
         catch ( org.omg.CORBA.TypeCodePackage.BadKind bke) {
-            bke.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "insert_string", bke);
         }
     }
 
@@ -565,7 +565,7 @@ public class DynAny extends org.omg.CORBA.LocalObject implements org.omg.Dynamic
         }
         // Never happens, for type.length() method
         catch ( org.omg.CORBA.TypeCodePackage.BadKind bke) {
-            bke.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "insert_wstring", bke);
         }
     }
 
@@ -759,7 +759,7 @@ public class DynAny extends org.omg.CORBA.LocalObject implements org.omg.Dynamic
 
         }
         catch (org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode it) {
-            it.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "get_dyn_any", it);
         }
         return null;
     }

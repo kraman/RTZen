@@ -8,6 +8,7 @@ import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 /**
  * @author Bruce Miller
@@ -39,7 +40,7 @@ public class RequestMessage extends
                     .newInstance(RequestMessage.class);
             return rm;
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, RequestMessage.class, "getMessage", e);
         }
         return null;
     }

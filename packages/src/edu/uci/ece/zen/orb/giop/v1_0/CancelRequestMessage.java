@@ -6,6 +6,8 @@ import org.omg.GIOP.CancelRequestHeaderHelper;
 
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.ReadBuffer;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 /**
  * Represents header of GIOP CancelRequest message as described in CORBA Spec
@@ -48,7 +50,7 @@ public class CancelRequestMessage extends
                     .instance().newInstance(CancelRequestMessage.class);
             return crm;
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, CancelRequestMessage.class, "getMessage", e);
         }
         return null;
     }

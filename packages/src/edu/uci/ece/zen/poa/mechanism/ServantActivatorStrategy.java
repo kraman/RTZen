@@ -20,6 +20,7 @@ import edu.uci.ece.zen.poa.POAImpl;
 import edu.uci.ece.zen.poa.POARunnable;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 public class ServantActivatorStrategy extends ServantManagerStrategy {
 
@@ -293,7 +294,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
                 invokeHandler = (InvokeHandler) this.manager.incarnate(oid
                         .getData(), poa);
             } catch (Exception fre) {
-                fre.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, getClass(), "incarnate", fre);
             }
 
             if (this.uniquenessStrategy

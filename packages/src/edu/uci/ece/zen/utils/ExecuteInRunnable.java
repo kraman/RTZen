@@ -28,11 +28,9 @@ public class ExecuteInRunnable implements Runnable {
     }
 
     public void run() {
-        if (ZenProperties.devDbg) {
-            System.out.println("utils.ExecuteInRunnable, the current"
+        ZenProperties.logger.log("utils.ExecuteInRunnable, the current"
                     + " memory region is "
                     + javax.realtime.RealtimeThread.getCurrentMemoryArea());
-        }
         area.enter(runnable);
     }
 }

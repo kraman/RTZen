@@ -3,6 +3,8 @@ package edu.uci.ece.zen.orb.any.monolithic;
 
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.CDRInputStream;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 /**
  * Monolithic implementation of the IDL type Any.
@@ -448,7 +450,7 @@ public final class Any extends edu.uci.ece.zen.orb.any.AnyStrategy {
             } 
             catch( Exception e )
             {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, getClass(), "write_value", e);
                 throw new org.omg.CORBA.INTERNAL( e.getMessage());
             }
         case org.omg.CORBA.TCKind._tk_value:

@@ -3,6 +3,8 @@ package edu.uci.ece.zen.orb.giop.v1_0;
 import javax.realtime.ImmortalMemory;
 
 import edu.uci.ece.zen.utils.FString;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 /**
  * Struct definition : ReplyHeader_1_0
@@ -19,7 +21,7 @@ public final class ReplyHeader implements org.omg.CORBA.portable.IDLEntity {
             if (rh == null) rh = (ReplyHeader) ImmortalMemory.instance()
                     .newInstance(ReplyHeader.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, ReplyHeader.class, "instance", e);
         }
 
         return rh;

@@ -18,6 +18,7 @@ import edu.uci.ece.zen.poa.SynchronizedInt;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 /**
  * <code> ActiveObjectMapOnlyStrategy </code> is one of the three policy
@@ -150,7 +151,7 @@ public final class ActiveObjectMapOnlyStrategy extends
             if (pimpl.poaCurrent.get() == null) pimpl.poaCurrent
                     .set(poa.poaMemoryArea.newInstance(POACurrent.class));
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", e);
         }
 
         ((POACurrent) pimpl.poaCurrent.get()).init(poa, okey,

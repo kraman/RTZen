@@ -52,10 +52,10 @@ public class DynUnion extends DynAny implements org.omg.DynamicAny.DynUnion {
         }
         // Must be caught from member_count(), but should never be thrown
         catch (org.omg.CORBA.TypeCodePackage.BadKind bke) {
-            bke.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "findSelectedLabelIndex", bke);
         }
         catch (org.omg.CORBA.TypeCodePackage.Bounds be) {
-            be.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "findSelectedLabelIndex", be);
         }
         return -1;
     }

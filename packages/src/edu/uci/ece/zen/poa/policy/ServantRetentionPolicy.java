@@ -7,6 +7,8 @@ package edu.uci.ece.zen.poa.policy;
 
 import org.omg.PortableServer.ServantRetentionPolicyValue;
 
+import edu.uci.ece.zen.utils.ZenProperties;
+
 /**
  * The class <code>ServantRetentionPolicy</code> is the ZEN specific
  * implementation of ServantRetentionPolicy.
@@ -37,7 +39,7 @@ public class ServantRetentionPolicy extends org.omg.CORBA.LocalObject implements
     public ServantRetentionPolicy(
             org.omg.PortableServer.ServantRetentionPolicyValue _value) {
         this.value = _value;
-        System.out.println("Created RT-policy with value " + _value.value());
+        ZenProperties.logger.log("Created RT-policy with value " + _value.value());
     }
 
     /**

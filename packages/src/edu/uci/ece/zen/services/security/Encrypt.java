@@ -16,15 +16,15 @@ public class Encrypt {
         for (int i = 0; i < providers.length; i++) {
             Provider provider = providers[i];
 
-            System.out.println("Provider name: " + provider.getName());
-            System.out.println("Provider information: " + provider.getInfo());
-            System.out.println("Provider version: " + provider.getVersion());
+            ZenProperties.logger.log("Provider name: " + provider.getName());
+            ZenProperties.logger.log("Provider information: " + provider.getInfo());
+            ZenProperties.logger.log("Provider version: " + provider.getVersion());
             Set entries = provider.entrySet();
 
             Iterator iterator = entries.iterator();
 
             while (iterator.hasNext()) {
-                System.out.println("Property entry: " + iterator.next());
+                ZenProperties.logger.log("Property entry: " + iterator.next());
             }
         }
     }
@@ -38,19 +38,19 @@ public class Encrypt {
             Cipher cipher = Cipher.getInstance("DES");
 
             byte[] data = "Encrypt Me !".getBytes();
-            System.out.println("Original data : " + new String(data));
+            ZenProperties.logger.log("Original data : " + new String(data));
 
             cipher.init(Cipher.ENCRYPT_MODE, key);
             byte[] result = cipher.doFinal(data);
-            System.out.println("Encrypted data: " + new String(result));
+            ZenProperties.logger.log("Encrypted data: " + new String(result));
 
             cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] original = cipher.doFinal(result);
-            System.out.println("Decrypted data: " + new String(original));
+            ZenProperties.logger.log("Decrypted data: " + new String(original));
         }
 
         catch (Exception exception) {
-            System.out.println("Exception");
+            ZenProperties.logger.log(Logger.WARN, getClass(), "main", exception);
         }
     }
 }

@@ -4,6 +4,8 @@ import javax.realtime.ImmortalMemory;
 
 import edu.oswego.cs.dl.util.concurrent.Semaphore;
 import edu.uci.ece.zen.orb.giop.GIOPMessage;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 public class TwoWayWaitingStrategy extends WaitingStrategy {
     Semaphore clientSem;
@@ -18,7 +20,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
                 inst = (TwoWayWaitingStrategy) ImmortalMemory.instance()
                         .newInstance(TwoWayWaitingStrategy.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, TwoWayWaitingStrategy.class, "instance", e);
             }
         }
         return inst;
@@ -58,7 +60,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
         try {
             clientSem.acquire();
         } catch (InterruptedException ie) {
-            ie.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "waitForReply", ie);
         }
         return replyMsg;
     }

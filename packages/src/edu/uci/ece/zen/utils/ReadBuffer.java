@@ -21,7 +21,7 @@ public class ReadBuffer {
             bufferCache = (Queue) ImmortalMemory.instance().newInstance(
                     Queue.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, "static <init>", e);
             System.exit(-1);
         }
     }
@@ -36,7 +36,7 @@ public class ReadBuffer {
                 return ret;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class, "instance", e);
             System.exit(-1);
         }
         return null;
@@ -63,7 +63,7 @@ public class ReadBuffer {
             buffers = (Vector) ImmortalMemory.instance().newInstance(
                     Vector.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, getClass(), "<init>", e);
             System.exit(-1);
         }
     }
@@ -140,7 +140,7 @@ public class ReadBuffer {
             //System.out.println( "Limit is " + limit );
 
         } catch (java.io.IOException ioex) {
-            ioex.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "appendFromStream", ioex);
         }
     }
 

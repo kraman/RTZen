@@ -92,7 +92,7 @@ public class ActiveDemuxTable {
                 push(data[i]);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "init", e);
         }
     }
 

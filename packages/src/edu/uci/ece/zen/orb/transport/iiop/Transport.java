@@ -81,7 +81,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
                 //don't know how to set dont_route
             }
         } catch (java.net.SocketException se) {
-            se.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "setSockProps", se);
         }
     }
 }

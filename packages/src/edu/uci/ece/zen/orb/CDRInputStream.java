@@ -7,6 +7,8 @@ import javax.realtime.ImmortalMemory;
 
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ReadBuffer;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     ReadBuffer buffer;
@@ -20,7 +22,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
             cdrInputStreamCache = (Queue) ImmortalMemory.instance()
                     .newInstance(Queue.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, CDRInputStream.class, "static <init>", e);
             System.exit(-1);
         }
     }
@@ -31,7 +33,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
                     .instance().newInstance(CDRInputStream.class);
             else return (CDRInputStream) cdrInputStreamCache.dequeue();
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, CDRInputStream.class, "instance", e);
             System.exit(-1);
         }
         return null;

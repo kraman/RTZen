@@ -75,7 +75,7 @@ public abstract class DynSeqOrArray extends DynAny {
       }
       // Required catch for TypeCode method content_type()
       catch( org.omg.CORBA.TypeCodePackage.BadKind bk ) {
-          bk.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "from_any", bk);
       }
 
       // CORBA v2.3 Spec p 9-11 says position set to 0 for value that have components, -1 otherwise
@@ -135,7 +135,7 @@ public abstract class DynSeqOrArray extends DynAny {
             }
             // Required for create_dyn_any_from_type_code method, but doesn't actually happen.
             catch( Exception e ) {
-                e.printStackTrace();
+				ZenProperties.logger.log(Logger.WARN, getClass(), "current_component", e);
             }
         }
         // Else, returns null
@@ -215,7 +215,7 @@ public abstract class DynSeqOrArray extends DynAny {
         }
         // Required due to create_dyn_any call, but never really happens
         catch( Exception e ) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "get_elements_as_dyn_any", e);
         }
         return retArray;
    }

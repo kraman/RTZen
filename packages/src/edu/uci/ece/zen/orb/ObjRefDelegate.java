@@ -31,7 +31,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             objRefDelegateCache = (Queue) ImmortalMemory.instance()
                     .newInstance(Queue.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, ObjRefDelegate.class, "static <init>", e);
             System.exit(-1);
         }
     }
@@ -42,7 +42,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 return (ObjRefDelegate) ImmortalMemory.instance().newInstance(
                         ObjRefDelegate.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.FATAL, ObjRefDelegate.class, "instance", e);
                 System.exit(-1);
             }
         } else return (ObjRefDelegate) objRefDelegateCache.dequeue();

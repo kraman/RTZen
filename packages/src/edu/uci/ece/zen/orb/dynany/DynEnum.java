@@ -24,7 +24,7 @@ public class DynEnum extends DynAny implements org.omg.DynamicAny.DynEnum {
             enumerator = 0;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "<init>", e);
         }
 
     }

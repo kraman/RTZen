@@ -33,7 +33,7 @@ public class LocateRequestMessage extends  edu.uci.ece.zen.orb.giop.type.LocateR
             return lrm;
         }catch (Exception e)
         {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, LocateRequestMessage.class, "getMessage", e);
         }
         return null;
     }

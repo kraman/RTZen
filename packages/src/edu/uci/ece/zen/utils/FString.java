@@ -24,7 +24,7 @@ public class FString {
             fs = (FString) ImmortalMemory.instance().newInstance(FString.class);
             fs.init(128);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, FString.class, "fromImmortal", e);
         }
         return fs;
     }

@@ -82,7 +82,7 @@ public abstract class Transport implements Runnable {
                 waitObj.wait();
             }
         } catch (InterruptedException ie) {
-            ie.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "run", ie);
         }
     }
 
@@ -113,7 +113,7 @@ public abstract class Transport implements Runnable {
             java.io.OutputStream out = getOutputStream();
             msg.dumpBuffer(out);
         } catch (java.io.IOException ioex) {
-            ioex.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "send", ioex);
         }
     }
 }
@@ -171,7 +171,6 @@ class MessageProcessor implements Runnable {
                 ZenProperties.logger.log(Logger.SEVERE,
                         getClass(),
                         "run", "Could not process message", e);
-                e.printStackTrace();
             }
             gmr.setRequestScope(null);
             //ORB.freeScopedRegion( messageScope );

@@ -55,7 +55,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
             return rm;
         }catch (Exception e)
         {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, RequestMessage.class, "getMessage", e);
         }
         return null;
     }

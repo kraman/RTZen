@@ -44,8 +44,7 @@ public class POAServerRequestHandler extends
      * </p>
      */
     public void handleRequest(RequestMessage req) {
-        if (ZenProperties.devDbg) System.out
-                .println("POAServerRequestHandler.handleRequest: Got a request to process: "
+        ZenProperties.logger.log("POAServerRequestHandler.handleRequest: Got a request to process: "
                         + req);
 
         // gt the index into the Active Map
@@ -58,9 +57,9 @@ public class POAServerRequestHandler extends
 
         POA poa = null;
 
-        if (ZenProperties.devDbg) System.out.println("IOR: " + index + ","
+        ZenProperties.logger.log("IOR: " + index + ","
                 + genCount);
-        if (ZenProperties.devDbg) System.out.println("POA: " + index + ","
+        ZenProperties.logger.log("POA: " + index + ","
                 + demuxTable.getGenCount(index));
 
         //TODO: Cant throw exception here. marshall and send back

@@ -494,12 +494,12 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
                 
         }      
         catch ( org.omg.CORBA.TypeCodePackage.Bounds be ) {
-            be.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "equal", be);
             return false;
         }
         
         catch ( org.omg.CORBA.TypeCodePackage.BadKind bk ) {
-            bk.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "equal", bk);
             return false;
         }
             
@@ -655,12 +655,12 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
         } // end of try {
         
         catch ( org.omg.CORBA.TypeCodePackage.Bounds be ) {
-            be.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "equivalent", be);
             return false;
         }
         
         catch ( org.omg.CORBA.TypeCodePackage.BadKind bk ) {
-            bk.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "equivalent", bk);
             return false;
         }
         

@@ -9,6 +9,8 @@ import edu.uci.ece.zen.orb.ResponseHandler;
 import edu.uci.ece.zen.orb.giop.type.RequestMessage;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.WriteBuffer;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 public class MSGRunnable implements Runnable {
     RequestMessage rm;
@@ -61,7 +63,7 @@ public class MSGRunnable implements Runnable {
             try {
                 orb.orbImplRegion.executeInArea(eir);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
             }
         }
         reply.free();

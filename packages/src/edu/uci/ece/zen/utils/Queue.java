@@ -30,7 +30,7 @@ public class Queue {
                 ret = (QueueNode) MemoryArea.getMemoryArea(this).newInstance(
                         QueueNode.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.FATAL, getClass(), "getNode", e);
                 System.exit(-1);
             }
             else {

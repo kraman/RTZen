@@ -10,6 +10,7 @@ import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.poa.mechanism.PolicyUtils;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 /**
  * This class POAManager is managing the POA operations. This class
@@ -42,7 +43,7 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
                 unusedFacades.enqueue(imm
                         .newInstance(edu.uci.ece.zen.poa.POAManager.class));
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, POAManager.class, "static <init>", e);
             System.exit(-1);
         }
     }

@@ -2,6 +2,9 @@ package edu.uci.ece.zen.orb.giop.v1_1;
 
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.ReadBuffer;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
+
 import javax.realtime.ImmortalMemory;
 
 // Same as for version 1.0
@@ -28,7 +31,7 @@ public class CancelRequestMessage extends edu.uci.ece.zen.orb.giop.type.CancelRe
             return crm;
         }catch (Exception e)
         {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, CancelRequestMessage.class, "getMessage", e);
         }
         return null;
     }

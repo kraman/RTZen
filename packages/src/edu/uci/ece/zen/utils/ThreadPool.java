@@ -188,7 +188,7 @@ class Lane {
             }
             return runnable.execute(task);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "getLeaderAndExecute", e);
             return false;
         }
     }
@@ -303,7 +303,7 @@ class ThreadSleepRunnable implements Runnable {
                 try {
                     lane.tp.orb.orbImplRegion.executeInArea(eir);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
                 }
                 //System.out.println( "Returned executeInArea on
                 // HandleRequestRunnable" );
@@ -315,7 +315,7 @@ class ThreadSleepRunnable implements Runnable {
                     "Recieved an Interrupt exception. Shutting down.");
             //Ignore. Expected while shutting down.
         } catch (Exception e1) {
-            e1.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "run", e1);
         }
     }
 

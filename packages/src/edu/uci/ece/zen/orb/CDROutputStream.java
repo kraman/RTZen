@@ -4,6 +4,8 @@ import javax.realtime.ImmortalMemory;
 
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.WriteBuffer;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     WriteBuffer buffer;
@@ -16,7 +18,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             cdrCache = (Queue) ImmortalMemory.instance().newInstance(
                     Queue.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, CDROutputStream.class, "static <init>", e);
             System.exit(-1);
         }
     }
@@ -27,7 +29,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
                     .instance().newInstance(CDROutputStream.class);
             else return (CDROutputStream) cdrCache.dequeue();
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, CDROutputStream.class, "instance", e);
             System.exit(-1);
         }
         return null;
@@ -57,11 +59,11 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     public WriteBuffer getBuffer() {
         return buffer;
     }
-
+/*
     public void printWriteBuffer() {
         buffer.printBuffer();
     }
-
+*/
     /**
      * Writes an octet to the output stream.
      * 

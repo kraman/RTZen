@@ -36,7 +36,7 @@ public class DynSequence extends DynSeqOrArray implements org.omg.DynamicAny.Dyn
       }
       // Required for TypeCode length() and content_type() methods
       catch( org.omg.CORBA.TypeCodePackage.BadKind bk ) {
-         bk.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "<init>", bk);
       }
    }
 
@@ -123,7 +123,7 @@ public class DynSequence extends DynSeqOrArray implements org.omg.DynamicAny.Dyn
            }
            // Thrown by dynAnyFactory
            catch( org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode itce ) {
-               itce.printStackTrace();
+               ZenProperties.logger.log(Logger.WARN, getClass(), "set_length", itce);
            }
            
        }

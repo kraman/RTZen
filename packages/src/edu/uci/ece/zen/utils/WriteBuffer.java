@@ -4,6 +4,9 @@ import java.util.Vector;
 
 import javax.realtime.ImmortalMemory;
 
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
+
 public class WriteBuffer {
     private static Queue bufferCache;
 
@@ -20,7 +23,7 @@ public class WriteBuffer {
             bufferCache = (Queue) ImmortalMemory.instance().newInstance(
                     Queue.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "static <init>", e);
             System.exit(-1);
         }
     }
@@ -31,7 +34,7 @@ public class WriteBuffer {
                     .instance().newInstance(WriteBuffer.class);
             else return (WriteBuffer) bufferCache.dequeue();
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "instance", e);
             System.exit(-1);
         }
         return null;
@@ -56,24 +59,24 @@ public class WriteBuffer {
             buffers = (Vector) ImmortalMemory.instance().newInstance(
                     Vector.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, getClass(), "<init>", e);
             System.exit(-1);
         }
     }
-
+/*
     public void printBuffer() {
 
-        System.out.println("Here is in the printBuffer of WriteBuffer...");
+        ZenProperties.logger.log("Here is in the printBuffer of WriteBuffer...");
         int i, j;
         for (i = 0; i < buffers.size(); i++) {
             byte[] buffer = (byte[]) buffers.elementAt(i);
             for (j = 0; j < buffer.length; j++) {
-                System.out.println(buffer[j]);
+                ZenProperties.logger.log(buffer[j]);
             }
         }
 
     }
-
+*/
     public void init() {
         position = limit = capacity = 0;
         buffers.removeAllElements();
@@ -278,7 +281,7 @@ public class WriteBuffer {
 
         pad(WriteBuffer.LONGLONG);
         byte b1 = (byte) ((v >>> 56) & 0xFF);
-        System.out.println(b1);
+        ZenProperties.logger.log(b1 + "");
         byte b2 = (byte) ((v >>> 48) & 0xFF);
         byte b3 = (byte) ((v >>> 40) & 0xFF);
         byte b4 = (byte) ((v >>> 32) & 0xFF);

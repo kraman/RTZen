@@ -40,11 +40,11 @@ public class DynArray extends DynSeqOrArray implements org.omg.DynamicAny.DynArr
             }
         }
         catch( org.omg.CORBA.TypeCodePackage.BadKind bk ) {
-            bk.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "<init>", bk);
         }
         catch( org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode itc ) {
             // Shouldn't happen.  Required for factory method.
-            itc.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "<init>", itc);
         }
     }
 

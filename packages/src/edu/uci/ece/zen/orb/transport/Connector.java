@@ -5,6 +5,8 @@ import javax.realtime.ScopedMemory;
 import edu.uci.ece.zen.orb.ORBImpl;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 public abstract class Connector {
     public Connector() {
@@ -28,7 +30,7 @@ public abstract class Connector {
         try {
             orb.parentMemoryArea.executeInArea(eir);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "connect", e);
         }
         orbImpl.eirCache.enqueue(eir);
         orbImpl.eirCache.enqueue(eir2);

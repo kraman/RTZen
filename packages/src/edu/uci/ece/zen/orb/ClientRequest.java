@@ -45,7 +45,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
                 inst = (ClientRequest) ImmortalMemory.instance().newInstance(
                         ClientRequest.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, ClientRequest.class, "instance", e);
             }
         }
         return inst;
@@ -373,7 +373,7 @@ class MessageComposerRunnable implements Runnable {
                 inst = (MessageComposerRunnable) ImmortalMemory.instance()
                         .newInstance(MessageComposerRunnable.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.FATAL, MessageComposerRunnable.class, "instance", e);
             }
         }
         return inst;

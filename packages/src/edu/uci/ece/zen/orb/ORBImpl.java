@@ -84,7 +84,7 @@ public class ORBImpl {
                     0//max_request_buffer_size
                     );
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "<init>", e);
         }
 
         eirCache = new Queue();
@@ -102,7 +102,7 @@ public class ORBImpl {
                 ret.init(orbFacade);
                 policyCurrent.set(ret);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, getClass(), "getPolicyCurrent", e);
             }
         }
 
@@ -120,7 +120,7 @@ public class ORBImpl {
                 ret.init(orbFacade);
                 rtCurrent.set(ret);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, getClass(), "getRTCurrent", e);
             }
         }
 

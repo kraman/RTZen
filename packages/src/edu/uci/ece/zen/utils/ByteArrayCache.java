@@ -37,7 +37,7 @@ public class ByteArrayCache {
             _instance = (ByteArrayCache) ImmortalMemory.instance().newInstance(
                     ByteArrayCache.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, ByteArrayCache.class, "instance", e);
             System.exit(-1);
         }
         return _instance;
@@ -53,7 +53,7 @@ public class ByteArrayCache {
             imm = ImmortalMemory.instance();
             byteBuffers = (Queue) imm.newInstance(Queue.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "<init>", e);
             System.exit(-1);
         }
     }
@@ -73,7 +73,7 @@ public class ByteArrayCache {
                 return ret;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, getClass(), "getByteArray", e);
             System.exit(-1);
         }
         return null;

@@ -2,6 +2,9 @@ package edu.uci.ece.zen.orb.giop;
 
 import javax.realtime.ImmortalMemory;
 
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
+
 /**
  * Inner class used to represent the information parsend from a GIOP message
  * header.
@@ -32,7 +35,7 @@ class GIOPHeaderInfoHelper {
                     .newInstance(GIOPHeaderInfo.class);
             return ghi;
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, GIOPHeaderInfoHelper.class, "instance", e);
         }
         return null;
     }

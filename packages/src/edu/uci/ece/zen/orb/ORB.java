@@ -72,7 +72,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                 // java.net.InetSocketAddress(java.net.InetAddress.getLocalHost().getHostAddress(),0);
                 sockAddr = java.net.InetAddress.getLocalHost();
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, ORB.class, "static <init>", e);
             }
 
             //if(edu.uci.ece.zen.utils.ZenProperties.memDbg)
@@ -103,7 +103,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                     .getGlobalProperty("doc.zen.orb.maxConnectionsPerORB",
                             "100"));
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.FATAL, ORB.class, "static <init>", e);
             System.exit(-1);
         }
     }
@@ -224,7 +224,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                 ret = (ExecuteInRunnable) ImmortalMemory.instance()
                         .newInstance(ExecuteInRunnable.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, getClass(), "getEIR", e);
             }
         }
         return ret;
@@ -240,7 +240,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                     .newInstance(TPRunnable.class);
             return tpr;
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "getTPR", e);
         }
         return null;
     }
@@ -304,7 +304,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             try {
                 orbRunningLock.wait();
             } catch (InterruptedException ie) {
-                ie.printStackTrace();
+                ZenProperties.logger.log(Logger.WARN, getClass(), "run", ie);
             }
         }
     }
@@ -531,7 +531,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             waiterRegistry.registerWaiter(key, (ScopedMemory) RealtimeThread
                     .getCurrentMemoryArea());
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "registerWaiter", e);
         }
     }
 
@@ -539,7 +539,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         try {
             waiterRegistry.remove(key);
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "releaseWaiter", e);
         }
     }
 

@@ -30,7 +30,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
             return rm;
         }catch (Exception e)
         {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, ReplyMessage.class, "getMessage", e);
         }
         return null;
     }

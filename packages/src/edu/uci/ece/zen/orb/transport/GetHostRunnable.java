@@ -2,6 +2,9 @@ package edu.uci.ece.zen.orb.transport;
 
 import java.net.InetAddress;
 
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
+
 class GetHostRunnable implements Runnable {
     public InetAddress inetaddr;
 
@@ -16,7 +19,7 @@ class GetHostRunnable implements Runnable {
             inetaddr = InetAddress.getByName(new String(host.getBytes()));
             inetaddr.getHostAddress();
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
         }
     }
 }
