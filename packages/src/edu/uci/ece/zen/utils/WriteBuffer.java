@@ -137,10 +137,10 @@ public class WriteBuffer{
     }
 
     public void dumpBuffer( WriteBuffer out ){
-        for( int i=0;i<limit/1024-1;i++ ){
+        for( int i=0;i<position/1024-1;i++ ){
             out.writeByteArray( (byte[])buffers.elementAt(i) , 0 , 1024 );
         }
-        out.writeByteArray( (byte[])buffers.elementAt(((int)(limit/1024))) , 0 , (int)(limit%1024) );
+        out.writeByteArray( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) );
     }
 
     private void dumpByteArray( byte[] arr , int off , int len , java.io.OutputStream out ) throws java.io.IOException{
@@ -188,19 +188,19 @@ public class WriteBuffer{
 
     public ReadBuffer getReadBuffer(){
         ReadBuffer out = ReadBuffer.instance();
+        out.init();
         for( int i=0;i<position/1024-1;i++ ){
             out.writeByteArray( (byte[])buffers.elementAt(i) , 0 , 1024 );
         }
         out.writeByteArray( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) );
-        WriteBuffer.release( this );
         return out;
     }
 
-    //public ReadBuffer getReadBufferAndFree(){
-    //    ReadBuffer out = ReadBuffer.instance();
-    //    out.init( buffers , position , capacity );
-    //    return out;
-    //}
+    public ReadBuffer getReadBufferAndFree(){
+        ReadBuffer ret = getReadBuffer();
+        free();
+        return ret;
+    }
 
     public void writeShort( short v ){
         pad(WriteBuffer.SHORT);

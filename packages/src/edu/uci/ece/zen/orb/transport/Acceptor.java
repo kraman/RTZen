@@ -18,7 +18,8 @@ public abstract class Acceptor{
 
     public final void startAccepting(){
         acceptorLogic = new AcceptorLogic( this );
-        acceptorLogicThread = new NoHeapRealtimeThread(null,null,null,null,null,acceptorLogic);
+        isActive = true;
+        acceptorLogicThread = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,acceptorLogic);
         acceptorLogicThread.start();
     }
 
@@ -30,32 +31,33 @@ public abstract class Acceptor{
 
     protected final void registerTransport( Transport t ){
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( t );
-        RealtimeThread transportThread = new NoHeapRealtimeThread(null,null,null,null,null,t);
+        RealtimeThread transportThread = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,t);
         transportThread.start();
     }
 
     protected abstract void accept();
     protected abstract void internalShutdown();
 
-    public TaggedProfile getProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion ){
+    private ProfileRunnable prunnable;
+    public synchronized TaggedProfile getProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion ){
         try{
             System.out.println("Acceptor client region: " + clientRegion);
-            ProfileRunnable runnable = (ProfileRunnable)(clientRegion.newInstance( ProfileRunnable.class ));
-            runnable.init( iiopMajorVersion , iiopMinorVersion , objKey, this );
-            clientRegion.executeInArea( runnable );
-            return runnable.getRetVal();
-        }catch(IllegalAccessException iae){
+            if( prunnable == null )
+                prunnable = new ProfileRunnable();
+            prunnable.init( iiopMajorVersion , iiopMinorVersion , objKey, this );
+            clientRegion.executeInArea( prunnable );
+            return prunnable.getRetVal();
+        }catch(Exception iae){
             iae.printStackTrace();
-        }catch(InstantiationException ie){
-            ie.printStackTrace();
-        }catch( InaccessibleAreaException iae2 ){
-            iae2.printStackTrace();
         }
-
         return null;
     }
 
     protected abstract TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey);
+
+    public void finalize(){
+        System.out.println( "Acceptor region has been GC'd" );
+    }
 }
 
 class AcceptorLogic implements Runnable{

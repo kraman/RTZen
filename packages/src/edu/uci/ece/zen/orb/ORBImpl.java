@@ -45,7 +45,7 @@ public class ORBImpl{
             policyManager = (PolicyManagerImpl)(orbFacade.parentMemoryArea.newInstance( PolicyManagerImpl.class ));
             policyManager.init(orbFacade);
             rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance( RTORBImpl.class ));
-            rtorb.init(orbFacade, this);
+            rtorb.init(orbFacade);
 
             rtorb.create_threadpool (0,//stacksize,
                                    10,//static_threads,

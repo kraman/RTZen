@@ -33,6 +33,10 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         this.operation = operation;
         this.responseExpected = responseExpected;
         out = CDROutputStream.instance();
+        
+        System.out.println( "1ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
+        System.out.println( "1ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
+        
         System.out.println( "ClientRequest 1" );
         out.init( orb );
         System.out.println( "ClientRequest 2" );
@@ -49,6 +53,8 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         //TODO:Assemble and write message header and policies here
 
 
+        System.out.println( "2ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
+        System.out.println( "2ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
         if(del.priorityModel == PriorityModel._CLIENT_PROPAGATED && del.serverPriority >= 0){
             contexts = new ServiceContext[1]; //kludge: of course there will be more than just 1
             contexts[0] = new ServiceContext();
@@ -74,6 +80,8 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         System.out.println( "ClientRequest 8" );
         edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructMessage( this , messageId , out );
         System.out.println( "ClientRequest 9" );
+        System.out.println( "3ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
+        System.out.println( "3ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
     }
 
     /**

@@ -99,7 +99,7 @@ class Lane{
 
     private void newThread(){
         ThreadSleepRunnable r = new ThreadSleepRunnable( this );
-        NoHeapRealtimeThread thr = new NoHeapRealtimeThread(null,null,null,null,null,r);
+        NoHeapRealtimeThread thr = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,r);
         thr.setPriority( priority );
         r.setThread( thr );
         r.setNativePriority( priority );

@@ -23,6 +23,7 @@ public final class GIOPMessageFactory
 
     public static GIOPMessage parseStream( ORB orb , Transport trans ) throws java.io.IOException{
         ReadBuffer buffer = ReadBuffer.instance();
+        buffer.init();
 
         GIOPHeaderInfo mainMsgHdr = new GIOPHeaderInfo();
     
@@ -207,11 +208,13 @@ public final class GIOPMessageFactory
      * @param headerInfo GIOPHeaderInfo object to fill with data read from header
     */
     public static void parseStreamForHeader(java.io.InputStream in, GIOPHeaderInfo headerInfo)  throws java.io.IOException{
+        System.out.println( "parseStreamForHeader 1" );
         byte[] header = new byte[12];
         
         int read = 0;
         while( read < 12 )
             read += in.read( header , 0 , 12 );
+        System.out.println( "parseStreamForHeader 2" );
         
         // Bytes 0,1,2,3 should equal 'GIOP'
         if (  header[0] != magic[0]
@@ -221,6 +224,7 @@ public final class GIOPMessageFactory
             {
                 throw new RuntimeException(""); //THROW GIOP Error here
             }
+        System.out.println( "parseStreamForHeader 3" );
         
         headerInfo.giopMajorVersion = header[4];
         headerInfo.giopMinorVersion = header[5];

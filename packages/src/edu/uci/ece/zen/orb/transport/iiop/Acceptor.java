@@ -13,7 +13,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
     public Acceptor( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl ){
         super( orb , orbImpl );
         try{
-            ssock = new java.net.ServerSocket();
+            ssock = new java.net.ServerSocket(0);
         }catch( Exception ex ){
             ZenProperties.logger.log(
                 Logger.WARN,
@@ -61,13 +61,17 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
 
             break;
         }
-
+        
+        WriteBuffer outb = out.getBuffer();
+        ReadBuffer outrb = outb.getReadBuffer();
+        
         TaggedProfile tp = new TaggedProfile();
         tp.tag = TAG_INTERNET_IOP.value;
-        tp.profile_data = new byte[(int)out.getBuffer().getLimit()];
-        out.getBuffer().readByteArray(tp.profile_data, 0 , (int)out.getBuffer().getLimit());
+        tp.profile_data = new byte[(int)outrb.getLimit()];
+        outrb.readByteArray(tp.profile_data, 0 , (int)outrb.getLimit());
 
         out.free();
+        outrb.free();
 
         return tp;
     }

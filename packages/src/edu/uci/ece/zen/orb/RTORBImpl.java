@@ -21,17 +21,15 @@ public class RTORBImpl
     private AcceptorRunnable acceptorRunnable;
 
 
-    public void init(ORB orb, ORBImpl orbImpl){
+    public void init(ORB orb ){
         this.orb = orb;
-        this.orbImpl = orbImpl;
-
 
         //tpr = new ThreadPoolRunnable();
 
         try{
             tpr = (ThreadPoolRunnable)(orb.parentMemoryArea.newInstance( ThreadPoolRunnable.class ));
             acceptorRunnable = (AcceptorRunnable)(orb.parentMemoryArea.newInstance( AcceptorRunnable.class ));
-            acceptorRunnable.init(orb,orbImpl);
+            acceptorRunnable.init(orb);
         }catch(Exception e){
             e.printStackTrace();
         }
