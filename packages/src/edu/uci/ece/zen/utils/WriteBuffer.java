@@ -315,6 +315,7 @@ public class WriteBuffer {
 
             length -= bytesLeft;
             position += bytesLeft;
+            offset += bytesLeft;
         }
     }
 

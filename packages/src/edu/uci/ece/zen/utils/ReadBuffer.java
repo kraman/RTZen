@@ -403,6 +403,7 @@ public class ReadBuffer {
 
             length -= bytesLeft;
             position += bytesLeft;
+            offset += bytesLeft;
         }
         /*
         if (ZenBuildProperties.dbgIOR){
