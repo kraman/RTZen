@@ -20,11 +20,17 @@ function printUsage() {
         echo "                40 RTZEN server remote on OVM interpreter"
         echo "                5  RTZEN server on OVM ahead-of-time compiler"
         echo "                50 RTZEN server remote on OVM ahead-of-time compiler"        
+        echo "                6  RTZEN server on regular ZEN and JVM"
+        echo "                60 RTZEN server remote on regular ZEN and JVM"
+        echo "                7  RTZEN server on JacORB and JVM"
+        echo "                70 RTZEN server remote on JacORB and JVM"
 	echo "    clientType  1  Simulated RTZEN client on regular JVM"
 	echo "                2  TimeSys RTZen client"
 	echo "                3  TAO Client             "
         echo "                4  RTZEN client on OVM interpreter"
         echo "                5  RTZEN client on OVM ahead-of-time compiler"
+        echo "                6  RTZEN client on regular ZEN and JVM"
+        echo "                7  RTZEN client on JacORB and JVM"
 
 	exit -1;
 
@@ -96,8 +102,8 @@ TJVM_START="/opt/timesys/rtsj-ri/bin/tjvm -Xverify:all -Ximmortal400M -Xms200M -
 #OVM_INT_START="$OVMHOME/OpenVM_bin/bin/gen-ovm -engine=interpreter -threads=RealtimeJVM -model=MostlyCopyingRegions-B_M_F_H  -app-methods-live -classpath=$PROJECT_HOME/lib/RTZen.jar"
 
 #OVM_NAT_START="$OVMHOME/OpenVM_bin/bin/gen-ovm -engine=j2c -threads=RealtimeJVM -model=MostlyCopyingRegions-B_M_F_H  -app-methods-live -classpath=$PROJECT_HOME/lib/RTZen.jar"
- 
-
+export JAC_HOME="/groups/pces/uav_oep/exp/RTZEN/tools/JacORB_2_2"
+JAC_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$JAC_HOME/lib/jacorb.jar:$PROJECT_HOME/classes:$JAC_HOME/lib/logkit-1.2.jar:$JAC_HOME/lib/avalon-framework-4.1.5.jar -Djacorb.home=$JAC_HOME -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=orb.jacorb.orb.ORBSingleton"
 #change to program dir, all filenames are relative
 cd $PROGDIR
 
@@ -160,6 +166,13 @@ function startServer(){
                 echo $EXEC_CMD
                 $EXEC_CMD&
                 echo $! > $STOPFNAME
+         elif [ $1 -eq 40 ]; then
+                # start ZEN server remote in OVM interpreter
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 4 $1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD&
+                echo $! > $STOPFNAME
         elif [ $1 -eq 5 ]; then
                 # start ZEN server in OVM ahead_of_time compiler
                 EXEC_CMD="sh ./OVMServer_NAT/run.sh $1"
@@ -167,7 +180,49 @@ function startServer(){
                 echo $EXEC_CMD
                 $EXEC_CMD&
                  echo $! > $STOPFNAME
-    else
+         elif [ $1 -eq 50 ]; then
+                # start ZEN server remote in OVM ahead-of-time compiler
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 5$1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD&
+                echo $! > $STOPFNAME
+
+		elif [ $1 -eq 6 ]; then
+# start ZEN server in regular JVM
+		EXEC_CMD="$JAVA_START perf.jitter.Server $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD&
+		echo $! > $STOPFNAME
+
+		elif [ $1 -eq 60 ]; then
+# start ZEN server remote in regular JVM
+		EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 6 $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD&
+#echo $! > $STOPFNAME
+
+		elif [ $1 -eq 7 ]; then
+# start JacORB server in regular jvm
+		EXEC_CMD="$JAC_START perf.jitter.Server $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD&
+		echo $! > $STOPFNAME
+
+		elif [ $1 -eq 70 ]; then
+# start JacORB server remote in regular jvm
+		EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 7 $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD&
+#echo $! > $STOPFNAME
+
+
+
+	else
         printUsage "startServer, unknown server type '$1'"
             fi
 }
@@ -178,7 +233,7 @@ function startServer(){
 function stopServer(){
 	echo "stop server "
 
-	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 $1 -eq 4 $1 -eq 5]; then
+	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 -o $1 -eq 4 -o $1 -eq 5 -o $1 -eq 6 -o $1 -eq 7 ]; then
 	
 		if [ -f $STOPFNAME ]; then
 		
@@ -234,6 +289,25 @@ function stopServer(){
                 echo $EXEC_CMD
                 $EXEC_CMD
                 #echo $! > $STOPFNAME
+   elif [ $1 -eq 60 ]; then
+                # OVM on node 0
+                # Start RTZEN server in OVM ahead-of-time compiler
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 6 $1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD
+                #echo $! > $STOPFNAME
+   elif [ $1 -eq 70 ]; then
+                # OVM on node 0
+                # Start RTZEN server in OVM ahead-of-time compiler
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 7 $1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD
+                #echo $! > $STOPFNAME
+
+
+
     else
         printUsage "unknown server type"
 	fi
