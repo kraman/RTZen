@@ -361,4 +361,24 @@ public class ReadBuffer{
         }
         out.writeByteArray( (byte[])buffers.elementAt(((int)(limit/1024))) , 0 , (int)(limit%1024) );
     }
+
+    /** Points to next Read buffer in linked list of ReadBuffers.
+     * Used by GIOP v1.1 fragments.
+     */
+    private ReadBuffer nextBuffer = null;
+
+    /** Set the buffer that is read from after this buffer is used up.
+     * Used by GIOP v1.1 fragments. 
+     */
+    public void setNextBuffer(ReadBuffer aNextBuffer) {
+        nextBuffer = aNextBuffer;
+    }
+
+    /** Get the buffer that has been set to be read from after this
+     * buffer is used up.  Used by GIOP v1.1 fragments.  
+     * @return the next buffer to be read from or null if no next buffer.
+     */
+    public ReadBuffer getNextBuffer() {
+        return nextBuffer;
+    }
 }
