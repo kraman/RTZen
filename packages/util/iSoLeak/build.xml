@@ -3,7 +3,7 @@
 
     <target name="run" depends="compile">
         <java 
-            classname="IsoLeak"
+            classname="iSoLeak.IsoLeak"
             classpath="${zen.libdir}/RTZen.jar;${java.home}/lib/rt.jar;${zen.rtbootclasspath};${zen.srcdir}/util/iSoLeak/bcel-5.1.jar:${zen.classdir}"
             fork="true"
             >

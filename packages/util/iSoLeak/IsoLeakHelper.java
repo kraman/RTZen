@@ -1,3 +1,5 @@
+package iSoLeak;
+
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 
@@ -16,6 +18,33 @@ public class IsoLeakHelper
         }
     }
 
+    public synchronized static final void __isoLeak_beginLeakMeasurement(){
+        init();
+        try{
+            out.write( 'I' );
+            out.write( 'S' );
+            out.write( 'o' );
+            out.write( 'B' );
+            out.write( 'e' );
+            out.write( 'g' );
+            out.write( 'i' );
+            out.write( 'n' );
+            out.write( 'L' );
+            out.write( 'e' );
+            out.write( 'a' );
+            out.write( 'k' );
+            out.write( 'D' );
+            out.write( 'e' );
+            out.write( 't' );
+            out.write( 'e' );
+            out.write( 'c' );
+            out.write( 't' );
+            out.write( '\n' );
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
+    }
+
     public synchronized static final long __isoLeak_recordScopedSize(){
         init();
         try{
@@ -28,6 +57,8 @@ public class IsoLeakHelper
             __isoLeak_write( javax.realtime.RealtimeThread.getCurrentMemoryArea().hashCode() );
             out.write( ',' );
             __isoLeak_write( javax.realtime.RealtimeThread.currentRealtimeThread().hashCode() );
+            out.write( ',' );
+            __isoLeak_write( javax.realtime.RealtimeThread.getCurrentMemoryArea().memoryConsumed() );
             out.write( '\n' );
         }catch( Exception e ){
             e.printStackTrace();
@@ -71,7 +102,7 @@ public class IsoLeakHelper
                 out.write( 'e' );
                 out.write( 'a' );
                 out.write( 'k' );
-                __isoLeak_write( javax.realtime.RealtimeThread.getCurrentMemoryArea().memoryConsumed() - oldMemorySpace ); 
+                __isoLeak_write( javax.realtime.RealtimeThread.getCurrentMemoryArea().memoryConsumed() ); 
             }
 
             if( oldImmortalSpace != javax.realtime.ImmortalMemory.instance().memoryConsumed() ){
@@ -81,7 +112,7 @@ public class IsoLeakHelper
                 out.write( 'e' );
                 out.write( 'a' );
                 out.write( 'k' );
-                __isoLeak_write( javax.realtime.ImmortalMemory.instance().memoryConsumed() - oldImmortalSpace );
+                __isoLeak_write( javax.realtime.ImmortalMemory.instance().memoryConsumed() );
             }
             out.write( '\n' );
         }catch( Exception e ){
