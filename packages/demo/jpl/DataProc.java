@@ -6,9 +6,10 @@ import java.io.FileReader;
 import java.util.Vector;
 import java.io.File;
 import java.io.PrintWriter;
-import java.io.FileWriter; 
+import java.io.FileWriter;
 
 class DataProc{
+    /*
     Vector v1 = new Vector();
     Vector v2 = new Vector();
     Vector v1Proc = new Vector();
@@ -39,7 +40,7 @@ class DataProc{
                     v2Proc.addElement(d1-d2);
                 }
             }
-            
+
             for(int i = 0; i < v1.size();i++){
                 if(i%2==1){
                     double d1 = (Double)v2.elementAt(i).doubleValue();
@@ -52,7 +53,7 @@ class DataProc{
             }
 
 
-            PrintWriter out1 = new PrintWriter(new BufferedWriter(new FileWriter("timeRecords.1.1.1.128.txt"))); 
+            PrintWriter out1 = new PrintWriter(new BufferedWriter(new FileWriter("timeRecords.1.1.1.128.txt")));
             PrintWriter out2 = new PrintWriter(new BufferedWriter(new FileWriter("timeRecords.1.2.2.128.txt")));
             for(int i=0; i<v2Proc.size();i++){
                 out1.println((Double)v1Proc.elementAt(i).doubleValue());
@@ -61,12 +62,13 @@ class DataProc{
             out1.flush();
             out1.close();
             out2.flush();
-            out2.close();       
+            out2.close();
         }
         catch(Exception ex){
             ex.printStackTrace();
             System.exit(-1);
         }
     }
+    */
 }
 
