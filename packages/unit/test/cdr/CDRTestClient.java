@@ -50,6 +50,7 @@ public class CDRTestClient extends RealtimeThread
 			testOctet();
 			testOctetSeq();
 			testStructSeq();
+			testonewayShort();
 			//test();
 			//testUShort();
 
@@ -281,6 +282,18 @@ public class CDRTestClient extends RealtimeThread
 			System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqoutVal.value[1].b);
 		}
 	}
+
+	public void testonewayShort(){
+
+			short shinVal = 100;
+
+		    stub.echoShort( shinVal);
+
+		    return;
+
+
+		}
+
 
 
 

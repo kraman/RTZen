@@ -144,6 +144,16 @@ public class DataTypesImpl extends DataTypesPOA
 
 	}
 
+	public void onewayShort( short shinVal) {
+
+			if(shinVal != 100){
+				System.out.println("in value wrong in onewayShort()");
+				System.out.println("The expected value is 100 and the actual value is "+shinVal);
+			}
+
+			return;
+	}
+
 
 
 
