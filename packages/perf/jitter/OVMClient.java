@@ -32,12 +32,12 @@ public class OVMClient extends RealtimeThread
 
 		/* pass the input parameters */
 		if ( args.length == 2 ) {
-			Client.testType = Integer.parseInt(args[0]);
-			Client.seqSize  = Integer.parseInt(args[1]);
+			OVMClient.testType = Integer.parseInt(args[0]);
+			OVMClient.seqSize  = Integer.parseInt(args[1]);
 		}
 
         System.out.println( "=====================Creating RT Thread in client==========================" );
-        RealtimeThread rt = (Client) ImmortalMemory.instance().newInstance( Client.class );
+        RealtimeThread rt = (OVMClient) ImmortalMemory.instance().newInstance( Client.class );
         System.out.println( "=====================Starting RT Thread in client==========================" );
         rt.start();
     }
