@@ -13,6 +13,24 @@ import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 import javax.realtime.PriorityParameters;
 
+import org.omg.IIOP.ProfileBody_1_0;
+import org.omg.IIOP.ProfileBody_1_0Helper;
+import org.omg.IIOP.ProfileBody_1_1;
+import org.omg.IIOP.ProfileBody_1_1Helper;
+import org.omg.IIOP.Version;
+import org.omg.IOP.TAG_INTERNET_IOP;
+import org.omg.IOP.TaggedComponent;
+import org.omg.Messaging.PolicyValue;
+import org.omg.Messaging.PolicyValueHelper;
+
+import edu.uci.ece.zen.orb.CDROutputStream;
+import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.ReadBuffer;
+import edu.uci.ece.zen.utils.WriteBuffer;
+import edu.uci.ece.zen.utils.ZenProperties;
+
+import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
+
 public abstract class Acceptor {
     protected edu.uci.ece.zen.orb.ORB orb;
 
@@ -93,6 +111,83 @@ public abstract class Acceptor {
     public void finalize() {
         ZenProperties.logger.log("Acceptor region has been GC'd");
     }
+
+    //trust me, this is just a temporary hack
+    public static boolean enableComponents = false;
+    public static short serverPriority = -1; //initial value, not a valid priority
+    public static int priorityModel = 0;
+
+    protected TaggedComponent[] getComponents() {
+        ZenProperties.logger.log("getComponents()");
+        TaggedComponent[] tcarr;
+
+        if(enableComponents){
+            tcarr = new TaggedComponent[1];
+            //tcarr[0].tag = SERVER_PROTOCOL_POLICY_TYPE.value;
+            tcarr[0] = getPolicyComponent();
+        }else{
+            tcarr = new TaggedComponent[0];
+        }
+        return tcarr;
+    }
+
+    private TaggedComponent getPolicyComponent() {
+        ZenProperties.logger.log("getPolicyComponent()");
+        TaggedComponent tc = new TaggedComponent();
+        tc.tag = org.omg.IOP.TAG_POLICIES.value;
+
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        out.write_boolean(false); //BIGENDIAN
+        out.write_ulong((int)1); //just one policy for now
+
+        PolicyValueHelper.write(out, createPriorityModelValue());
+
+        tc.component_data = new byte[(int) out.getBuffer().getLimit()];
+        out.getBuffer().getReadBuffer().readByteArray(tc.component_data, 0,
+                (int) out.getBuffer().getLimit());
+        out.free();
+
+        return tc;
+    }
+
+    private PolicyValue createPriorityModelValue() {
+        ZenProperties.logger.log("createPriorityModelValue()");
+        PolicyValue pv = new PolicyValue();
+        pv.ptype = priorityModel;
+
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        out.write_boolean(false); //BIGENDIAN
+
+        out.write_long(priorityModel);
+        out.write_short(serverPriority);
+
+        pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
+        pv.ptype = PRIORITY_MODEL_POLICY_TYPE.value;
+
+        out.getBuffer().getReadBuffer().readByteArray(pv.pvalue, 0 ,
+                (int)out.getBuffer().getLimit());
+
+        out.free();
+
+        return pv;
+    }
+
+    private PolicyValue createServerProtocolPolicyValue() {
+        /*
+         * ServerProtocolPolicy spp = ((RTORBImpl)(orb.getRTORB())).spp;
+         * PolicyValue pv = new PolicyValue(); pv.ptype = spp.policy_type();
+         * CDROutputStream out = CDROutputStream.instance(); out.init(orb);
+         * out.write_boolean(false); //BIGENDIAN org.omg.CORBA.Any value =
+         * edu.uci.ece.zen.orb.ORB.init().create_any();
+         * ServerProtocolPolicyHelper.insert(value, spp); out.write_any(value);
+         * pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
+         * out.getBuffer().readByteArray(pv.pvalue, 0 ,
+         * (int)out.getBuffer().getLimit()); out.free(); return pv;
+         */
+        return null;
+    }
 }
 
 class AcceptorLogic implements Runnable {
@@ -120,6 +215,7 @@ class AcceptorLogic implements Runnable {
             this.notifyAll();
         }
     }
+
 }
 
 class ProfileRunnable implements Runnable {

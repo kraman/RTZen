@@ -21,7 +21,7 @@ public abstract class Transport implements Runnable {
     protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
     private MessageProcessor messageProcessor;
     public Object objectTable[]; //used to store misc
-    
+
     // objects with
     // 1instance
 
@@ -29,16 +29,16 @@ public abstract class Transport implements Runnable {
 
     // 0 = POARunnable for POA.handleRequest
     // 1 = ExecuteInRunnable for POA.handleRequest
-    // 2 = Used for GIOP header byte array 
+    // 2 = Used for GIOP header byte array
     // 3 = Protocol Header
 
-    
+
     /* This method helps to get the object stored in objectTable[]*/
     public Object getObject(int num){
         try{
             if(num != 0 && num != 1 && num != 2 && num != 3){
                 ZenProperties.logger.log(Logger.WARN, Transport.class, "static <getObject>", "Wrong objectTable index in Transport.java");
-                return null;               
+                return null;
             }
             return objectTable[num];
         }
@@ -72,7 +72,7 @@ public abstract class Transport implements Runnable {
         if (ZenProperties.dbg) ZenProperties.logger.log("Transport being created "
                 + RealtimeThread.getCurrentMemoryArea());
     }
-    
+
     public byte[] getGIOPHeader() {
         return (byte[]) objectTable[2];
     }
@@ -91,7 +91,7 @@ public abstract class Transport implements Runnable {
                 .getMemoryArea(messageProcessor).toString());
         if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
                 .getMemoryArea(this).toString());
-        
+
         RealtimeThread messageProcessorThr = new RealtimeThread(null,
                 null, null, RealtimeThread.getCurrentMemoryArea(), null,
                 messageProcessor);
@@ -112,7 +112,7 @@ public abstract class Transport implements Runnable {
         } catch (InterruptedException ie) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "run", ie);
         }
-        ORB.freeScopedRegion( (ScopedMemory) RealtimeThread.getCurrentMemoryArea() );
+        edu.uci.ece.zen.orb.ORB.freeScopedRegion( (ScopedMemory) RealtimeThread.getCurrentMemoryArea() );
     }
 
     /**
@@ -298,14 +298,14 @@ class GIOPMessageRunnable implements Runnable {
                         (edu.uci.ece.zen.orb.protocol.type.RequestMessage) message);
  //               edu.uci.ece.zen.utils.Logger.printMemStats(309);
 
-            
+
             }else if (message instanceof edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage) {
                 //this is provisional until we get it working right
                 //just return OBJECT_HERE for now
  //               edu.uci.ece.zen.utils.Logger.printMemStats(310);
 
                 CDROutputStream out = edu.uci.ece.zen.orb.protocol.MessageFactory.
-                         constructLocateReplyMessage(orb, 
+                         constructLocateReplyMessage(orb,
                          (edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage)message);
  //               edu.uci.ece.zen.utils.Logger.printMemStats(311);
 
@@ -315,9 +315,9 @@ class GIOPMessageRunnable implements Runnable {
                 out.free();
  //               edu.uci.ece.zen.utils.Logger.printMemStats(313);
 
-                
+
             }else if (message instanceof edu.uci.ece.zen.orb.protocol.type.ReplyMessage) {
-                ZenProperties.logger.log("Inside GMR run: ReplyMessage");                
+                ZenProperties.logger.log("Inside GMR run: ReplyMessage");
  //               edu.uci.ece.zen.utils.Logger.printMemStats(314);
 
                 ScopedMemory waiterRegion = orb.getWaiterRegion(message
@@ -347,9 +347,9 @@ class GIOPMessageRunnable implements Runnable {
                 }
             }else{
                     ZenProperties.logger.log(Logger.SEVERE, getClass(),
-                                    "run", "Message type not supported.");                
+                                    "run", "Message type not supported.");
             }
-            
+
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(2223);
         } catch (java.io.IOException ioex) {
             //TODO: do something here
@@ -361,7 +361,7 @@ class GIOPMessageRunnable implements Runnable {
                 e.printStackTrace();
             }
             ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", ioex);
-            
+
         }
 
     }
