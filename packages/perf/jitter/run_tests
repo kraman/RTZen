@@ -32,6 +32,9 @@ SERVERTYPE=1
 CLIENTTYPE=1
 TESTTYPE=1
 
+
+REMNODE="node0.rtzen.pces.emulab.net" 
+
 # used by startServer and stopServer 
 STOPTOKEN=0
 
@@ -48,6 +51,9 @@ fi
 # assume that sed is greedy, so we can handle something like
 #  /packages/RTZen/packages/...
 PROJECT_HOME="`echo $ABSPROGNAME | sed 's/\(.*\)\/packages.*/\1/'`"
+
+# guess in which directory to execute (needed for the file names)
+PROGDIR=`dirname $ABSPROGNAME`
 
 # force the timesys settings
 if echo $LD_LIBRARY_PATH | grep timesys >> /dev/null; then
@@ -72,6 +78,9 @@ JAVA_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$PROJECT_HOME/classes:$CLA
 
 TJVM_START="/opt/timesys/rtsj-ri/bin/tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=$PROJECT_HOME/classes/ -Djava.library.path=$LD_LIBRARY_PATH -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar"
 
+
+#change to program dir, all filenames are relative
+cd $PROGDIR
 
 # startup function for the server
 # parameters 
@@ -104,11 +113,11 @@ function startServer(){
 	elif [ $1 -eq 30 ]; then
 		# TimeSys JVM on node 0
 		# start ZEN server in simulated RT
-		EXEC_CMD="ssh node0.rtzen.pces.emulab.net ~/RTZen/packages/perf/jitter/run_tests startServer 3 $1"
+		EXEC_CMD="ssh $REMNODE ~/RTZen/packages/perf/jitter/run_tests startServer 3 $1"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
-		$EXEC_CMD
-		echo $! > $STOPFNAME	
+		$EXEC_CMD&
+		#echo $! > $STOPFNAME	
 	else
 		printUsage "startServer, unknown server type '$1'"
 	fi
@@ -132,8 +141,18 @@ function stopServer(){
 			$EXEC_CMD
 			rm -f $STOPFNAME
 		else
-			printUsage "server was not started, can not find file '$STOPFNAME'"
+			printUsage "server was not stoped, can not find file '$STOPFNAME'"
 		fi
+    elif [ $1 -eq 30 ]; then
+		# TimeSys JVM on node 0
+		# start ZEN server in simulated RT
+		EXEC_CMD="ssh $REMNODE ~/RTZen/packages/perf/jitter/run_tests stopServer 3 $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD
+		#echo $! > $STOPFNAME	
+    else
+        printUsage "unknown server type"
 	fi
 }
 
@@ -213,10 +232,10 @@ if [ $OPERATION == "both" -o $OPERATION == "client" ]; then
 else 
 	if [ $OPERATION == "startServer" ]; then
 		# check if a server is already started, if so stop the server first 
-		if [ -f $STOPFNAME ]; then
-			stopServer $SERVERTYPE
-			sleep 2
-		fi
+		#if [ -f $STOPFNAME ]; then
+		#	stopServer $SERVERTYPE
+		#	sleep 2
+		#fi
 		startServer $SERVERTYPE
 	else
 		if [ $OPERATION == "stopServer" ]; then
