@@ -17,7 +17,9 @@ public class Client implements Runnable
 {
     public static void main(String[] args)
     {
-        RealtimeThread rt = new RealtimeThread(null,null,null,null,null,new Client());
+        System.out.println( "=====================Creating RT Thread in client==========================" );
+        RealtimeThread rt = new RealtimeThread(null,null,null,new LTMemory(3000,30000),null,new Client());
+        System.out.println( "=====================Starting RT Thread in client==========================" );
         rt.start();
     }
 
@@ -25,7 +27,9 @@ public class Client implements Runnable
     {
         try
         {
+            System.out.println( "=====================Calling ORB Init in client============================" );
             ORB orb = ORB.init((String[])null, null);
+            System.out.println( "=====================ORB Init complete in client===========================" );
             String ior = "";
             File iorfile = new File( "/home/kraman/RTZen/packages/demo/hello/ior.txt" );
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );

@@ -15,7 +15,7 @@
     <!-- I need to have this one here to work with Windows. 
          The one above doesn't work for some reason.-->
     <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"/>
-    <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
+    <!--<taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>-->
 
     <patternset id="sources" >
         <!--*** Ant Extensions ***-->

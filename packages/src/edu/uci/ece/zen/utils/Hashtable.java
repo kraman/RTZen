@@ -21,7 +21,7 @@ public class Hashtable
 
     public void init( int limit ){
         System.err.println( "ConnReg:   " + limit );
-        Thread.dumpStack();
+        //Thread.dumpStack();
         totObjects = limit;
         table = new Object[4*limit];
         keytable = new long[4*limit];

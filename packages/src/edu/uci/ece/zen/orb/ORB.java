@@ -75,6 +75,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             props = new Properties();
 
         //Find the ORBId
+        System.out.println( "======================Locating OBR ID from ZenProperties====================" );
         String orbId = ZenProperties.getORBId( args , props );
         if( orbId == null ){
                 orbId = "edu.uci.ece.zen.orb.ORB." + nextOrbId();
@@ -85,13 +86,16 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         if( orbId.equals( "" ) ){
             return edu.uci.ece.zen.orb.ORB.orbSingleton;
         }else{
+            System.out.println( "======================Trying to locate the orb with that orbid==============" );
             edu.uci.ece.zen.orb.ORB retVal = (edu.uci.ece.zen.orb.ORB) orbTable.get( orbId );
             if( retVal == null ){
+                System.out.println( "======================None found...new orb will mbe made====================" );
                 if( unusedFacades.isEmpty() ){
                     throw new RuntimeException( "ORB number limit reached. Cannot create more ORB's. Please increase the number of ORB's in the zen.properties file." );
                 }
                 ScopedMemory mem = getScopedRegion();
                 retVal = (edu.uci.ece.zen.orb.ORB) unusedFacades.dequeue();
+                System.out.println( "======================Calling internal init now=============================" );
                 retVal.internalInit( mem , orbId , args , props );
             }
             return retVal;
@@ -118,20 +122,20 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public ScopedMemory orbImplRegion;
     public MemoryArea parentMemoryArea;
-    private ORBInitRunnable orbInitRunnable;
     private ORBImplRunnable orbImplRunnable;
     private ORBStrToObjRunnable strToObjRunnable;
     private ConnectionRegistry connectionRegistry;
     private AcceptorRegistry acceptorRegistry;
     private WaiterRegistry waiterRegistry;
     private Queue executeInRunnableCache;
-    private String orbId;
     private RTORB rtorb;
     private PolicyManager policyManager;
     public MemoryArea [] threadpoolList;
 
+    private byte orbId[];
+    private int orbIdLen;
+
     public ORB(){
-        orbInitRunnable = new ORBInitRunnable();
         orbImplRunnable = new ORBImplRunnable();
         strToObjRunnable = new ORBStrToObjRunnable();
         connectionRegistry = new ConnectionRegistry();//KLUDGE:ORB.maxSupportedConnections );
@@ -143,6 +147,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         rtorb = new RTORBImpl(this);
         policyManager = new PolicyManagerImpl();
         threadpoolList = new MemoryArea[10];//KLUDGE: need to set up property for max TPs
+        orbId = new byte[25];
+        orbIdLen=0;
     }
 
     public ExecuteInRunnable getEIR(){
@@ -162,15 +168,20 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     private void internalInit( ScopedMemory mem , String orbId , String[] args , Properties props ){
-        this.orbId = orbId;
+        System.arraycopy( orbId.getBytes() , 0 , this.orbId , 0 , orbId.length() );
+        this.orbIdLen = orbId.length();
+        System.out.println( "======================Assigning the parent memory area======================" );
         this.parentMemoryArea = RealtimeThread.getCurrentMemoryArea();
+        System.out.println( "======================Filing ORBInitRunnable with values====================" );
+        ORBInitRunnable orbInitRunnable = new ORBInitRunnable();
         orbInitRunnable.init( args , props , this );
         orbImplRegion = mem;
 
-        ExecuteInRunnable r = getEIR();
+        ExecuteInRunnable r = new ExecuteInRunnable();
 
         r.init( orbInitRunnable , mem);
         try{
+            System.out.println( "======================Calling ExecuteInRunnable=============================" );
             parentMemoryArea.executeInArea( r );
         }catch( Exception e ){
             ZenProperties.logger.log(
@@ -181,7 +192,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
             System.exit(-1);
         }
-        freeEIR( r );
     }
 
     private void isNotDestroyed(){
@@ -198,9 +208,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     public void set_parameters(String args[], java.util.Properties props) {
+        ORBInitRunnable orbInitRunnable = new ORBInitRunnable();
         orbInitRunnable.init( args , props , this );
 
-        ExecuteInRunnable r = getEIR();
+        ExecuteInRunnable r = new ExecuteInRunnable();
         r.init( orbInitRunnable , this.orbImplRegion );
         try{
             parentMemoryArea.executeInArea( r );
@@ -213,7 +224,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
             System.exit(-1);
         }
-        freeEIR( r );
     }
 
     //For Multithreaded ORB's
@@ -278,7 +288,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     public String id() {
-        return orbId;
+        byte[] tmp = new byte[orbIdLen];
+        System.arraycopy( orbId , 0 , tmp , 0 , orbIdLen );
+        return new String(tmp);
     }
 
     /**

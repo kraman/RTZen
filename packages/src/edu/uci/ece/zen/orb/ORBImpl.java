@@ -12,6 +12,7 @@ public class ORBImpl{
     public ServerRequestHandler serverRequestHandler;
     
     public ORBImpl( String args[] , Properties props, edu.uci.ece.zen.orb.ORB orbFacade ){
+        System.out.println( "======================In orb impl region===================================" );
         properties = new ZenProperties();
         properties.addPropertiesFromArgs( args );
         properties.addProperties( props );
@@ -19,6 +20,7 @@ public class ORBImpl{
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( this );
         orbImplRunnable = new ORBImplRunnable();
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,null,null,null,null,orbImplRunnable );
+        System.out.println( "======================starting nhrt in orb impl region=====================" );
         nhrt.start();
 
         cachedObjects = new Hashtable();
