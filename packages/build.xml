@@ -5,8 +5,6 @@
     <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"/>
     <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
 
-    <property name="idldepend.dir" value="${zen.anttaskdir}/idldepend"/>
-
     <patternset id="sources" >
         <!--*** OMG Sources ***-->
             <include name="src/edu/uci/ece/zen/utils/**"/>
