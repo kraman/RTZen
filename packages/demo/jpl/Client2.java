@@ -74,10 +74,12 @@ public class Client2 extends RealtimeThread
         try
         {
             System.out.println("==============Calling ORB Init in client==============");
-            ORB orb = ORB.init((String[]) null, null);
+            //ORB orb = ORB.init((String[]) null, null);
+            ORB orb = Client1.getORB();
             System.out.println("==============ORB Init complete in client==============");
             String ior = "";
-            File iorfile = new File(fileName);
+            File iorfile = new File("ior2.txt");//new File(fileName);
+            id = 2;
             BufferedReader br = new BufferedReader(new FileReader(iorfile));
             ior = br.readLine();
             System.out.println("==============IOR read==============");
@@ -93,7 +95,7 @@ public class Client2 extends RealtimeThread
 
             sleep(INITIAL_SLEEP);
 
-            System.out.println("==============Warm Up==============");
+            System.out.println("==============Warm Up 2==============");
             
             for (int i=0; i<WARM_UP; i++){
                 NativeTimeStamp.RecordTime(20);
@@ -111,7 +113,7 @@ public class Client2 extends RealtimeThread
             }
 
 
-            System.out.println("==============Performance benchmark==============");
+            System.out.println("==============Performance benchmark 2 ==============");
             long start = System.currentTimeMillis();
             for (int i = 0; i < RUN_NUM; i++)
             {
@@ -128,6 +130,7 @@ public class Client2 extends RealtimeThread
 
                 if (i != 0 && i % 500 == 0)
                 {
+                    Logger.write(id);
                     Logger.write(i);
                     Logger.writeln();
                 }
@@ -137,6 +140,8 @@ public class Client2 extends RealtimeThread
             System.err.println((double) RUN_NUM / ((end - start) / 1000.0));
 
             NativeTimeStamp.OutputLogRecords();
+            Runtime.getRuntime().exec("mv timeRecords.txt timeRecords.1.2.2.128.txt");
+
 
             System.exit(0);
         }

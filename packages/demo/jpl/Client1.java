@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 
 import javax.realtime.ImmortalMemory;
+import javax.realtime.HeapMemory;
 import javax.realtime.RealtimeThread;
 
 import org.omg.CORBA.ORB;
@@ -19,6 +20,7 @@ import edu.uci.ece.zen.utils.NativeTimeStamp;
  */
 public class Client1 extends RealtimeThread
 {
+    public static ORB sharedOrb;
     private static final int A_SECOND = 1000;
     private static final int INITIAL_SLEEP = A_SECOND;
     private static final int REQUEST_SLEEP = 1;
@@ -39,6 +41,12 @@ public class Client1 extends RealtimeThread
     static String fileName;
 
     static int id;
+
+    public static synchronized ORB getORB(){
+       if (sharedOrb == null)
+            sharedOrb = ORB.init((String[]) null, null);
+       return sharedOrb;
+    }
 
     /**
      * Main function.
@@ -72,26 +80,28 @@ public class Client1 extends RealtimeThread
     {
         try
         {
-            System.out.println("==============Calling ORB Init in client==============");
-            ORB orb = ORB.init((String[]) null, null);
-            System.out.println("==============ORB Init complete in client==============");
+            System.out.println("==============Calling ORB Init in client 1==============");
+        
+            ORB orb = getORB();
+            System.out.println("==============ORB Init complete in client 1==============");
             String ior = "";
-            File iorfile = new File(fileName);
+            File iorfile = new File("ior1.txt"); //new File(fileName);
+            id = 1;
             BufferedReader br = new BufferedReader(new FileReader(iorfile));
             ior = br.readLine();
-            System.out.println("==============IOR read==============");
+            System.out.println("==============IOR read 1==============");
             org.omg.CORBA.Object object = orb.string_to_object(ior);
-            System.out.println("==============Trying to establish connection==============");
+            System.out.println("==============Trying to establish connection 1==============");
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
 
-            System.out.println( "===================Trying to initialize the NativeTimeStamp================" );
+            System.out.println( "===================Trying to initialize the NativeTimeStamp 1================" );
             NativeTimeStamp rtts = new NativeTimeStamp();
             NativeTimeStamp.Init(1, 20.0);
-            System.out.println( "===================NativeTimeStamp gets initialized================" );
+            System.out.println( "===================NativeTimeStamp gets initialized 1================" );
 
             sleep(INITIAL_SLEEP);
              
-            System.out.println("==============Warm Up==============");
+            System.out.println("==============Warm Up 1==============");
             for (int i=0; i<WARM_UP; i++){
                 NativeTimeStamp.RecordTime(20);
                 server.getMessage(id, array1);
@@ -102,11 +112,11 @@ public class Client1 extends RealtimeThread
                     Logger.write(i);
                     Logger.writeln();
                 }
-
+                
 
             }
 
-            System.out.println("==============Performance benchmark==============");
+            System.out.println("==============Performance benchmark 1==============");
             long start = System.currentTimeMillis();
             for (int i = 0; i< RUN_NUM*3; i++)
             {
@@ -121,16 +131,25 @@ public class Client1 extends RealtimeThread
                 
                 if (i != 0 && i % 500 == 0)
                 {
+                    Logger.write(id);
                     Logger.write(i);
                     Logger.writeln();
                 }
                 
-                
+
+               HeapMemory.instance().enter(new Runnable(){
+                        public void run()
+                        {
+                           int[] a = new int[10];
+                        }
+                        });
+               
             }
             long end = System.currentTimeMillis();
             System.err.println((double) RUN_NUM / ((end - start) / 1000.0));
 
             NativeTimeStamp.OutputLogRecords();
+            Runtime.getRuntime().exec("mv timeRecords.txt timeRecords.1.1.1.128.txt");
 
             System.exit(0);
 
@@ -140,7 +159,7 @@ public class Client1 extends RealtimeThread
             e.printStackTrace();
             System.exit(-1);
         }
-        /*
+        /* 
         finally{
 
             //long end = System.currentTimeMillis();

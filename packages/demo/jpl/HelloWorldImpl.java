@@ -27,9 +27,11 @@ public class HelloWorldImpl extends HelloWorldPOA
            array[j] = id;
            }
          */
+        /*
         for (int i = 0; i<array.length; i++){
             array[i] = array[i]*array[i]*array[i];
         }
+        */
         
         //System.out.println(id + " Request got here ! ...now sending it back. " + array[0]);
         return id;
