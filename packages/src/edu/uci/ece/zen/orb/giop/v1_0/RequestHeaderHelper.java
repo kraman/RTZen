@@ -99,22 +99,25 @@ public class RequestHeaderHelper
      */
     public static RequestHeader read(org.omg.CORBA.portable.InputStream istream)
     {
+
         RequestHeader new_one = RequestHeader.instance();
 
         new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.
                 read(istream,FString.instance(new_one.service_context));
 
         new_one.request_id = istream.read_ulong();
+        System.out.println("RequestHeader read -- req id: " + new_one.request_id);
         new_one.response_expected = istream.read_boolean();
+        System.out.println("RequestHeader read -- response_expected: " + new_one.response_expected);
 
         new_one.object_key = FString.instance(new_one.object_key);
         int object_key_length = istream.read_ulong();
-        new_one.object_key.append(object_key_length);
+        //new_one.object_key.append(object_key_length);
         new_one.object_key.read(istream, object_key_length);
 
         new_one.operation =  FString.instance(new_one.operation);
         int op_length = istream.read_ulong() - 1;
-        new_one.operation.append(op_length);
+        //new_one.operation.append(op_length);
         new_one.operation.read(istream, op_length);
         istream.read_octet();
 
@@ -125,7 +128,7 @@ public class RequestHeaderHelper
 
         new_one.requesting_principal =  FString.instance(new_one.requesting_principal);
         int rp_length = istream.read_ulong();
-        new_one.requesting_principal.append(rp_length);
+        //new_one.requesting_principal.append(rp_length);
         new_one.requesting_principal.read(istream, rp_length);
 
         return new_one;
@@ -140,7 +143,7 @@ public class RequestHeaderHelper
     {
         //edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
         value.service_context.write(ostream);
-        System.out.println("len: " + value.service_context.length());
+        //System.out.println("len: " + value.service_context.length());
         //ostream.write_ulong(0);
 
         ostream.write_ulong(value.request_id);

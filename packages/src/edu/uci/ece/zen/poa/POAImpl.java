@@ -247,7 +247,6 @@ public class POAImpl{
             ScopedMemory tpRegion = this.orb.getThreadPoolRegion(tpId);
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 8" );
 
-
             edu.uci.ece.zen.utils.Logger.printThreadStack();
 
             if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
@@ -255,9 +254,9 @@ public class POAImpl{
                 System.out.println("requestScope  is " + requestScope);
                 System.out.println("req allocated in " + MemoryArea.getMemoryArea(req));
             }
-            ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
+            //ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 9.5" );
-            TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );
+            //TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );
 
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 10" );
             //tpr.init( self , (ScopedMemory) requestScope );
@@ -269,7 +268,7 @@ public class POAImpl{
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 12" );
             //((ScopedMemory)requestScope).setPo{rtal( hrr );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 13" );
-            orb.orbImplRegion.executeInArea( eir );
+            //orb.orbImplRegion.executeInArea( eipr );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 14" );
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here

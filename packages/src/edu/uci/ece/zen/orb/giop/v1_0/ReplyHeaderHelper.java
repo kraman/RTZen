@@ -3,7 +3,7 @@ package edu.uci.ece.zen.orb.giop.v1_0;
 
 import javax.realtime.*;
 import edu.uci.ece.zen.utils.*;
-import edu.uci.ece.zen.orb.giop.IOP.ServiceContext;
+import edu.uci.ece.zen.orb.giop.IOP.*;
 
 /**
  * Helper class for : ReplyHeader_1_0
@@ -39,8 +39,14 @@ public class ReplyHeaderHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, ReplyHeader value)
     {
-        //org.omg.IOP.ServiceContextListHelper.write(ostream,value.service_context);
-        //ostream.write_ulong(value.request_id);
+        //ServiceContextListHelper.write(ostream,value.service_context);
+
+        //value.service_context.write(ostream);
+        System.out.println("writing empty service context");
+        ostream.write_ulong(0);
+
+        ostream.write_ulong(value.request_id);
+        ostream.write_ulong(value.reply_status);
         //org.omg.GIOP.ReplyStatusType_1_0Helper.write(ostream,value.reply_status);
     }
 

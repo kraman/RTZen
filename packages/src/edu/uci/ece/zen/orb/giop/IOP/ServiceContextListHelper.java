@@ -45,7 +45,7 @@ public class ServiceContextListHelper
      * @param ostream the output stream
      * @param value ServiceContextList value
      */
-    public static void write(org.omg.CORBA.portable.OutputStream ostream, ServiceContext[] value)
+    public static void write(org.omg.CORBA.portable.OutputStream ostream, FString value)
     {
         /*
         ostream.write_ulong(ServiceContext.length);

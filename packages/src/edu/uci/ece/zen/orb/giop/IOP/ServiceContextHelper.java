@@ -35,11 +35,11 @@ public class ServiceContextHelper
      * @param ostream the output stream
      * @param value ServiceContext value
      */
-    public static void write(org.omg.CORBA.portable.OutputStream ostream, ServiceContext value)
+    public static void write(org.omg.CORBA.portable.OutputStream ostream, FString value)
     {
-        org.omg.IOP.ServiceIdHelper.write(ostream,value.context_id);
-        ostream.write_ulong(value.context_data_length);
-        ostream.write_octet_array(value.context_data, 0,value.context_data_length);
+        //org.omg.IOP.ServiceIdHelper.write(ostream,value.context_id);
+        //ostream.write_ulong(value.context_data_length);
+        //ostream.write_octet_array(value.context_data, 0,value.context_data_length);
 
     }
 
