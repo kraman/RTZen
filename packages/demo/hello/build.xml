@@ -39,7 +39,8 @@
 
     <target name="server">
         <java classname="demo.hello.Server" fork="yes">
-             <arg line="-ORBListenEndpoints"/>
+            <jvmarg line="${zen.jvm.properties}"/>
+            <arg line="-ORBListenEndpoints"/>
         </java>
     </target>
     

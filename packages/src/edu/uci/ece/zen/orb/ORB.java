@@ -267,14 +267,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         orbImplRegion = mem;
 
         executeInORBRegion(orbInitRunnable);
-        ZenProperties.logger.log("======================Performing post initialization steps====================");
-        boolean startSerialTransportAcceptor = ZenProperties.getProperty( "edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
-        if( startSerialTransportAcceptor ){
-            edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable r =
-                new edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable();
-            r.init(this);
-            orb.setUpORBChildRegion( r );
-        }
+        
 
         /*
          * ExecuteInRunnable r = new ExecuteInRunnable(); r.init(

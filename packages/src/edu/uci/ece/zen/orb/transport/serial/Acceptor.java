@@ -54,8 +54,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         //tp.profile_data[1] = iiopMajorVersion;
         out.write_octet_array(objKey, 0, objKey.length);
 
-        out.getBuffer().readByteArray(tp.profile_data, 0,
-                (int) out.getBuffer().getLimit());
+        out.getBuffer().readByteArray(tp.profile_data, 0, 2);
         out.free();        
         
         return tp;

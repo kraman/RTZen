@@ -11,7 +11,7 @@ class NativeSerialPort
     static
     {
         System.out.println("Loading libNativeSerialPort.so...");
-        System.load("/home/kraman/javaperf-repository/prismj/RTZen-serial/SerialDriver/libNativeSerialPort.so");
+        System.load("/home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/transport/serial/jni/libNativeSerialPort.so");
     }
 
     public synchronized static NativeSerialPort instance(){
@@ -32,7 +32,7 @@ class NativeSerialPort
     }
 
     byte[] tmpBuffer;
-    public Mutex lock;
+    public Mutex lock = new Mutex();
     public InputStream istream = new SerialPortInputStream();
     public OutputStream ostream = new SerialPortOutputStream();
     private NativeSerialPort(){

@@ -89,6 +89,15 @@ public class ORBImpl {
 
         eirCache = new Queue();
         crCache = new Queue();
+
+        ZenProperties.logger.log("======================Performing post initialization steps====================");
+        boolean startSerialTransportAcceptor = this. properties.getProperty( "edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
+        if( startSerialTransportAcceptor ){
+            edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable r =
+                new edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable();
+            r.init(this.orbFacade);
+            orbFacade.setUpORBChildRegion( r );
+        }
     }
 
     public PolicyCurrent getPolicyCurrent() {

@@ -16,11 +16,14 @@ import org.omg.PortableServer.*;
 
 public class Server extends RealtimeThread
 {
+    String[] args;
+    
     public static void main(String[] args) throws Exception
     {
         //System.out.println( "=====================Creating RT Thread in server==========================" );
-        RealtimeThread rt = (Server) ImmortalMemory.instance().newInstance( Server.class );
+        Server rt = (Server) ImmortalMemory.instance().newInstance( Server.class );
         //System.out.println( "=====================Starting RT Thread in server==========================" );
+        rt.init( args );
         rt.start();
     }
 
@@ -28,12 +31,16 @@ public class Server extends RealtimeThread
         super(null,null,null,new LTMemory(3000,300000),null,null);
     }
 
+    public void init( String args[] ){
+        this.args = args;
+    }
+
     public void run()
     {
         try
         {
             //System.out.println( "=====================Calling ORB Init in server============================" );
-            ORB zen = ORB.init((String[])null, null);
+            ORB zen = ORB.init( args , null);
             //System.out.println( "=====================ORB Init complete in server===========================" );
 
             POA rootPOA = POAHelper.narrow(zen.resolve_initial_references("RootPOA"));
