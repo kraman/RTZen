@@ -8,14 +8,15 @@ stepSmall = 0.2;
 
 barWidth = 0.1;
 
-xIndexArray = [2];
+xIndexArray = [4 32 128 512];
 
-for xIndex=xIndexArray
+
+for xIndex = 2:difference:8
 
 	% clear fileName, hiss, pdfArray;
 
-	fileName = strcat('timeRecords', num2str(round((xIndex))), '.txt');
-    s = load(fileName);
+	fileName = strcat('timeRecords.1.3.2.', num2str(round((xIndexArray([xIndex/difference])))), '.txt');
+        s = load(fileName);
 	s = diff(s(:, 3));
 
 	minS = min(s);
@@ -31,22 +32,23 @@ for xIndex=xIndexArray
 	pdfArray = (minS:stepSize:(maxS - stepSize));
 
 	hold on;
-	plot([xIndex xIndex], [minS maxS], 'r');
+	semilogy([xIndex xIndex], [minS maxS], 'r');
 	hold on;
-	plot((hiss + xIndex) , pdfArray);
+        % semilogy the historam 
+	%semilogy((hiss + xIndex) , pdfArray);
+	semilogy((hiss + xIndex) , pdfArray);
 	hold on;
 
-	plot(xIndex , averageS, 'bo');
+	semilogy(xIndex , averageS, 'bo');
 	hold on;
 
-	plot([xIndex - barWidth xIndex + barWidth], [minS minS]);
+        semilogy([xIndex - barWidth xIndex + barWidth], [minS minS]);
 	hold on;
-	plot([xIndex - barWidth xIndex + barWidth], [maxS maxS]);
+	semilogy([xIndex - barWidth xIndex + barWidth], [maxS maxS]);
 
 end
 
-title('tttt');
-ylabel('koskfdsf');
-xlabel('ze y');
-
+title('Roundtrip Latency/Jitter, RTZen/TimeSys, Single Host Emulab');
+ylabel('Roundtrip Latency [seconds] ');
+xlabel('Message size [bytes] (4 32 128 512)');
 set(gca, 'xtick', xIndexArray);

@@ -17,7 +17,8 @@ import perf.TimeStamp.*;
 
 public class Client extends RealtimeThread
 {
-	public static final int iterations = 10000;
+	public static final int warmUpIterations =   1000;
+	public static final int iterations       = 100000;
 
 	public static int seqSize = 4;
 	public static int testType =1;
@@ -64,14 +65,33 @@ public class Client extends RealtimeThread
 				NativeTimeStamp.Init(1, 20.0);
 			
         
-				// System.out.println( "====================== Performance warmup =================================" );
-				// for( int i=0;i<10000;i++ )
-				//server.getMsg();
 		
 				int i, j, k;
 				long start, end;
-				if ( testType == 1 ) {
-					System.out.println( "====================== Performance benchmark BYTE =========================" );
+				if ( testType == 0) {
+					// calibration loop for the time stamp measurement itself
+					System.out.println( "====================== Performance warmup =================================" );
+					for( i=0;i<warmUpIterations;i++ )
+						NativeTimeStamp.RecordTime(21);
+
+					System.out.println( "====================== Performance benchmark Check Overhead  ====================" );
+					// repeat the call 
+					start = System.currentTimeMillis();
+
+					// run the time stamp taker in the loop to measure
+					// loop and time stamp taker overhead
+					NativeTimeStamp.RecordTime(22);
+					for(j=0; j<iterations;j++ ) {
+						//NativeTimeStamp.RecordTime(20);
+						NativeTimeStamp.RecordTime(21);
+					}
+					NativeTimeStamp.RecordTime(22);
+					end = System.currentTimeMillis();
+
+					// keep the old style measurements so we can cross verify the numbers
+					System.err.println("Avg latency [ms]: " + ((end-start)/ ((float) iterations)) );
+					
+				} else if ( testType == 1 ) {
 
 					byte inOctetSeq[] = new byte[seqSize];
 				
@@ -80,6 +100,12 @@ public class Client extends RealtimeThread
 						inOctetSeq[j] = (byte) (j % 256);
 					}
 
+					
+					System.out.println( "====================== Performance warmup =================================" );
+					for( i=0;i<warmUpIterations;i++ )
+						server.putOctetSeq(inOctetSeq);
+
+					System.out.println( "====================== Performance benchmark BYTE =========================" );
 					// repeat the call 
 					start = System.currentTimeMillis();
 				
@@ -108,7 +134,6 @@ public class Client extends RealtimeThread
 
 				} else if (testType == 2) {
 				
-					System.out.println( "====================== Performance benchmark SHORT ========================" );
 					/* short sequence */
 					short inShortSeq[] = new short[seqSize];
 			
@@ -117,6 +142,11 @@ public class Client extends RealtimeThread
 						inShortSeq[j] = (short) (j % 65536);
 					}
 			
+					System.out.println( "====================== Performance warmup =================================" );
+					for( i=0;i<warmUpIterations;i++ )
+						server.putShortSeq(inShortSeq);
+
+					System.out.println( "====================== Performance benchmark SHORT ========================" );
 					// repeat the call 
 					start = System.currentTimeMillis();
 			
