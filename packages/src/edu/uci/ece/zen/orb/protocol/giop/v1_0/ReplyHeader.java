@@ -18,7 +18,7 @@ public final class ReplyHeader implements org.omg.CORBA.portable.IDLEntity {
     private static Queue queue = Queue.fromImmortal();
 
     public static ReplyHeader instance() {
-        ReplyHeader rh = (ReplyHeader)ORB.getQueuedInstance(ReplyHeader.class,queue);
+        ReplyHeader rh = (ReplyHeader)Queue.getQueuedInstance(ReplyHeader.class,queue);
         return rh;
     }
 

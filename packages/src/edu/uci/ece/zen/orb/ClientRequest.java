@@ -32,7 +32,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     private static Queue queue = Queue.fromImmortal();
 
     public static ClientRequest instance() {
-        ClientRequest cr = (ClientRequest)ORB.getQueuedInstance(ClientRequest.class,queue);
+        ClientRequest cr = (ClientRequest)Queue.getQueuedInstance(ClientRequest.class,queue);
         return cr;
     }
 

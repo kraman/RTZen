@@ -53,7 +53,7 @@ public class RequestMessage extends
         //if(ZenProperties.memDbg1) System.out.write('d');
         //if(ZenProperties.memDbg1) System.out.write('r');
         //if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(drawn);
-        RequestMessage rm = (RequestMessage)ORB.getQueuedInstance(RequestMessage.class,queue);
+        RequestMessage rm = (RequestMessage)Queue.getQueuedInstance(RequestMessage.class,queue);
         //rm.inUse = true;
         return rm;
     }

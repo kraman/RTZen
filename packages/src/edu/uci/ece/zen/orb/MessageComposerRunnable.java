@@ -10,7 +10,7 @@ public class MessageComposerRunnable implements Runnable {
     private static Queue queue = Queue.fromImmortal();
     SendMessageRunnable smr;
     public static MessageComposerRunnable instance() {
-        MessageComposerRunnable mcr = (MessageComposerRunnable)ORB.getQueuedInstance(MessageComposerRunnable.class,queue);
+        MessageComposerRunnable mcr = (MessageComposerRunnable)Queue.getQueuedInstance(MessageComposerRunnable.class,queue);
         return mcr;
     }
 

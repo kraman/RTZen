@@ -30,7 +30,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
             int threadPoolId) {
         super(orb, orbImpl, threadPoolId);
         try {
-            ssock = new java.net.ServerSocket(0, 0, orb.sockAddr);
+            ssock = new java.net.ServerSocket(0, 0, null);
 
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,

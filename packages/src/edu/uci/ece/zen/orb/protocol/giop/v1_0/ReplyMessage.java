@@ -48,7 +48,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.protocol.type.ReplyMessage
             System.out.write('g');
             edu.uci.ece.zen.utils.Logger.writeln(drawn);
         }
-        return (ReplyMessage)ORB.getQueuedInstance(ReplyMessage.class,queue);
+        return (ReplyMessage)Queue.getQueuedInstance(ReplyMessage.class,queue);
     }
 
     public int getRequestId() {

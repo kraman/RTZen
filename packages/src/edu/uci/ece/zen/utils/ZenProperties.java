@@ -65,70 +65,45 @@ public final class ZenProperties {
     private static boolean isInit = false;
 
     private static synchronized void init() {
-        if (ZenBuildProperties.dbgZenProperties) System.out
-                .println("The current memory region in ZenProperties.init() is "
-                        + javax.realtime.RealtimeThread.getCurrentMemoryArea());
+        if (ZenBuildProperties.dbgZenProperties) System.out.println("The current memory region in ZenProperties.init() is " + javax.realtime.RealtimeThread.getCurrentMemoryArea());
         if (isInit) return;
         isInit = true;
         //load global properties
 
         Properties tmpProperties = new Properties();
         try {
-            if (ZenBuildProperties.dbgZenProperties) System.out
-                    .println("Loading zen.properties from " + installDir
-                            + File.separator + "zen.properties");
+            if (ZenBuildProperties.dbgZenProperties) System.out.println("Loading zen.properties from " + installDir + File.separator + "zen.properties");
 
-            FileInputStream in = new FileInputStream(new File(installDir
-                    + File.separator + "zen.properties"));
+            FileInputStream in = new FileInputStream(new File(installDir + File.separator + "zen.properties"));
             tmpProperties.load(in);
         } catch (Exception exception) {
-            if (ZenBuildProperties.dbgZenProperties) System.out
-                    .println("Unable to load default properties from the installation directory. ("
-                            + installDir + ")");
+            if (ZenBuildProperties.dbgZenProperties) System.out.println("Unable to load default properties from the installation directory. (" + installDir + ")");
         }
 
         try {
             if (ZenBuildProperties.dbgZenProperties) System.out
-                    .println("Loading zen.properties from "
-                            + System.getProperty("user.home") + File.separator
-                            + "zen.properties");
-
-            FileInputStream in = new FileInputStream(new File(System
-                    .getProperty("user.home")
-                    + File.separator + "zen.properties"));
+                    .println("Loading zen.properties from " + System.getProperty("user.home") + File.separator + "zen.properties");
+            FileInputStream in = new FileInputStream(new File(System.getProperty("user.home") + File.separator + "zen.properties"));
             tmpProperties.load(in);
         } catch (Exception exception) {
-            if (ZenBuildProperties.dbgZenProperties) System.out
-                    .println("Unable to load default properties from the user home directory. ("
-                            + System.getProperty("user.home") + ")");
+            if (ZenBuildProperties.dbgZenProperties) System.out.println("Unable to load default properties from the user home directory. (" + System.getProperty("user.home") + ")");
         }
 
         try {
-            if (ZenBuildProperties.dbgZenProperties) System.out
-                    .println("Loading zen.properties from "
-                            + System.getProperty("user.dir") + File.separator
-                            + "zen.properties");
+            if (ZenBuildProperties.dbgZenProperties) System.out.println("Loading zen.properties from " + System.getProperty("user.dir") + File.separator + "zen.properties");
 
-            FileInputStream in = new FileInputStream(new File(System
-                    .getProperty("user.dir")
-                    + File.separator + "zen.properties"));
+            FileInputStream in = new FileInputStream(new File(System.getProperty("user.dir") + File.separator + "zen.properties"));
             tmpProperties.load(in);
         } catch (Exception exception) {
-            if (ZenBuildProperties.dbgZenProperties) System.out
-                    .println("Unable to load default properties from the working directory. ("
-                            + System.getProperty("user.dir") + ")");
+            if (ZenBuildProperties.dbgZenProperties) System.out.println("Unable to load default properties from the working directory. (" + System.getProperty("user.dir") + ")");
         }
 
         try {
-            globalProperties = (Properties) immortalMem
-                    .newInstance(Properties.class);
+            globalProperties = (Properties) immortalMem.newInstance(Properties.class);
             //System.out.println( "#" + globalProperties );
             java.util.Enumeration propsEnum = tmpProperties.propertyNames();
-            Class[] refArgs = new Class[] {
-                String.class
-            };
-            java.lang.reflect.Constructor refConstr = String.class
-                    .getConstructor(refArgs);
+            Class[] refArgs = new Class[] { String.class };
+            java.lang.reflect.Constructor refConstr = String.class.getConstructor(refArgs);
             while (propsEnum.hasMoreElements()) {
                 String key = (String) propsEnum.nextElement();
                 String val = (String) tmpProperties.get(key);
@@ -148,8 +123,7 @@ public final class ZenProperties {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        if (ZenBuildProperties.dbgZenProperties) System.out
-                .println("Global properties have been loaded");
+        if (ZenBuildProperties.dbgZenProperties) System.out.println("Global properties have been loaded");
         System.out.flush();
         //All properties loaded
     }
@@ -274,8 +248,7 @@ public final class ZenProperties {
                     } else {
                         value = args[++i].trim();
                     }
-                    props.setProperty("org.omg.CORBA.ORBDefaultInitRef", value
-                            + "");
+                    props.setProperty("org.omg.CORBA.ORBDefaultInitRef", value + "");
                 } else if (arg.startsWith("-ZENLoadProtocol")) {
                     Object propActVal = props.getProperty( "org.omg.CORBA.ORBNoProprietaryActivation" );
                     if( propActVal != null && ((String)propActVal).trim().equalsIgnoreCase( "true" ) ){
@@ -294,7 +267,9 @@ public final class ZenProperties {
                         System.err.println( "Unable to proceed due to excetion: " + e + " while trying to load protocol" );
                         System.exit(-1);
                     }
-                } else if (arg.startsWith("-ORB")) { throw new org.omg.CORBA.BAD_PARAM( "Bad parameter " + arg); }
+                } else if (arg.startsWith("-ORB")) { 
+                    throw new org.omg.CORBA.BAD_PARAM( "Bad parameter " + arg); 
+                }
             }
         }
     }
