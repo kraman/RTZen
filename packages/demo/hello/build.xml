@@ -60,7 +60,7 @@
             debug="true">
             <fileset dir="${zen.srcdir}">
                 <patternset>
-                    <include name="demo/hello/**.java"/>
+                    <include name="demo/hello/Client.java"/>
                     <exclude name="demo/hello/Server.java"/>
                 </patternset>
             </fileset>

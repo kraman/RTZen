@@ -7,7 +7,6 @@ package demo.hello;
  */
 
 public class HelloWorldImpl extends HelloWorldPOA
-
 {
     /**
      * Gets a message from the Hello World Server.

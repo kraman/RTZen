@@ -118,7 +118,6 @@ class MessageProcessor implements Runnable{
          
 
         while( isActive ){
-             
 		//ScopedMemory messageScope = ORB.getScopedRegion();
 
 
@@ -126,9 +125,7 @@ class MessageProcessor implements Runnable{
 
 
             //ImmortalMemory messageScope = ORB.getScopedRegion();
-             
             //gmr.setRequestScope( messageScope );
-
             //eir.init( gmr , messageScope );
              
             try{

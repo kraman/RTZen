@@ -55,7 +55,9 @@
             <exclude name="src/edu/uci/ece/zen/orb/TracerAspect.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TypeCodeAspect.java"/>
 
-            <include name="src/edu/uci/ece/zen/poa/**"/>
+            <exclude name="src/edu/uci/ece/zen/poa/**"/>
+            <exclude name="src/edu/uci/ece/zen/orb/giop/v1_1/**"/>
+            <exclude name="src/edu/uci/ece/zen/orb/giop/v1_2/**"/>
 
             <exclude name="src/edu/uci/ece/zen/orb/resolvers/**"/>
 

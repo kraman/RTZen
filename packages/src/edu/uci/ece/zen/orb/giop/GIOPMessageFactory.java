@@ -71,6 +71,7 @@ public final class GIOPMessageFactory
                                     break;
                             }
                             break;
+                        /*
                         case 1:
                             switch( mainMsgHdr.messageType ){
                                 case org.omg.GIOP.MsgType_1_1._Request:
@@ -150,6 +151,7 @@ public final class GIOPMessageFactory
                                     break;
                             }
                             break;
+                    */
                         default:
                             throw new RuntimeException(""); //throw GIOP error here
                     }
@@ -158,7 +160,7 @@ public final class GIOPMessageFactory
                     throw new RuntimeException(""); //throw GIOP error here
             }   
         }while( false );
-        ret.setTransport( trans );
+        ret.setTransport( (javax.realtime.ScopedMemory) javax.realtime.MemoryArea.getMemoryArea(trans) );
         return ret;
     }
 

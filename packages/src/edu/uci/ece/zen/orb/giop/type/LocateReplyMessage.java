@@ -64,12 +64,12 @@ public abstract class LocateReplyMessage extends GIOPMessage {
     /** Read and store the body of the LocateReplyMessage based on the type of message that it is.  Called by constructors.
     */
     protected void readBody() {
-        if (this instanceof edu.uci.ece.zen.orb.giop.v1_0.LocateReplyMessage || this instanceof edu.uci.ece.zen.orb.giop.v1_1.LocateReplyMessage) {
+        if (this instanceof edu.uci.ece.zen.orb.giop.v1_0.LocateReplyMessage ){ //|| this instanceof edu.uci.ece.zen.orb.giop.v1_1.LocateReplyMessage) {
             if (getLocateStatusValue() == org.omg.GIOP.LocateStatusType_1_0._OBJECT_FORWARD) {
                 forwardIOR = org.omg.IOP.IORHelper.read(this.istream);
             }
             // Do nothing for OBJECT_HERE and UNKNOWN_OBJECT.
-        }
+        }/*
         else if (this instanceof edu.uci.ece.zen.orb.giop.v1_2.LocateReplyMessage) {
             int aReplyStatus = getLocateStatusValue();
             switch ( aReplyStatus ) {
@@ -87,7 +87,7 @@ public abstract class LocateReplyMessage extends GIOPMessage {
                 default: 
                     throw new org.omg.CORBA.NO_IMPLEMENT ("Unhandled reply status " + aReplyStatus); 
             }
-        }
+        }*/
         else {
             throw new org.omg.CORBA.NO_IMPLEMENT ("Unhandled instance type of " + this);   
         }

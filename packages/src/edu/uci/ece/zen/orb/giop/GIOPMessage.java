@@ -43,12 +43,13 @@ public abstract class GIOPMessage{
     public final void setScope( ScopedMemory scope ) { this.scope = scope; }
     public final ScopedMemory getScope(){ return scope; }
 
-    protected ScopedMemory transportMemArea;
-    public void setTransport( Transport t ){
-        this.transportMemArea = (ScopedMemory) javax.realtime.MemoryArea.getMemoryArea(t);
+    protected ScopedMemory transport;
+    public void setTransport( ScopedMemory t ){
+        transport = t;
     }
-    public Transport getTransport()
+
+    public ScopedMemory getTransport()
     { 
-        return (Transport) transportMemArea.getPortal();
+        return transport;
     }
 }
