@@ -2,11 +2,12 @@ package edu.uci.ece.zen.poa.mechanism;
 
 
 import org.omg.CORBA.CompletionStatus;
-
-import edu.uci.ece.zen.orb.ResponseHandler;
-import edu.uci.ece.zen.orb.ServerReply;
-import edu.uci.ece.zen.orb.ServerRequest;
-
+import org.omg.CORBA.IntHolder;
+import edu.uci.ece.zen.orb.*;
+import edu.uci.ece.zen.orb.giop.type.*;
+import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.utils.*;
+import javax.realtime.*;
 
 public class DefaultServantStrategy extends RequestProcessingStrategy {
     /**
@@ -45,9 +46,7 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
             this.servant = (org.omg.PortableServer.Servant) servant;
         } else {
             exceptionValue.value = POARunnable.WrongPolicyException;
-            return null;
         }
-
     }
 
     /**
@@ -74,21 +73,20 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      * @throws org.omg.PortableServer.POAPackage.ObjectNotActive
      */
-    public Object getRequestProcessor(int name, IntHolder excpetionValue)
+    public Object getRequestProcessor(int name, IntHolder excpetionValue )
     {
-        exceptionValue.value = POARunnable.NoException;
-        if (this.validate(name)) {
+        excpetionValue.value = POARunnable.NoException;
+        if ( this.validate(name , excpetionValue )) {
             if (this.servant != null) {
                 return this.servant;
             } else {
-                exceptionValue.value = POARunnable.ObjectNotActiveException;
+                excpetionValue.value = POARunnable.ObjNotActiveException;
                return null; 
             }
         } else {
-            exceptionValue.value = POARunnable.WrongPolicyException;
+            excpetionValue.value = POARunnable.WrongPolicyException;
             return null;
         }
-
     }
 
     /**
@@ -98,7 +96,7 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
      * @param requests edu.uci.ece.zen.poa.SynchronizedInt
      * @return int
      */
-    public int handleRequest(ServerRequest request, edu.uci.ece.zen.poa.POA poa, edu.uci.ece.zen.poa.SynchronizedInt requests, exceptionValue) {
+    public void handleRequest( RequestMessage request, edu.uci.ece.zen.poa.POA poa, edu.uci.ece.zen.poa.SynchronizedInt requests, IntHolder exceptionValue ) {
         exceptionValue.value = POARunnable.NoException;
         if (this.retentionStrategy != null) {
                 int tmp = handleIfRetain(request, poa, requests, exceptionValue);
@@ -108,14 +106,20 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
             //something happened here and nothing is done
             exceptionValue.value = POARunnable.NoException;
         }
+        
+        POAImpl pimpl = (POAImpl) ((ScopedMemory)poa.poaMemoryArea).getPortal();
 
-        edu.uci.ece.zen.poa.ObjectKey ok = request.getObjectKey();
-        byte[] oid = ok.getId();
+        FString okey = pimpl.getFString();
+        FString oid = pimpl.getFString();
+        request.getObjectKey( okey );
+        ObjectKeyHelper.getId( okey , oid );
 
         // handling as if non retain is in place
         if (this.servant == null) {
             exceptionValue.value = POARunnable.ObjAdapterException;
-            return null;
+            pimpl.retFString( okey );
+            pimpl.retFString( oid );
+            return;
         }
 
         org.omg.PortableServer.Servant myServant = this.servant;
@@ -125,62 +129,61 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
             requests.increment();
         }
 
-        edu.uci.ece.zen.poa.ThreadSpecificPOACurrent.putInvocationContext(poa,
-                ok, this.servant);
+        ((POACurrent)pimpl.poaCurrent.get()).init(poa,okey, this.servant);
 
-        ResponseHandler responseHandler = new ResponseHandler(poa.getORB(),
-                request.message.getRequestId(),
-                request.message.getGIOPVersion().major,
-                request.message.getGIOPVersion().minor);
+        ResponseHandler responseHandler = new ResponseHandler(poa.getORB(),request);
 
         this.threadPolicyStrategy.enter(invokeHandler);
 
-        ServerReply reply;
-        if (request.message.getOperation().equals("_is_a") )
+        CDROutputStream reply;
+        if (request.getOperation().equals("_is_a") )
         {
-        		boolean _result = myServant._is_a(request.message.getIstream().read_string());
-                        org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
-                        _output.write_boolean(_result);
-                        reply = (ServerReply) _output;
-
+            boolean _result = myServant._is_a(request.getCDRInputStream().read_string());
+            org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
+            _output.write_boolean(_result);
+            reply = (CDROutputStream) _output;
         }
-        else if (request.message.getOperation().equals("_non_existent") )
-                 {
-                 	boolean _result = myServant._non_existent();
-                        org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
-                        _output.write_boolean(_result);
-                        reply = (ServerReply) _output;
-
-                  }
-       else
-
-
-                  {
-        		reply = (ServerReply)
-                	invokeHandler._invoke(request.message.getOperation(),
-                	request.message.getIstream(), responseHandler);
-                  }
-
+        else if (request.getOperation().equals("_non_existent") )
+        {
+            boolean _result = myServant._non_existent();
+            org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
+            _output.write_boolean(_result);
+            reply = (CDROutputStream) _output;
+        }
+        else
+        {
+            reply = (CDROutputStream)
+                invokeHandler._invoke(request.getOperation(),
+                (org.omg.CORBA.portable.InputStream) request.getCDRInputStream(),
+                responseHandler);
+        }
+        pimpl.retFString( okey );
+        pimpl.retFString( oid );
 
         this.threadPolicyStrategy.exit(invokeHandler);
 
         // --Post Invoke
         synchronized (mutex) {
-            requests.decrementAndNotifyAll(poa.isDestructionApparent());
+            requests.decrementAndNotifyAll( poa.poaState == POA.DESTRUCTION_APPARANT);
         }
-        reply.sendUsing(request.getTransport());
-        return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
+        //reply.sendUsing(request.getTransport());
+        //return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
     }
 
-    private int handleIfRetain(ServerRequest request,
-            edu.uci.ece.zen.poa.POA poa,
-            edu.uci.ece.zen.poa.SynchronizedInt requests, IntHolder exceptionValue)
+    private void handleIfRetain( RequestMessage request, edu.uci.ece.zen.poa.POA poa, edu.uci.ece.zen.poa.SynchronizedInt requests, IntHolder exceptionValue)
     {
         exceptionValue.value = POARunnable.NoException;
-        edu.uci.ece.zen.poa.ObjectKey ok = request.getObjectKey();
-        byte[] oid = ok.getId();
+        POAImpl pimpl = (POAImpl) ((ScopedMemory)poa.poaMemoryArea).getPortal();
+        FString ok = pimpl.getFString();
+        FString oid = pimpl.getFString();
+        request.getObjectKey( ok );
+        ObjectKeyHelper.getId( ok , oid );
 
-        edu.uci.ece.zen.poa.POAHashMap okey = this.retentionStrategy.getHashMap(oid);
+        edu.uci.ece.zen.poa.POAHashMap okey = this.retentionStrategy.getHashMap( oid , exceptionValue );
+        if( exceptionValue.value != POARunnable.NoException ){
+            pimpl.retFString( ok );
+            pimpl.retFString( oid );
+        }
 
         org.omg.PortableServer.Servant myServant = okey.getServant();
 
@@ -188,59 +191,57 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
 
         if (okey == null || !okey.isActive()) {
             exceptionValue.value = POARunnable.ObjNotExistException;
-            return null;
+            pimpl.retFString( ok );
+            pimpl.retFString( oid );            
+            return;
         }
+        
         // --PRE-INVOKE
         synchronized (mutex) {
             okey.incrementActiveRequests();
             requests.increment();
         }
 
-        edu.uci.ece.zen.poa.ThreadSpecificPOACurrent.putInvocationContext(poa,
-                ok, okey.getServant());
+        
+        ((POACurrent)pimpl.poaCurrent.get()).init(poa,ok, okey.getServant() );
 
-        ResponseHandler responseHandler = new ResponseHandler(poa.getORB(),
-                request.message.getRequestId(),
-                request.message.getGIOPVersion().major,
-                request.message.getGIOPVersion().minor);
+        ResponseHandler responseHandler = new ResponseHandler(poa.getORB(),request);
 
         this.threadPolicyStrategy.enter(invokeHandler);
-        ServerReply reply;
-        if (request.message.getOperation().equals("_is_a") )
+        CDROutputStream reply;
+        if (request.getOperation().equals("_is_a") )
         {
-        		boolean _result = myServant._is_a(request.message.getIstream().read_string());
-                        org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
-                        _output.write_boolean(_result);
-                        reply = (ServerReply) _output;
-
+            boolean _result = myServant._is_a(request.getCDRInputStream().read_string());
+            org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
+            _output.write_boolean(_result);
+            reply = (CDROutputStream) _output;
         }
-        else if (request.message.getOperation().equals("_non_existent") )
-                 {
-                 	boolean _result = myServant._non_existent();
-                        org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
-                        _output.write_boolean(_result);
-                        reply = (ServerReply) _output;
-
-                  }
-       else
-
-
-                  {
-        		reply = (ServerReply)
-                	invokeHandler._invoke(request.message.getOperation(),
-                	request.message.getIstream(), responseHandler);
-                  }
+        else if (request.getOperation().equals("_non_existent") )
+        {
+            boolean _result = myServant._non_existent();
+            org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
+            _output.write_boolean(_result);
+            reply = (CDROutputStream) _output;
+        }
+        else
+        {
+            reply = (CDROutputStream)
+                invokeHandler._invoke(request.getOperation(),
+                (org.omg.CORBA.portable.InputStream) request.getCDRInputStream(),
+                responseHandler);
+        }
+        pimpl.retFString( ok );
+        pimpl.retFString( oid );
 
         this.threadPolicyStrategy.exit(invokeHandler);
 
         // --Post Invoke
         synchronized (mutex) {
-            requests.decrementAndNotifyAll(poa.isDestructionApparent());
+            requests.decrementAndNotifyAll( poa.poaState == POA.DESTRUCTION_APPARANT );
             okey.decrementActiveRequestsAndDeactivate();
         }
-        reply.sendUsing(request.getTransport());
-        return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
-
+        //reply.sendUsing(request.getTransport());
+        //return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
     }
 
     private static final int name = RequestProcessingStrategy.DEFAULT_SERVANT;
@@ -252,3 +253,4 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
     // --- MUTEX ---
     private Object mutex = new byte[0];
 }
+

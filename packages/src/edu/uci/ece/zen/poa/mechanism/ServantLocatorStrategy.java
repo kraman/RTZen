@@ -8,6 +8,9 @@ package edu.uci.ece.zen.poa.mechanism;
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.portable.InvokeHandler;
 import edu.uci.ece.zen.orb.ResponseHandler;
+import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.utils.*;
+import org.omg.CORBA.IntHolder;
 
 public class ServantLocatorStrategy extends ServantManagerStrategy {
     
@@ -65,7 +68,7 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
     * @param requests active requests
     * @return int return state
     */
-    public int handleRequest(ServerRequest request,
+    public int handleRequest(RequestMessage request,
             edu.uci.ece.zen.poa.POA poa,
             edu.uci.ece.zen.poa.SynchronizedInt requests) {
         edu.uci.ece.zen.poa.ObjectKey ok = request.getObjectKey();
@@ -152,7 +155,8 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
     * @param name 
     * @return boolean
     */
-    public boolean validate( int name , IntHolder exceptionHolder )
+    public boolean validate( int name , IntHolder exceptionHolder ){
+        exceptionHolder.value = POARunnable.NoException;
         return (RequestProcessingStrategy.SERVANT_LOCATOR == name);
     }
 

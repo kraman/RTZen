@@ -35,7 +35,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
     * @param uniqunessStrategy IdUniquenessStrategy
     * @throws org.omg.PortableServer.POAPackage.InvalidPolicy
     */
-    public void init( ServantRetentionStrategy retain, ThreadPolicyStrategy threadStrategy, org.omg.CORBA.IntHolder ih,
+    public void init( ServantRetentionStrategy retain, ThreadPolicyStrategy threadStrategy, 
             IdUniquenessStrategy uniqunessStrategy , POAImpl pimpl , IntHolder exceptionValue ){
         if(!( retain instanceof RetainStrategy )){
             exceptionValue.value = POARunnable.InvalidPolicyException;

@@ -36,7 +36,7 @@ public abstract class RequestProcessingStrategy {
 
     
     public static RequestProcessingStrategy init( org.omg.CORBA.Policy[] policy, ServantRetentionStrategy retentionStrategy, IdUniquenessStrategy uniquenessStrategy,
-            ThreadPolicyStrategy threadStrategy, IntHolder exceptionValue)
+            ThreadPolicyStrategy threadStrategy, POAImpl pimpl , IntHolder exceptionValue)
     {
         exceptionValue.value = POARunnable.NoException;
 
@@ -45,8 +45,9 @@ public abstract class RequestProcessingStrategy {
             retentionStrategy.validate(retentionStrategy.RETAIN , exceptionValue );
             if( exceptionValue.value != POARunnable.NoException)
                 return null;
-            ServantActivatorStrategy activator = new RequestProcessingStrategy();
-            activator.initialize(retentionStrategy, threadStrategy,uniquenessStrategy);
+            ServantActivatorStrategy activator = new ServantActivatorStrategy();
+            activator.init(retentionStrategy, threadStrategy,uniquenessStrategy , 
+                pimpl , exceptionValue );
 
             if (exceptionValue.value == POARunnable.NoException)
                 return activator;    
@@ -67,15 +68,14 @@ public abstract class RequestProcessingStrategy {
     
         if ( PolicyUtils.useDefaultServantPolicy(policy) ) {
 
-            if (uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID, exceptionValue)) 
+            if (uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID)) 
             {
-                exceptionValue.value = InvalidPolicyException;
+                exceptionValue.value = POARunnable.InvalidPolicyException;
                 return null;
             }
 
             try {
-                DefaultServantStrategy servant = (DefaultServantStrategy)
-                        POAPolicyFactory.createPolicy(ZenProperties.getProperty(RequestProcessingStrategy.defaultServantPath));
+                DefaultServantStrategy servant = new DefaultServantStrategy();
 
                 //servant.initialize(retentionStrategy, ;
                 return servant;
@@ -86,7 +86,7 @@ public abstract class RequestProcessingStrategy {
 
         ActiveObjectMapOnlyStrategy aom = new ActiveObjectMapOnlyStrategy();
 
-        aom.initialize(retentionStrategy, threadStrategy);
+        aom.initialize( retentionStrategy, threadStrategy , exceptionValue );
         return aom;
     }
 

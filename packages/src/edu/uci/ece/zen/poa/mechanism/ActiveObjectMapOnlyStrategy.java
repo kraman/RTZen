@@ -8,6 +8,7 @@ import org.omg.CORBA.IntHolder;
 import edu.uci.ece.zen.poa.*;
 import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.utils.*;
+import javax.realtime.*;
 
 
 /**
@@ -124,15 +125,11 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         org.omg.PortableServer.Servant myServant = ((POAHashMap)this.retainStr.activeMap.mapEntry(index)).getServant();
         InvokeHandler invokeHandler = (InvokeHandler) myServant;
 
-        POAImpl pimpl = (POAImpl) ((ScopedMemory)poa.poaMemoryRegion).getPortal();
+        POAImpl pimpl = (POAImpl) ((ScopedMemory)poa.poaMemoryArea).getPortal();
         // Logger.debug("logged debug 0");
         ((POACurrent)pimpl.poaCurrent.get()).init(poa, okey, (org.omg.PortableServer.Servant) invokeHandler);
 
-        ResponseHandler responseHandler = new ResponseHandler(
-                ((edu.uci.ece.zen.poa.POA) poa).getORB(),
-                request.getRequestId(),
-                request.getGIOPVersion() / 10,
-                request.getGIOPVersion() % 10);
+        ResponseHandler responseHandler = new ResponseHandler(((edu.uci.ece.zen.poa.POA) poa).getORB(),request );
 
         CDROutputStream reply;
         synchronized (mutex) {
@@ -143,7 +140,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
 
         if (request.getOperation().equals("_is_a") )
         {
-            boolean _result = myServant._is_a(request.getIstream().read_string());
+            boolean _result = myServant._is_a(request.getCDRInputStream().read_string());
             org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
             _output.write_boolean(_result);
             reply = (CDROutputStream) _output;
@@ -159,14 +156,15 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         {
             reply = (CDROutputStream)
                 invokeHandler._invoke(request.getOperation(),
-                        request.getIstream(), responseHandler);
+                        (org.omg.CORBA.portable.InputStream)request.getCDRInputStream(), 
+                        responseHandler);
         }
 
 
         // --- POST-INVOKE ---
         this.threadPolicyStrategy.exit(invokeHandler);
         synchronized (mutex) {
-            requests.decrementAndNotifyAll(poa.isDestructionApparent());
+            requests.decrementAndNotifyAll(poa.processingState == POA.DESTRUCTION_APPARANT);
             map.decrementActiveRequestsAndDeactivate();
         }
 

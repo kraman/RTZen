@@ -28,7 +28,7 @@ public abstract class ServantRetentionStrategy {
     public static ServantRetentionStrategy init( org.omg.CORBA.Policy[] policy, IdUniquenessStrategy uniquenessStrategy, org.omg.CORBA.IntHolder ih ) {
         if (PolicyUtils.useRetainPolicy(policy)) {
             RetainStrategy retain = new RetainStrategy();
-            retain.initialize(uniquenessStrategy , ih );
+            retain.initialize(uniquenessStrategy);
             return retain;
         } else {
             return new NonRetainStrategy();
