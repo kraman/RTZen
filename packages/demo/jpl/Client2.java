@@ -37,7 +37,7 @@ public class Client2 extends NoHeapRealtimeThread
 {
     private static final int A_SECOND = 1000;
     private static final int INITIAL_SLEEP = A_SECOND;
-    private static final int REQUEST_SLEEP = 10;
+    private static final int REQUEST_SLEEP = 6;
     public static final int RUN_NUM = 10000;
     public static final int ARRAY_SIZE = 10;
     public static final int WARM_UP = 3000;

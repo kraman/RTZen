@@ -33,10 +33,11 @@ public class Client1 extends RealtimeThread
     public static ORB sharedOrb;
     private static final int A_SECOND = 1000;
     private static final int INITIAL_SLEEP = A_SECOND;
-    private static final int REQUEST_SLEEP = 1;
+    private static final int REQUEST_SLEEP = 3;
     public static final int RUN_NUM = 10000;
     public static final int ARRAY_SIZE = 200;
     public static final int WARM_UP = 3000;
+    public static final int FACTOR = 2;
     public static short priority = minPriority.value;
 
     static int[] array1 = new int[ARRAY_SIZE];
@@ -142,7 +143,7 @@ public class Client1 extends RealtimeThread
 
             System.out.println("==============Performance benchmark 1==============");
             long start = System.currentTimeMillis();
-            for (int i = 0; i< RUN_NUM*3; i++)
+            for (int i = 0; i< RUN_NUM*FACTOR; i++)
             {
 
                 //System.out.print("# ");
