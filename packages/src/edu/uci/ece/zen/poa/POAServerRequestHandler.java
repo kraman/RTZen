@@ -17,7 +17,12 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
     }
 
     public int addPOA( FString path, org.omg.PortableServer.POA poa ){
-        return demuxTable.bind( path , poa );
+        int idx =  demuxTable.bind( path , poa );
+        return idx;
+    }
+
+    public int getPOAGenCount( int poaIdx ){
+        return demuxTable.getGenCount( poaIdx );
     }
 
     /**
@@ -35,6 +40,8 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
      * </p>
      */
     public void handleRequest(RequestMessage req) {
+        System.out.println( "POAServerRequestHandler.handleRequest: Got a request to process: " + req );
+        
        // gt the index into the Active Map
        FString objKey = new FString( 256 );
        req.getObjectKey( objKey );
@@ -43,6 +50,9 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
        int genCount = ObjectKeyHelper.getPOAGeneration( objKey );
 
        POA poa = null;
+
+       System.out.println( "IOR: " + index + "," + genCount );
+       System.out.println( "POA: " + index + "," + demuxTable.getGenCount(index) );
 
        if (demuxTable.getGenCount(index) == genCount) {
            poa = ((POA)this.demuxTable.mapEntry(index));

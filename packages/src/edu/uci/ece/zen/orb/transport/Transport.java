@@ -221,9 +221,17 @@ class GIOPMessageRunnable implements Runnable{
      */
     public void run(){
         try{
+            System.out.println( "GIOPMessageRunnable.run 1" );
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
+            System.out.println( "GIOPMessageRunnable.run 2" );
             if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
+                System.out.println( "GIOPMessageRunnable.run 3" );
+                System.out.println( trans );
+                System.out.println( trans.orbImpl );
+                System.out.println( trans.orbImpl.getServerRequestHandler() );
+                System.out.println( message );
                 trans.orbImpl.getServerRequestHandler().handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) message );
+                System.out.println( "GIOPMessageRunnable.run 4" );
             }
             if( message instanceof edu.uci.ece.zen.orb.giop.type.ReplyMessage ){
                 ScopedMemory waiterRegion = orb.getWaiterRegion( message.getRequestId() );

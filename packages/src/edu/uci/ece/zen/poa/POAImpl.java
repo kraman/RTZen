@@ -26,12 +26,10 @@ public class POAImpl{
     private POA                                     parent;
     public  POA                                     self;
     private java.util.Hashtable                     theChildren;
-    private org.omg.PortableServer.POAManager       poaManager;
     private org.omg.PortableServer.AdapterActivator adapterActivator;
     private org.omg.PortableServer.ServantManager   theServantManager;
     private org.omg.PortableServer.Servant          theServant = null;
     private POAServerRequestHandler                 serverRequestHandler;
-    private int                                     poaDemuxCount;
     private POAImplRunnable                         poaImplRunnable;
 
     // ---  Current Number of request executing in the POA ---
@@ -142,18 +140,21 @@ public class POAImpl{
         this.parent = parent;
         this.manager = manager;
         this.tpId = 0;
+        this.poaCurrent = new ThreadLocal();
         System.out.println( "POAImpl init 2" );
 
         try{
             serverRequestHandler = (POAServerRequestHandler) ((ORBImpl)((ScopedMemory)orb.orbImplRegion).getPortal()).getServerRequestHandler();
             if( serverRequestHandler == null ){
                 serverRequestHandler =  (POAServerRequestHandler) orb.orbImplRegion.newInstance( POAServerRequestHandler.class  );
+                ((ORBImpl)((ScopedMemory)orb.orbImplRegion).getPortal()).setServerRequestHandler( serverRequestHandler );
             }
         }catch( Exception e1 ){
             e1.printStackTrace();
         }
         System.out.println( "POAImpl init 3" );
         self.poaDemuxIndex = serverRequestHandler.addPOA( self.poaPath , self );
+        self.poaDemuxCount = serverRequestHandler.getPOAGenCount( self.poaDemuxIndex );
         System.out.println( "POAImpl init 4" );
 
 
@@ -219,40 +220,52 @@ public class POAImpl{
      *      </p>
      * </p>
      */
-    public void handleRequest( RequestMessage req , POARunnable prun ){
+    public void handleRequest( RequestMessage req , MemoryArea requestScope , POARunnable prun ){
+        System.out.println( "POAImpl.handled 1" );
         IntHolder ih = getIntHolder();
 
         if( this.poaCurrent.get() == null )
             this.poaCurrent.set( new POACurrent() );
+        System.out.println( "POAImpl.handled 2" );
 
         validateProcessingState( ih ); // check for the state of the poa? if it is discarding then throw the transient exception...
         if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retIntHolder( ih ); return; }
+        System.out.println( "POAImpl.handled 3" );
 
         // Check the state of the POAManager. Here the POA is in active state
-        prun.exception = POAManager.checkPOAManagerState(this.poaManager);
+        prun.exception = POAManager.checkPOAManagerState(self.the_POAManager());
         if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retIntHolder( ih ); return; }
+        System.out.println( "POAImpl.handled 4" );
 
         // check if the POA has the persistent policy/or the transient
         FString objKey = getFString();
         req.getObjectKey( objKey );
+        System.out.println( "POAImpl.handled 5" );
         this.lifespanStrategy.validate( objKey , ih );
+        System.out.println( "POAImpl.handled 6" );
         retFString( objKey );
         if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retIntHolder( ih ); return; }
+        System.out.println( "POAImpl.handled 7" );
 
         try {
             ScopedMemory tpRegion = this.orb.getThreadPoolRegion(tpId);
-            ScopedMemory requestScope = (ScopedMemory) MemoryArea.getMemoryArea( req );
+            System.out.println( "POAImpl.handled 8" );
 
             ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );
-            tpr.init( self , requestScope );
+            System.out.println( "POAImpl.handled 10" );
+            tpr.init( self , (ScopedMemory) requestScope );
             eir.init( tpr , tpRegion );
+            System.out.println( "POAImpl.handled 11" );
 
             HandleRequestRunnable hrr = (HandleRequestRunnable) requestScope.newInstance( HandleRequestRunnable.class );
             hrr.init( self , req );
-            requestScope.setPortal( hrr );
+            System.out.println( "POAImpl.handled 12" );
+            ((ScopedMemory)requestScope).setPortal( hrr );
+            System.out.println( "POAImpl.handled 13" );
 
             orb.orbImplRegion.executeInArea( eir );
+            System.out.println( "POAImpl.handled 14" );
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here
             // -- Throw a transient exception
@@ -317,7 +330,7 @@ public class POAImpl{
                     int genCount = this.retentionStrategy.getGenCount( index , ih );
                     if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retPOAHashMap( map ); break; }
 
-                    this.lifespanStrategy.create( self.poaPath , oid, self.poaDemuxIndex , this.poaDemuxCount , index , genCount , okey );
+                    this.lifespanStrategy.create( self.poaPath , oid, self.poaDemuxIndex , self.poaDemuxCount , index , genCount , okey );
                     retVal = this.create_reference_with_object_key(okey, p_servant._all_interfaces(self, null)[0] , clientMemoryArea );
                     break;
                 }
@@ -336,7 +349,7 @@ public class POAImpl{
                 if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; break; }
 
                 // Create the Object Key using the IdHint Strategy
-                this.lifespanStrategy.create(self.poaPath, oid, self.poaDemuxIndex , this.poaDemuxCount , index, count, okey );
+                this.lifespanStrategy.create(self.poaPath, oid, self.poaDemuxIndex , self.poaDemuxCount , index, count, okey );
 
                 retVal = this.create_reference_with_object_key (okey, p_servant._all_interfaces(self, null)[0] , clientMemoryArea);
             }

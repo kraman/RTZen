@@ -216,7 +216,7 @@ public class POAManager extends org.omg.CORBA.LocalObject implements org.omg.Por
      * @return The state of the POAManager.
      */
     public org.omg.PortableServer.POAManagerPackage.State get_state() {
-        return State.from_int(state.value());
+        return state;
     }
 
     protected void register(org.omg.PortableServer.POA poa) {

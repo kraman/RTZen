@@ -23,6 +23,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private SynchronizedInt numberOfCurrentRequests;
     public  int poaState;
     protected int poaDemuxIndex;
+    protected int poaDemuxCount;
     public int processingState = POA.ACTIVE;
     private AdapterActivator adapterActivator;
 
@@ -176,6 +177,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     public void handleRequest(final RequestMessage sreq) {
         POARunnable r = new POARunnable( POARunnable.HANDLE_REQUEST );
         r.addParam( sreq );
+        r.addParam( RealtimeThread.getCurrentMemoryArea() );
 
         ExecuteInRunnable eir1 = new ExecuteInRunnable();
         eir1.init( r , poaMemoryArea );
