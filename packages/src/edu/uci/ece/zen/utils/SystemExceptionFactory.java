@@ -86,7 +86,7 @@ public class SystemExceptionFactory
     private final static int PORTABLE_UNKNOWN_EXCEPTION = 33;
     
     private static final int MAX_NUM_OF_SYS_EX = 34;
-    private static final int NUM_OF_STD_MINOR_CODES = 150; // See Apendix A of CORBA spec 3.0.3.
+    private static final int NUM_OF_STD_MINOR_CODES = 130 + MAX_NUM_OF_SYS_EX; // See Apendix A of CORBA spec 3.0.3.
     private static final int COMPLETION_POSSIBILITIES = 3; // COMPLETED_MAYBE, COMPLETED_NO, and COMPLETED_YES 
 
     private static final SystemException[] sysExCache = 
@@ -116,16 +116,16 @@ public class SystemExceptionFactory
      * @return  a CORBA system exception created in immortal memory.
      * @throws  NullPointerException if <code>completed</code> is null.
      * @throws  IllegalArgumentException if <code>sysEx</code> is invalid, or 
-     *          <code>minor</code> is negative or zero.
+     *          <code>minor</code> is negative.
      */
-    public SystemException getSystemException(int sysEx, int minor, CompletionStatus completed) {
+    public synchronized SystemException getSystemException(int sysEx, int minor, CompletionStatus completed) {
         if (completed == null) {
             ZenProperties.logger.log(Logger.WARN, this.getClass(), "getSystemException", 
                                      "completed cannot be is null");
             throw NULL_POINTER_EXCEPTION;
         }
         
-        if (minor <= 0) {
+        if (minor < 0) {
             ZenProperties.logger.log(Logger.WARN, this.getClass(), "getSystemException", 
                                      "minor must be possitive");
             throw ILLEGAL_ARG_EXCEPTION;
@@ -155,10 +155,25 @@ public class SystemExceptionFactory
         return e;
     }
 
+
+   /**
+     * Returns a CORBA system exception created in immortal memory with minor code 
+     * <code>0</code> and completion status <code>COMPLETED_NO</code>. 
+     * After being created, the exception is cached so that the can be reused in future 
+     * invocations.
+     * @param   sysEx number that identifies the type of the system exception.
+     * @return  a CORBA system exception created in immortal memory with minor code
+     *          <code>0</code> and completion status <code>COMPLETED_NO</code>.
+     * @throws  IllegalArgumentException if <code>sysEx</code> is invalid.
+     */
+    public SystemException getSystemException(int sysEx) {
+       return this.getSystemException(sysEx, 0, CompletionStatus.COMPLETED_NO);
+    }
+
     /**
-     * Returns the class object corresponding to the ode that identifies the type of the system exception
+     * Returns the class object corresponding to the code that identifies the type of the system exception.
      * @param sysEx number that identifies the type of the system exception.
-     * @return
+     * @return the class object corresponding to the code that identifies the type of the system exception.
      */
     private Class getSysExClass(int sysEx) {
         if (sysEx < 0 || sysEx > MAX_NUM_OF_SYS_EX) { 
