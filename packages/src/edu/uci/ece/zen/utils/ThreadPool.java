@@ -58,6 +58,11 @@ public class ThreadPool {
         this.lanes = new Lane[1];
         acceptorRunnable.init( orb , defaultPriority , threadPoolId );
         orb.setUpORBChildRegion( acceptorRunnable );
+        
+        if (ZenBuildProperties.dbgTP) ZenProperties.logger.log(
+                " Default Lane created with priority: " + defaultPriority + 
+                " static_threads: " + staticThreads + 
+                " dynamic_threads: " + dynamicThreads);              
         this.lanes[0] = new Lane(stackSize, staticThreads, dynamicThreads,
                 defaultPriority, this, allowBorrowing, allowRequestBuffering,
                 maxBufferedRequests, acceptorRunnable.acceptorArea);
@@ -172,7 +177,7 @@ public class ThreadPool {
             lanes[i].execute(task);
         }
         else {
-            ZenProperties.logger.log("No lane matched the request priority. Will execute at lowest priority lane.");
+            ZenProperties.logger.log(Logger.INFO, getClass(), "execute(...)", "No lane matched the request priority. Will execute at lowest priority lane.");
             lanes[0].execute(task);
         }
     }
