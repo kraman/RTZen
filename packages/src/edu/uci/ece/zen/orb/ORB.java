@@ -456,11 +456,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
         ORBStrToObjRunnable strToObjRunnable = new ORBStrToObjRunnable();
         strToObjRunnable.init( ior , objImpl );
-        System.out.println("yue1");
         ExecuteInRunnable r = new ExecuteInRunnable();
-        System.out.println("yue2");
         r.init( strToObjRunnable , this.orbImplRegion );
-        System.out.println("yue3");
         try{
             parentMemoryArea.executeInArea( r );
         }catch( Exception e ){
@@ -472,8 +469,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
             e.printStackTrace();
         }
-        System.out.println("yue4");
-        System.out.println("yue5");
         return objImpl;
     }
 
