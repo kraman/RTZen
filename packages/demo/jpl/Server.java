@@ -61,16 +61,16 @@ public class Server extends RealtimeThread
     {
         try
         {
-            System.out.println( "=====================Calling ORB Init in server============================" );
+            System.out.println( "[Server] =====================Calling ORB Init in server============================" );
             orb = ORB.init(args , null);
-            System.out.println( "=====================ORB Init complete in server===========================" );
+            System.out.println( "[Server] =====================ORB Init complete in server===========================" );
 
             POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            System.out.println( "=================== RootPOA resolved, starting servant_to_ref ==============" );
+            System.out.println( "[Server] =================== RootPOA resolved, starting servant_to_ref ==============" );
 
             POAManager poaManager = rootPOA.the_POAManager ();
             poaManager.activate();
-            System.out.println( "=================== Activated POA Manager ==============" );
+            System.out.println( "[Server] =================== Activated POA Manager ==============" );
 
             // Creating a child poa with a threadpool
 
@@ -83,54 +83,79 @@ public class Server extends RealtimeThread
             //short priority = (short) PriorityScheduler.instance().getMaxPriority();
             //System.out.println("Higher priority is: " + priority);
 
-            int threadPoolId;
-            Policy[] policy;
+            int threadPoolId, threadPoolId2;
 
-            policy = new Policy[2];
+
+
 
             if(isClientPropagated){
-                System.out.println("Using client-propagated policy.....");
-
+                System.out.println("[Server] Using client-propagated policy.....");
+                Policy[] policy = new Policy[2];
                 policy[0] = rtorb.create_priority_model_policy (
                         org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,
                         (short)0);
+
+                ThreadpoolLane[] lanes = new ThreadpoolLane[2];
+
+                //args are: priority, static threads, dynamic threads
+                lanes[0] = new ThreadpoolLane(loPrio, staticThreads, 0);
+                lanes[1] = new ThreadpoolLane(hiPrio, staticThreads, 0);
+
+                threadPoolId = rtorb.create_threadpool_with_lanes(10, lanes, false, false, 10, 10);
+                policy[1] = rtorb.create_threadpool_policy(threadPoolId);
+
+                System.out.println("[Server] Creating a child POA");
+                POA childPOA = rootPOA.create_POA("childPOA", poaManager, policy);
+
+                createObj(ITERATION_FACTOR_1, childPOA, "ior1.txt");
+                createObj(ITERATION_FACTOR_2, childPOA, "ior2.txt");
             }else{
-                System.out.println("Using server-declared policy.....");
-                policy[0] = rtorb.create_priority_model_policy (
+                System.out.println("[Server] Using server-declared policy.....");
+                Policy[] loPolicy = new Policy[2];
+                Policy[] hiPolicy = new Policy[2];
+
+                loPolicy[0] = rtorb.create_priority_model_policy (
                         org.omg.RTCORBA.PriorityModel.SERVER_DECLARED,
-                        (short)0);
-            }
-/*                threadPoolId = rtorb.create_threadpool(
+                        loPrio);
+                hiPolicy[0] = rtorb.create_priority_model_policy (
+                        org.omg.RTCORBA.PriorityModel.SERVER_DECLARED,
+                        hiPrio);
+
+                threadPoolId = rtorb.create_threadpool(
                         0,//stacksize,
-                        1,//static_threads,
+                        staticThreads,//static_threads,
                         0,//dynamic_threads,
-                        maxPriority.value,//default_thread_priority,
+                        loPrio,//default_thread_priority,
+                        false,//allow_request_buffering,
+                        0,//max_buffered_requests,
+                        0//max_request_buffer_size
+                        );
+
+                threadPoolId2 = rtorb.create_threadpool(
+                        0,//stacksize,
+                        staticThreads,//static_threads,
+                        0,//dynamic_threads,
+                        hiPrio,//default_thread_priority,
                         false,//allow_request_buffering,
                         0,//max_buffered_requests,
                         0//max_request_buffer_size
                         );
                 //threadPoolId = rtorb.create_threadpool(10, 5, 5, maxPriority.value, false, 0, 10);
-                policy = new Policy[1];
-                policy[0] = rtorb.create_threadpool_policy(threadPoolId);
+
+                loPolicy[1] = rtorb.create_threadpool_policy(threadPoolId);
+                hiPolicy[1] = rtorb.create_threadpool_policy(threadPoolId2);
+
+                System.out.println("[Server] Creating a low priority child POA");
+                POA lpChildPOA = rootPOA.create_POA("lpChildPOA", poaManager, loPolicy);
+
+                System.out.println("[Server] Creating a high priority child POA");
+                POA hpChildPOA = rootPOA.create_POA("hpChildPOA", poaManager, hiPolicy);
+
+                createObj(ITERATION_FACTOR_1, lpChildPOA, "ior1.txt");
+                createObj(ITERATION_FACTOR_2, hpChildPOA, "ior2.txt");
             }
-            */
 
-            ThreadpoolLane[] lanes = new ThreadpoolLane[2];
-
-            //args are: priority, static threads, dynamic threads
-            lanes[0] = new ThreadpoolLane(loPrio, staticThreads, 0);
-            lanes[1] = new ThreadpoolLane(hiPrio, staticThreads, 0);
-
-            threadPoolId = rtorb.create_threadpool_with_lanes(10, lanes, false, false, 10, 10);
-            policy[1] = rtorb.create_threadpool_policy(threadPoolId);
-
-            System.out.println("Creating a child POA");
-            POA childPOA = rootPOA.create_POA("childPOA", poaManager, policy);
-
-            createObj(ITERATION_FACTOR_1, childPOA, "ior1.txt");
-            createObj(ITERATION_FACTOR_2, childPOA, "ior2.txt");
-
-            System.out.println( "RTZen is running ...." );
+            System.out.println( "[Server] RTZen is running ...." );
             orb.run();
         }
         catch (Exception e)

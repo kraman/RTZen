@@ -40,7 +40,7 @@
         <java classname="demo.jpl.Server" fork="yes">
             <jvmarg line="${zen.jvm.properties}"/>
             <!--arg line="-ORBListenEndpoints"/-->
-            <arg line="-pm cp -st 1 -lp 0 -hp 32767"/>
+            <arg line="-pm sd -st 1 -lp 0 -hp 32767"/>
         </java>
     </target>
 
