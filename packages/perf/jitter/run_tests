@@ -24,6 +24,8 @@ function printUsage() {
     echo "                60 RTZEN server remote on regular ZEN and JVM"
     echo "                7  RTZEN server on JacORB and JVM"
     echo "                70 RTZEN server remote on JacORB and JVM"
+    echo "                8  RTZEN server on jRate"
+    echo "                80 RTZEN server remote on jRate"
     echo "    clientType  1  Simulated RTZEN client on regular JVM"
     echo "                2  TimeSys RTZen client"
     echo "                3  TAO Client             "
@@ -31,6 +33,8 @@ function printUsage() {
     echo "                5  RTZEN client on OVM ahead-of-time compiler"
     echo "                6  RTZEN client on regular ZEN and JVM"
     echo "                7  RTZEN client on JacORB and JVM"
+    echo "                8  RTZEN client on jRate"
+
 
     exit -1;
 
@@ -227,8 +231,21 @@ function startServer(){
 		echo $EXEC_CMD
 		$EXEC_CMD&
 #echo $! > $STOPFNAME
+                elif [ $1 -eq 8 ]; then
+# start RTZen server on jRate 
+                EXEC_CMD="./server $1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD&
+                echo $! > $STOPFNAME
 
-
+                elif [ $1 -eq 80 ]; then
+                # start RTZen server remote on jRate
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 8 $1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD&
+                echo $! > $STOPFNAME
 
 	else
         printUsage "startServer, unknown server type '$1'"
@@ -241,7 +258,7 @@ function startServer(){
 function stopServer(){
 	echo "stop server "
 
-	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 -o $1 -eq 4 -o $1 -eq 5 -o $1 -eq 6 -o $1 -eq 7 ]; then
+	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 -o $1 -eq 4 -o $1 -eq 5 -o $1 -eq 6 -o $1 -eq 7 -o $1 -eq 8 ]; then
 	
 		if [ -f $STOPFNAME ]; then
 		
@@ -306,15 +323,20 @@ function stopServer(){
                 $EXEC_CMD
                 #echo $! > $STOPFNAME
    elif [ $1 -eq 70 ]; then
-                # OVM on node 0
-                # Start RTZEN server in OVM ahead-of-time compiler
+                
+                # Stop RTZEN server in JacORB
                 EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 7 $1"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD
                 #echo $! > $STOPFNAME
-
-
+     elif [ $1 -eq 80 ]; then                
+                # Stop RTZEN server on jRate
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 8 $1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD
+                #echo $! > $STOPFNAME
 
     else
         printUsage "unknown server type"
@@ -363,7 +385,11 @@ function startClient(){
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD
-
+                elif [ $1 -eq 8 ]; then
+                EXEC_CMD="./client $2 $3"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD
 
         elif [ $1 -eq 9 ]; then
         EXEC_CMD="$TJVM_START perf.jitter.Client 1 $3"
