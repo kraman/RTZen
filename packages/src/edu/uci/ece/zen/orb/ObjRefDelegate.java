@@ -60,17 +60,19 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         org.omg.IOP.IORHelper.write( out , ior );
         out.getBuffer().dumpBuffer( this.ior );
         out.free();
-
+        System.out.println("ObjRefDel init 1");
         //process all the tagged profiles
         for( int i=0;i<ior.profiles.length;i++ ){   //go through each tagged profile
             processTaggedProfile( ior.profiles[i] , obj , orbImpl );
         }
+        System.out.println("ObjRefDel init 2");
         numLanes=0;
     }
 
     public synchronized void addLaneData( int min , int max , ScopedMemory transport , byte[] objectKey ){
         if( ZenProperties.dbg )
-            System.out.println( RealtimeThread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "New lane info: " + min + " <--> " + max + "  :  " + transport );
+            System.out.println( RealtimeThread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + 
+                    " " +  "New lane info: " + min + " <--> " + max + "  :  " + transport );
         priorityLanes[numLanes++].init( min , max , transport , objectKey );
     }
 
@@ -87,6 +89,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     private void processTaggedProfile( TaggedProfile profile , ObjectImpl obj , ORBImpl orbImpl ){
         int tag = profile.tag;
+        System.out.println("processTaggedProfile " + tag);
+
         switch( tag ){
             case TAG_INTERNET_IOP.value:            //establish appropriate connections and register them
                 {
@@ -102,13 +106,15 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                     in.setEndian( in.read_boolean() );*/
                     byte iiopMinor = data[2];
                     try{
+                    System.out.println("iiop minor " + iiopMinor);
                         switch( iiopMinor ){
                             case 0:{
                                 org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read( in );
                                 long connectionKey = ConnectionRegistry.ip2long( profilebody.host , profilebody.port );
                                 ScopedMemory transportScope = orb.getConnectionRegistry().getConnection( connectionKey );
                                 if( transportScope == null ){
-                                    transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector.instance().connect( profilebody.host , profilebody.port , orb , orbImpl );
+                                    transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector.instance().
+                                            connect( profilebody.host , profilebody.port , orb , orbImpl );
                                     orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
                                 }
 
@@ -120,12 +126,14 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                 long connectionKey = ConnectionRegistry.ip2long( profilebody.host , profilebody.port );
                                 ScopedMemory transportScope = orb.getConnectionRegistry().getConnection( connectionKey );
                                 if( transportScope == null ){
+                                    //System.out.println(": " );
                                     edu.uci.ece.zen.orb.transport.Connector connector = edu.uci.ece.zen.orb.transport.iiop.Connector.instance();
                                     transportScope = connector.connect( profilebody.host , profilebody.port , orb , orbImpl );
                                     orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
                                 }
 
                                 System.out.println("number of components: " + profilebody.components.length);
+
                                 for(int i = 0; i <  profilebody.components.length; ++i){
                                     TaggedComponent tc = profilebody.components[i];
                                     System.out.println("found tag: " + tc.tag);

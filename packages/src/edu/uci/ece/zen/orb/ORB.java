@@ -398,18 +398,31 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     class RTCurrentRunnable implements Runnable{
         public RTCurrent val;
+        public boolean init;
+        public ThreadLocal tl;
         private ScopedMemory sm;
         public RTCurrentRunnable(ScopedMemory sm){
             this.sm = sm;
         }
         public void run(){
-            val = ((ORBImpl)(sm.getPortal())).getRTCurrent();
+            if(!init)
+                tl = ((ORBImpl)(sm.getPortal())).rtCurrent;
+            else
+                val = ((ORBImpl)(sm.getPortal())).getRTCurrent();
         }
     }
 
     public RTCurrent getRTCurrent(){
         RTCurrentRunnable rtrun = new RTCurrentRunnable(orbImplRegion);
         internalResolve(rtrun);
+        if(!rtrun.init){
+            rtrun.init = true;
+            //since ThreadLocal lazily creates the internal hash map every time 
+            //get() is called, we have to call it here from client scope and not
+            //let it be created lazily from ORB scope
+            rtrun.tl.get();
+            internalResolve(rtrun);
+        }
         return rtrun.val;
     }
 
@@ -746,6 +759,7 @@ class ORBStrToObjRunnable implements Runnable{
     }
 
     public void run(){
+        //System.out.println("ORBStrToObjRunnable1");
         ORBImpl orbImpl = ((ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal()  );
         orbImpl.string_to_object( ior , objImpl );
     }

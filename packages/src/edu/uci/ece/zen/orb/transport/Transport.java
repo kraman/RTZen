@@ -37,10 +37,13 @@ public abstract class Transport implements Runnable{
         
         RealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,messageProcessor );
         System.out.println("Transport.run() 2");
+        
         messageProcessorThr.setDaemon( true );
         System.out.println("Transport.run() yue 3");
+        
         messageProcessorThr.start();
         System.out.println("Transport.run() 4");
+        
         try{
             synchronized( waitObj ){
                 System.out.println("Transport.run() 5");
@@ -106,6 +109,7 @@ class MessageProcessor implements Runnable{
     }
 
     public void run(){
+        System.out.println("Krishna noodle 0");
         isActive = true;
         System.out.println("Krishna noodle 1");
         GIOPMessageRunnable gmr = new GIOPMessageRunnable( orb , trans );

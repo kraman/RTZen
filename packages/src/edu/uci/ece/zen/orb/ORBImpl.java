@@ -42,6 +42,7 @@ public class ORBImpl{
 
         try{
             rtCurrent = (ThreadLocal)(orbFacade.parentMemoryArea.newInstance( ThreadLocal.class ));
+            //rtCurrent = new ThreadLocal();
             policyCurrent = (ThreadLocal)(orbFacade.parentMemoryArea.newInstance( ThreadLocal.class ));
             policyManager = (PolicyManagerImpl)(orbFacade.parentMemoryArea.newInstance( PolicyManagerImpl.class ));
             policyManager.init(orbFacade);
@@ -97,6 +98,7 @@ public class ORBImpl{
     }
 
     public void string_to_object( org.omg.IOP.IOR ior , org.omg.CORBA.portable.ObjectImpl objImpl ){
+        //System.out.println("ORBImpl string_to_object 1");
         ObjRefDelegate delegate = ObjRefDelegate.instance();
         delegate.init( ior , (edu.uci.ece.zen.orb.ObjectImpl) objImpl , orbFacade , this );
         objImpl._set_delegate( delegate );
