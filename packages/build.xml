@@ -131,6 +131,10 @@
         <ant antfile="${zen.srcdir}/src/edu/uci/ece/zen/services/naming/build.xml"/>
     </target>
 
+    <target name="naming" if="zen.naming">
+        <ant antfile="${zen.srcdir}/src/edu/uci/ece/zen/services/naming/build.xml"/>
+    </target>
+
     <target name="lib">
         <jar 
         jarfile="${zen.libdir}/RTZen.jar" 
