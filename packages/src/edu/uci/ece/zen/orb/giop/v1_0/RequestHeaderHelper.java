@@ -102,7 +102,7 @@ public class RequestHeaderHelper {
 
         new_one.object_key = FString.instance(new_one.object_key);
         int object_key_length = istream.read_ulong();
-        //new_one.object_key.append(object_key_length);
+        //int object_key_length = istream.read_octet();
         if (ZenProperties.dbg) ZenProperties.logger.log("RequestHeader read -- ok len: " + object_key_length);
 
         new_one.object_key.read(istream, object_key_length);
@@ -111,7 +111,7 @@ public class RequestHeaderHelper {
         new_one.operation = FString.instance(new_one.operation);
         int op_length = istream.read_ulong() - 1;
         if (ZenProperties.dbg) ZenProperties.logger.log( "Op len: " + op_length );
-        //new_one.operation.append(op_length);
+
         new_one.operation.read(istream, op_length);
         istream.read_octet();
         if (ZenProperties.dbg) ZenProperties.logger.log( "==> " + new_one.operation );
@@ -155,6 +155,7 @@ public class RequestHeaderHelper {
 
         //System.out.println("RequestHeader write -- ok len: " + value.object_key.length());
         ostream.write_ulong(value.object_key.length());
+        //ostream.write_octet((byte)value.object_key.length());
         value.object_key.write(ostream);
 
         if (ZenProperties.dbg) ZenProperties.logger.log("ok len: " + value.object_key.length());
