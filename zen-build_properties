@@ -22,6 +22,7 @@ build.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
 #zen.build.runtime = OVM
 zen.build.runtime = jvm
 #zen.build.runtime = JamaicaVM
+#zen.build.runtime = Mackinac
 
 #Set up paths where each compiler is available
 timesys_ri_install = /opt/timesys/rtsj-ri/
@@ -29,6 +30,8 @@ jRate_install = /home/jay/jRate/
 jRate_classpath = /home/jay/jRate-gcc/share/java/libgcj-3.3.3.jar:/home/jay/jRate/classes/
 OVM_install = /home/kraman/OpenVM/OpenVM_bin/
 JamaicaVM_install = /usr/local/jamaica-2.4-10
+Mackinac_install = /opt/mackinac
+
 
 #Set up the tag if you need to compile the naming service
 #zen.naming = on
