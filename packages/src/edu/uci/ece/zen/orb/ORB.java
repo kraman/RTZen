@@ -39,6 +39,7 @@ import edu.uci.ece.zen.utils.Hashtable;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ThreadLocal;
 
 /**
  * @author Alex Potanin (alex@mcs.vuw.ac.nz)

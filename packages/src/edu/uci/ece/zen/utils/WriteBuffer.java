@@ -86,6 +86,7 @@ public class WriteBuffer {
         ByteArrayCache cache = ByteArrayCache.instance();
         for (int i = 0; i < buffers.size(); i++)
             cache.returnByteArray((byte[]) buffers.elementAt(i));
+        buffers.removeAllElements();
         init();
         WriteBuffer.release(this);
     }

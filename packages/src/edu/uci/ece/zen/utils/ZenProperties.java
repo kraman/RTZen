@@ -20,7 +20,7 @@ public final class ZenProperties {
     public static final boolean devDbg = false;
 
     /* set to true to allow printing about memory usage */
-    public static final boolean memDbg = false;
+    public static final boolean memDbg = true;
 
     public static final ImmortalMemory immortalMem = ImmortalMemory.instance();
 

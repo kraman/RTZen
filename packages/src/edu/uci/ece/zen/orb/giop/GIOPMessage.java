@@ -63,4 +63,9 @@ public abstract class GIOPMessage {
     public ScopedMemory getTransport() {
         return transport;
     }
+
+    public void free(){
+        istream.free();
+        messageBody.free();    
+    }
 }

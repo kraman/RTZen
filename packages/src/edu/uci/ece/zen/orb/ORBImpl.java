@@ -14,6 +14,7 @@ import edu.uci.ece.zen.orb.policies.PolicyManagerImpl;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ThreadLocal;
 
 public class ORBImpl {
     ZenProperties properties;
@@ -64,13 +65,10 @@ public class ORBImpl {
         nhrt.start();
         try {
 /*
-            rtCurrent = (ThreadLocal) (orbFacade.parentMemoryArea
-                    .newInstance(ThreadLocal.class));
+            rtCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
             //rtCurrent = new ThreadLocal();
-            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea
-                    .newInstance(ThreadLocal.class));
-            policyManager = (PolicyManagerImpl) (orbFacade.parentMemoryArea
-                    .newInstance(PolicyManagerImpl.class));
+            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
+            policyManager = (PolicyManagerImpl) (orbFacade.parentMemoryArea.newInstance(PolicyManagerImpl.class));
             policyManager.init(orbFacade);
 */            
             /*

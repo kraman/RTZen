@@ -80,6 +80,15 @@ public abstract class Logger{
         }
         System.out.flush();
     }
+    public static void printTracePoint( int pos ){
+        System.out.write( 'C' );
+        System.out.write( 'p' );
+        System.out.write( 'o' );
+        System.out.write( 's' );
+        System.out.write( ' ' );
+        write( pos );
+        writeln();
+    }
         
     public static void printMemStats(int code, MemoryArea ma){
 	    long mem = ma.memoryConsumed();

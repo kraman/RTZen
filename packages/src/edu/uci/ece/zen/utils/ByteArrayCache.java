@@ -36,6 +36,7 @@ public class ByteArrayCache {
         if (_instance == null) try {
             _instance = (ByteArrayCache) ImmortalMemory.instance().newInstance(
                     ByteArrayCache.class);
+            System.out.println( "ByteArrayCache creatd" );
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, ByteArrayCache.class, "instance", e);
             System.exit(-1);
