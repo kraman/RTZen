@@ -172,7 +172,7 @@ public class ThreadPool {
             lanes[i].execute(task);
         }
         else {
-            ZenProperties.logger.log(Logger.INFO, getClass(), "execute(...)", "No lane matched the request priority. Will execute at lowest priority lane.");
+            ZenProperties.logger.log("No lane matched the request priority. Will execute at lowest priority lane.");
             lanes[0].execute(task);
         }
     }

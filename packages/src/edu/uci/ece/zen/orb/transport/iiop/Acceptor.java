@@ -33,9 +33,6 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         super(orb, orbImpl, threadPoolId);
         try {
             ssock = new java.net.ServerSocket(0, 0, null);
-            //ssock = new java.net.ServerSocket();
-            //ssock.bind(new java.net.InetSocketAddress("127.0.0.1",0));
-
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
                     getClass(), "<cinit>",
