@@ -49,7 +49,7 @@
             <include name="src/javax/**"/>
             <include name="src/edu/uci/ece/zen/utils/**"/>
             <include name="src/edu/uci/ece/zen/orb/any/**"/>
-            <!--<include name="src/edu/uci/ece/zen/orb/dynany/**"/>-->
+            <!--<include name="src/edu/uci/ece/zen/orb/dynany/**"/> doesn't compile-->
             <include name="src/edu/uci/ece/zen/orb/transport/**"/>
             <include name="src/edu/uci/ece/zen/orb/**.java"/>
             <include name="src/edu/uci/ece/zen/orb/policies/**.java"/>
