@@ -8,7 +8,8 @@ import javax.realtime.*;
  * @author Gunar Schirne
  */
 public abstract class Logger{
-    //Loggin levels
+    
+	// Logging levels
     public static final int PEDANTIC=0;
     public static final int CONFIG=1;
     public static final int INFO=2;
@@ -22,31 +23,35 @@ public abstract class Logger{
             "FATAL" };
 
     /** Static instance of the logger */
-    private static Logger _instance;
+    private static Logger instance;
 
     /** Return an instance of the logger. */
     public static Logger instance(){
-        if( _instance == null ){
+        if( instance == null ){
             String loggerType = ZenProperties.getGlobalProperty( "edu.uci.ece.zen.logger.type" , "Console" );
             int level = Integer.parseInt( ZenProperties.getGlobalProperty( "edu.uci.ece.zen.logger.level" , "4" ) );
             try{
                 Class loggerClass = Class.forName( "edu.uci.ece.zen.utils."+loggerType+"Logger" );
-                _instance = (Logger) loggerClass.newInstance();
+                instance = (Logger) loggerClass.newInstance();
             }catch( Exception e ){
-                _instance = new ConsoleLogger();
-                _instance.log( INFO , "edu.uci.ece.zen.utils.Logger" , "instance()" , "Unable to load logger of type " + loggerType
-                        + ". Loading ConsoleLogger" );
+				System.err.println("Logger.instance(): " +
+					"Unable to load logger of type " + loggerType + ". Loading NullLogger.");
+				instance = new NullLogger(); 
             }
-            _instance.setLevel(level);
+            instance.setLevel(level);
         }
-        return _instance;
+        return instance;
     }
 
-    public abstract void log( int level , String thisClass , String thisFunction , String msg );
+	public abstract void log(String msg);
+	public abstract void log(String thisFunction, String msg);
+    public abstract void log(int level, Class thisClass, String thisFunction, String msg);
+    public abstract void log(int level, Class thisClass, String thisFunction, String msg, Throwable e);
+    public abstract void log(int level, Class thisClass, String thisFunction, Throwable e);
 
     protected int level=0;
     protected void setLevel( int level ){
-        //this.level=level;
+        this.level=level;
     }
 
     public static void printMemStats(){
@@ -99,15 +104,43 @@ public abstract class Logger{
 
 class ConsoleLogger extends Logger{
     protected ConsoleLogger(){}
-    public void log( int level , String thisClass , String thisFunction , String msg ){
+	
+    public void log(String msg) {
+		log(null, msg);
+	}
+
+	public void log(String thisFunction, String msg) {
+		log(Logger.INFO, null, thisFunction, msg);
+	}
+    public void log(int level, Class thisClass, String thisFunction, String msg) {
         if( level >= this.level ){
-            System.err.println( Logger.levelLabels[level] + ":" + thisClass + " : " + thisFunction + " : " + msg );
+            System.err.print( Logger.levelLabels[level] + ":");
+			
+			if (thisClass != null)
+				System.err.print(thisClass.getName() + " : ");
+			
+			if (thisFunction != null)
+				System.err.print(thisFunction + " : ");
+			
+			System.err.println(msg);
         }
     }
+    public void log(int level, Class thisClass, String thisFunction, String msg, Throwable e)
+	{
+		log(level, thisClass, thisFunction, msg);
+		e.printStackTrace();
+	}
+    public void log(int level, Class thisClass, String thisFunction, Throwable e)
+	{
+		log(level, thisClass, thisFunction, "", e);
+	}
 }
 
 class NullLogger extends Logger{
     protected NullLogger(){}
-    public void log( int level , String thisClass , String thisFunction , String msg ){
-    }
+    public void log(String msg) {}
+    public void log(String thisFunction, String msg) {}
+    public void log(int level, Class thisClass, String thisFunction, String msg) {}
+    public void log(int level, Class thisClass, String thisFunction, String msg, Throwable e) {}
+    public void log(int level, Class thisClass, String thisFunction, Throwable e) {}
 }
