@@ -4,7 +4,14 @@ import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 
 public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
+
+    byte[] magic = new byte[89];
+
     public Connector() {
+	magic[0]=2;
+	magic[1]=1;
+	magic[2]=7;
+	magic[3]=7;
     }
 
     protected edu.uci.ece.zen.orb.transport.Transport internalConnect(
@@ -14,10 +21,11 @@ public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
         
         try{
             if( !NativeSerialPort.instance().lock.attempt(0) ){
-                ZenProperties.logger.log("------------------------------ Returning null transport in SERIAL connector.");           
+                ZenProperties.logger.log("------------------------------ Returning null transport in SERIAL connector."); 
                 return null; 
             }
-        }catch(java.lang.InterruptedException ie){
+	    NativeSerialPort.instance().setMessage( magic , 89 );
+        }catch(Exception ie){
             ie.printStackTrace();
         }
                     

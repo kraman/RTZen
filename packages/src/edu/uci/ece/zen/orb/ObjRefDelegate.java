@@ -142,6 +142,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         ZenProperties.logger.log("ObjRefDel processTaggedProfile 1");
         switch (tag) {
             case TAG_INTERNET_IOP.value: //establish appropriate connections
+                System.out.println( "IIOP transport profile found" );
             // and
             // register them
             {
@@ -330,6 +331,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 ZenProperties.logger.log("TAG_MULTIPLE_COMPONENTS ignored");
                 break;
             case TAG_SERIAL.value: //process serial
+                System.out.println( "Serial transport profile found" );
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 1");            
                 byte[] data = profile.profile_data;
                 if (ZenProperties.dbg) ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL prof data len:" + data.length);
@@ -344,21 +346,27 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 long connectionKey = -TAG_SERIAL.value;
                 ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 2");
-                if (transportScope == null) {
+                if( transportScope == null ){
                     try{ 
                         transportScope = edu.uci.ece.zen.orb.transport.serial.Connector
-                                .instance().connect(null, (short)0, orb, orbImpl);
+                            .instance().connect(null, (short)0, orb, orbImpl);
                     }catch(Exception e){
                         e.printStackTrace();   
                     }
-                    orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
+                }
 
+                if (transportScope != null) {
+                    orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
                     addLaneData(RealtimeThread.MIN_PRIORITY,
                             99/* RealtimeThread.MAX_PRIORITY */,
                             transportScope, object_key);
-                }    
+                    System.out.println( "Serial connection succesful" );
+                }else{
+                    System.out.println( "Serial connection unsuccesful" );
+                }
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 3");
                 in.free();
+
                 break;                
             default:
                 ZenProperties.logger.log(Logger.WARN, getClass(), "processTaggedProfile", "unhandled tag: " + tag);

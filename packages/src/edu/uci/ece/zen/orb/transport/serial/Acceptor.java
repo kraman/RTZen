@@ -64,8 +64,10 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         out.write_boolean(false); //BIGENDIAN
         out.write_ulong(objKey.length);
         out.write_octet_array(objKey, 0, objKey.length);
-        if (ZenProperties.dbg) ZenProperties.logger.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&Serial transport: getInternalProfile() obj key array size: " + objKey.length);
-        if (ZenProperties.dbg) ZenProperties.logger.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&Serial transport: getInternalProfile() obj key marshaled size: " + out.getBuffer().getLimit());
+        if (ZenProperties.dbg) 
+            ZenProperties.logger.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&Serial transport: getInternalProfile() obj key array size: " + objKey.length);
+        if (ZenProperties.dbg) 
+            ZenProperties.logger.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&Serial transport: getInternalProfile() obj key marshaled size: " + out.getBuffer().getLimit());
         TaggedProfile tp = new TaggedProfile();
         tp.tag = TAG_SERIAL.value;
         tp.profile_data = new byte[(int)out.getBuffer().getLimit()];

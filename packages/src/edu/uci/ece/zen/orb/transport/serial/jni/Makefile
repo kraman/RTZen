@@ -11,9 +11,9 @@ ifeq ($(CPU), PPC)
   ARCH = ppc
 endif
 
-ifeq ($(DEBUG), ON)
+#ifeq ($(DEBUG), ON)
   CCFLAGS += -DDEBUG_ON
-endif
+#endif
 
 ifeq ($(TARGET),)
   $(warning Default TARGET=PAYLOAD. make with TARGET=PAYLOAD | TARGET=GSTATION)
