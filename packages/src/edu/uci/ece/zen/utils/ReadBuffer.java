@@ -224,9 +224,15 @@ public class ReadBuffer{
 
     public short readShort(){
         pad(ReadBuffer.SHORT);
+ System.out.println("In readShort, After pad, the position is "+position);
+
         checkReadPositionLimit(ReadBuffer.SHORT);
         byte b1 = readByte();
-        byte b2 = readByte();
+	byte b2 = readByte();
+	System.out.println("In readShort,b1, b2");
+	System.out.println(b1);
+	System.out.println(b2);
+
 
         short ret=0;
         if( isLittleEndian ){
@@ -275,39 +281,70 @@ public class ReadBuffer{
     }
 
     public long readLongLong(){
-        pad(ReadBuffer.LONGLONG);
-        checkReadPositionLimit(ReadBuffer.LONGLONG);
-        byte b1 = readByte();
-        byte b2 = readByte();
-        byte b3 = readByte();
-        byte b4 = readByte();
-        byte b5 = readByte();
-        byte b6 = readByte();
-        byte b7 = readByte();
-        byte b8 = readByte();
-        long ret=0;
-        if( isLittleEndian ){
-            ret |= ((short)(b8 & 0xFF)) << 56;
-            ret |= ((short)(b7 & 0xFF)) << 48;
-            ret |= ((short)(b6 & 0xFF)) << 40;
-            ret |= ((short)(b5 & 0xFF)) << 32;
-            ret |= ((short)(b4 & 0xFF)) << 24;
-            ret |= ((short)(b3 & 0xFF)) << 16;
-            ret |= ((short)(b2 & 0xFF)) << 8;
-            ret |= ((short)(b1 & 0xFF)) << 0;
-            return ret;
+	    System.out.println("It's in readLongLong, before pad, the postion is "+position);
+	    pad(ReadBuffer.LONGLONG);
+	    System.out.println("It's in readLongLong, after pad, the postion is "+position);
+	    checkReadPositionLimit(ReadBuffer.LONGLONG);
+	    byte b1 = readByte();
+	    byte b2 = readByte();
+	    byte b3 = readByte();
+	byte b4 = readByte();
+	byte b5 = readByte();
+	byte b6 = readByte();
+	byte b7 = readByte();
+	byte b8 = readByte();
+        System.out.println("Here begin to print out the bytes read from InputStream...");
+        System.out.println(b1);
+ System.out.println(b2);
+ System.out.println(b3);
+ System.out.println(b4);
+ System.out.println(b5);
+ System.out.println(b6);
+ System.out.println(b7);
+ System.out.println(b8);
+
+	long ret=0;
+	if( isLittleEndian ){
+		//    ret |= ((short)(b8 & 0xFF)) << 56;
+		//    ret |= ((short)(b7 & 0xFF)) << 48;
+		//    ret |= ((short)(b6 & 0xFF)) << 40;
+		//    ret |= ((short)(b5 & 0xFF)) << 32;
+		//    ret |= ((short)(b4 & 0xFF)) << 24;
+		//    ret |= ((short)(b3 & 0xFF)) << 16;
+		//    ret |= ((short)(b2 & 0xFF)) << 8;
+		//    ret |= ((short)(b1 & 0xFF)) << 0;
+		ret += ((long)(b8 & 0xFF)) << 56;
+		ret += ((long)(b7 & 0xFF)) << 48;
+		ret += ((long)(b6 & 0xFF)) << 40;
+		ret += ((long)(b5 & 0xFF)) << 32;
+		ret += ((long)(b4 & 0xFF)) << 24;
+		ret += ((long)(b3 & 0xFF)) << 16;
+		ret += ((long)(b2 & 0xFF)) << 8;
+		ret += ((long)(b1 & 0xFF)) << 0;
+		return ret;
         }else{
+            /*
             ret |= ((short)(b1 & 0xFF)) << 56;
             ret |= ((short)(b2 & 0xFF)) << 48;
-            ret |= ((short)(b3 & 0xFF)) << 40;
-            ret |= ((short)(b4 & 0xFF)) << 32;
-            ret |= ((short)(b5 & 0xFF)) << 24;
-            ret |= ((short)(b6 & 0xFF)) << 16;
-            ret |= ((short)(b7 & 0xFF)) << 8;
-            ret |= ((short)(b8 & 0xFF)) << 0;
-            return ret;
+	    ret |= ((short)(b3 & 0xFF)) << 40;
+	    ret |= ((short)(b4 & 0xFF)) << 32;
+	    ret |= ((short)(b5 & 0xFF)) << 24;
+	    ret |= ((short)(b6 & 0xFF)) << 16;
+	    ret |= ((short)(b7 & 0xFF)) << 8;
+	    ret |= ((short)(b8 & 0xFF)) << 0;
+	     */
+		ret += ((long)(b1 & 0xFF)) << 56;
+		ret += ((long)(b2 & 0xFF)) << 48;
+		ret += ((long)(b3 & 0xFF)) << 40;
+		ret += ((long)(b4 & 0xFF)) << 32;
+		ret += ((long)(b5 & 0xFF)) << 24;
+		ret += ((long)(b6 & 0xFF)) << 16;
+		ret += ((long)(b7 & 0xFF)) << 8;
+		ret += ((long)(b8 & 0xFF)) << 0;
 
-        }
+		return ret;
+
+	}
     }
 
     public String readString() {
