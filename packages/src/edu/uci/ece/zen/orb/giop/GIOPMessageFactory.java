@@ -31,8 +31,7 @@ public final class GIOPMessageFactory
 
         do{
             java.io.InputStream in = trans.getInputStream();
-            parseStreamForHeader(in, mainMsgHdr);
-
+            parseStreamForHeader(in, mainMsgHdr, trans);
             // Read the GIOP message (including any request/reply/etc headers) into the variable "buffer"
             buffer.setEndian( mainMsgHdr.isLittleEndian );
             buffer.appendFromStream( in , mainMsgHdr.messageSize );
@@ -179,7 +178,7 @@ public final class GIOPMessageFactory
         boolean moreFragments = true;
         while (moreFragments) {
             java.io.InputStream in = trans.getInputStream();
-            parseStreamForHeader(in, headerInfo);
+            parseStreamForHeader(in, headerInfo, trans);
 
             // Create the ReadBuffer to store the data of the fragment
             ReadBuffer buffer = ReadBuffer.instance();
@@ -205,7 +204,7 @@ public final class GIOPMessageFactory
         boolean moreFragments = true;
         while (moreFragments) {
             java.io.InputStream in = trans.getInputStream();
-            parseStreamForHeader(in, headerInfo);
+            parseStreamForHeader(in, headerInfo, trans);
 
             // Read the GIOP v1_2 fragment header, which is composed
             // of a single long.
@@ -234,9 +233,10 @@ public final class GIOPMessageFactory
      * @param trans Transport stream
      * @param headerInfo GIOPHeaderInfo object to fill with data read from header
     */
-    public static void parseStreamForHeader(java.io.InputStream in, GIOPHeaderInfo headerInfo)  throws java.io.IOException{
+    public static void parseStreamForHeader(java.io.InputStream in, GIOPHeaderInfo headerInfo, Transport trans)  throws java.io.IOException{
         if(ZenProperties.devDbg) System.out.println( "parseStreamForHeader" );
-        byte[] header = new byte[12];
+        //byte[] header = new byte[12];
+        byte[] header = trans.getGIOPHeader();
         int read = 0;
         while( read < 12 ){
             int tmp = in.read( header , 0 , 12 );

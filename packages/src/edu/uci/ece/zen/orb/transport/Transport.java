@@ -14,6 +14,7 @@ public abstract class Transport implements Runnable{
     public Object objectTable[];    //used to store misc objects with 1instance per transport
                                     // 0 = POARunnable for POA.handleRequest
                                     // 1 = ExecuteInRunnable for POA.handleRequest
+                                    // 2 = GIOP Header
 
     /**
      * <p>
@@ -25,7 +26,12 @@ public abstract class Transport implements Runnable{
         this.orbImpl = orbImpl;
         waitObj = new Integer(0);
         objectTable = new Object[3];
+        objectTable[2] = new byte[12];
         if(ZenProperties.devDbg) System.out.println( "Transport being created " + RealtimeThread.getCurrentMemoryArea() );
+    }
+
+    public byte[] getGIOPHeader(){
+        return (byte[])objectTable[2];
     }
 
     /**
@@ -114,6 +120,7 @@ class MessageProcessor implements Runnable{
     }
 
     public void run(){
+                edu.uci.ece.zen.utils.Logger.printMemStats(300);
         isActive = true;
         if(ZenProperties.devDbg) {
             System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea());
@@ -185,17 +192,16 @@ class GIOPMessageRunnable implements Runnable{
         this.requestScope = requestScope;
     }
     private int statCount = 0;
+    private int count = 300;
     //private static final String name = "Trans: ";
     public void run(){
         try{
-
 
             statCount++;
             if(statCount % 100 == 0){
                 //System.out.print(name);
                 edu.uci.ece.zen.utils.Logger.printMemStats(3);
             }
-
 
 
             if( ZenProperties.dbg )

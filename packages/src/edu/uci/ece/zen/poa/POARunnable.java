@@ -169,5 +169,6 @@ public class POARunnable implements Runnable{
                     this );
                 break;
         }
+        args.clear(); 
     }
 }
