@@ -295,8 +295,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             return rtorb;
         else if(object_name.equals("ORBPolicyManager"))
             return policyManager;
+        //else if(object_name.equals("RTCurrent"))
+            //return policyManager;
 
-        return null;
+        throw new org.omg.CORBA.ORBPackage.InvalidName(object_name + " resolver not implemented");
     }
 
     public String object_to_string(org.omg.CORBA.Object obj) {
