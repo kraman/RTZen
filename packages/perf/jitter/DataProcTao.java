@@ -31,8 +31,8 @@ class DataProcTao{
             String s;
             int id;
 
-            Vector v1 = new Vector();
-            Vector v1Proc = new Vector();
+            Vector vec = new Vector();
+            Vector vecProc = new Vector();
 
 
             while((s = br.readLine())!=null){
@@ -42,28 +42,28 @@ class DataProcTao{
                 switch(id){
                     case 22: 
                              Double db1 = new Double(Double.parseDouble(st.nextToken()));
-                             v1.addElement(db1);
+                             vec.addElement(db1);
                              break;
                     case 21: break;
                     default:System.err.println("Unrecogzied position id "+id);
                             System.exit(-1);
                 }
             }
-            System.out.println("v1's size is "+v1.size());
+            System.out.println("vec's size is "+vec.size());
 
             
-            for(int i = 0; i < v1.size();i++){
+            for(int i = 0; i < vec.size();i++){
                 if(i%2==1){
-                    double d1 = ((Double)v1.elementAt(i)).doubleValue();
-                    double d2 = ((Double)v1.elementAt(i-1)).doubleValue();
-                    v1Proc.addElement(new Double(d1-d2));
+                    double d1 = ((Double)vec.elementAt(i)).doubleValue();
+                    double d2 = ((Double)vec.elementAt(i-1)).doubleValue();
+                    vecProc.addElement(new Double(d1-d2));
                 }
             }
 
 
             PrintWriter out1 = new PrintWriter(new BufferedWriter(new FileWriter(args[0])));
-            for(int i=0; i<v1Proc.size();i++){
-                out1.println(((Double)v1Proc.elementAt(i)).doubleValue());
+            for(int i=0; i<vecProc.size();i++){
+                out1.println(((Double)vecProc.elementAt(i)).doubleValue());
             }
             out1.flush();
             out1.close();

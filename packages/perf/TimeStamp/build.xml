@@ -6,7 +6,7 @@
     <property name="package.dir" value="${zen.srcdir}/perf/TimeStamp"/>
     <property name="idl.src" value="TimeStamp.idl"/>
 
-    <target name="all" depends="compile, compileC, jRate"/>
+    <target name="all" depends="compile, compileC"/>
 	<property name="CORBA.dir" value="${package.dir}/tao"/>
 
     <target name="openorb">
@@ -47,7 +47,7 @@
         />
     </target>
 
-    <target name="jRate" if="compiler_jRate">
+    <!--target name="jRate" if="compiler_jRate">
       <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
       <jRate
             optimizeLevel="2"
@@ -71,7 +71,7 @@
                 </patternset>
             </fileset>
        </jRate>
-   </target>
+   </target-->
 
 	<target name="compileC">
 	

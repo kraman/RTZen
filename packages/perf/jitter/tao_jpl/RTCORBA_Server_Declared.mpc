@@ -7,7 +7,7 @@ idlflags += -GA
     server.cpp
     testS.cpp
     testC.cpp
-    //../check_supported_priorities.cpp
+    //check_supported_priorities.cpp
   }
 }
 
@@ -17,7 +17,7 @@ idlflags += -GA
     testC.cpp
     Client_ORBInitializer.cpp
     interceptors.cpp
-    //../check_supported_priorities.cpp
+    //check_supported_priorities.cpp
     client1.cpp
   }
 }
@@ -29,7 +29,7 @@ idlflags += -GA
     testC.cpp
     Client_ORBInitializer.cpp
     interceptors.cpp
-    //../check_supported_priorities.cpp
+    //check_supported_priorities.cpp
     client2.cpp
   }
 }

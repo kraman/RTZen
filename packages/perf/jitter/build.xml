@@ -158,7 +158,8 @@
 		</exec>
 
 		<exec executable="g++" dir="${CORBA.dir}">
-			<arg line="-L${zen.libdir} -lttimestampjni ${link.args} client jitterC.o client.o"/> 
+			<arg line="-L${zen.libdir} -lttimestampjni ${link.args} client jitterC.o client.o"/>
+                        <!--arg line="-L${zen.libdir} ${link.args} client jitterC.o client.o"/--> 
 		</exec>
 
 	</target>

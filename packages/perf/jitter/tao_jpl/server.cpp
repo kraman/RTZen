@@ -7,10 +7,10 @@
 #include "tao/RTCORBA/RTCORBA.h"
 #include "tao/RTPortableServer/RTPortableServer.h"
 #include "check_supported_priorities.cpp"
-#include "tao/RTCORBA/Linear_Priority_Mapping.h" //Enable the linear priority mapping in TAO
-#include "tao/RTCORBA/rtcorba_typedefs.h"
-#include "tao/RTCORBA/Priority_Mapping.h"
-#include "tao/RTCORBA/Priority_Mapping_Manager.h"
+//#include "tao/RTCORBA/Linear_Priority_Mapping.h" //Enable the linear priority mapping in TAO
+//#include "tao/RTCORBA/rtcorba_typedefs.h"
+//#include "tao/RTCORBA/Priority_Mapping.h"
+//#include "tao/RTCORBA/Priority_Mapping_Manager.h"
 
 class Test_i : public POA_Test
 {
@@ -141,8 +141,8 @@ parse_args (int argc, char *argv[])
 						    ACE_ERROR_RETURN ((LM_ERROR,
 									    "usage:  %s "
 									    "-m sd|cp Priority model(pm) of client-propagated(cp) or server declared(sd).\n"
-									    "-l <poa_priority> The priority value for low priority task. The default value is 0"
-									    "-h <object_priority> The priority value for high priority task. The default value is 32767"
+									    "-l <poa_priority> The priority value for low priority task. The default value is 0\n"
+									    "-h <object_priority> The priority value for high priority task. The default value is 32767\n"
 									    "\n",
 									    argv [0]),
 								    -1);
@@ -181,8 +181,8 @@ parse_args (int argc, char *argv[])
 			    ACE_ERROR_RETURN ((LM_ERROR,
 						    "usage:  %s "
 						    "-m sd|cp Priority model(pm) of client-propagated(cp) or server declared(sd).\n"
-						    "-l <poa_priority> The priority value for low priority task. The default value is 0"
-						    "-h <object_priority> The priority value for high priority task. The default value is 32767"
+						    "-l <poa_priority> The priority value for low priority task. The default value is 0\n"
+						    "-h <object_priority> The priority value for high priority task. The default value is 32767\n"
                             "\n",
                             argv [0]),
                         -1);
@@ -518,6 +518,8 @@ Task::svc (void)
                     CORBA::ORB_var orb =
                         CORBA::ORB_init (argc, argv, "" ACE_ENV_ARG_PARAMETER);
                     ACE_TRY_CHECK;
+
+                   /* 
 		    
 		    //Enable the linear priority mapping in TAO so that the priority range is increased from 0-127 to 0-32767
 	            CORBA::Object_var object = orb->resolve_initial_references ("PriorityMappingManager");
@@ -525,7 +527,10 @@ Task::svc (void)
 		    RTCORBA::PriorityMappingManager_var mapping_manager = RTCORBA::PriorityMappingManager::_narrow (object.in () ACE_ENV_ARG_PARAMETER);  
 		    ACE_TRY_CHECK;	    
 	            RTCORBA::PriorityMapping *pm = new TAO_Linear_Priority_Mapping (SCHED_OTHER); 
+                    //RTCORBA::PriorityMapping *pm = new TAO_Linear_Priority_Mapping (SCHED_FIFO);
 	            mapping_manager->mapping (pm); 
+*/
+                    
 	            
 
                     //if (parse_args (argc, argv) != 0)
