@@ -122,7 +122,7 @@ class MessageProcessor implements Runnable{
             eir.init( gmr , messageScope );
              
             try{
-             
+                //messageScope.enter(gmr);
                 orb.orbImplRegion.executeInArea( eir );
             }catch( Exception e ){
                 ZenProperties.logger.log(

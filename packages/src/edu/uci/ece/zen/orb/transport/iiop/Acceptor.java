@@ -46,6 +46,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN
         System.out.println("yuez in Acceptor 2");
+        edu.uci.ece.zen.utils.Logger.printThreadStack();
  
         switch(iiopMinorVersion){
             case 0:

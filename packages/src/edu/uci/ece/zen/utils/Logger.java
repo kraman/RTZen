@@ -36,7 +36,7 @@ public abstract class Logger{
     
     public static void printThreadStack(){
 
-
+        System.out.println("Current thread is " + RealtimeThread.currentRealtimeThread());
         System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());            
             
         int curInd = RealtimeThread.getMemoryAreaStackDepth()-1;
