@@ -16,4 +16,9 @@
     <condition property="zen.rtbootclasspath" value="${OVM_install}/src/syslib/user/ovm_rt_user.jar">
         <equals arg1="${zen.build.runtime}" arg2="OVM"/>
     </condition>
+    
+    <condition property="compiler_jdk">
+        <equals arg1="${zen.build.runtime}" arg2="jvm"/>
+    </condition>    
+
 </project>
