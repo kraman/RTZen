@@ -1,9 +1,7 @@
-/* --------------------------------------------------------------------------*
- * $Id: SingleMap.java,v 1.5 2003/08/05 23:37:22 nshankar Exp $
- *--------------------------------------------------------------------------*/
-
 package edu.uci.ece.zen.poa;
 
+import edu.uci.ece.zen.utils.*;
+import org.omg.CORBA.IntHolder;
 
 /**
  * <code> SingleMap </code> is the AOM associated with the POA that has a MULTIPLE_ID
@@ -14,23 +12,13 @@ package edu.uci.ece.zen.poa;
  * @version 1.0
  * @see DualMap
  */
-
-import edu.uci.ece.zen.sys.ZenProperties;
-
-
 public class SingleMap implements ActiveObjectMap {
 
-    private static int initialCapacity;
-    private static String name = "poa.aom.size";
-    public static int DEFAULT_CAPACITY = 100;
+    private Hashtable mapByObjectIDs;
 
-    static {
-        try {
-            SingleMap.initialCapacity = Integer.parseInt
-                    (ZenProperties.getProperty(SingleMap.name));
-        } catch (Exception ex) {
-            SingleMap.initialCapacity = SingleMap.DEFAULT_CAPACITY;
-        }
+    public SingleMap(){
+        mapByObjectIDs = new Hashtable();
+        mapByObjectIDs.init( 10 );
     }
 
     /**
@@ -38,7 +26,7 @@ public class SingleMap implements ActiveObjectMap {
      * @param key object id of the servant
      * @param map map representing the servant
      */
-    public void add(ObjectID key, POAHashMap map) {
+    public void add( FString key, POAHashMap map ) {
         mapByObjectIDs.put(key, map);
     }
 
@@ -50,10 +38,8 @@ public class SingleMap implements ActiveObjectMap {
      * @return ObjectID
      * @throws org.omg.PortableServer.POAPackage.ServantNotActive
      */
-    public ObjectID getObjectID(org.omg.PortableServer.Servant st)
-        throws org.omg.PortableServer.POAPackage.ServantNotActive {
-
-        throw new org.omg.PortableServer.POAPackage.ServantNotActive();
+    public void getObjectID( org.omg.PortableServer.Servant st , FString objectId_out , IntHolder exceptionValue ){
+        exceptionValue.value = POARunnable.ServantNotActiveException;
     }
 
     /**
@@ -61,11 +47,8 @@ public class SingleMap implements ActiveObjectMap {
      * @param ok
      * @return POAHashMap
      */
-    public POAHashMap getHashMap(ObjectID ok) {
-        if (this.mapByObjectIDs.containsKey(ok)) {
-            return (POAHashMap) mapByObjectIDs.get(ok);
-        }
-        return null;
+    public POAHashMap getHashMap( FString ok ) {
+        return (POAHashMap) (this.mapByObjectIDs.get(ok));
     }
 
     /**
@@ -73,7 +56,7 @@ public class SingleMap implements ActiveObjectMap {
      * @param key ObjectID
      * @return org.omg.PortableServer.Servant
      */
-    public org.omg.PortableServer.Servant getServant(ObjectID key) {
+    public org.omg.PortableServer.Servant getServant( FString  key ) {
         return ((POAHashMap) mapByObjectIDs.get(key)).getServant();
     }
 
@@ -92,8 +75,8 @@ public class SingleMap implements ActiveObjectMap {
      * @param key ObjectID
      * @return boolean
      */
-    public boolean objectIDPresent(ObjectID key) {
-        return mapByObjectIDs.containsKey(key);
+    public boolean objectIDPresent( FString key ) {
+        return mapByObjectIDs.get(key) != null;
     }
 
     /**
@@ -101,38 +84,23 @@ public class SingleMap implements ActiveObjectMap {
      * @param key Object
      */
     public void remove(Object key) {
-        if (key instanceof ObjectID) {
-            mapByObjectIDs.remove((ObjectID) key);
+        if (key instanceof FString) {
+            mapByObjectIDs.remove((FString)key);
         }
     }
 
-    /**
-     *
-     * @return java.util.Enumeration
-     */
-    public java.util.Enumeration elements() {
-        return mapByObjectIDs.elements();
-    }
     /**
      * Remove ObjectID from the AOM
      * @param ok ObjectID
      */
-
-    public void destroyObjectID(ObjectID ok) {
-        if (this.mapByObjectIDs.containsKey(ok)) {
-            org.omg.PortableServer.Servant servant = (org.omg.PortableServer.Servant)
-                    this.mapByObjectIDs.get(ok);
-
+    public void destroyObjectID( FString ok) {
+        if (this.mapByObjectIDs.get(ok) != null) {
+            org.omg.PortableServer.Servant servant = (org.omg.PortableServer.Servant) this.mapByObjectIDs.get(ok);
             POAHashMap map = (POAHashMap) mapByObjectIDs.get(servant);
-
             if (map.servicingRequests()) {
                 map.waitForDestruction();
             }
-
             this.remove(ok);
         }
     }
-
-    /* ---------------- Private members ------------------------*/
-    private java.util.Hashtable mapByObjectIDs = new java.util.Hashtable(SingleMap.initialCapacity);
 }

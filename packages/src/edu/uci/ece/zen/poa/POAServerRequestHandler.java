@@ -11,18 +11,17 @@ import edu.uci.ece.zen.utils.*;
 
 
 public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHandler {
-    edu.uci.ece.zen.utils.Hashtable demuxTable;
+    edu.uci.ece.zen.utils.ActiveDemuxTable demuxTable;
     
     public POAServerRequestHandler(ORB orb) {
         super(orb);
         int numPOAs = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.maxNumPOAs" , "1" ) );
-        demuxTable = new edu.uci.ece.zen.utils.Hashtable();
+        demuxTable = new edu.uci.ece.zen.utils.ActiveDemuxTable();
         demuxTable.init( numPOAs );
     }
 
     public int addPOA( FString path, org.omg.PortableServer.POA poa ){
-        demuxTable.put( path , poa );
-        return demuxTable.getIndex( poaPath );
+        return demuxTable.bind( path , poa );
     }
 
     /**
@@ -49,8 +48,8 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
 
        POA poa = null;
 
-       if (demuxTable.getGeneration(index) == genCount) {
-           poa = this.demuxTable.mapEntry(index).poa;
+       if (demuxTable.getGenCount(index) == genCount) {
+           poa = ((POA)this.demuxTable.mapEntry(index));
        } else if (ObjectKeyHelper.isPersistent( objKey )) {
            throw new org.omg.CORBA.NO_IMPLEMENT();
            /* Transient objects only for now

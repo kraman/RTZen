@@ -79,7 +79,7 @@ public interface ActiveObjectMap {
      * @param key key to be removed from the AOM.
      */
 
-    void remove( FString key );
+    void remove( Object key );
 
     /**
      * <code> destroyObjectID </code> is used to deactivate the ObjectID in the

@@ -274,7 +274,8 @@ public class POAImpl{
                     POAHashMap map = getPOAHashMap();
                     map.init( oid, p_servant );
 
-                    this.retentionStrategy.add( oid, map );
+                    this.retentionStrategy.add( oid, map , ih);
+                    if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retPOAHashMap( map ); break; }
                     orb.set_delegate ( p_servant );
 
                     int index = this.retentionStrategy.bindDemuxIndex( map , ih );
@@ -436,16 +437,18 @@ class CreateReferenceWithObjectRunnable implements Runnable{
 class HandleRequestRunnable implements Runnable{
     POA poa;
     RequestMessage req;
+    IntHolder exceptionValue;
 
     public void init( POA poa , RequestMessage req ){
         this.poa = poa;
         this.req = req;
+        exceptionValue = new IntHolder(0);
     }
     
     public void run(){
         POAImpl pimpl = ((POAImpl)poa.poaMemoryArea.getPortal());
         try{
-            pimpl.requestProcessingStrategy.handleRequest( req , poa , pimpl.numberOfCurrentRequests );
+            pimpl.requestProcessingStrategy.handleRequest( req , poa , pimpl.numberOfCurrentRequests , exceptionValue );
         }catch( Exception e ){
             e.printStackTrace();
         }

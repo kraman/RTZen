@@ -2,7 +2,7 @@ package edu.uci.ece.zen.utils;
 
 public class Hashtable{
     class HashNode{
-        FString key;
+        Object key;
         Object data;
 
         HashNode next;
@@ -31,7 +31,7 @@ public class Hashtable{
         }
     }
     
-    public void put( FString key , Object data ){
+    public void put( Object key , Object data ){
         int hash = key.hashCode() % list.length;
         HashNode hn = pop();
         hn.key = key;
@@ -42,7 +42,7 @@ public class Hashtable{
         }
     }
     
-    public Object get( FString key ){
+    public Object get( Object key ){
         int hash = key.hashCode() % list.length;
         synchronized( list ){
             for( HashNode i = list[hash] ; i != null ; i = i.next ){
@@ -53,7 +53,7 @@ public class Hashtable{
         return null;
     }
     
-    public void remove( FString key ){
+    public void remove( Object key ){
         int hash = key.hashCode() % list.length;
         synchronized( list ){
             HashNode prev = null;
@@ -71,5 +71,8 @@ public class Hashtable{
                 }
             }
         }
+    }
+
+    public void removeAll(){
     }
 }

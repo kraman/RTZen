@@ -8,24 +8,27 @@ import org.omg.CORBA.IntHolder;
  * to make operations like servant_to_id and id_to_servant faster there
  * is a reverse map maintained from servant to ObjectID that helps in
  * retrieving the ObjectID associated with the servant.
- *
- * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna</a>
- * @version 1.0
- * @see SingleMap
  */
 public class DualMap implements ActiveObjectMap {
-    /* ---------------- Private members ------------------------*/
-    private java.util.Hashtable mapByObjectIDs = new java.util.Hashtable(DualMap.initialCapacity);
-    private java.util.Hashtable mapByServants = new java.util.Hashtable(DualMap.initialCapacity);
+
+    private Hashtable mapByObjectIDs;
+    private Hashtable mapByServants;
+
+    public DualMap(){
+        mapByObjectIDs = new Hashtable();
+        mapByServants = new Hashtable();
+        mapByObjectIDs.init( 10 );
+        mapByServants.init( 10 );
+    }
 
     /**
      * This method adds the servant to the ActiveObjectMap.
      * @param key Object_id of the object.
      * @param map POAHashMap that contains the object.
      */
-    public void add(ObjectID key, POAHashMap map) {
-        mapByObjectIDs.put(key, map);
-        mapByServants.put(map.getServant(), key);
+    public void add( FString key, POAHashMap map ) {
+        mapByObjectIDs.put( key, map );
+        mapByServants.put( map.getServant() , key );
     }
 
 
@@ -34,10 +37,9 @@ public class DualMap implements ActiveObjectMap {
      * @param st Seravnt.
      * @return ObjectID The objectid of the servant
      */
-
-    public ObjectID getObjectID(org.omg.PortableServer.Servant st)
-        throws org.omg.PortableServer.POAPackage.ServantNotActive {
-        return (ObjectID) mapByServants.get(st);
+    public void getObjectID(org.omg.PortableServer.Servant st , FString objectId_out , IntHolder exceptionValue ){
+        exceptionValue.value = POARunnable.NoException;
+        objectId_out.append( (FString) mapByServants.get(st) );
     }
 
     // PRE CONDITION:
@@ -47,7 +49,7 @@ public class DualMap implements ActiveObjectMap {
      * @param ok
      * @return POAHashMap
      */
-    public POAHashMap getHashMap(ObjectID ok) {
+    public POAHashMap getHashMap( FString ok ) {
         return (POAHashMap) this.mapByObjectIDs.get(ok);
 
     }
@@ -57,7 +59,7 @@ public class DualMap implements ActiveObjectMap {
      * @param key
      * @return Servant
      */
-    public org.omg.PortableServer.Servant getServant(ObjectID key) {
+    public org.omg.PortableServer.Servant getServant( FString key ) {
         return ((POAHashMap) mapByObjectIDs.get(key)).getServant();
     }
 
@@ -67,73 +69,56 @@ public class DualMap implements ActiveObjectMap {
      * @return boolean
      */
     public boolean servantPresent(org.omg.PortableServer.Servant st) {
-        return mapByServants.containsKey(st);
-
-        }
+        return mapByServants.get(st) != null;
+    }
 
     /**
      * This method returns true if the ObjectID is present in the table else false.
      * @param key
      * @return boolean
      */
-    public boolean objectIDPresent(ObjectID key) {
-        return mapByObjectIDs.containsKey(key);
+    public boolean objectIDPresent( FString key ) {
+        return mapByObjectIDs.get(key) != null;
     }
 
     /**
      * This method removes the Object from the table.
      * @param key Object to be removed.
      */
-    public void remove(Object key) {
-        if (key instanceof ObjectID) {
-            org.omg.PortableServer.Servant st = getServant((ObjectID) key);
+    public void remove( Object key ) {
+        if (key instanceof FString) {
+            org.omg.PortableServer.Servant st = getServant((FString) key);
 
-            mapByObjectIDs.remove((ObjectID) key);
+            mapByObjectIDs.remove((FString) key);
             mapByServants.remove(st);
         } else if (key instanceof org.omg.PortableServer.Servant) {
-            ObjectID okey = null;
+            //FString okey = null;
+            //okey = getObjectID((org.omg.PortableServer.Servant) key);
 
-            try {
-                okey = getObjectID((org.omg.PortableServer.Servant) key);
-            } catch (Exception ex) {}
-
-            mapByObjectIDs.remove(okey);
-            mapByServants.remove((org.omg.PortableServer.Servant) key);
+            //mapByObjectIDs.remove(okey);
+            //mapByServants.remove((org.omg.PortableServer.Servant) key);
         } else {
-            edu.uci.ece.zen.orb.Logger.error("Wrong key passed to HashTable.remove: "
-                    + key);
+            //edu.uci.ece.zen.orb.Logger.error("Wrong key passed to HashTable.remove: " + key);
         }
-    }
-
-    /**
-     * This method lists all the servants present in the table.
-     * @return java.util.Enumeration Enumeration of all the servants.
-     */
-    public java.util.Enumeration elements() {
-        return mapByServants.elements();
+        //KLUDGE: above
     }
 
     /**
      * This method destroys the object indicated by the ObjectID
      * @param ok ObjectID of the object to be destroyed.
      */
-    public void destroyObjectID(ObjectID ok) {
-        if (this.mapByObjectIDs.containsKey(ok)) {
-            org.omg.PortableServer.Servant servant = (org.omg.PortableServer.Servant)
-                    this.mapByObjectIDs.get(ok);
-
+    public void destroyObjectID( FString ok) {
+        if (this.mapByObjectIDs.get(ok) != null) {
+            org.omg.PortableServer.Servant servant = (org.omg.PortableServer.Servant) this.mapByObjectIDs.get(ok);
             POAHashMap map = (POAHashMap) mapByServants.get(servant);
-
             if (map.servicingRequests()) {
                 map.waitForDestruction();
             }
-
             this.remove(ok);
             // edu.uci.ece.zen.orb.Logger.debug("Removing the objectKey from the"
             // + "MapbyObjectIDs");
             this.mapByServants.remove(servant);
             // edu.uci.ece.zen.orb.Logger.debug("Removing Key from the Map");
-
         }
     }
 }

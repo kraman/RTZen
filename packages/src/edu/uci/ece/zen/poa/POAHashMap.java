@@ -2,7 +2,7 @@ package edu.uci.ece.zen.poa;
 
 import edu.uci.ece.zen.utils.*;
 
-public class POAHashMap extends ObjectMap{
+public class POAHashMap{
 
     private int requests = 0;
     // --Making this volatile does not need to be synchronized
@@ -13,7 +13,6 @@ public class POAHashMap extends ObjectMap{
 
     public POAHashMap(){}
     public void init(FString oid, org.omg.PortableServer.Servant servant) {
-        super.init( oid , servant );
         this.value = servant;
         this.key = oid;
     }
@@ -98,7 +97,7 @@ public class POAHashMap extends ObjectMap{
      */
 
     public org.omg.PortableServer.Servant getServant() {
-        return this.servant;
+        return this.value;
     }
 
     /**
@@ -106,6 +105,6 @@ public class POAHashMap extends ObjectMap{
      * @return ObjectID
      */
     public FString objectID() {
-        return this.objId;
+        return this.key;
     }
 }

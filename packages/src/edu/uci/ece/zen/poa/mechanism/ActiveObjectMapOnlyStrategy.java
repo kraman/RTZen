@@ -6,6 +6,7 @@ import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.portable.InvokeHandler;
 import org.omg.CORBA.IntHolder;
 import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.utils.*;
 
 
@@ -109,63 +110,56 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
 
         if (this.servant == null) {
             exceptionValue.value = POARunnable.ObjNotExistException;
-            return 0;
+            return;
         }
 
         int count = this.retainStr.activeMap.getGenCount(index);
-        POAHashMap map = this.retainStr.activeMap.mapEntry(index);
+        POAHashMap map = (POAHashMap) this.retainStr.activeMap.mapEntry(index);
 
         if (count != genCount || !map.isActive()) {
             exceptionValue.value = POARunnable.ObjNotExistException;
-            return 0;
+            return;
         }
 
-        org.omg.PortableServer.Servant myServant = this.retainStr.activeMap.mapEntry(index).getServant();
+        org.omg.PortableServer.Servant myServant = ((POAHashMap)this.retainStr.activeMap.mapEntry(index)).getServant();
         InvokeHandler invokeHandler = (InvokeHandler) myServant;
 
+        POAImpl pimpl = (POAImpl) ((ScopedMemory)poa.poaMemoryRegion).getPortal();
         // Logger.debug("logged debug 0");
-        edu.uci.ece.zen.poa.ThreadSpecificPOACurrent.putInvocationContext(poa, okey, (org.omg.PortableServer.Servant) invokeHandler);
-
-
-        ///------------------------------------------------------- KRKRKRKRKRKRKRKRKRKRKRKRKRKKRKRKRKR ---------------------------
+        ((POACurrent)pimpl.poaCurrent.get()).init(poa, okey, (org.omg.PortableServer.Servant) invokeHandler);
 
         ResponseHandler responseHandler = new ResponseHandler(
                 ((edu.uci.ece.zen.poa.POA) poa).getORB(),
-                request.message.getRequestId(),
-                request.message.getGIOPVersion() / 10,
-                request.message.getGIOPVersion().minor);
+                request.getRequestId(),
+                request.getGIOPVersion() / 10,
+                request.getGIOPVersion() % 10);
 
-        ServerReply reply;
+        CDROutputStream reply;
         synchronized (mutex) {
             requests.increment();
             map.incrementActiveRequests();
         }
         this.threadPolicyStrategy.enter(invokeHandler);
 
-
-        if (request.message.getOperation().equals("_is_a") )
+        if (request.getOperation().equals("_is_a") )
         {
-            boolean _result = myServant._is_a(request.message.getIstream().read_string());
+            boolean _result = myServant._is_a(request.getIstream().read_string());
             org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
             _output.write_boolean(_result);
-            reply = (ServerReply) _output;
-
+            reply = (CDROutputStream) _output;
         }
-        else if (request.message.getOperation().equals("_non_existent") )
+        else if (request.getOperation().equals("_non_existent") )
         {
             boolean _result = myServant._non_existent();
             org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
             _output.write_boolean(_result);
-            reply = (ServerReply) _output;
-
+            reply = (CDROutputStream) _output;
         }
         else
-
-
         {
-            reply = (ServerReply)
-                invokeHandler._invoke(request.message.getOperation(),
-                        request.message.getIstream(), responseHandler);
+            reply = (CDROutputStream)
+                invokeHandler._invoke(request.getOperation(),
+                        request.getIstream(), responseHandler);
         }
 
 
@@ -175,8 +169,9 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
             requests.decrementAndNotifyAll(poa.isDestructionApparent());
             map.decrementActiveRequestsAndDeactivate();
         }
-        reply.sendUsing(request.getTransport());
+
+        //reply.sendUsing(request.getTransport());
         reply = null; // Enable GC of the reply Object
-        return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
+        //return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
     }
 }
