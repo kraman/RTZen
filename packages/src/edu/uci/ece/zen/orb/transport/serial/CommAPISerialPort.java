@@ -134,7 +134,7 @@ class CommAPISerialPort implements SerialPort, SerialPortEventListener
         }
         catch (IOException e)
         {
-e.printStackTrace();
+            // e.printStackTrace();
             edu.uci.ece.zen.utils.ZenProperties.logger.log(
                 edu.uci.ece.zen.utils.Logger.WARN, getClass(), "serialEvent", "Could not read from serial port", e);
         }

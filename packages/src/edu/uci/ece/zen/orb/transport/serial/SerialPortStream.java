@@ -156,43 +156,7 @@ class RemoteSerialPortStream implements SerialPortStream
                 throw ioex;
             }
         }
-/*
-   public int read(byte b[], int off, int len) throws IOException {
-       System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): trying to read " + len + " bytes into buffer");
-	if (b == null) {
-	    throw new NullPointerException();
-	} else if ((off < 0) || (off > b.length) || (len < 0) ||
-		   ((off + len) > b.length) || ((off + len) < 0)) {
-	    throw new IndexOutOfBoundsException();
-	} else if (len == 0) {
-	    return 0;
-	}
 
-	int c = read();
-	if (c == -1) {
-System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): c == -1, returning");
-	    return -1;
-	}
-	b[off] = (byte)c;
-
-	int i = 1;
-	try {
-	    for (; i < len ; i++) {
-		c = read();
-		if (c == -1) {
-		    break;
-		}
-		if (b != null) {
-		    b[off + i] = (byte)c;
-		}
-	    }
-	} catch (IOException ee) {
-System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): IOException!!!!");
-	}
-System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): returning " + i + " bytes");
-	return i;
-    }
-*/
         public int available() throws IOException
         {
             return (int) inputAvailable.permits();
@@ -237,6 +201,7 @@ System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): 
             {
                 // System.out.println("RemoteSerialPortStream: OutputStream.flush: flushing " + bufferSize + " bytes to serial port (includes socket data header)");
                 SerialPortSocketProtocol.encodeSocketData(socket, buffer);
+                System.out.println("Zen serial port: sending " + bufferSize + "-byte message");
                 serialPort.sendMessage(buffer, bufferSize);
                 bufferSize = SerialPortSocketProtocol.SOCKET_DATA_HEADER_LENGTH;
             }

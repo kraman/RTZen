@@ -106,7 +106,7 @@ public class SerialPortManager
                 {
                     int messageLength = SerialPortSocketProtocol.encodeConnectionRequested(requestedConnection, buffer);
                     // System.out.println("SerialPortManager: connect: couldn't find local listener, sending request to remote host...");
-                    System.out.println("Zen serial port: sending a " + messageLength + "-byte message");
+                    System.out.println("Zen serial port: sending " + messageLength + "-byte message");
                     serialPort.sendMessage(buffer, messageLength);
                 }
 
@@ -143,7 +143,7 @@ public class SerialPortManager
                     // Block until a message is available
                     // System.out.println("SerialPortListener: run: calling serialPort.getMessage...");
                     int messageLength = serialPort.getMessage(message);
-                    System.out.println("Zen serial port: received a " + messageLength + "-byte message");
+                    System.out.println("Zen serial port: received " + messageLength + "-byte message");
 
                     Socket socket;
                     SerialPortConnection connection, requestedConnection;
@@ -163,7 +163,7 @@ public class SerialPortManager
                                 messageLength = SerialPortSocketProtocol.encodeConnectionAccepted(
                                     requestedConnection, socket, buffer);
                                 // System.out.println("SerialPortListener: run: sending connection accept message back to caller");
-                                System.out.println("Zen serial port: sending a " + messageLength + "-byte message");
+                                System.out.println("Zen serial port: sending " + messageLength + "-byte message");
                                 serialPort.sendMessage(buffer, messageLength);
                             }
                             else
@@ -171,7 +171,7 @@ public class SerialPortManager
                                 messageLength = SerialPortSocketProtocol.encodeConnectionDenied(
                                     requestedConnection, socket, buffer);
                                 // System.out.println("SerialPortListener: run: sending connection denied message back to caller");
-                                System.out.println("Zen serial port: sending a " + messageLength + "-byte message");
+                                System.out.println("Zen serial port: sending " + messageLength + "-byte message");
                                 serialPort.sendMessage(buffer, messageLength);
                             }
 
