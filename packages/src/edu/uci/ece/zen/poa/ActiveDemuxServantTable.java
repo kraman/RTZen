@@ -4,7 +4,7 @@
 package edu.uci.ece.zen.poa;
 
 
-import edu.uci.ece.zen.sys.ZenProperties;
+import edu.uci.ece.zen.utils.ZenProperties;
 
 /**
  * Table for storing Active Demultiplexing Locations for servants activated
@@ -23,23 +23,12 @@ final public class ActiveDemuxServantTable {
     private static String capId = "poa.servant_demux_table.capcity";
     private static String inc = "poa.servant_demux_table.increment";
 
-    public static int DEFAULT_CAPACITY = 100;
-    public static int DEFAULT_INCREMENT = 250;
+    public static String DEFAULT_CAPACITY = "100";
+    public static String DEFAULT_INCREMENT = "250";
 
     static {
-        try {
-            ActiveDemuxServantTable.capacity = Integer.parseInt
-                    (ZenProperties.getProperty(ActiveDemuxServantTable.capId));
-        } catch (Exception ex) {
-            ActiveDemuxServantTable.capacity = ActiveDemuxServantTable.DEFAULT_CAPACITY;
-        }
-
-        try {
-            ActiveDemuxServantTable.increment = Integer.parseInt
-                    (ZenProperties.getProperty(ActiveDemuxServantTable.inc));
-        } catch (Exception ex) {
-            ActiveDemuxServantTable.increment = ActiveDemuxServantTable.DEFAULT_INCREMENT;
-        }
+        ActiveDemuxServantTable.capacity = Integer.parseInt(ZenProperties.getGlobalProperty(ActiveDemuxServantTable.capId, ActiveDemuxServantTable.DEFAULT_CAPACITY));
+        ActiveDemuxServantTable.increment = Integer.parseInt(ZenProperties.getGLobalProperty(ActiveDemuxServantTable.inc, ActiveDemuxServantTable.DEFAULT_INCREMENT));
     }
 
     /**

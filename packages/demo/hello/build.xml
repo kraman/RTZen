@@ -26,7 +26,6 @@
        </antcall>
    </target>
 
-
    <target name="idl">
       <java classpath="${classpath}"
             dir="${zen.gendir}"
@@ -35,8 +34,6 @@
             <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
       </java>
    </target>
-
-
 
    <target name="compile" depends="idl">
       <javac srcdir="${zen.srcdir}:${zen.gendir}"
@@ -56,7 +53,6 @@
             libDirs="${zen.jRateLibDir}"
             additionalLinkOptions="-L${zen.libdir} -lZen"
             destdir="${package.dir}"
-            classpath="${zen.classpath}"
             out="${package.dir}/client"
             main="demo.hello.Client"
             debug="true">

@@ -85,7 +85,6 @@
             libDirs="${zen.jRateLibDir}"
             sharedLib="true"
             destdir="${zen.libdir}"
-            classpath="${zen.classpath}"
             out="${zen.libdir}/libZen.so"
             debug="true"
             >

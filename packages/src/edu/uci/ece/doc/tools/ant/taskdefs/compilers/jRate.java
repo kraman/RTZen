@@ -277,6 +277,11 @@ public class jRate extends MatchingTask {
             procs[i].setCommandline( cmd.getCommandline() );
             procs[i].setWorkingDirectory( new File( destdir.toString() ) );
             try{
+                /*
+                String[] cmdline = cmd.getCommandline();
+                for( int j=0;j<cmdline.length;j++ ){
+                    System.out.println( cmdline[j] );
+                }*/
                 procs[i].execute();
             }catch( Exception e ){
                 e.printStackTrace();
@@ -288,7 +293,11 @@ public class jRate extends MatchingTask {
         Execute linkProc = new Execute();
         linkProc.setCommandline( cmd.getCommandline() );
         linkProc.setWorkingDirectory( new File( destdir.toString() ) );
-        try{
+        try{/*
+            String[] cmdline = cmd.getCommandline();
+            for( int i=0;i<cmdline.length;i++ ){
+                System.out.println( cmdline[i] );
+            }*/
             linkProc.execute();
         }catch( Exception e ){
             e.printStackTrace();
@@ -352,15 +361,6 @@ public class jRate extends MatchingTask {
             cmd.createArgument().setValue("-O" + optimizeLevel);
         }
 
-		if (libDirs != null)
-		{
-			String[] dirs = libDirs.list();
-			for (int i = 0; i < dirs.length; i++)
-			{
-				cmd.createArgument().setValue("-L" + dirs[i]);
-			}
-		}
-
 		if (main != null)
 		{
 			cmd.createArgument().setValue("--main=" + main);
@@ -382,6 +382,15 @@ public class jRate extends MatchingTask {
 		{
 			cmd.createArgument().setValue("-o");
 			cmd.createArgument().setFile(out);
+		}
+
+        if (libDirs != null)
+		{
+			String[] dirs = libDirs.list();
+			for (int i = 0; i < dirs.length; i++)
+			{
+				cmd.createArgument().setValue("-L" + dirs[i]);
+			}
 		}
 
         if( additionalLinkOptions != null )

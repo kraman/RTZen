@@ -15,7 +15,7 @@ package edu.uci.ece.zen.poa;
  * @see SingleMap
  */
 
-import edu.uci.ece.zen.sys.ZenProperties;
+import edu.uci.ece.zen.utils.*;
 
 
 public class DualMap implements ActiveObjectMap {
@@ -25,12 +25,7 @@ public class DualMap implements ActiveObjectMap {
     public static int DEFAULT_CAPACITY = 100;
 
     static {
-        try {
-            DualMap.initialCapacity = Integer.parseInt
-                    (ZenProperties.getProperty(DualMap.name));
-        } catch (Exception ex) {
-            DualMap.initialCapacity = DualMap.DEFAULT_CAPACITY;
-        }
+        DualMap.initialCapacity = Integer.parseInt(ZenProperties.getGloablProperty(DualMap.name, DEFAULT_CAPACITY));
     }
     /**
      * This method adds the servant to the ActiveObjectMap.
@@ -117,8 +112,11 @@ public class DualMap implements ActiveObjectMap {
             mapByObjectIDs.remove(okey);
             mapByServants.remove((org.omg.PortableServer.Servant) key);
         } else {
-            edu.uci.ece.zen.orb.Logger.error("Wrong key passed to HashTable.remove: "
-                    + key);
+            ZenProperties.logger.logp(
+                Logger.SEVERE;
+                "edu.uci.ece.zen.poa.DualMap",
+                "remove(...)"
+                "Wrong key passed to HashTable.remove");
         }
     }
 

@@ -20,7 +20,7 @@ import javax.realtime.*;
 
 import edu.uci.ece.zen.orb.ObjRefDelegate;
 import edu.uci.ece.zen.orb.ServerRequest;
-import edu.uci.ece.zen.orb.ior.IOR;
+import edu.uci.ece.zen.orb.IOR;
 import edu.uci.ece.zen.orb.protocols.ProfileList;
 import edu.uci.ece.zen.sys.ThreadFactory;
 //import edu.uci.ece.zen.util.ExecutorShutdownException;
