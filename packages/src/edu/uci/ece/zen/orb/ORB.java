@@ -5,6 +5,7 @@ import edu.uci.ece.zen.utils.*;
 import java.io.*;
 import javax.realtime.*;
 import org.omg.RTCORBA.*;
+import org.omg.messaging.*;
 import java.util.Properties;
 import edu.uci.ece.zen.orb.policies.*;
 import org.omg.CORBA.ServiceInformationHolder;
@@ -21,6 +22,7 @@ import org.omg.CORBA.TCKind;
 import org.omg.CORBA.UNSUPPORTED_POLICY;
 import org.omg.CORBA.PolicyError;
 import org.omg.CORBA.Any;
+import org.omg.CORBA.PolicyManager;
 
 public class ORB extends org.omg.CORBA_2_3.ORB{
     private static Queue unusedFacades;
@@ -121,6 +123,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private Queue executeInRunnableCache;
     private String orbId;
     private RTORB rtorb;
+    private PolicyManager policyManager;
 
     public ORB(){
         orbInitRunnable = new ORBInitRunnable();
@@ -133,6 +136,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         waiterRegistry.init( 100 );
         executeInRunnableCache = new Queue();
         rtorb = new RTORBImpl();
+        policyManager = new PolicyManagerImpl();
     }
 
     private ExecuteInRunnable getEIR(){
@@ -250,31 +254,20 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public org.omg.CORBA.Policy create_policy(int type, org.omg.CORBA.Any val)
         throws org.omg.CORBA.PolicyError {
-/*
+
         switch(type){
-            case PRIORITY_MODEL_POLICY_TYPE.value:
-                return new PriorityModelPolicyImpl();
-            //break;
+            case SYNC_SCOPE_POLICY_TYPE.value:
+                return new SyncScopePolicyImpl(val.extract_short());
 
-            case THREADPOOL_POLICY_TYPE.value:
-            //break;
-
-            case SERVER_PROTOCOL_POLICY_TYPE.value:
-            //break;
-
-            case CLIENT_PROTOCOL_POLICY_TYPE.value:
-            //break;
-
-            case PRIORITY_BANDED_CONNECTION_POLICY_TYPE.value:
-            //break;
+            case REBIND_POLICY_TYPE.value:
+                return new RebindPolicyImpl(val.extract_short());
 
             default:
                 throw new PolicyError(UNSUPPORTED_POLICY.value);
 
-
         }
-*/
-        throw new PolicyError(UNSUPPORTED_POLICY.value);
+
+        //throw new PolicyError(UNSUPPORTED_POLICY.value);
         //throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
@@ -300,6 +293,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
         if(object_name.equals("RTORB"))
             return rtorb;
+        else if(object_name.equals("ORBPolicyManager"))
+            return policyManager;
 
         return null;
     }
@@ -396,6 +391,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public AcceptorRegistry getAcceptorRegistry(){
         return acceptorRegistry;
+    }
+
+    public PolicyManager getPolicyManager(){
+        return policyManager;
     }
 
     ///////////////////////////////////////////////////////////////////////////
