@@ -2,6 +2,7 @@ package edu.uci.ece.zen.utils;
 
 import java.util.Properties;
 import java.util.Hashtable;
+import java.util.Enumeration;
 import java.io.*;
 import javax.realtime.*;
 
@@ -150,11 +151,19 @@ public final class ZenProperties{
     }
 
     public void addProperties( Properties props ){
-        if( props != null )
-            orbProperties.putAll( props );
+        System.out.println( "entering addProperties" );
+        if( props != null ){
+            Enumeration keys = props.keys();
+            while( keys.hasMoreElements() ){
+                String element = ((String)keys.nextElement()) + "";
+                orbProperties.put( element , props.getProperty( element ) + "" );
+            }
+        }
+        System.out.println( "exiting addProperties" );
     }
 
     public void addPropertiesFromArgs( String args[] ){
+        System.out.println( "entering addPropertiesFromArgs" );
         Properties props = orbProperties;
         if( args != null ){
             for( int i=0;i<args.length;i++ ){
@@ -167,14 +176,14 @@ public final class ZenProperties{
                     }else{
                         value = args[++i].trim();
                     }
-                    props.setProperty( "org.omg.CORBA.ORBid" , value );
+                    props.setProperty( "org.omg.CORBA.ORBid" , value + "" );
                 }else if( arg.startsWith( "-ORBServerId" ) ){
                     if( arg.length() > 12 ){
                         value = arg.substring(12).trim();
                     }else{
                         value = args[++i].trim();
                     }
-                    props.setProperty( "org.omg.CORBA.ORBServerId" , value );
+                    props.setProperty( "org.omg.CORBA.ORBServerId" , value+"" );
                 }else if( arg.startsWith( "-ORBListenEndpoints" ) ){
                 /*
                     if( arg.length() > 19 ){
@@ -203,19 +212,20 @@ public final class ZenProperties{
                     java.util.StringTokenizer strtok = new java.util.StringTokenizer( value , "=" );
                     String service = strtok.nextToken();
                     String ref = strtok.nextToken();
-                    props.setProperty( "edu.uci.ece.zen.initRef." + service , ref );
+                    props.setProperty( "edu.uci.ece.zen.initRef." + service , ref+"" );
                 }else if( arg.startsWith( "-ORBDefaultInitRef" ) ){
                     if( arg.length() > 18 ){
                         value = arg.substring(18).trim();
                     }else{
                         value = args[++i].trim();
                     }
-                    props.setProperty( "org.omg.CORBA.ORBDefaultInitRef" , value );
+                    props.setProperty( "org.omg.CORBA.ORBDefaultInitRef" , value+"" );
                 }else if( arg.startsWith( "-ORB" ) ){
                     throw new org.omg.CORBA.BAD_PARAM( "Bad parameter " + arg );
                 }
             }
         }
+        System.out.println( "exiting addPropertiesFromArgs" );
     }
 
     public static String getORBId( String args[] , java.util.Properties properties ){

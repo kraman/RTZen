@@ -31,8 +31,10 @@ package org.omg.CORBA;
 
 abstract public class ORB {
 
-    private static final String ORB_CLASS_PROPERTY = "org.omg.CORBA.ORBClass";
-    private static final String ORB_SINGLETON_CLASS_PROPERTY = "org.omg.CORBA.ORBSingletonClass";
+//    private static final String ORB_CLASS_PROPERTY = "org.omg.CORBA.ORBClass";
+//    private static final String ORB_SINGLETON_CLASS_PROPERTY = "org.omg.CORBA.ORBSingletonClass";
+    private static final String ORB_CLASS_PROPERTY = "edu.uci.ece.zen.ORB";
+    private static final String ORB_SINGLETON_CLASS_PROPERTY = "edu.uci.ece.zen.orb.ORBSingleton";
     private static ORB singleton = null;
 
     //private static ORB singleton = null;
@@ -53,7 +55,6 @@ abstract public class ORB {
     }
 
     public synchronized static ORB init() {
-
        if ( singleton != null)
        {
        		return singleton;
@@ -70,14 +71,13 @@ abstract public class ORB {
 
 
         try {
-           singleton = (ORB) ORB.createInstance(orbClassName) ;
+           //singleton = (ORB) ORB.createInstance(orbClassName) ;
+           singleton = (ORB) new edu.uci.ece.zen.orb.ORB();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
         return singleton;
-
-
     }
 
     private static java.lang.Object createInstance(String className) throws Exception {
@@ -88,7 +88,8 @@ abstract public class ORB {
 
 
     public static ORB init(String[] args, java.util.Properties props) {
-
+        return edu.uci.ece.zen.orb.ORB.init( args , props );
+/*
         String orbClassName = ORB.getPropertyValue(ORB.ORB_CLASS_PROPERTY, props);
 
         if (orbClassName == null) {
@@ -109,6 +110,7 @@ abstract public class ORB {
             System.exit(-1);
         }
         return orb;
+*/
     }
     /*
     public static ORB init(java.applet.Applet app, java.util.Properties props) {

@@ -10,11 +10,17 @@ public class IOR
     private static final char[] intToHex = { '0' , '1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , 'A' , 'B' , 'C' , 'D' , 'E' , 'F' };
 
     private static ReadBuffer stringToByteBuffer( String s ){
+        int line=1;
+        System.out.println( "ior.stringToByteBuffer " + (line++) );
         ReadBuffer buffer = ReadBuffer.instance();
+        System.out.println( "ior.stringToByteBuffer " + (line++) );
         byte[] tmpBuffer = ByteArrayCache.instance().getByteArray();
+        System.out.println( "ior.stringToByteBuffer " + (line++) );
         int len=0;
+        System.out.println( "ior.stringToByteBuffer " + (line++) );
 
         int readPos=4;
+        System.out.println( "ior.stringToByteBuffer " + (line++) );
         while (readPos < s.length())
         {
             char first = s.charAt(readPos++);
@@ -24,9 +30,12 @@ public class IOR
                     | (hexToInt(second) & 0xF));
             tmpBuffer[len++] = combined;
         }
+        System.out.println( "ior.stringToByteBuffer " + (line++) );
 
         buffer.writeByteArray( tmpBuffer , 0 , len );
+        System.out.println( "ior.stringToByteBuffer " + (line++) );
         ByteArrayCache.instance().returnByteArray( tmpBuffer );
+        System.out.println( "ior.stringToByteBuffer " + (line++) );
         return buffer;
     }
 
@@ -43,23 +52,30 @@ public class IOR
             case '8':
             case '9':
                 return (byte)c;
-            case 'A': case 'a': return 10;
-            case 'B': case 'b': return 11;
-            case 'C': case 'c': return 12;
-            case 'D': case 'd': return 13;
-            case 'E': case 'e': return 14;
-            case 'F': case 'f': return 15;
+            case 'A': case 'a': return (byte)10;
+            case 'B': case 'b': return (byte)11;
+            case 'C': case 'c': return (byte)12;
+            case 'D': case 'd': return (byte)13;
+            case 'E': case 'e': return (byte)14;
+            case 'F': case 'f': return (byte)15;
         }
-        return -1;
+        return (byte)-1;
     }
 
     public static org.omg.IOP.IOR parseString(edu.uci.ece.zen.orb.ORB orb, String ior)
     {
+        int line=1;
+        System.out.println( "ior.parseString " + (line++) );
         CDRInputStream cdrIn = CDRInputStream.instance();
+        System.out.println( "ior.parseString " + (line++) );
         cdrIn.init( orb , stringToByteBuffer( ior ));
+        System.out.println( "ior.parseString " + (line++) );
         cdrIn.setEndian( cdrIn.read_boolean() );
+        System.out.println( "ior.parseString " + (line++) );
         org.omg.IOP.IOR ret = org.omg.IOP.IORHelper.read( cdrIn );
+        System.out.println( "ior.parseString " + (line++) );
         cdrIn.free();
+        System.out.println( "ior.parseString " + (line++) );
         return ret;
     }
 

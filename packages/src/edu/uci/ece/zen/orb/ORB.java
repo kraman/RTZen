@@ -1,6 +1,5 @@
 package edu.uci.ece.zen.orb;
 
-import org.omg.CORBA.*;
 import org.omg.CORBA.portable.*;
 import edu.uci.ece.zen.utils.*;
 import java.io.*;
@@ -8,6 +7,20 @@ import javax.realtime.*;
 import org.omg.RTCORBA.*;
 import java.util.Properties;
 import edu.uci.ece.zen.orb.policies.*;
+import org.omg.CORBA.ServiceInformationHolder;
+import org.omg.CORBA.NVList;
+import org.omg.CORBA.NamedValue;
+import org.omg.CORBA.ExceptionList;
+import org.omg.CORBA.ContextList;
+import org.omg.CORBA.Context;
+import org.omg.CORBA.Environment;
+import org.omg.CORBA.Request;
+import org.omg.CORBA.WrongTransaction;
+import org.omg.CORBA.CompletionStatus;
+import org.omg.CORBA.TCKind;
+import org.omg.CORBA.UNSUPPORTED_POLICY;
+import org.omg.CORBA.PolicyError;
+import org.omg.CORBA.Any;
 
 public class ORB extends org.omg.CORBA_2_3.ORB{
     private static Queue unusedFacades;
@@ -271,14 +284,22 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     public synchronized org.omg.CORBA.Object string_to_object(String str) {
+        int line=1;
+        System.out.println ( "orb.string_to_object "+(line++) );
         org.omg.IOP.IOR ior = IOR.parseString( this , str );
+        System.out.println ( "orb.string_to_object "+(line++) );
         org.omg.CORBA.portable.ObjectImpl objImpl = new ObjectImpl( ior );
-        strToObjRunnable.init( ior , orbImplRegion , objImpl );
+        System.out.println ( "orb.string_to_object "+(line++) );
+        strToObjRunnable.init( ior , objImpl );
+        System.out.println ( "orb.string_to_object "+(line++) );
 
         ExecuteInRunnable r = ExecuteInRunnable.instance();
+        System.out.println ( "orb.string_to_object "+(line++) );
         r.init( strToObjRunnable , this.orbImplRegion );
+        System.out.println ( "orb.string_to_object "+(line++) );
         try{
             parentMemoryArea.executeInArea( r );
+        System.out.println ( "orb.string_to_object "+(line++) );
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.SEVERE,
@@ -287,9 +308,11 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 "Could not get object due to exception: " + e.toString()
                 );
         }
+        System.out.println ( "orb.string_to_object "+(line++) );
         r.free();
+        System.out.println ( "orb.string_to_object "+(line++) );
 
-        return strToObjRunnable.getRetVal();
+        return objImpl;
     }
 
     public org.omg.CORBA.portable.OutputStream create_output_stream() {
@@ -539,7 +562,11 @@ class ORBInitRunnable implements Runnable{
     public void run(){
         ScopedMemory curMem = ((ScopedMemory) RealtimeThread.getCurrentMemoryArea());
         if( curMem.getPortal() == null ){
-            curMem.setPortal( new ORBImpl( args , props , orbFacade ) );
+            System.out.println( "--" );
+            ORBImpl orbImpl = new ORBImpl( args , props , orbFacade );
+            System.out.println( "---" );
+            curMem.setPortal( orbImpl );
+            System.out.println( "----" );
         }else{
             ((ORBImpl)curMem.getPortal()).setProperties( args , props );
         }
@@ -549,52 +576,24 @@ class ORBInitRunnable implements Runnable{
 class ORBStrToObjRunnable implements Runnable{
     org.omg.IOP.IOR ior;
     org.omg.CORBA.portable.ObjectImpl objImpl;
-    ScopedMemory orbImplRegion;
-
-    org.omg.CORBA.Object retval;
 
     public ORBStrToObjRunnable(){
     }
 
-    public void init( org.omg.IOP.IOR ior , ScopedMemory orbImplRegion , org.omg.CORBA.portable.ObjectImpl objImpl ){
+    public void init( org.omg.IOP.IOR ior , org.omg.CORBA.portable.ObjectImpl objImpl ){
+        System.out.println( "In ORBStrToObjRunnable.init()" );
         this.ior = ior;
-        this.orbImplRegion = orbImplRegion;
         this.objImpl = objImpl;
-        this.retval = null;
-    }
-
-    public org.omg.CORBA.Object getRetVal(){ return retval; }
-
-    public void run(){
-        retval = ((ORBImpl) orbImplRegion.getPortal()  ).string_to_object( ior , objImpl );
-    }
-}
-
-class ORBImplRunnable implements Runnable{
-    private boolean active;
-
-    public ORBImplRunnable(){
-        active = true;
-    }
-
-    public boolean isActive(){
-        return this.active;
+        System.out.println( "Exiting ORBStrToObjRunnable.init()" );
     }
 
     public void run(){
-        ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
-        synchronized( orbImpl ){
-            try{
-                orbImpl.wait();
-            }catch( InterruptedException ie ){
-                ZenProperties.logger.log(
-                        Logger.INFO ,
-                        "edu.uci.ece.zen.orb.ORBImplRunnable" ,
-                        "run()" ,
-                        "ORB is shutting down.");
-            }
-            active=false;
-        }
+        System.out.println( "In ORBStrToObjRunnable.run()" );
+        ORBImpl orbImpl = ((ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal()  );
+        System.out.println( "---" );
+        orbImpl.string_to_object( ior , objImpl );
+        System.out.println( "Exiting ORBStrToObjRunnable.run()" );
     }
-
 }
+
+

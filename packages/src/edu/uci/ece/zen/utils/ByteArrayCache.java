@@ -19,6 +19,7 @@ public class ByteArrayCache{
         return _instance;
     }
     
+    private ByteArrayCreator bac = new ByteArrayCreator();
     public ByteArrayCache(){
         try{
             imm = ImmortalMemory.instance();
@@ -30,11 +31,18 @@ public class ByteArrayCache{
     }
 
     public byte[] getByteArray(){
+        System.out.println( "byteArrayCache.getByteArray 1" );
         try{
-            if( byteBuffers.isEmpty() )
-                return (byte[]) imm.newArray( byte.class , 1024 );
-            else
+        System.out.println( "byteArrayCache.getByteArray 2");
+            if( byteBuffers.isEmpty() ){
+        System.out.println( "byteArrayCache.getByteArray 3");
+                imm.executeInArea( bac );
+                //return (byte[]) imm.newArray( byte.class , 1024 );
+                return bac.getByteArray();
+            }else{
+        System.out.println( "byteArrayCache.getByteArray 4");
                 return (byte[]) byteBuffers.dequeue();
+            }
         }catch( Exception e ){
             e.printStackTrace();
             System.exit(-1);
@@ -44,5 +52,17 @@ public class ByteArrayCache{
 
     public void returnByteArray( byte[] buf ){
         byteBuffers.enqueue( buf );
+    }
+}
+
+class ByteArrayCreator implements Runnable{
+    byte[] retval;
+
+    public void run(){
+        retval = new byte[1024];
+    }
+    
+    byte[] getByteArray(){
+        return retval;
     }
 }

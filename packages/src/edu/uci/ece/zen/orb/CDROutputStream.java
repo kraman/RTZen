@@ -1,8 +1,8 @@
 package edu.uci.ece.zen.orb;
 
-import org.omg.CORBA.*;
 import edu.uci.ece.zen.utils.*;
 import javax.realtime.*;
+import org.omg.CORBA.TCKind;
 
 public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     WriteBuffer buffer;

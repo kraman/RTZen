@@ -10,9 +10,13 @@ public class Connector extends edu.uci.ece.zen.orb.transport.Connector{
 
     private static Connector _instance;
     public static Connector instance(){
-        if( _instance == null )
-            _instance = new Connector();
+        if( _instance == null ){
+            try{
+                _instance = (Connector) javax.realtime.ImmortalMemory.instance().newInstance( edu.uci.ece.zen.orb.transport.iiop.Connector.class );
+            }catch( Exception e ){
+                e.printStackTrace();
+            }
+        }
         return _instance;
     }
-
 }

@@ -5,7 +5,7 @@
 package edu.uci.ece.zen.orb;
 
 
-import org.omg.CORBA.*;
+import org.omg.CORBA.TCKind;
 
 /**
  * ZEN implementation of CORBA TypeCodes.
@@ -91,7 +91,7 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
                     java.lang.String _name,
                     org.omg.CORBA.TypeCode _discriminator_type,
                     org.omg.CORBA.UnionMember[] _members) {
-        kind = TCKind._tk_union;
+        kind = org.omg.CORBA.TCKind._tk_union;
         id = _id;
         name = _name;
         discriminator_type = (TypeCode) _discriminator_type;
@@ -101,12 +101,12 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
         member_names = new String[member_count];
         member_labels = new edu.uci.ece.zen.orb.any.Any[member_count];
         member_types = new TypeCode[member_count];
-        member_idlTypes = new IDLType[member_count];
+        member_idlTypes = new org.omg.CORBA.IDLType[member_count];
         for (int i = 0; i < member_count; i++) {
             member_names[i] = _members[i].name;
             member_types[i] = (TypeCode) _members[i].type;
             member_labels[i] = (edu.uci.ece.zen.orb.any.Any) _members[i].label;
-            member_idlTypes[i] = (IDLType) _members[i].type_def;
+            member_idlTypes[i] = (org.omg.CORBA.IDLType) _members[i].type_def;
             
         }
     }
@@ -123,7 +123,7 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
     public TypeCode(java.lang.String _id,
                     java.lang.String _name,
                     java.lang.String[] _members) {
-        kind = TCKind._tk_enum;
+        kind = org.omg.CORBA.TCKind._tk_enum;
         id = _id;
         name = _name;
         member_count = _members.length;
@@ -149,7 +149,7 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
     public TypeCode(java.lang.String _id,
                     java.lang.String _name,
                     org.omg.CORBA.TypeCode _original_type) {
-        kind = TCKind._tk_alias;
+        kind = org.omg.CORBA.TCKind._tk_alias;
         id = _id;
         name = _name;
         type = _original_type;
@@ -280,7 +280,7 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
         member_defined_ins = new String[member_count];
         member_versions = new String[member_count];
         member_types = new TypeCode[member_count];
-        member_idlTypes = new IDLType[member_count];
+        member_idlTypes = new org.omg.CORBA.IDLType[member_count];
         member_visibility = new short[member_count];
 
         for (int i = 0; i < member_count; i++) {
@@ -289,7 +289,7 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
             member_defined_ins[i] = _members[i].defined_in;
             member_versions[i] = _members[i].version;
             member_types[i] = (TypeCode) _members[i].type;
-            member_idlTypes[i] = (IDLType) _members[i].type_def;
+            member_idlTypes[i] = (org.omg.CORBA.IDLType) _members[i].type_def;
             member_visibility[i] = (short) _members[i].access;
         } 
     }    
@@ -713,7 +713,7 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
         }
         
         if (member_idlTypes != null) {
-            newTC.member_idlTypes = new IDLType [member_idlTypes.length];
+            newTC.member_idlTypes = new org.omg.CORBA.IDLType [member_idlTypes.length];
             for (int i = 0; i < member_idlTypes.length; i++) {
                 newTC.member_idlTypes[i] = member_idlTypes[i];
             }

@@ -26,17 +26,27 @@ public abstract class Transport implements Runnable{
      * </p>
      */
     public final void run(){
+        system.out.println( "transport.Transport.run 1" );
         messageProcessor = new MessageProcessor( this , orb );
+        system.out.println( "transport.Transport.run 2" );
         NoHeapRealtimeThread messageProcessorThr = new NoHeapRealtimeThread( messageProcessor );
+        system.out.println( "transport.Transport.run 3" );
         messageProcessorThr.setDaemon( true );
+        system.out.println( "transport.Transport.run 4" );
         messageProcessorThr.start();
+        system.out.println( "transport.Transport.run 5" );
         try{
+        system.out.println( "transport.Transport.run 6" );
             synchronized( waitObj ){
+        system.out.println( "transport.Transport.run 7" );
                 waitObj.wait();
+        system.out.println( "transport.Transport.run 8" );
             }
+        system.out.println( "transport.Transport.run 9" );
         }catch( InterruptedException ie ){
             //ignore exception. Always happens on shutdown
         }
+        system.out.println( "transport.Transport.run 10" );
     }
     
     /**
@@ -60,7 +70,8 @@ public abstract class Transport implements Runnable{
      * </p>
      */
     public synchronized final void send( WriteBuffer msg ){
-        //System.out.println( "Sending message" );
+        if( ZenProperties.dbg )
+            System.out.println( "Sending message" );
         try{
             java.io.OutputStream out = getOutputStream();
             msg.dumpBuffer( out );
@@ -94,17 +105,29 @@ class MessageProcessor implements Runnable{
     }
 
     public void run(){
+        system.out.println( "transport.MessageProcessor.run 1" );
         isActive = true;
+        system.out.println( "transport.MessageProcessor.run 2" );
         GIOPMessageRunnable gmr = new GIOPMessageRunnable( orb , trans );
+        system.out.println( "transport.MessageProcessor.run 3" );
         while( isActive ){
-            //System.err.println( "Waiting for message to come in..." );
+        system.out.println( "transport.MessageProcessor.run 4" );
+            if( ZenProperties.dbg )
+                System.err.println( "Waiting for message to come in..." );
+        system.out.println( "transport.MessageProcessor.run 5" );
             ScopedMemory messageScope = ORB.getScopedRegion();
+        system.out.println( "transport.MessageProcessor.run 6" );
             gmr.setRequestScope( messageScope );
+        system.out.println( "transport.MessageProcessor.run 7" );
 
             ExecuteInRunnable eir = ExecuteInRunnable.instance();
+        system.out.println( "transport.MessageProcessor.run 8" );
             eir.init( gmr , messageScope );
+        system.out.println( "transport.MessageProcessor.run 9" );
             try{
+        system.out.println( "transport.MessageProcessor.run 10" );
                 orb.orbImplRegion.executeInArea( eir );
+        system.out.println( "transport.MessageProcessor.run 11" );
             }catch( Exception e ){
                 ZenProperties.logger.log(
                     Logger.SEVERE,
@@ -113,8 +136,11 @@ class MessageProcessor implements Runnable{
                     "Could not process message due to exception: " + e.toString()
                     );
             }
+        system.out.println( "transport.MessageProcessor.run 12" );
             ORB.freeScopedRegion( messageScope );
+        system.out.println( "transport.MessageProcessor.run 13" );
             eir.free();
+        system.out.println( "transport.MessageProcessor.run 14" );
         }
         synchronized( this ){
             this.notifyAll();
@@ -189,7 +215,8 @@ class GIOPMessageRunnable implements Runnable{
     public void run(){
         try{
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
-            //System.err.println( "Got a new message....." );
+            if( ZenProperties.dbg )
+                System.err.println( "Got a new message....." );
             message.setScope( requestScope );
             requestScope.setPortal( message );
             if( message.isRequest() ){
@@ -198,9 +225,11 @@ class GIOPMessageRunnable implements Runnable{
                 //ImmortalMemory.instance().executeInArea( pdispatcher );
             }
             if( message.isReply() ){
-                //System.err.println( "Message received w/ id: " + message.getRequestId() );
+                if( ZenProperties.dbg )
+                    System.err.println( "Message received w/ id: " + message.getRequestId() );
                 ScopedMemory waiterRegion = orb.getWaiterRegion( message.getRequestId() );
-                //System.err.println( "Waiter region determined to be: " + waiterRegion );
+                if( ZenProperties.dbg )
+                    System.err.println( "Waiter region determined to be: " + waiterRegion );
                 WaitingStratergyNotifyRunnable wsnr = new WaitingStratergyNotifyRunnable( message , waiterRegion );
                 ExecuteInRunnable eir = ExecuteInRunnable.instance();
                 eir.init( wsnr , waiterRegion );
@@ -259,8 +288,10 @@ class WaitingStratergyNotifyRunnable implements Runnable{
      */   
     public void run(){
         edu.uci.ece.zen.orb.WaitingStrategy waitingStrategy = ((edu.uci.ece.zen.orb.WaitingStrategy) waiterRegion.getPortal());
-        //System.err.println( "Waiter found: " + waitingStrategy );
-        //System.err.println( "Reply is " + message );
+        if( ZenProperties.dbg ){
+            System.err.println( "Waiter found: " + waitingStrategy );
+            System.err.println( "Reply is " + message );
+        }
         CDRInputStream inp = message.getCDRInputStream();
         waitingStrategy.replyReceived( message );
     }

@@ -4,7 +4,7 @@
 
 package edu.uci.ece.zen.orb.any;
 
-import org.omg.CORBA.*;
+//import org.omg.CORBA.*;
 import edu.uci.ece.zen.orb.*; 
 
 /**
@@ -340,7 +340,7 @@ public class Any
      * @see edu.uci.ece.zen.orb.any.pluggable.Any edu.uci.ece.zen.orb.any.pluggable.Any
      * @see edu.uci.ece.zen.orb.any.monolithic.Any edu.uci.ece.zen.orb.any.monolithic.Any
      */
-    public Principal extract_Principal() throws org.omg.CORBA.BAD_OPERATION {
+    public org.omg.CORBA.Principal extract_Principal() throws org.omg.CORBA.BAD_OPERATION {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
@@ -350,7 +350,7 @@ public class Any
      * @see edu.uci.ece.zen.orb.any.pluggable.Any edu.uci.ece.zen.orb.any.pluggable.Any
      * @see edu.uci.ece.zen.orb.any.monolithic.Any edu.uci.ece.zen.orb.any.monolithic.Any
      */
-    public void insert_Principal(Principal p) {
+    public void insert_Principal(org.omg.CORBA.Principal p) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 

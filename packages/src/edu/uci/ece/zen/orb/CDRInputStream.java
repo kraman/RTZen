@@ -1,6 +1,6 @@
 package edu.uci.ece.zen.orb;
 
-import org.omg.CORBA.*;
+import org.omg.CORBA.TCKind;
 import edu.uci.ece.zen.utils.*;
 import javax.realtime.*;
 
@@ -775,7 +775,8 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
             org.omg.CORBA.UnionMember union_members[] = new org.omg.CORBA.UnionMember[union_memCount];
 
             for (int i = 0; i < union_memCount; i++) {
-                //System.out.println("CDR Istream :: Writing >> " + i);
+                if( ZenProperties.dbg )
+                    System.out.println("CDR Istream :: Writing >> " + i);
                 org.omg.CORBA.Any uLabel = orb.create_any();
                 if ( i != default_index ) {
                     uLabel.read_value(cdr, discriminator);

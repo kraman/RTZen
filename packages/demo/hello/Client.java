@@ -3,6 +3,7 @@ package demo.hello;
 import java.io.*;
 
 import org.omg.CORBA.ORB;
+import javax.realtime.*;
 
 /**
  * This class implements a simple Client for the Hello World CORBA
@@ -12,21 +13,32 @@ import org.omg.CORBA.ORB;
  * @version 1.0
  */
 
-public class Client
+public class Client implements Runnable
 {
     public static void main(String[] args)
     {
+        RealtimeThread rtThread = new RealtimeThread( (Runnable)new Client() );
+        rtThread.start();
+    }
+
+    public void run()
+    {
+        System.out.println( "In Client run()" );
         try
         {
+            System.out.println( "going to do ORB.init(...)" );
             ORB orb = ORB.init((String[])null, null);
+            System.out.println( "got an ORB at "+orb );
             String ior = "";
             File iorfile = new File( "/home/kraman/RTZen/packages/demo/hello/ior.txt" );
             System.out.println( iorfile );
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
             ior = br.readLine();
             System.out.println("[Client] " + ior);
+            System.out.println( "going to do string_to_object" );
             org.omg.CORBA.Object object = orb.string_to_object(ior);
-            System.out.println( orb.object_to_string( object ) );
+            System.out.println( "got object : " + object );
+            //System.out.println( orb.object_to_string( object ) );
             HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
 
             for( int i=0;i<10000;i++ )
