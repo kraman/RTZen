@@ -67,13 +67,13 @@ public class ORBImpl {
 
         nhrt.start();
         try {
-/*
+
             rtCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
             //rtCurrent = new ThreadLocal();
-            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
+/*            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
             policyManager = (PolicyManagerImpl) (orbFacade.parentMemoryArea.newInstance(PolicyManagerImpl.class));
             policyManager.init(orbFacade);
-*/            
+*/
             /*
              * rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance(
              * RTORBImpl.class )); rtorb.init(orbFacade);
@@ -96,6 +96,7 @@ public class ORBImpl {
         ZenProperties.logger.log("======================Performing post initialization steps====================");
         boolean startSerialTransportAcceptor = this. properties.getProperty( "edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
         //boolean startSerialTransportAcceptor = ZenProperties.getGlobalProperty("edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
+
         /*
         if( startSerialTransportAcceptor ){
             ZenProperties.logger.log("**** STARTING SERIAL ACCEPTOR ****");
@@ -104,7 +105,7 @@ public class ORBImpl {
             r.init(this.orbFacade);
             orbFacade.setUpORBChildRegion( r );
         }*/
-        
+
     }
 
     public PolicyCurrent getPolicyCurrent() {
