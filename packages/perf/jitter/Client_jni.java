@@ -19,7 +19,7 @@ import perf.TimeStamp.*;
 public class Client_jni extends RealtimeThread
 {
 	public static final int warmUpIterations =   5000;
-	public static final int iterations       = 10000;
+	public static final int iterations       = 50000;
 
 	public static int seqSize = 128;
 	public static int testType =1;
