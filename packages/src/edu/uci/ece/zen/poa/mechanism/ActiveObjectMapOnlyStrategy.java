@@ -102,6 +102,8 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
      * @param requests edu.uci.ece.zen.poa.SynchronizedInt
      * @return int
      */
+
+    //TODO: Peter, get rid of new calls over here. this will be executed from POA Impl region
     public void handleRequest( edu.uci.ece.zen.orb.giop.type.RequestMessage request, POA poa, SynchronizedInt requests , IntHolder exceptionValue ) {
         exceptionValue.value = POARunnable.NoException;
         FString okey = new FString(255);
@@ -149,6 +151,9 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
             map.incrementActiveRequests();
         }
         this.threadPolicyStrategy.enter(invokeHandler);
+
+        //TODO: Peter, get a ScopedRegion from the orb and all the actual invocations need to happen
+        //inside this region. At the end...free the region.
 
         if (request.getOperation().equals("_is_a") )
         {
