@@ -209,9 +209,10 @@ public class POARunnable implements Runnable {
                     break;
                     
                 case GET_CLIENT_EXPOSED_POLICIES:
-                    if(pimpl.getClientExposedPolicies().length == 0)
-                        System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
-                    else{
+                    if(pimpl.getClientExposedPolicies().length == 0){
+                        //System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
+                    
+                    }else{
                         CDROutputStream out = CDROutputStream.instance();
                         out.init(orb);   
                         out.write_boolean(false); //BIGENDIAN       

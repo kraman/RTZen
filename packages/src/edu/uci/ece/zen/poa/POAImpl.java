@@ -357,33 +357,36 @@ if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------PO
         }
     }
         IntHolder ih = getIntHolder();
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------handleRequest:0 ");
+        if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("---------------------handleRequest:0 ");
 
         // Check the POA's state. if it is discarding then throw the transient exception.
         validateProcessingState(ih);
         if (ih.value != POARunnable.NoException) {
             prun.exception = ih.value;
             retIntHolder(ih);
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:0 -- Exception");
             return;
         }
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:1 ");
+        if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:1 ");
         // Check the state of the POAManager. Here the POA is in active state
         prun.exception = POAManager.checkPOAManagerState(self.the_POAManager());
         if (ih.value != POARunnable.NoException) {
             prun.exception = ih.value;
             retIntHolder(ih);
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:1 -- Exception");
             return;
         }
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:2 ");
+        if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:2 ");
         // check if the POA has the persistent policy/or the transient
         FString objKey = req.getObjectKey();
         this.lifespanStrategy.validate(objKey, ih);
         if (ih.value != POARunnable.NoException) {
             prun.exception = ih.value;
             retIntHolder(ih);
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:2 -- Exception");
             return;
         }
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:3 ");
+        if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:3 ");
         try {
             ScopedMemory tpRegion = this.orb.getThreadPoolRegion(threadPoolId);
             edu.uci.ece.zen.utils.Logger.printThreadStack();
@@ -397,26 +400,28 @@ if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------PO
             //    (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             ExecuteInRunnable eir = orb.getEIR();
 
-            if(req.getPriority() != (short)serverPriority)
-                if (ZenBuildProperties.dbgIOR) 
-                    ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", "server pr != msg pr");
+            //if(req.getPriority() != (short)serverPriority)
+                //if (ZenBuildProperties.dbgPOA) 
+                    //ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", "server pr != msg pr");
             //kludge, server pr for now
-            short pr = req.getPriority();//(short)serverPriority;//orb.getRTCurrent().the_priority();
-            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:4 pr:" + pr);
+            short pr = req.getPriority();//orb.getRTCurrent().the_priority();//req.getPriority();//(short)serverPriority;//
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:4 pr:" + pr);
 
             tpr.init(self, req, pr);
             eir.init(tpr, tpRegion);
-            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:5 ");
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:5 ");
             //HandleRequestRunnable hrr = (HandleRequestRunnable)
             // requestScope.newInstance( HandleRequestRunnable.class );
             //hrr.init( self , req );
 
             //((ScopedMemory)requestScope).setPo{rtal( hrr );
             req.associatePOA(self);
-            edu.uci.ece.zen.utils.Logger.printMemStatsImm(318);
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(318);
             orb.orbImplRegion.executeInArea(eir);
-            edu.uci.ece.zen.utils.Logger.printMemStatsImm(319);
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:6 ");
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(319);
             orb.freeEIR(eir);
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:7 ");
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here
             // -- Throw a transient exception

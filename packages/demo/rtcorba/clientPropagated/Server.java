@@ -65,14 +65,17 @@ public class Server extends RealtimeThread
             //edu.uci.ece.zen.orb.transport.iiop.Acceptor.enableComponents = true;
             //edu.uci.ece.zen.orb.transport.iiop.Acceptor.serverPriority = 0;
             //edu.uci.ece.zen.orb.transport.iiop.Acceptor.priorityModel = org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED.value();
-
+            System.out.println("Max prio " + PriorityScheduler.instance().getMaxPriority());
+            System.out.println("Min prio " + PriorityScheduler.instance().getMinPriority());
+            System.out.println("Norm prio " + PriorityScheduler.instance().getNormPriority());
+            int minPrio = PriorityScheduler.instance().getMinPriority();
             //for standard CORBA, this would be reenabled
-            poa_policy_list[0] = rtorb.create_priority_model_policy (org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,(short)0);
+            poa_policy_list[0] = rtorb.create_priority_model_policy (org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,(short)minPrio);
 
 
             ThreadpoolLane[] lanes = new ThreadpoolLane[3];
             for(int i = 0; i < lanes.length; ++i)
-                lanes[i] = new ThreadpoolLane((short)i, 1, 1);
+                lanes[i] = new ThreadpoolLane((short)(i+minPrio), 1, 1);
             int threadPoolId = rtorb.create_threadpool_with_lanes(100, lanes, false, false, 10, 10);            
 
             poa_policy_list[1] = rtorb.create_threadpool_policy(threadPoolId);

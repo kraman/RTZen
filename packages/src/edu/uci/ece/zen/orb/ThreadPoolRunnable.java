@@ -2,14 +2,21 @@ package edu.uci.ece.zen.orb;
 
 import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
+import javax.realtime.MemoryArea;
 import edu.uci.ece.zen.utils.ThreadPool;
 import edu.uci.ece.zen.orb.transport.iiop.AcceptorRunnable;
+
+import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
+import edu.uci.ece.zen.orb.CDROutputStream;
 
 public class ThreadPoolRunnable implements Runnable {
 
     int stacksize;
 
-    org.omg.RTCORBA.ThreadpoolLane[] lanes;
+    //org.omg.RTCORBA.ThreadpoolLane[] lanes;
+    CDROutputStream lanes;
 
     boolean allowBorrowing;
 
@@ -56,7 +63,11 @@ public class ThreadPoolRunnable implements Runnable {
         this.orb = orb;
         this.rtorb = rtorb;
         this.stacksize = stacksize;
-        this.lanes = lanes;
+        //ZenProperties.logger.log("@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@ThreadPoolRunnable 3");
+        //if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("orb mem" + MemoryArea.getMemoryArea(orb));
+        //if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("lanes mem" + MemoryArea.getMemoryArea(lanes));
+        this.lanes = ThreadPool.marshalLanes(lanes,orb);
+        //ZenProperties.logger.log("ThreadPoolRunnable 4");
         this.allowBorrowing = allow_borrowing;
         this.allowRequestBuffering = allow_request_buffering;
         this.maxBufferedRequests = max_buffered_requests;
@@ -67,16 +78,17 @@ public class ThreadPoolRunnable implements Runnable {
         //make sure this has been initialized
         if (stacksize >= 0) {
             ThreadPool tp;
-            if (lanes == null) 
+            if (lanes == null) {
                 tp = new ThreadPool(stacksize, staticThreads,
                     dynamicThreads, defaultPriority, allowRequestBuffering,
                     maxBufferedRequests, maxRequestBufferSize, orb, 
                     rtorb.acceptorRunnable, rtorb.tpID );
-            else 
+            } else {
                 tp = new ThreadPool(stacksize, allowRequestBuffering,
                     maxBufferedRequests, maxRequestBufferSize, lanes,
                     allowBorrowing, orb, rtorb.acceptorRunnable, rtorb.tpID );
-
+                lanes.free();
+            }
             orb.threadpoolList[rtorb.tpID] = (ScopedMemory) RealtimeThread
                     .getCurrentMemoryArea();
 

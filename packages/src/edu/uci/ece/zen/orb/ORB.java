@@ -100,7 +100,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                     "doc.zen.orb.scopedMemorySize", "2097951"));    //Change by Alex...TODO: unknown reason
 
             int numMemAreas = Integer.parseInt(ZenProperties
-                .getGlobalProperty( "memarea.amount" , "20" ));
+                .getGlobalProperty( "memarea.amount" , "40" ));
 
             for (int i = 0; i < numMemAreas; i++)
                 unusedMemoryAreas.enqueue(new LTMemory(100, scopeMemorySize));

@@ -8,6 +8,7 @@ import javax.realtime.MemoryArea;
 //import javax.realtime.ScopedMemory;
 
 import edu.uci.ece.zen.orb.CDROutputStream;
+import edu.uci.ece.zen.orb.CDRInputStream;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.poa.POA;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
@@ -18,6 +19,8 @@ import org.omg.IOP.TaggedProfile;
 import org.omg.IOP.TaggedProfileHelper;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
+import org.omg.RTCORBA.ThreadpoolLane;
+import org.omg.RTCORBA.ThreadpoolLanesHelper;
 
 
 public class ThreadPool {
@@ -59,6 +62,45 @@ public class ThreadPool {
         this.threadPoolId = threadPoolId;
     }
 
+    public ThreadPool(int stackSize, boolean allowRequestBuffering,
+            int maxBufferedRequests, int requestBufferSize,
+            CDROutputStream out, boolean allowBorrowing,
+            ORB orb, AcceptorRunnable acceptorRunnable , int threadPoolId ) {
+        //stackSize; //KLUDGE: ignored
+        this.allowRequestBuffering = allowRequestBuffering;
+        this.maxBufferedRequests = maxBufferedRequests;
+        this.requestBufferSize = requestBufferSize;
+        this.allowBorrowing = allowBorrowing;
+        this.acceptorRunnable = acceptorRunnable;
+
+        CDRInputStream in = (CDRInputStream)(out.create_input_stream());
+        int length = in.read_ulong();
+        this.lanes = new Lane[length];
+        for (int i = 0; i < length; i++){
+            short lane_priority = in.read_short();
+            int static_threads = in.read_ulong();
+            int dynamic_threads = in.read_ulong();
+            if (ZenBuildProperties.dbgTP) ZenProperties.logger.log(
+                    "Lane" + i + 
+                    " created with priority: " + lane_priority + 
+                    " static_threads: " + static_threads + 
+                    " dynamic_threads: " + dynamic_threads);            
+            acceptorRunnable.init( orb , lane_priority , threadPoolId );
+            orb.setUpORBChildRegion( acceptorRunnable );
+            this.lanes[i] = new Lane(stackSize, static_threads,
+                    dynamic_threads, lane_priority, this,
+                    allowBorrowing, allowRequestBuffering, maxBufferedRequests,
+                    acceptorRunnable.acceptorArea);
+            orb.setUpORBChildRegion(acceptorRunnable);
+        }
+        in.free();
+        java.util.Arrays.sort(this.lanes, 0, this.lanes.length);
+        for (int i = 0; i < this.lanes.length; i++)
+            this.lanes[i].setLaneId(i);
+        this.orb = orb;
+        this.threadPoolId = threadPoolId;
+    }    
+    
     public ThreadPool(int stackSize, boolean allowRequestBuffering,
             int maxBufferedRequests, int requestBufferSize,
             org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allowBorrowing,
@@ -107,7 +149,7 @@ public class ThreadPool {
         int i = 0;
         for (; i < lanes.length; i++) {
             short lanePriority = lanes[i].getPriority();
-            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("TP execute pr: " + minPriority + " lane pr: " + lanePriority);
+            if (ZenBuildProperties.dbgTP) ZenProperties.logger.log("TP min pr: " + minPriority + ", TP max pr: " + maxPriority + ", lane pr: " + lanePriority);
             if ( lanePriority >= minPriority && lanePriority <= maxPriority) {
                 laneFound = true;
                 break;
@@ -119,7 +161,7 @@ public class ThreadPool {
         }
         else {
             ZenProperties.logger.log(Logger.WARN, getClass(), "execute(...)",
-                                     "No lane matched the request priority.");
+                                     "No lane matched the request priority. Will execute at lowest priority lane.");
             lanes[0].execute(task);
         }
     }
@@ -156,6 +198,13 @@ public class ThreadPool {
             e.printStackTrace();//TODO better exception handling
         }
         //if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("-----TP.getProfiles2:  " + out.toString());
+    }
+    
+    public static CDROutputStream marshalLanes(ThreadpoolLane[] lanes, ORB orb){
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        ThreadpoolLanesHelper.write(out, lanes);
+        return out;
     }
 }
 
@@ -217,7 +266,7 @@ class GetProfilesRunnable2 implements Runnable{
 }
 
 
-class Lane {
+class Lane implements Comparable{
     int stackSize; //ignored. No such provision in RTSJ 2.0
 
     int maxStaticThreads;
@@ -375,6 +424,8 @@ class Lane {
     }
 
     public int compareTo(Object e2) {
+        if(!(e2 instanceof Lane))
+            ZenProperties.logger.log("NOT instance of Lane!!");
         return priority - ((Lane) e2).priority;
     }
 }

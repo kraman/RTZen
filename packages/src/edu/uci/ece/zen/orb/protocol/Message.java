@@ -74,6 +74,7 @@ public abstract class Message {
         transport = null;
         istream = null;
         scope = null;
+        priority = 0;
         internalFree();
         //messageBody.free();
     }
