@@ -5,7 +5,7 @@ import java.io.*;
 import org.omg.CORBA.ORB;
 import javax.realtime.*;
 import org.omg.PortableServer.*;
-import perf.TimeStamp.*;
+//import perf.TimeStamp.*;
 
 /**
  * This class implements a simple jitter time measurement 
