@@ -54,7 +54,9 @@ public class RequestMessage extends
         //if(ZenProperties.memDbg1) System.out.write('d');
         //if(ZenProperties.memDbg1) System.out.write('r');
         //if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(drawn);
-        return (RequestMessage)ORB.getQueuedInstance(RequestMessage.class,queue);
+        RequestMessage rm = (RequestMessage)ORB.getQueuedInstance(RequestMessage.class,queue);
+        //rm.inUse = true;
+        return rm;
 /*
         try {
             if (rm == null) rm = (RequestMessage) ImmortalMemory.instance()
@@ -73,6 +75,7 @@ public class RequestMessage extends
         messageBody = stream;
     }
 */
+
 
     public int getRequestId() {
         return header.request_id;
