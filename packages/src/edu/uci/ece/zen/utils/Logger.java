@@ -39,7 +39,7 @@ public abstract class Logger{
         MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
 	    long mem = ma.memoryConsumed();
         //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());            
-        System.out.println(ma.memoryConsumed());            
+        System.out.println(ma.memoryConsumed()/1024);            
         long diff = ma.memoryConsumed() - mem;
         if(flag){
             System.out.println("dbg size: " + diff);
