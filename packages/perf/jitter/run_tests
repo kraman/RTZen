@@ -19,6 +19,7 @@ function printUsage() {
     echo "                4  RTZEN server on OVM interpreter"
     echo "                40 RTZEN server remote on OVM interpreter"
     echo "                5  RTZEN server on OVM ahead-of-time compiler"
+    echo "                5  RTZEN server remote on OVM ahead-of-time compiler"
     echo "                6  RTZEN server on regular ZEN and JVM"
     echo "                60 RTZEN server remote on regular ZEN and JVM"
     echo "                7  RTZEN server on JacORB and JVM"
@@ -45,14 +46,14 @@ STOPFNAME=$PROGNAME.stopToken
 
 
 # startup types 
-TESTSIZES="4 8 16 32 64 128 256 512"
+#TESTSIZES="4 8 16 32 64 128 256 512"
+TESTSIZES="128"
 SERVERTYPE=1
 CLIENTTYPE=1
 TESTTYPE=1
 
 
 REMNODE="node0.rtzen.pces.emulab.net" 
-
 # used by startServer and stopServer 
 STOPTOKEN=0
 
@@ -409,7 +410,7 @@ if [ $OPERATION == "both" -o $OPERATION == "client" ]; then
 			startServer $SERVERTYPE
 			
 			# delay a bit to give the server a chance
-			sleep 15
+			sleep 10
 		fi
 
 		# startup the client (will terminate automatically after finishing)
