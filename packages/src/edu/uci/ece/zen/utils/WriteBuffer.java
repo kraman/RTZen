@@ -26,7 +26,7 @@ public class WriteBuffer {
         try {
             maxCap = Integer.parseInt(ZenProperties
                 .getGlobalProperty( "writebuffer.size" , "20" ));
-	    bufferCache = (Queue) ImmortalMemory.instance().newInstance(Queue.class);
+        bufferCache = (Queue) ImmortalMemory.instance().newInstance(Queue.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "static <init>", e);
             System.exit(-1);
@@ -42,7 +42,7 @@ public class WriteBuffer {
             //Thread.dumpStack();
             idgen++;
             numFree--;
-	    WriteBuffer wb = (WriteBuffer) bufferCache.dequeue();
+        WriteBuffer wb = (WriteBuffer) bufferCache.dequeue();
             if ( wb == null){
                 ZenProperties.logger.log(Logger.WARN, WriteBuffer.class, "instance", "Creating new instance.");
                 wb = (WriteBuffer) ImmortalMemory.instance().newInstance(WriteBuffer.class);
@@ -80,7 +80,7 @@ public class WriteBuffer {
     public WriteBuffer() {
         try {
             //buffers = (Vector) ImmortalMemory.instance().newInstance(vectorConstructor, vectorArgTypes);
-	    buffers = new Vector( WriteBuffer.maxCap );
+        buffers = new Vector( WriteBuffer.maxCap );
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, getClass(), "<init>", e);
             System.exit(-1);
@@ -101,7 +101,7 @@ public class WriteBuffer {
     }
 */
     public void init() {
-	//System.out.println( "WriteBuffer.init()" );
+    //System.out.println( "WriteBuffer.init()" );
         position = limit = capacity = 0;
         buffers.removeAllElements();
         enableAllignment = true;
@@ -109,7 +109,7 @@ public class WriteBuffer {
     }
 
     public void free() {
-	//System.out.println( "WriteBuffer.free()" );
+    //System.out.println( "WriteBuffer.free()" );
         if(!inUse){
             Thread.dumpStack();
             ZenProperties.logger.log(Logger.WARN, WriteBuffer.class, "free", "Buffer already freed.");
@@ -139,8 +139,8 @@ public class WriteBuffer {
         }
 
         buffers.removeAllElements();
-        init();
-        WriteBuffer.release(this);
+        //init();
+
         numFree++;
 
         if(ZenBuildProperties.dbgDataStructures){
@@ -152,6 +152,7 @@ public class WriteBuffer {
         }
 
        inUse = false;
+       WriteBuffer.release(this);
     }
 
     public String toString(){
@@ -437,7 +438,7 @@ public class WriteBuffer {
         writeLong(val);
         position = tmp;
     }
-    
+
     private long profileLengthPosition;
     private int profileLength;
 

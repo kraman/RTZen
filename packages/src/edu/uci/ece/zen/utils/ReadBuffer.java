@@ -80,14 +80,14 @@ public class ReadBuffer {
                 //ret.id = idgen++;
                 ret.inUse = true;
                 ret.init();
-                
+
                 if(ZenBuildProperties.dbgDataStructures){
                     System.out.write('r');
                     System.out.write('b');
                     System.out.write('u');
                     System.out.write('f');
                     System.out.write('2');
-                    edu.uci.ece.zen.utils.Logger.writeln(ret.id);                
+                    edu.uci.ece.zen.utils.Logger.writeln(ret.id);
                 }
                 return ret;
             }
@@ -128,7 +128,7 @@ public class ReadBuffer {
         byte [] buf = (byte[]) buffers.elementAt((int) (limit / 1024));
 
         for(int i = 0; i < limit; ++i)
-            newarr[i] = buf[i];
+            newarr[i] = ((byte[]) buffers.elementAt((int) (limit / 1024)))[i%1024];
 
         return FString.byteArrayToString(newarr) + "\n\nlimit: " + limit;
     }
@@ -214,6 +214,8 @@ public class ReadBuffer {
     }
 
     public void writeByteArray(byte[] v, int offset, int length) {
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("ReadBuffer: writing byte arr of len " + length);
+
         ensureCapacity(length);
         while (length > 0) {
             byte[] buffer = (byte[]) buffers.elementAt((int) (limit / 1024));
@@ -277,9 +279,9 @@ public class ReadBuffer {
             edu.uci.ece.zen.utils.Logger.writeln(bs);
         }
 
-        init();
+        //init();
         inUse = false;
-        
+
         numFree++;
         if(ZenBuildProperties.dbgDataStructures){
             System.out.write('r');
@@ -359,6 +361,12 @@ public class ReadBuffer {
     }
 
     public byte readByte() {
+        if (ZenBuildProperties.dbgInvocations)
+            if(!inUse){
+                ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
+                    "readByte",
+                    "Buffer already freed.");
+            }
         checkReadPositionLimit(1);
         //if (!inUse) System.out.println("IN USE:" + inUse);
         byte[] curBuf = (byte[]) buffers.elementAt((int) (position / 1024));
@@ -368,6 +376,12 @@ public class ReadBuffer {
     }
 
     public void readByteArray(byte[] v, int offset, int length) {
+        if (ZenBuildProperties.dbgInvocations)
+            if(!inUse){
+                ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
+                    "readByte",
+                    "Buffer already freed.");
+            }
         checkReadPositionLimit(length);
         while (length > 0) {
             byte[] curBuf = (byte[]) buffers.elementAt((int) (position / 1024));

@@ -26,6 +26,7 @@ public abstract class WaitingStrategy {
      * method, may want to drop it.
      */
     public abstract CDRInputStream waitForReply();
+    public abstract int getReplyStatus();
 
     private static int messageId = 0;
 

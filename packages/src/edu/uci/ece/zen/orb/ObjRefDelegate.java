@@ -18,6 +18,7 @@ import org.omg.RTCORBA.PRIVATE_CONNECTION_POLICY_TYPE;
 import org.omg.RTCORBA.PriorityModel;
 import org.omg.RTCORBA.SERVER_PROTOCOL_POLICY_TYPE;
 import org.omg.RTCORBA.THREADPOOL_POLICY_TYPE;
+import org.omg.CORBA.SystemExceptionHelper;
 
 import edu.uci.ece.zen.orb.policies.PriorityModelPolicyImpl;
 import edu.uci.ece.zen.utils.Queue;
@@ -567,8 +568,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////Request / Reply
-    // stuff///////////////////////////
+    ///////////////////////////////Request / Reply stuff///////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -609,17 +609,31 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      * </p>
      */
     public org.omg.CORBA.portable.InputStream invoke(org.omg.CORBA.Object self, org.omg.CORBA.portable.OutputStream os)
-            throws org.omg.CORBA.portable.ApplicationException,
-            org.omg.CORBA.portable.RemarshalException {
+            throws org.omg.CORBA.portable.ApplicationException, org.omg.CORBA.portable.RemarshalException {
         try{
-            //        edu.uci.ece.zen.utils.Logger.printMemStats(302);
             org.omg.CORBA.portable.InputStream ret = ((ClientRequest) os).invoke();
-            //      edu.uci.ece.zen.utils.Logger.printMemStats(303);
-            ((ClientRequest) os).free();
-            return ret;
+            int replyStatus = ((ClientRequest) os).getReplyStatus();
+
+            switch( replyStatus ){
+                case org.omg.GIOP.ReplyStatusType_1_0._NO_EXCEPTION:
+                    return ret;
+                case org.omg.GIOP.ReplyStatusType_1_0._USER_EXCEPTION:
+                    String exceptionID = ((edu.uci.ece.zen.orb.CDRInputStream)ret).peekAtString();
+                    throw new org.omg.CORBA.portable.ApplicationException(exceptionID, ret);
+                case org.omg.GIOP.ReplyStatusType_1_0._SYSTEM_EXCEPTION:
+                    org.omg.CORBA.SystemException sysEx = SystemExceptionHelper.read(ret);
+                    throw sysEx;
+                default:
+                    ZenProperties.logger.log( Logger.WARN , "Unknown status returned" );
+                    //TODO: throw some soft of exception here?
+                    return ret;
+            }
+            
         }catch( NullPointerException npe ){
             npe.printStackTrace();
             return null;
+        }finally{
+            ((ClientRequest) os).free();
         }
     }
 
@@ -631,8 +645,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     ///////////////////////////////////DII // Stuff////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
 
-    public org.omg.CORBA.Request request(org.omg.CORBA.Object self,
-            String operation) {
+    public org.omg.CORBA.Request request(org.omg.CORBA.Object self, String operation) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
@@ -659,8 +672,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////Local
-    // Invocations///////////////////////////
+    ///////////////////////////////////Local Invocations///////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
 
     public org.omg.CORBA.portable.ServantObject servant_preinvoke(
@@ -673,36 +685,3 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 }
-/*
-class TaggedProfileRunnable implements Runnable{
-    private static Queue queue = Queue.fromImmortal();
-
-    public org.omg.IIOP.Version iiop_version;
-
-    public FString host;
-
-    public short port;
-
-    public FString object_key;
-
-
-    CDRInputStream in;
-
-    public static TaggedProfileRunnable instance() {
-        return (TaggedProfileRunnable)ORB.getQueuedInstance(TaggedProfileRunnable.class,queue);
-    }
-
-    public void init(CDRInputStream in){
-        this.in = in;
-    }
-
-    public void run(){
-        org.omg.IIOP.ProfileBody_1_0 profilebody =
-                org.omg.IIOP.ProfileBody_1_0Helper.read(in);
-
-
-        port = profilebody.port;
-    }
-
-}
-*/

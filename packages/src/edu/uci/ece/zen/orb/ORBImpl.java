@@ -81,7 +81,7 @@ public class ORBImpl {
              * rtorb.init(orbFacade);
              */
             orbFacade.getRTORB().create_threadpool(0,//stacksize,
-                    1,//static_threads,
+                    10,//static_threads,
                     0,//dynamic_threads,
                     PriorityMappingImpl.toCORBA((short) PriorityScheduler.instance().getNormPriority()),//default_thread_priority,
                     false,//allow_request_buffering,
@@ -161,8 +161,7 @@ public class ORBImpl {
             org.omg.CORBA.portable.ObjectImpl objImpl) {
         //System.out.println("ORBImpl string_to_object 1");
         ObjRefDelegate delegate = ObjRefDelegate.instance();
-        delegate.init(ior, (edu.uci.ece.zen.orb.ObjectImpl) objImpl, orbFacade,
-                this);
+        delegate.init(ior, (edu.uci.ece.zen.orb.ObjectImpl) objImpl, orbFacade, this);
         objImpl._set_delegate(delegate);
     }
 

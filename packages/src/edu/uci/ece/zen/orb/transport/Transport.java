@@ -318,6 +318,8 @@ class GIOPMessageRunnable implements Runnable {
     
                         rm.setPriority(priority);
                         orb.getRTCurrent().the_priority(priority);
+                        
+                        rm.setClientPropagated(true);
     
                         if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("GIOPMessageRunnable NEW thread priority: " + orb.getRTCurrent().the_priority());
     

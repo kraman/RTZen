@@ -15,7 +15,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
     Semaphore clientSem;
 
     CDRInputStream replyMsg;
-
+    int replyStatus = -1;
     private static TwoWayWaitingStrategy inst;
 
     TwoWayWaitingStrategy() {
@@ -26,11 +26,9 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
         this.replyMsg = reply.getCDRInputStream();
         if( replyMsg == null )
             if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log( "Reply Msg Null" );
-
         FString contexts = ((ReplyMessage)reply).getServiceContexts();
         if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("REPLY SC: " + contexts.decode());
         ReadBuffer rb = contexts.toReadBuffer();
-        //if (ZenBuildProperties.dbg) System.out.println("#############REPLY RB: " + rb.toString());
         int size = rb.readLong();
         if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("REPLY CONTEXT size: " + size);
         for(int i = 0; i < size; ++i){
@@ -51,25 +49,9 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
                     rb.readByte();
             }
         }
+
+        this.replyStatus = ((ReplyMessage)reply).getReplyStatus();
         rb.free();
-        /*
-         ServiceContext[] contexts =((ReplyMessage)reply).getServiceContexts();
-         for(int i = 0; i < contexts.length; ++i){
-            if(ZenBuildProperties.dbgInvocations)
-            System.out.println("REPLY CONTEXT id: " + contexts[0].context_id);
-            if(contexts[0].context_id == RTCorbaPriority.value){
-                if(ZenBuildProperties.dbgInvocations) System.out.println("REPLY CONTEXT id:RTCorbaPriority");
-                if(ZenBuildProperties.dbgInvocations) System.out.println("CUR thread priority: " + replyMsg.orb.getRTCurrent().the_priority());
-                CDRInputStream in1 = CDRInputStream.fromOctetSeq(contexts[0].context_data, replyMsg.orb);
-                short priority = in1.read_short();
-                if(ZenBuildProperties.dbgInvocations) System.out.println("RECEIVED thread priority: " + priority);
-                replyMsg.orb.getRTCurrent().the_priority(priority);
-                if(ZenBuildProperties.dbgInvocations) System.out.println("NEW thread priority: " + replyMsg.orb.getRTCurrent().the_priority());
-                in1.free();
-            }
-         }
-         */
-        //TODO:remember to release the message....u only have 1
         clientSem.release();
         ((ReplyMessage)reply).release();
     }
@@ -82,6 +64,10 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
             ZenProperties.logger.log(Logger.WARN, getClass(), "waitForReply", ie);
         }
         return replyMsg;
+    }
+
+    public int getReplyStatus(){
+        return replyStatus;
     }
 }
 

@@ -33,11 +33,25 @@ public class Server extends RealtimeThread
     private static final int ITERATION_FACTOR_2 = 1;
     private static final int ITERATION_FACTOR_1 = 20;
     public String[] args;
-    private static boolean isClientPropagated = false;
+    private static boolean isClientPropagated = true;
     ORB orb;
     
     public static void main(String[] args) throws Exception
     {
+        if(args.length == 0){
+            System.out.println( "Need to specify \"sd\" for server declared or \"cp\" for client propagated." );
+            System.exit(-1);
+        }
+        
+        if(args[0].equals("sd"))
+            isClientPropagated = false;
+        else if (args[0].equals("cp"))
+            isClientPropagated = true;
+        else{
+            System.out.println( "Need to specify \"sd\" for server declared or \"cp\" for client propagated." );
+            System.out.println( "You passed in: " + args[0]);
+            System.exit(-1);
+        }
         // System.out.println( "=====================Creating RT Thread in server==========================" );
         Server rt = (Server) ImmortalMemory.instance().newInstance( Server.class );
         // System.out.println( "=====================Starting RT Thread in server==========================" );
@@ -91,14 +105,23 @@ public class Server extends RealtimeThread
                         (short)0);
                         
                 ThreadpoolLane[] lanes = new ThreadpoolLane[2];
-                lanes[0] = new ThreadpoolLane(minPriority.value, 1, 1);
-                lanes[1] = new ThreadpoolLane(maxPriority.value, 1, 1);
+                lanes[0] = new ThreadpoolLane(minPriority.value, 5, 0);
+                lanes[1] = new ThreadpoolLane(maxPriority.value, 5, 0);
                     
                 threadPoolId = rtorb.create_threadpool_with_lanes(10, lanes, false, false, 10, 10);
                 policy[1] = rtorb.create_threadpool_policy(threadPoolId);
             }else{
-                System.out.println("Using server-declared policy.....");                
-                threadPoolId = rtorb.create_threadpool(10, 5, 5, maxPriority.value, false, 10, 10);            
+                System.out.println("Using server-declared policy.....");    
+                threadPoolId = rtorb.create_threadpool(
+                        0,//stacksize,
+                        5,//static_threads,
+                        0,//dynamic_threads,
+                        maxPriority.value,//default_thread_priority,
+                        false,//allow_request_buffering,
+                        0,//max_buffered_requests,
+                        0//max_request_buffer_size
+                        );                
+                //threadPoolId = rtorb.create_threadpool(10, 5, 5, maxPriority.value, false, 0, 10);            
                 policy = new Policy[1];
                 policy[0] = rtorb.create_threadpool_policy(threadPoolId);                
             }

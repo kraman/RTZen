@@ -22,11 +22,6 @@ public class ResponseHandler implements org.omg.CORBA.portable.ResponseHandler {
         this.req = req;
     }
 
-    public static ResponseHandler instance() {
-        if (rh == null) rh = new ResponseHandler();
-        return rh;
-    }
-
     /**
      * This method is called by servant code to send back a reply.
      * 
@@ -34,8 +29,7 @@ public class ResponseHandler implements org.omg.CORBA.portable.ResponseHandler {
      *         <code>CDROutputStream</code>.
      */
     public org.omg.CORBA.portable.OutputStream createReply() {
-        return edu.uci.ece.zen.orb.protocol.MessageFactory
-                .constructReplyMessage(orb, req);
+        return edu.uci.ece.zen.orb.protocol.MessageFactory.constructReplyMessage(orb, req);
     }
 
     /**
@@ -46,7 +40,6 @@ public class ResponseHandler implements org.omg.CORBA.portable.ResponseHandler {
      *         <code>CDROutputStream</code>.
      */
     public org.omg.CORBA.portable.OutputStream createExceptionReply() {
-        return edu.uci.ece.zen.orb.protocol.MessageFactory
-                .constructExceptionMessage(orb, req);
+        return edu.uci.ece.zen.orb.protocol.MessageFactory.constructExceptionMessage(orb, req);
     }
 }
