@@ -164,10 +164,6 @@ public class Server extends RealtimeThread
             System.out.println( "=================== Servant registered, getting IOR ========================" );
             String ior = orb.object_to_string(obj);
             writeIOR(ior, iorFile);
-            //BufferedWriter bw = new BufferedWriter( new FileWriter(iorFile) );
-            //bw.write(ior);
-            //bw.close();
-
         }catch(Exception e){
             e.printStackTrace();
             System.exit(-1);
@@ -184,11 +180,7 @@ public class Server extends RealtimeThread
                         BufferedWriter bw = new BufferedWriter( new FileWriter(filename) );
                         bw.write(ior);
                         bw.close();
-
                         System.out.println( "[Server] " + ior );
-                        //pw.println( ior );
-                        //pw.flush();
-                        //pw.close();
                     }
                     catch ( java.io.IOException ioe ) {
                         System.out.println( "Exception writing " + filename );
