@@ -18,10 +18,10 @@ import edu.uci.ece.zen.utils.NativeTimeStamp;
 
 public class Client extends RealtimeThread
 {
-	public static final int warmUpIterations =   1000;
+	public static final int warmUpIterations =   5000;
 	public static final int iterations       = 10000;
 
-	public static int seqSize = 4;
+	public static int seqSize = 128;
 	public static int testType =1;
 
     public static void main(String[] args) throws Exception
@@ -117,11 +117,12 @@ public class Client extends RealtimeThread
 				
 					for(j=0; j<iterations;j++ ) {
 						//NativeTimeStamp.RecordTime(20);
+                        NativeTimeStamp.RecordTime(22);
 						server.putOctetSeq(inOctetSeq);
+                        NativeTimeStamp.RecordTime(22);
                         if( j % 100 == 0 ){
                             edu.uci.ece.zen.utils.Logger.printMemStats( j );
                         }
-						NativeTimeStamp.RecordTime(21);
 					}
 					end = System.currentTimeMillis();
 
