@@ -112,7 +112,7 @@ public abstract class Transport implements Runnable {
         ZenProperties.logger.log("Transport send 1");
         try {
             java.io.OutputStream out = getOutputStream();
-	    System.out.println( "send msg size is " + msg.getPosition() );
+	    //System.out.println( "send msg size is " + msg.getPosition() );
             msg.dumpBuffer(out);
 	    out.flush();
         } catch (java.io.IOException ioex) {

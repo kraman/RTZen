@@ -84,14 +84,16 @@ class SerialPortInputStream extends InputStream{
     }
 
     void checkAvail(){
-	System.out.println( "Avail: " + limit + " pos: " + pos );
+	//System.out.println( "Avail: " + limit + " pos: " + pos );
 	try{
             if( (limit-pos) == 0 ){
 		int tmp=0;
-		System.out.println( "get message from port" );
+		//System.out.println( "get message from port" );
 		while( (tmp = NativeSerialPort.instance().getMessage( tmpBuffer )) <= 0 )
-		{ System.out.println( "...." ); }
-		System.out.println( "tmp _" + tmp );
+		{ 
+		    //System.out.println( "...." ); 
+		}
+		//System.out.println( "tmp _" + tmp );
 	        pos = 2;
 	        limit = tmpBuffer[1];
             }
@@ -149,7 +151,7 @@ class SerialPortOutputStream extends OutputStream{
     public void flush() throws java.io.IOException{ 
         buffer[1] = (byte) pos;
 	if( pos > 89 ){
-		System.out.println( "Message is WAY TOO BIG. msg size: " + pos + " (Max supported:89)" );
+		System.err.println( "Message is WAY TOO BIG. msg size: " + pos + " (Max supported:89)" );
 		System.exit(-1);
 	}
         NativeSerialPort.instance().setMessage( buffer , 89 );
