@@ -57,22 +57,14 @@ class SerialPortInputStream extends InputStream{
     }
 
     public int read() throws java.io.IOException{
-        NativeSerialPort.instance().getMessage( tmpBuffer );
+        while( NativeSerialPort.instance().getMessage( tmpBuffer ) != 1 ){}
         return tmpBuffer[0];
     }
 
-    public void close() throws java.io.IOException{
-    }
-
-    public synchronized void reset() throws java.io.IOException{
-    }
-
-    public boolean markSupported(){
-        return false;
-    }
-
-    public synchronized void mark(int m){
-    }
+    public void close() throws java.io.IOException{ }
+    public synchronized void reset() throws java.io.IOException{ }
+    public boolean markSupported(){ return false; }
+    public synchronized void mark(int m){ }
 
     public long skip(long l) throws java.io.IOException{
         long ls = l;
@@ -88,24 +80,29 @@ class SerialPortInputStream extends InputStream{
     }
 
     public int read(byte[] buf,int start,int len) throws java.io.IOException{
-        return 0;
+        for( int i=start;i<start+len;i++ )
+            buf[i] = (byte)read();
+        return len;
     }
 
 }
 
 class SerialPortOutputStream extends OutputStream{
-    public void close() throws java.io.IOException{
-    }
+    public void close() throws java.io.IOException{ }
+    public void flush() throws java.io.IOException{ }
 
-    public void flush() throws java.io.IOException{
-    }
-
+    byte tmpBuffer[] = new byte[1];
     public void write(int i) throws java.io.IOException{
+        tmpBuffer[0] = (byte)i;
+        NativeSerialPort.instance().setMessage( tmpBuffer , 1 );
     }
 
     public void write(byte[] buf) throws java.io.IOException{
+        NativeSerialPort.instance().setMessage( buf , buf.length );
     }
 
     public void write(byte[] buf,int start,int len) throws java.io.IOException{
+        for( int i=start;i<start+len;i++ )
+            write( buf[i] );
     }
 }
