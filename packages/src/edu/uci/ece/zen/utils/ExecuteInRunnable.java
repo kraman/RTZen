@@ -12,6 +12,7 @@ public class ExecuteInRunnable implements Runnable{
         this.area = area;
     }
     public void run(){
+        System.out.println("utils.ExecuteInRunnable, the current memory region is "+javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
         area.enter( runnable );
     }
 }
