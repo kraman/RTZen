@@ -1,0 +1,1 @@
+java -Xbootclasspath/p:$ZEN_HOME/lib/zen.jar:$ZEN_HOME/lib/omg.jar -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton edu.uci.ece.zen.naming.NamingService

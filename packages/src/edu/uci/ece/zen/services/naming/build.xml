@@ -1,0 +1,37 @@
+<!--$Id: build.xml,v 1.2 2004/08/30 16:49:54 tharmon Exp $-->
+
+<project name="NamingService" default="all" basedir="../../../../../../../..">
+
+   <property file="zen-build-bootstrap.properties"/>
+   <property file="zen-build.properties"/>
+
+   <target name="all" depends="compile, lib"/>
+
+   <target name="compile">
+            <javac srcdir="${zen.srcdir}/src:${zen.gendir}"
+             destdir="${zen.classdir}"
+             debug="${zen.debug}"
+             optimize="${zen.optimization}"
+         includes="edu/uci/ece/zen/services/naming/**.java"/>
+   </target>
+   
+    <target name="run" >
+        <java classname="edu.uci.ece.zen.services.naming.NamingService"
+              fork="yes"
+              failonerror="yes"
+              >
+		 <jvmarg line="${zen.jvm.properties}"/>
+        </java>
+    </target> 
+   
+
+   <target name="lib">
+       <jar jarfile="${zen.libdir}/naming.jar" basedir="${zen.classdir}" includes="edu/uci/ece/zen/services/naming/**" manifest="${zen.srcdir}/src/edu/uci/ece/zen/services/naming/MANIFEST.MF"/>
+   </target>
+
+   <target name="clean">
+      <delete dir="${zen.classdir}/edu/uci/ece/zen/services/naming"/>
+      <delete file="${zen.libdir}/naming.jar"/>
+   </target>
+
+</project>

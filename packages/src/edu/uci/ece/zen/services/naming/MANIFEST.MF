@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Implementation-Title: RT ZEN Naming Service
+Implementation-Version: 1.0.0
+Implementation-Vendor: DOC Laboratory, University Of California at Irvine
+Created-By: Krishna Raman <kraman@uci.edu>, Yue Zhang <yuez@doc.ece.uci.edu>.
+Main-Class: edu.uci.ece.zen.services.naming.NamingServer
