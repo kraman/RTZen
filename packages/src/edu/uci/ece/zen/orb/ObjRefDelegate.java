@@ -3,6 +3,9 @@ package edu.uci.ece.zen.orb;
 import org.omg.IOP.*;
 import javax.realtime.*;
 import edu.uci.ece.zen.utils.*;
+import edu.uci.ece.zen.orb.policies.*;
+import org.omg.Messaging.*;
+import org.omg.RTCORBA.*;
 
 public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     private static Queue objRefDelegateCache;
@@ -87,12 +90,15 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             case TAG_INTERNET_IOP.value:            //establish appropriate connections and register them
                 {
                     byte[] data = profile.profile_data;
+                    CDRInputStream in = CDRInputStream.fromOctetSeq(data, orb);
+                    /*
+
                     ReadBuffer rb = ReadBuffer.instance();
                     rb.init();
                     rb.writeByteArray( data , 0 , data.length );
                     CDRInputStream in = CDRInputStream.instance();
                     in.init( orb , rb );
-                    in.setEndian( in.read_boolean() );
+                    in.setEndian( in.read_boolean() );*/
                     byte iiopMinor = data[2];
                     try{
                         switch( iiopMinor ){
@@ -118,6 +124,77 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                     orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
                                 }
 
+                                System.out.println("number of components: " + profilebody.components.length);
+                                for(int i = 0; i <  profilebody.components.length; ++i){
+                                    TaggedComponent tc = profilebody.components[i];
+                                    System.out.println("found tag: " + tc.tag);
+
+                                    if(tc.tag == org.omg.IOP.TAG_POLICIES.value){
+/*
+                                        ReadBuffer readBuf = ReadBuffer.instance();
+                                        readBuf.init();
+                                        readBuf.writeByteArray(tc.component_data, 0 , tc.component_data.length );
+                                        CDRInputStream in1 = CDRInputStream.instance();
+                                        in1.init( orb , readBuf );
+                                        in1.setEndian( in1.read_boolean() );
+*/
+
+                                        CDRInputStream in1 = CDRInputStream.fromOctetSeq(tc.component_data, orb);
+
+                                        PolicyValue[] pvarr = PolicyValueSeqHelper.read(in1);
+                                        in1.free();
+
+                                        System.out.println("number of policies: " + pvarr.length);
+
+                                        for(int j = 0; j < pvarr.length; ++j){
+
+                                            System.out.println("found policy value: " + pvarr[j].ptype);
+
+                                            CDRInputStream in2 = CDRInputStream.fromOctetSeq(pvarr[j].pvalue, orb);
+                                            //PriorityModelPolicyHelper.extract(in2.read_any());
+
+                                            switch(pvarr[j].ptype){
+
+                                                case PRIORITY_MODEL_POLICY_TYPE.value:
+
+
+                                                    System.out.println("\tPRIORITY_MODEL_POLICY_TYPE");
+                                                    priorityModel = in2.read_long();
+                                                    serverPriority = in2.read_short();
+                                                    System.out.println("\tpriority model: " + priorityModel);
+                                                    System.out.println("\tpriority: " + serverPriority);
+                                                break;
+
+                                                case THREADPOOL_POLICY_TYPE.value:
+                                                    System.out.println("\tTHREADPOOL_POLICY_TYPE");
+                                                break;
+
+                                                case SERVER_PROTOCOL_POLICY_TYPE.value:
+                                                    System.out.println("\tSERVER_PROTOCOL_POLICY_TYPE");
+                                                break;
+
+                                                case CLIENT_PROTOCOL_POLICY_TYPE.value:
+                                                    System.out.println("\tCLIENT_PROTOCOL_POLICY_TYPE");
+                                                break;
+
+                                                case PRIVATE_CONNECTION_POLICY_TYPE.value:
+                                                    System.out.println("\tPRIVATE_CONNECTION_POLICY_TYPE");
+                                                break;
+
+                                                case PRIORITY_BANDED_CONNECTION_POLICY_TYPE.value:
+                                                    System.out.println("\tPRIORITY_BANDED_CONNECTION_POLICY_TYPE");
+                                                break;
+
+                                            }
+
+                                            in2.free();
+
+                                        }
+
+                                    }
+
+                                }
+
                                 //TODO: process priority policies here and add the appropriate lanes
                                 addLaneData( NoHeapRealtimeThread.MIN_PRIORITY , NoHeapRealtimeThread.MAX_PRIORITY , transportScope , profilebody.object_key );
                             }break;
@@ -134,7 +211,10 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 break;
             case TAG_MULTIPLE_COMPONENTS.value:     //process the tagged components
                 //TODO: Currently ignored because they are of no immediate use
+                System.out.println("TAG_MULTIPLE_COMPONENTS ignored");
                 break;
+            default:
+                System.out.println("unhandled tag: " + tag);
         }
     }
 
@@ -251,6 +331,19 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     public synchronized org.omg.CORBA.Object set_policy_override( org.omg.CORBA.Object self, org.omg.CORBA.Policy[] policies, org.omg.CORBA.SetOverrideType set_add) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
+    }
+
+    short serverPriority;
+    int priorityModel;
+
+    public org.omg.CORBA.Policy get_policy(org.omg.CORBA.Object self, int policy_type) {
+
+        if(policy_type == PRIORITY_MODEL_POLICY_TYPE.value){
+            return new PriorityModelPolicyImpl(PriorityModel.from_int(priorityModel), serverPriority);
+        }
+
+        return null;
+        //throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
 

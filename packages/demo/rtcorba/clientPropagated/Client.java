@@ -6,6 +6,7 @@ import org.omg.CORBA.ORB;
 import org.omg.CORBA.*;
 import javax.realtime.*;
 import org.omg.RTCORBA.*;
+import org.omg.Messaging.*;
 
 /**
  * This class implements a simple Client for the Hello World CORBA
@@ -19,10 +20,10 @@ public class Client implements Runnable
 {
     public static void main(String[] args)
     {
-        System.out.println( "=====================Creating RT Thread in client==========================" );
+        System.out.println( "[client] =====================Creating RT Thread in client==========================" );
         RealtimeThread rt = new RealtimeThread((java.lang.Object)null,(java.lang.Object)null,(java.lang.Object)null,
                             new LTMemory(3000,30000),(java.lang.Object)null,new Client());
-        System.out.println( "=====================Starting RT Thread in client==========================" );
+        System.out.println( "[client] =====================Starting RT Thread in client==========================" );
         rt.start();
     }
 
@@ -30,9 +31,9 @@ public class Client implements Runnable
     {
         try
         {
-            System.out.println( "=====================Calling ORB Init in client============================" );
+            System.out.println( "[client] =====================Calling ORB Init in client============================" );
             ORB orb = ORB.init((String[])null, null);
-            System.out.println( "=====================ORB Init complete in client===========================" );
+            System.out.println( "[client] =====================ORB Init complete in client===========================" );
 
             RTORB rtorb = RTORBHelper.narrow(orb.resolve_initial_references ("RTORB"));
 
@@ -58,7 +59,7 @@ public class Client implements Runnable
             policyManager.set_policy_overrides(policies,SetOverrideType.ADD_OVERRIDE);
 
 
-            System.out.println( "=====================Policy creation complete===========================" );
+            System.out.println( "[client] =====================Policy creation complete===========================" );
 
 
             String ior = "";
@@ -68,8 +69,36 @@ public class Client implements Runnable
             ior = br.readLine();
             org.omg.CORBA.Object object = orb.string_to_object(ior);
             Test server = TestHelper.unchecked_narrow(object);
+
+            PriorityModelPolicy pmp = PriorityModelPolicyHelper.narrow(server._get_policy(PRIORITY_MODEL_POLICY_TYPE.value));
+            PriorityModel pm = pmp.priority_model();
+
+            if(pm.value() != PriorityModel._CLIENT_PROPAGATED)
+                System.out.println("[client] ERROR: priority_model != RTCORBA::CLIENT_PROPAGATED!");
+
+            System.out.println("[client] PriorityModelPolicy server priority: " + pmp.server_priority());
+
+            //should create a better way of getting the PriorityMapping
+            PriorityMapping pmap = new edu.uci.ece.zen.orb.PriorityMappingImpl();
+/*
+            for(int i = 0; i < 13; ++i){
+                pmap.to_CORBA ((short)(i), new org.omg.CORBA.ShortHolder());
+                //pmap.to_native ((short)(i*1), new org.omg.CORBA.ShortHolder());
+            }
+            for(int i = 0; i < 400; ++i){
+                //pmap.to_CORBA ((short)(i*1), new org.omg.CORBA.ShortHolder());
+                pmap.to_native ((short)(i*100), new org.omg.CORBA.ShortHolder());
+            }
+*/
+            short native_priority = 1;
+
+            org.omg.CORBA.ShortHolder desired_priority = new org.omg.CORBA.ShortHolder();
+
+            if (!pmap.to_CORBA (native_priority, desired_priority))
+                System.out.println("Cannot convert native priority " + native_priority + " to corba priority");
+
             long start = System.currentTimeMillis();
-            for( int i=0;i<10;i++ ){
+            for( int i=0;i<1;i++ ){
                 server.test_method((short)3);
             }
             long end = System.currentTimeMillis();

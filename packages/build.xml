@@ -35,6 +35,7 @@
 
             <include name="generated/org/omg/CORBA/**"/>
             <include name="generated/org/omg/RTCORBA/**"/>
+            <include name="omg-01-02-01/org/omg/RTCORBA/PriorityMapping.java"/>
             <include name="generated/org/omg/CORBA_2_3/**"/>
             <include name="generated/org/omg/IOP/**"/>
             <include name="generated/org/omg/GIOP/**"/>
@@ -100,7 +101,7 @@
                <patternset refid="sources"/>
             </fileset>
         </jRate>
-	-->
+    -->
         <jar 
         jarfile="${zen.libdir}/rteverything.jar" 
         basedir="${zen.classdir}" 

@@ -12,12 +12,16 @@ module RTCORBA {
     typedef short Priority;
     const Priority minPriority = 0;
     const Priority maxPriority = 32767;
-    //native PriorityMapping;
-    //native PriorityTransform;
+    
+    /*
+    these are specific to Java
+    native PriorityMapping;
+    native PriorityTransform;
+    
     interface PriorityMapping{
     };
     interface PriorityTransform{
-    };
+    };*/
  
     typedef unsigned long ThreadpoolId;
     struct ThreadpoolLane {

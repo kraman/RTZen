@@ -27,51 +27,63 @@
       <property file="zen-build-bootstrap.properties"/>
       <property file="zen-build.properties"/>
       <property file="openorb.properties"/>
+      <available file="TrackSize.class" property="track_size_prop" />
    </target>
 
    <target name="packages">
       <ant antfile="${zen.srcdir}/build.xml"/>
+      <antcall target="track_size"/>
    </target>
    
    <target name="clover" depends="init">
       <ant antfile="${zen.srcdir}/build.xml" target="clover"/>
    </target>   
+   
+   <target name="track_size" if="track_size_prop">
+    <echo>Tracking Size of rteverything.jar</echo>
+    <java classname="TrackSize"
+          fork="yes"
+          failonerror="yes"
+          classpath="."
+          >    
+          </java>
+   </target>     
 
-	<target name="javadoc" depends="init">
-		
-		<echo>Generating Javadoc for ZEN (excluding rtcorba and realtime packages)</echo>
+    <target name="javadoc" depends="init">
+        
+        <echo>Generating Javadoc for ZEN (excluding rtcorba and realtime packages)</echo>
 
-		<javadoc
-			destdir="docs/javaDoc"
-			author="true"
-			version="true"
-			use="true"
-			private="true"
-			windowtitle="ZEN API"
-			classpath="${zen.basedir}/lib/omg.jar:${zen.classpath}"
-			additionalparam="-breakiterator"
-			failonerror="true">
-			
-				<fileset dir="${zen.srcdir}/src/edu/uci">
-					<include name="**/*.java"/>
-					<exclude name="**/*Aspect.java"/>
-					<exclude name="**/*Debug.java"/>
-					<exclude name="**/dynany/**"/>
-					<exclude name="**/old/**"/>
-				</fileset>
-				
-				<fileset dir="${zen.srcdir}/generated/edu">
-					<include name="**/*.java"/>
-				</fileset>
+        <javadoc
+            destdir="docs/javaDoc"
+            author="true"
+            version="true"
+            use="true"
+            private="true"
+            windowtitle="ZEN API"
+            classpath="${zen.basedir}/lib/omg.jar:${zen.classpath}"
+            additionalparam="-breakiterator"
+            failonerror="true">
+            
+                <fileset dir="${zen.srcdir}/src/edu/uci">
+                    <include name="**/*.java"/>
+                    <exclude name="**/*Aspect.java"/>
+                    <exclude name="**/*Debug.java"/>
+                    <exclude name="**/dynany/**"/>
+                    <exclude name="**/old/**"/>
+                </fileset>
+                
+                <fileset dir="${zen.srcdir}/generated/edu">
+                    <include name="**/*.java"/>
+                </fileset>
 
-			<link href="http://www.rtj.org/doc/"/>
-			
-			<doctitle>
-				<![CDATA[<h1>ZEN - A Real-time CORBA ORB in RT Java</h1>]]>
-			</doctitle>
-		</javadoc>
-		
-	</target>
+            <link href="http://www.rtj.org/doc/"/>
+            
+            <doctitle>
+                <![CDATA[<h1>ZEN - A Real-time CORBA ORB in RT Java</h1>]]>
+            </doctitle>
+        </javadoc>
+        
+    </target>
    
     <target name="ns">
         <property file="zen-build-bootstrap.properties"/>
@@ -94,15 +106,15 @@
             <user userid="mpanahi" displayname="Mark Panahi"/>
             <user userid="spart" displayname="Spart Arguello"/>
             <user userid="pmartini" displayname="Peter Martini"/>
-			<user userid="lcui" displayname="Lin Cui"/>
-			<user userid="hqliu" displayname="Leo Liu"/>
-			<user userid="malli" displayname="Mallikarjuna Reddy"/>
-		</cvschangelog>
-		<style in="${changelog.name}.xml" out="${changelog.name}.html" style="${ant.home}/etc/changelog.xsl">
-			<param name="title" expression="Zen ChangeLog"/>
-			<param name="module" expression="Zen"/>
-			<param name="cvsweb" expression="http://doc.ece.uci.edu/cvs/viewcvs.cgi/"/>
-		</style>
+            <user userid="lcui" displayname="Lin Cui"/>
+            <user userid="hqliu" displayname="Leo Liu"/>
+            <user userid="malli" displayname="Mallikarjuna Reddy"/>
+        </cvschangelog>
+        <style in="${changelog.name}.xml" out="${changelog.name}.html" style="${ant.home}/etc/changelog.xsl">
+            <param name="title" expression="Zen ChangeLog"/>
+            <param name="module" expression="Zen"/>
+            <param name="cvsweb" expression="http://doc.ece.uci.edu/cvs/viewcvs.cgi/"/>
+        </style>
     </target>
 
    

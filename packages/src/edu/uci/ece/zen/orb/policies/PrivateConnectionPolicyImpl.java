@@ -18,7 +18,7 @@ public class PrivateConnectionPolicyImpl
      * @return the attribute value
      */
     public int policy_type(){
-        return THREADPOOL_POLICY_TYPE.value;
+        return PRIVATE_CONNECTION_POLICY_TYPE.value;
     }
 
     /**
