@@ -4,12 +4,17 @@
    <property file="zen-build-bootstrap.properties"/>
    <property file="zen-build.properties"/>
 
+<!--
     <taskdef 
         resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
         <classpath>
             <pathelement location="${zen.classpath}"/>    
         </classpath>
     </taskdef>
+-->    
+    <!-- I need to have this one here to work with Windows. 
+         The one above doesn't work for some reason.-->
+    <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"/>
 
     <patternset id="sources" >
 
@@ -44,9 +49,10 @@
             <include name="src/javax/**"/>
             <include name="src/edu/uci/ece/zen/utils/**"/>
             <include name="src/edu/uci/ece/zen/orb/any/**"/>
-            <include name="src/edu/uci/ece/zen/orb/dynany/**"/>
+            <!--<include name="src/edu/uci/ece/zen/orb/dynany/**"/>-->
             <include name="src/edu/uci/ece/zen/orb/transport/**"/>
             <include name="src/edu/uci/ece/zen/orb/**.java"/>
+            <include name="src/edu/uci/ece/zen/orb/policies/**.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/GIOPMessage.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/GIOPMessageFactory.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/v1_0/**.java"/>
