@@ -26,6 +26,8 @@ import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.FString;
 
 public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
+    public static final int TAG_SERIAL = 177;
+    
     private static Queue objRefDelegateCache;
     static {
         try {
@@ -317,6 +319,24 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 //TODO: Currently ignored because they are of no immediate use
                 ZenProperties.logger.log("TAG_MULTIPLE_COMPONENTS ignored");
                 break;
+            case TAG_SERIAL: //process serial
+                byte[] data = profile.profile_data;
+                CDRInputStream in = CDRInputStream.fromOctetSeq(data, orb);
+                FString object_key = in.getBuffer().readFString(false);
+                long connectionKey = -TAG_SERIAL;
+                ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
+        
+                if (transportScope == null) {
+                    transportScope = edu.uci.ece.zen.orb.transport.serial.Connector
+                            .instance().connect(orb, orbImpl);
+                    orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
+
+                    addLaneData(RealtimeThread.MIN_PRIORITY,
+                            99/* RealtimeThread.MAX_PRIORITY */,
+                            transportScope, object_key);
+                }    
+
+                break;                
             default:
                 ZenProperties.logger.log(Logger.WARN, getClass(), "processTaggedProfile", "unhandled tag: " + tag);
         }

@@ -181,6 +181,10 @@ public final class GIOPMessageFactory {
         transportScope.setPortal( trans );
         ret.setTransport( transportScope );
         ZenProperties.logger.log("GMF parse stream 2");
+        if(ZenProperties.devDbg) {
+            System.out.print("parse stream messageId:");
+            System.out.println(ret.getRequestId());
+        }        
         return ret;
     }
 
@@ -274,15 +278,28 @@ public final class GIOPMessageFactory {
         //byte[] header = new byte[12];
         byte[] header = trans.getGIOPHeader();
         int read = 0;
+        ZenProperties.logger.log("parseStreamForHeader: reading");
+        
+   
+        
         while (read < 12) {
+            if(ZenProperties.devDbg) {
+                System.out.print("parseStreamForHeader bytes available: ");
+                System.out.println(in.available());
+            }               
             int tmp = in.read(header, 0, 12);
-            if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
+            //if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
                 ZenProperties.logger.log(Logger.FATAL, GIOPMessageFactory.class, "parseStreamForHeader(InputStream, GIOPHeaderInfo, Transport)", "RTZen doesnt support closing connection yet :-P ... shutting down");
                 System.exit(0);
             }
             read += tmp;
+            if(ZenProperties.devDbg) {
+                System.out.print("tmp: ");
+                System.out.println(tmp);
+            }
         }
+        ZenProperties.logger.log("parseStreamForHeader: done reading");
 
         // Bytes 0,1,2,3 should equal 'GIOP'
         //System.err.println( "----GIOP Message Header ----" );
@@ -369,6 +386,11 @@ public final class GIOPMessageFactory {
             RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
+        
+        if(ZenProperties.devDbg) {
+            System.out.print("construct reply for messageId:");
+            System.out.println(req.getRequestId());
+        }            
 
         out.write_octet_array(magic, 0, 4);
         //giop version

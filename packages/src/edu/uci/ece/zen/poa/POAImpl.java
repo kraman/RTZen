@@ -322,16 +322,16 @@ public class POAImpl {
             ScopedMemory tpRegion = this.orb.getThreadPoolRegion(tpId);
             ZenProperties.logger.log("POAImpl.handled 8");
 
-            edu.uci.ece.zen.utils.Logger.printThreadStack();
+            //edu.uci.ece.zen.utils.Logger.printThreadStack();
 
             statCount++;
             if (statCount % 100 == 0) edu.uci.ece.zen.utils.Logger
                     .printMemStats(2);
-
+            
             //ExecuteInRunnable eir = (ExecuteInRunnable)
             // requestScope.newInstance( ExecuteInRunnable.class );
             ExecuteInRunnable eir = orb.getEIR();
-            ZenProperties.logger.log("POAImpl.handled 9.5");
+            ZenProperties.logger.log("POAImpl.handled 9");
             TPRunnable tpr = orb.getTPR();
 
             ZenProperties.logger.log("POAImpl.handled 10");

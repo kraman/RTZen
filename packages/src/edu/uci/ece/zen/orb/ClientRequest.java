@@ -142,6 +142,10 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
 
         messageId = WaitingStrategy.newMessageId();
         ZenProperties.logger.log("ClientRequest 8");
+        if(ZenProperties.devDbg) {
+            System.out.print("ClientRequest messageId:");
+            System.out.println(messageId);
+        }
         edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructMessage(this,
                 messageId, out);
         ZenProperties.logger.log("ClientRequest 9");

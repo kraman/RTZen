@@ -17,7 +17,9 @@ public final class ZenProperties {
 
     public static final boolean dbg = false;
 
-    public static final boolean devDbg = false;
+    public static final boolean devDbg = true;
+    
+    public static final boolean dbgThreadStack = false;    
 
     /* set to true to allow printing about memory usage */
     public static final boolean memDbg = false;

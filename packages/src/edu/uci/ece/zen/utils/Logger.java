@@ -37,7 +37,9 @@ public abstract class Logger{
             }catch( Exception e ){
 				System.err.println("Logger.instance(): " +
 					"Unable to load logger of type " + loggerType + ". Loading NullLogger.");
-				instance = new NullLogger();
+				//instance = new NullLogger();
+				instance = new ScopeSafeConsoleLogger();			
+				e.printStackTrace();
             }
             instance.setLevel(level);
         }
@@ -159,7 +161,7 @@ public abstract class Logger{
     }
 
     public static void printThreadStack(){
-		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) 
+		if (edu.uci.ece.zen.utils.ZenProperties.dbgThreadStack) 
         {
 			System.out.println("Current thread is " + RealtimeThread.currentRealtimeThread());
 			System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());

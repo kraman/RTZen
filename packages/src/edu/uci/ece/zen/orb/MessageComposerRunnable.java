@@ -87,11 +87,13 @@ public class MessageComposerRunnable implements Runnable {
         } finally {
             clr.out.free();
         }
+        ZenProperties.logger.log("MCR run 2");
 
         if (waitingStrategy != null) {
             reply = waitingStrategy.waitForReply();
             clr.releaseWaiter();
         }
+        ZenProperties.logger.log("MCR run 3");
         clr.orb.freeEIR( eir );
     }
 

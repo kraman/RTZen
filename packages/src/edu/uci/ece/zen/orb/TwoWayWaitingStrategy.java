@@ -59,6 +59,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
 
     public CDRInputStream waitForReply() {
         try {
+            ZenProperties.logger.log("waiting for reply...");
             clientSem.acquire();
         } catch (InterruptedException ie) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "waitForReply", ie);
