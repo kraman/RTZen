@@ -78,17 +78,9 @@
 
     <!--target name="all" depends="idl, compile, lib, jRate, naming_service, compile_perf"/-->
     <target name="all" depends="idl, compile, lib, jRate, naming_service"/>
-    
+
 
     <target name="idl">
-        <!-- Compile the idldepend Ant task -->
-        <ant
-            antfile="${idldepend.dir}/build.xml"
-            dir="${idldepend.dir}"
-            target="compile">
-            <property name="build.dir" value="${zen.classdir}"/>
-        </ant>
-
         <echo message="Compiling IDL files"/>
         <ant antfile="${zen.srcdir}/idl/omg/build.xml"/>
     </target>
@@ -159,9 +151,6 @@
     </target>
 
     <target name="clean">
-        <!-- Clean the idldepends Ant task -->
-        <ant antfile="${idldepend.dir}/build.xml" dir="${idldepend.dir}" target="clean"/>
-
         <!-- Clean IDL-generated files -->
         <ant antfile="${zen.srcdir}/idl/omg/build.xml" target="clean"/>
 
