@@ -7,10 +7,6 @@ import edu.uci.ece.zen.orb.*;
 public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessage {
     private RequestHeader_1_2 header;
 
-    ///////////////////////////////////////////////////////////////////////////
-    ////////////////////////////// Message Read ///////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////
-
     public RequestMessage ( ClientRequest clr,  int messageId ) {
         super();
 
@@ -26,16 +22,11 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessa
         header = new RequestHeader_1_2 (
                                         messageId,
                                         responseFlag,
-                                        this.reserved,
+                                        edu.uci.ece.zen.orb.giop.parent.RequestMessage.reserved,
                                         targetAddress,
                                         clr.operation,
                                         new org.omg.IOP.ServiceContext[0]
                                         );
-    }
-
-
-    public int getRequestId() {
-        return header.request_id;
     }
 
     public RequestMessage( ORB orb, ReadBuffer stream ) {
@@ -44,11 +35,12 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessa
         messageBody = stream;
     }
 
+    public int getRequestId() { return header.request_id; }
+
     public int getReplyStatus() { return -1; }
     public org.omg.IOP.ServiceContext[] getServiceContexts() { return header.service_context; }
 
     public void marshal( CDROutputStream out ) {
         RequestHeader_1_2Helper.write( out, header );
     }
-
 }

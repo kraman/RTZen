@@ -50,6 +50,8 @@ public final class GIOPMessageFactory
                                     ret = new edu.uci.ece.zen.orb.giop.v1_0.LocateRequestMessage( orb , buffer );
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._LocateReply :
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.LocateReplyMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_0._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_0._CancelRequest :
                                     // A cancel request header is just the request id to cancel.
@@ -80,6 +82,8 @@ public final class GIOPMessageFactory
                                     ret = new edu.uci.ece.zen.orb.giop.v1_1.LocateRequestMessage( orb , buffer );
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.LocateReplyMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
                                     // A cancel request header is just the request id to cancel.
                                     ret = new edu.uci.ece.zen.orb.giop.v1_1.CancelMessage( orb, buffer );
@@ -112,6 +116,8 @@ public final class GIOPMessageFactory
                                     ret = new edu.uci.ece.zen.orb.giop.v1_2.LocateRequestMessage( orb , buffer );
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.LocateReplyMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
                                     throw new org.omg.CORBA.BAD_CONTEXT("CancelRequest Cannot be called in GIOP 1.2 and higher");
                                 case org.omg.GIOP.MsgType_1_1._CloseConnection :

@@ -6,30 +6,15 @@ import edu.uci.ece.zen.orb.*;
 
 public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessage {
     private RequestHeader_1_1 header;
-
-    protected static final byte reserved[] = { 0x00, 0x00, 0x00 };
-
-    ///////////////////////////////////////////////////////////////////////////
-    ////////////////////////////// Message Read ///////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////
-
-    /** Do not directly call this method It is provided only to give
-     * access to the default constructor of GIOPMessage.
-     */
-/*
-    public RequestMessage() {
-        super();
-    };
-*/
+    
     public RequestMessage ( ClientRequest clr,  int messageId ) {
-        //edu.uci.ece.zen.orb.giop.GIOPMessage();
         super();
 
         header = new RequestHeader_1_1 (
                                         new org.omg.IOP.ServiceContext[0],
                                         messageId,
                                         clr.responseExpected,
-                                        this.reserved,
+                                        edu.uci.ece.zen.orb.giop.parent.RequestMessage.reserved,
                                         clr.objectKey,
                                         clr.operation,
                                         new byte[0]
@@ -50,5 +35,4 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessa
     public void marshal( CDROutputStream out ) {
         RequestHeader_1_1Helper.write( out, header );
     }
-
 }

@@ -7,21 +7,9 @@ import edu.uci.ece.zen.orb.*;
 public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessage {
     private RequestHeader_1_0 header;
     
-    ///////////////////////////////////////////////////////////////////////////
-    ////////////////////////////// Message Read ///////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////
-
-
-    /** Do not directly call this method It is provided only to give
-     * access to the default constructor of GIOPMessage.
-     */
-/*    public RequestMessage() {
-        super();
-    };
-*/
     public RequestMessage( ClientRequest clr , int messageId ){
         super();
-        header = new RequestHeader_1_0(
+        header = new RequestHeader_1_0 (
             new org.omg.IOP.ServiceContext[0],
             messageId,
             clr.responseExpected,
@@ -39,7 +27,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessa
     public int getRequestId() { return header.request_id; }
 
     public int getReplyStatus() { return -1; }
-    public org.omg.IOP.ServiceContext[] getServiceContexts(){ return header.service_context; }
+    public org.omg.IOP.ServiceContext[] getServiceContexts() { return header.service_context; }
 
     public void marshal( CDROutputStream out ){
         RequestHeader_1_0Helper.write( out , header );
