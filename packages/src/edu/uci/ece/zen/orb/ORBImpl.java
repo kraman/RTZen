@@ -83,7 +83,8 @@ public class ORBImpl {
             orbFacade.getRTORB().create_threadpool(0,//stacksize,
                     1,//static_threads,
                     0,//dynamic_threads,
-                    (short) javax.realtime.PriorityScheduler.instance().getNormPriority(),//default_thread_priority,
+                    PriorityMappingImpl.toCORBA(
+                            (short) PriorityScheduler.instance().getNormPriority()),//default_thread_priority,
                     false,//allow_request_buffering,
                     0,//max_buffered_requests,
                     0//max_request_buffer_size

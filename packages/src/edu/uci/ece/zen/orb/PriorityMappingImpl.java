@@ -36,7 +36,7 @@ public class PriorityMappingImpl extends PriorityMapping {
             ZenProperties.logger.log(Logger.WARN, PriorityMappingImpl.class, "toNative", "Cannot map requested priority. Assigning lowest value.");
             nativePriority = (short) MIN_PRIORITY;  //TODO: make sure number doesn't change b/c of conversion
         }else{
-            nativePriority = (short) ((corba_priority * (MAX_PRIORITY - MIN_PRIORITY)) / (double)maxPriority.value + MIN_PRIORITY);
+            nativePriority = (short) Math.round((corba_priority * (MAX_PRIORITY - MIN_PRIORITY)) / (double)maxPriority.value + MIN_PRIORITY);
         }
         
         if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("native result: "
@@ -67,7 +67,7 @@ public class PriorityMappingImpl extends PriorityMapping {
             ZenProperties.logger.log(Logger.WARN, PriorityMappingImpl.class, "toCORBA", "Cannot map requested priority. Assigning lowest value.");
             corbaPriority =  minPriority.value;
         }else{     
-            corbaPriority = (short) (((double) (native_priority - MIN_PRIORITY) / (MAX_PRIORITY - MIN_PRIORITY)) * maxPriority.value);
+            corbaPriority = (short) Math.round( ((double) (native_priority - MIN_PRIORITY) / (MAX_PRIORITY - MIN_PRIORITY))  * maxPriority.value );
         }
 
         if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("corba result: "

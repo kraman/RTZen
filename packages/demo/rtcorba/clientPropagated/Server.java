@@ -43,6 +43,15 @@ public class Server extends RealtimeThread
     {
         try
         {
+            /*
+            for(int i = PriorityScheduler.instance().getMinPriority(); i < PriorityScheduler.instance().getMaxPriority(); ++i){
+                
+                short p = edu.uci.ece.zen.orb.PriorityMappingImpl.toNative(edu.uci.ece.zen.orb.PriorityMappingImpl.toCORBA((short)i));
+                
+                if(p != i)
+                    System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            }
+            */
             ZenProperties.iiopMinor = 2;
             System.out.println( "=====================Calling ORB Init in server============================" );
             ORB orb = ORB.init( args , null);

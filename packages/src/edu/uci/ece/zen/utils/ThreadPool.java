@@ -46,7 +46,7 @@ public class ThreadPool {
             int maxBufferedRequests, int requestBufferSize, ORB orb,
             AcceptorRunnable acceptorRunnable , int threadPoolId ) {
         //stackSize; //KLUDGE: ignored
-        short defaultPriority = PriorityMappingImpl.toNative(defaultPr);
+        short defaultPriority = defaultPr;//PriorityMappingImpl.toNative(defaultPr);
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
         this.requestBufferSize = requestBufferSize;
@@ -79,7 +79,7 @@ public class ThreadPool {
         int length = in.read_ulong();
         this.lanes = new Lane[length];
         for (int i = 0; i < length; i++){
-            short lane_priority = PriorityMappingImpl.toNative(in.read_short());
+            short lane_priority = in.read_short();//PriorityMappingImpl.toNative(in.read_short());
             int static_threads = in.read_ulong();
             int dynamic_threads = in.read_ulong();
             if (ZenBuildProperties.dbgTP) ZenProperties.logger.log(
@@ -116,7 +116,7 @@ public class ThreadPool {
 
         this.lanes = new Lane[lanes.length];
         for (int i = 0; i < lanes.length; i++){
-            short lane_priority = PriorityMappingImpl.toNative(lanes[i].lane_priority );
+            short lane_priority = lanes[i].lane_priority;//PriorityMappingImpl.toNative(lanes[i].lane_priority );
             acceptorRunnable.init( orb , lane_priority, threadPoolId );
             orb.setUpORBChildRegion( acceptorRunnable );
             this.lanes[i] = new Lane(stackSize, lanes[i].static_threads,
@@ -143,8 +143,8 @@ public class ThreadPool {
 
     // TODO this method should indicate if we have an error.
     public void execute(RequestMessage task, short minPr, short maxPr) {
-        short minPriority = PriorityMappingImpl.toNative(minPr);
-        short maxPriority = PriorityMappingImpl.toNative(maxPr);
+        short minPriority = minPr;//PriorityMappingImpl.toNative(minPr);
+        short maxPriority = maxPr;//PriorityMappingImpl.toNative(maxPr);
         
         statCount++;
         if (statCount % ZenBuildProperties.MEM_STAT_COUNT == 0) {
@@ -157,9 +157,9 @@ public class ThreadPool {
         for (; i < lanes.length; i++) {
             short lanePriority = lanes[i].getPriority();
             if (ZenBuildProperties.dbgTP) ZenProperties.logger.log(
-                        "TP min (native) pr: " + minPriority + 
-                        ", TP max (native) pr: " + maxPriority + 
-                        ", lane (native) pr: " + lanePriority);
+                        "TP min pr: " + minPriority + 
+                        ", TP max pr: " + maxPriority + 
+                        ", lane pr: " + lanePriority);
             if ( lanePriority >= minPriority && lanePriority <= maxPriority) {
                 laneFound = true;
                 break;
@@ -369,9 +369,10 @@ class Lane implements Comparable{
     private void newThread() {
         ThreadSleepRunnable r = new ThreadSleepRunnable(this);
         NoHeapRealtimeThread thr = new NoHeapRealtimeThread(null, null, null, RealtimeThread.getCurrentMemoryArea(), null, r);
-        thr.setPriority(priority);
+        short pr = PriorityMappingImpl.toNative(priority);
+        thr.setPriority(pr);
         r.setThread(thr);
-        r.setNativePriority(priority);
+        r.setNativePriority(pr);
         numThreads++;
         thr.start();
     }
