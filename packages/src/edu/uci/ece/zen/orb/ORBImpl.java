@@ -96,14 +96,14 @@ public class ORBImpl {
         ZenProperties.logger.log("======================Performing post initialization steps====================");
         boolean startSerialTransportAcceptor = this. properties.getProperty( "edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
         //boolean startSerialTransportAcceptor = ZenProperties.getGlobalProperty("edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
-        
+        /*
         if( startSerialTransportAcceptor ){
             ZenProperties.logger.log("**** STARTING SERIAL ACCEPTOR ****");
             edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable r =
                 new edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable();
             r.init(this.orbFacade);
             orbFacade.setUpORBChildRegion( r );
-        }
+        }*/
         
     }
 

@@ -410,7 +410,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 //TODO: Currently ignored because they are of no immediate use
                 ZenProperties.logger.log("TAG_MULTIPLE_COMPONENTS ignored");
                 break;
-            case TAG_SERIAL.value: //process serial
+            case TAG_SERIAL.value: //process serial 
+/*
                 System.out.println( "Serial transport profile found" );
 
                 if( isCollocated ){
@@ -449,7 +450,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 if (transportScope != null) {
                     System.out.println( "Serial connection succesful" );
                     addLaneData(RealtimeThread.MIN_PRIORITY,
-                    99/* RealtimeThread.MAX_PRIORITY */,
+                    99/ * RealtimeThread.MAX_PRIORITY * /,
                     transportScope, object_key,
                     edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
                 }else{
@@ -458,7 +459,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 3");
                 in.free();
 
-                break;
+                break;*/
             default:
                 ZenProperties.logger.log(Logger.WARN, getClass(), "processTaggedProfile", "unhandled tag: " + tag);
         }
