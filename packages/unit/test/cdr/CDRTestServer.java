@@ -18,7 +18,8 @@ import java.io.FileWriter;
 public class CDRTestServer extends RealtimeThread{
 
 	public static void main( String[] args){
-		CDRTestServer rt = (CDRTestServer) (new RealtimeThread(null,null,null,new LTMemory(3000,300000),null,null) );
+		//CDRTestServer rt = (CDRTestServer) (new RealtimeThread(null,null,null,new LTMemory(3000,300000),null,null) );
+		RealtimeThread rt = (CDRTestServer) ImmortalMemory.instance().newInstance( CDRTestServer.class );
 		rt.start();
 	}
 

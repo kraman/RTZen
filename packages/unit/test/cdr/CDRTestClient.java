@@ -20,7 +20,8 @@ public class CDRTestClient extends RealtimeThread
 
 	public static void main( String[] args ){
 
-		CDRTestClient rt = (CDRTestClient)( new RealtimeThread (null, null, null, new LTMemory( 3000, 300000), null, null));
+		//CDRTestClient rt = (CDRTestClient)( new RealtimeThread (null, null, null, new LTMemory( 3000, 300000), null, null));
+		RealtimeThread rt = (CDRTestClient) ImmortalMemory.instance().newInstance( CDRTestClient.class );
 		rt.start();
 	}
 
