@@ -7,7 +7,7 @@ import javax.realtime.*;
 
 public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     ReadBuffer buffer;
-    private edu.uci.ece.zen.orb.ORB orb;
+    public edu.uci.ece.zen.orb.ORB orb;
     private static edu.uci.ece.zen.utils.Queue cdrInputStreamCache;
 
     static{

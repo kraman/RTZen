@@ -9,11 +9,12 @@ import edu.uci.ece.zen.orb.*;
  */
 public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage {
     private RequestHeader_1_0 header;
-    
+
     public RequestMessage( ClientRequest clr , int messageId ){
         super();
         header = new RequestHeader_1_0 (
-            new org.omg.IOP.ServiceContext[0],
+            //new org.omg.IOP.ServiceContext[0],
+            clr.contexts,
             messageId,
             clr.responseExpected,
             clr.objectKey,

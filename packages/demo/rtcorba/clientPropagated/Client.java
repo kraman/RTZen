@@ -90,16 +90,28 @@ public class Client implements Runnable
                 pmap.to_native ((short)(i*100), new org.omg.CORBA.ShortHolder());
             }
 */
+
+            org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(orb.resolve_initial_references("RTCurrent"));
+
             short native_priority = 1;
 
             org.omg.CORBA.ShortHolder desired_priority = new org.omg.CORBA.ShortHolder();
 
             if (!pmap.to_CORBA (native_priority, desired_priority))
-                System.out.println("Cannot convert native priority " + native_priority + " to corba priority");
+                System.out.println("[client] Cannot convert native priority " + native_priority + " to corba priority");
 
             long start = System.currentTimeMillis();
-            for( int i=0;i<1;i++ ){
-                server.test_method((short)3);
+            for( int i=0;i<3;i++ ){
+
+                rtcur.the_priority(desired_priority.value);
+
+                if(rtcur.the_priority() != desired_priority.value)
+                    System.out.println("[client] ERROR: Unable to set thread priority to " + desired_priority.value);
+
+                server.test_method(desired_priority.value);
+
+                desired_priority.value++;
+
             }
             long end = System.currentTimeMillis();
 

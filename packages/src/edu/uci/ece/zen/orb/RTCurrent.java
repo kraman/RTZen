@@ -32,7 +32,7 @@ public class RTCurrent
      * @param value the attribute value
      */
     public void the_priority(short value){
-        value = priority;
+        priority = value;
     }
 
 }

@@ -3,6 +3,9 @@ package edu.uci.ece.zen.orb;
 import javax.realtime.*;
 import edu.uci.ece.zen.orb.giop.*;
 import edu.uci.ece.zen.utils.*;
+import org.omg.RTCORBA.*;
+import org.omg.Messaging.*;
+import org.omg.IOP.*;
 
 public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
     public String operation;
@@ -15,6 +18,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
     public byte[] objectKey;
     public ORB orb;
     private int messageId;
+    public ServiceContext[] contexts;
 
     /**
      * Client upcall:
@@ -45,6 +49,35 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         System.out.println( "ClientRequest 7" );
 
         //TODO:Assemble and write message header and policies here
+
+        contexts = new ServiceContext[1]; //kludge: of course there will be more than just 1
+
+        if(del.priorityModel == PriorityModel._CLIENT_PROPAGATED && del.serverPriority >= 0){
+            contexts[0] = new ServiceContext();
+            contexts[0].context_id = RTCorbaPriority.value;
+            CDROutputStream out1 = CDROutputStream.create(orb);
+            short priority = orb.getRTCurrent().the_priority();
+            out1.write_short(priority);
+
+/*
+            contexts[0].context_data = new byte[4];
+
+            contexts[0].context_data[0] = (byte)0;
+            contexts[0].context_data[1] = (byte)0;
+            contexts[0].context_data[2] = (byte)0;
+            contexts[0].context_data[3] = (byte)priority;
+*/
+            int lim = (int)out1.getBuffer().getLimit();
+            contexts[0].context_data = new byte[lim];
+            out1.getBuffer().readByteArray(contexts[0].context_data, 0 , lim);
+
+            System.out.println("data " + contexts[0].context_data[0] + "-" + contexts[0].context_data[1] + "-" +
+                                         contexts[0].context_data[2] + "-" + contexts[0].context_data[3]);
+
+            System.out.println("________________Sending priority: " + priority);
+            out1.free();
+        }
+
         messageId = WaitingStrategy.newMessageId();
         System.out.println( "ClientRequest 8" );
         edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructMessage( this , messageId , out );

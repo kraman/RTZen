@@ -130,14 +130,6 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                     System.out.println("found tag: " + tc.tag);
 
                                     if(tc.tag == org.omg.IOP.TAG_POLICIES.value){
-/*
-                                        ReadBuffer readBuf = ReadBuffer.instance();
-                                        readBuf.init();
-                                        readBuf.writeByteArray(tc.component_data, 0 , tc.component_data.length );
-                                        CDRInputStream in1 = CDRInputStream.instance();
-                                        in1.init( orb , readBuf );
-                                        in1.setEndian( in1.read_boolean() );
-*/
 
                                         CDRInputStream in1 = CDRInputStream.fromOctetSeq(tc.component_data, orb);
 
@@ -333,8 +325,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    short serverPriority;
-    int priorityModel;
+    public short serverPriority = -1; //initial value, not a valid priority, so used to see if this was set
+    public int priorityModel;
 
     public org.omg.CORBA.Policy get_policy(org.omg.CORBA.Object self, int policy_type) {
 

@@ -332,9 +332,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             internalResolve(prun);
             return prun.val;
         }else if(object_name.equals("RTCurrent")){
-            RTCurrentRunnable rtrun = new RTCurrentRunnable(orbImplRegion);
-            internalResolve(rtrun);
-            return rtrun.val;
+            return getRTCurrent();
         }
 
         //else if(object_name.equals("RTCurrent"))
@@ -407,6 +405,12 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         public void run(){
             val = ((ORBImpl)(sm.getPortal())).getRTCurrent();
         }
+    }
+
+    public RTCurrent getRTCurrent(){
+        RTCurrentRunnable rtrun = new RTCurrentRunnable(orbImplRegion);
+        internalResolve(rtrun);
+        return rtrun.val;
     }
 
     class PolicyCurrentRunnable implements Runnable{
@@ -698,7 +702,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     /**
-     * Given a thread pool ID, this method returns the ScopedMemory region 
+     * Given a thread pool ID, this method returns the ScopedMemory region
      * associated with that thread pool.
      */
     public ScopedMemory getThreadPoolRegion( int tpId ){

@@ -34,6 +34,14 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         cdrCache.enqueue( self );
     }
 
+    public static CDROutputStream create(edu.uci.ece.zen.orb.ORB orb){
+
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        out.write_boolean(false); //BIGENDIAN
+        return out;
+    }
+
     public CDROutputStream() {
     }
 
@@ -377,7 +385,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
         //return this;
     }
-    
+
 
 
     /** Finish marshaling the CDROutputStream <code>cdr</code> into
@@ -385,7 +393,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
      * @param cdr The CDROutputStream to be marshaled into this stream.
      */
     public void endEncapsulation(CDROutputStream cdr) {
-        
+
         this.write_CDROutputStream(cdr);
         cdr.free();
 
@@ -395,7 +403,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a TypeCode to this CDROutputStream.
-     * 
+     *
      * @param value TypeCode to write to this CDROutputStream.
      */
     public final void write_TypeCode(org.omg.CORBA.TypeCode value) {
@@ -496,7 +504,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
                 endEncapsulation(cdr);
                 break;
             }
-                
+
             case TCKind._tk_sequence:
             case TCKind._tk_array: {
                 CDROutputStream cdr = beginEncapsulation();
@@ -520,7 +528,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
             case TCKind._tk_value: {
                 CDROutputStream cdr = beginEncapsulation();
-                
+
                 cdr.write_string(value.id());
                 cdr.write_string(value.name());
                 cdr.write_short(value.type_modifier());
@@ -530,7 +538,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
                     baseType = edu.uci.ece.zen.orb.TypeCode.lookupPrimitiveTc(TCKind._tk_null);
                 }
                 cdr.write_TypeCode(baseType);
-                
+
                 int memberCount = value.member_count();
                 cdr.write_ulong(memberCount);
                 for (int i = 0; i < memberCount; i++) {
@@ -582,16 +590,16 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             }
             catch (java.lang.Exception e2) {}
         }
-                 
+
                 //break;
                 */
             } // end of: switch(value_kind)
-        }  
-        catch (org.omg.CORBA.TypeCodePackage.BadKind bk) { 
+        }
+        catch (org.omg.CORBA.TypeCodePackage.BadKind bk) {
             System.err.println("CDROutputStream#write_TypeCode threw BadKind exception");
             bk.printStackTrace();
         }
-        catch (org.omg.CORBA.TypeCodePackage.Bounds b) { 
+        catch (org.omg.CORBA.TypeCodePackage.Bounds b) {
             System.err.println("CDROutputStream#write_TypeCode threw BadKind exception");
             b.printStackTrace();
         }
@@ -612,10 +620,10 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         try {
 
             edu.uci.ece.zen.orb.TypeCode discriminatorType = (edu.uci.ece.zen.orb.TypeCode) edu.uci.ece.zen.orb.TypeCode.originalType(tc.discriminator_type());
-            
+
             int selected_index = -1;
             int defaultIndex = tc.default_index();
-            
+
             // Switch based on the kind of discriminator used.  The
             // discriminator could be an IDL short, long, longlong, (or
             // unsigned versions of the last three), boolean, char, wchar,
@@ -623,7 +631,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             int kind = discriminatorType._kind();
             switch ( kind ) {
 
-            case TCKind._tk_short: 
+            case TCKind._tk_short:
             case TCKind._tk_ushort: {
                 short aValue = in.read_short();
                 out.write_short(aValue);
@@ -631,7 +639,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
                 break;
             }
 
-            case TCKind._tk_long: 
+            case TCKind._tk_long:
             case TCKind._tk_ulong: {
                 int aValue = in.read_long();
                 out.write_long(aValue);
@@ -639,7 +647,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
                 break;
             }
 
-            case TCKind._tk_longlong: 
+            case TCKind._tk_longlong:
             case TCKind._tk_ulonglong: {
                 long aValue = in.read_longlong();
                 out.write_longlong(aValue);
@@ -685,12 +693,12 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             if (selected_index == -1) {
                 selected_index = defaultIndex;
             }
-            
+
             // Make recursive call to write the value stored in the union.
             if (selected_index != -1) {
                 ( (CDROutputStream) out).write_value(tc.member_type(selected_index), in);
             }
-            
+
             // Member is -1, default is -1, so member couldn't be identified.
             else {
                 throw new org.omg.CORBA.NO_IMPLEMENT("Unhandled case");
@@ -703,10 +711,10 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         // required for the union's accessor methods
         catch (org.omg.CORBA.TypeCodePackage.BadKind bk) {
             System.err.println("BadKind exception occurred in CDROutputStream.write_value_union");
-        } 
+        }
         catch (org.omg.CORBA.TypeCodePackage.Bounds b) {
             System.err.println("Bounds exception occurred in CDROutputStream.write_value_union");
-        } 
+        }
     }
 
 
@@ -720,22 +728,22 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
      * @param discriminatorValue string holding value of the discriminator.  tc.discriminator_type() indicates the type of the value if the string is parsed.
      * @return int value indexing into tc.member_labels(int i) that indicates which member_label is represented by the discriminator or -1 if tc had no default index and a label wasn't found.
      */
-    public static final int union_find_member_label(org.omg.CORBA.TypeCode tc, String discriminatorValue) 
+    public static final int union_find_member_label(org.omg.CORBA.TypeCode tc, String discriminatorValue)
         throws org.omg.CORBA.TypeCodePackage.BadKind, org.omg.CORBA.TypeCodePackage.Bounds {
- 
+
         int defaultIndex = tc.default_index();
 
         // member_index will end up being set to the selected value
         // (the case label matched by discriminatorValue) or left at
         // -1 if discriminatorValue doesn't match any case label.
         int member_index = -1;
-        
+
         // Go through all the union's member labels, looking to see
         // which one when converted to a string is equal to
         // discriminatorValue.
         int kind = ((edu.uci.ece.zen.orb.TypeCode) tc.discriminator_type())._kind();
         switch (kind) {
-            
+
         case TCKind._tk_short:
         case TCKind._tk_ushort: {
             short discShort = Short.parseShort(discriminatorValue);
@@ -759,8 +767,8 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             }
             break;
         }
-            
-            
+
+
         case TCKind._tk_long:
         case TCKind._tk_ulong: {
             int discLong = Integer.parseInt(discriminatorValue);
@@ -779,7 +787,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             }
             break;
         }
-            
+
         case TCKind._tk_longlong:
         case TCKind._tk_ulonglong: {
             long discLongLong = Long.parseLong(discriminatorValue);
@@ -798,7 +806,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             }
             break;
         }
-            
+
         case TCKind._tk_boolean: {
             boolean discBoolean = Boolean.getBoolean(discriminatorValue);
             for (int i = 0; i < tc.member_count(); i++) {
@@ -830,7 +838,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             }
             break;
         }
-            
+
         case TCKind._tk_enum:
             //BM continue here
             throw new org.omg.CORBA.NO_IMPLEMENT("enum data type support not added yet");
@@ -838,7 +846,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             //BM continue here
             throw new org.omg.CORBA.NO_IMPLEMENT("enum data type support not added yet for kind " + kind);
         } // end of switch
-    
+
     return member_index;
 
     } // end of method
@@ -862,7 +870,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
         int kind = ((edu.uci.ece.zen.orb.TypeCode) tc)._kind();
         //int kind = tc.kind().value(); // Above method is faster
-    
+
         switch (kind) {
         case TCKind._tk_null:
         case TCKind._tk_void:
@@ -968,7 +976,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         case TCKind._tk_except:
             write_string(in.read_string());
             // don't break, fall through to ...
-            
+
         case TCKind._tk_struct:
             //            recursiveTCStack.push(tc);
             try {
@@ -983,7 +991,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             }
             // recursiveTCStack.pop();
             break;
-            
+
 
         case TCKind._tk_enum:
             write_long(in.read_long());
