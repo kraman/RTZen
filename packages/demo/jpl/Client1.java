@@ -7,7 +7,6 @@ import java.io.FileReader;
 import javax.realtime.ImmortalMemory;
 import javax.realtime.HeapMemory;
 import javax.realtime.RealtimeThread;
-
 import org.omg.CORBA.ORB;
 
 import edu.uci.ece.zen.utils.Logger;
@@ -75,6 +74,10 @@ public class Client1 extends RealtimeThread
         }
     }
 
+    private Object tmp;
+    public void allocHeap(){
+        tmp = HeapMemory.newArray( byte.class , 100 );
+    }
 
     public void run()
     {
@@ -112,7 +115,7 @@ public class Client1 extends RealtimeThread
                     Logger.write(i);
                     Logger.writeln();
                 }
-                
+                allocHeap();
 
             }
 
@@ -135,42 +138,20 @@ public class Client1 extends RealtimeThread
                     Logger.write(i);
                     Logger.writeln();
                 }
-                
-
-               HeapMemory.instance().enter(new Runnable(){
-                        public void run()
-                        {
-                           int[] a = new int[10];
-                        }
-                        });
-               
+                allocHeap();
             }
             long end = System.currentTimeMillis();
             System.err.println((double) RUN_NUM / ((end - start) / 1000.0));
 
-            NativeTimeStamp.OutputLogRecords();
-            Runtime.getRuntime().exec("mv timeRecords.txt timeRecords.1.1.1.128.txt");
-
-            System.exit(0);
-
+            //NativeTimeStamp.OutputLogRecords();
+            //Runtime.getRuntime().exec("mv timeRecords.txt timeRecords.1.1.1.128.txt");
+            System.out.println( "Client 1 complete" );
         }
         catch (Exception e)
         {
             e.printStackTrace();
             System.exit(-1);
         }
-        /* 
-        finally{
-
-            //long end = System.currentTimeMillis();
-            //System.err.println((double) RUN_NUM / ((end - start) / 1000.0));
-
-            NativeTimeStamp.OutputLogRecords();
-
-            System.exit(0);
-
-        }
-        */
     }
 
 

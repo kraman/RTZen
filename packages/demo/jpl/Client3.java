@@ -30,15 +30,18 @@ public class Client3 extends RealtimeThread
         try
         {
             RealtimeThread rt1 = (Client1) ImmortalMemory.instance().newInstance(Client1.class);
-            RealtimeThread rt2 = (Client2) ImmortalMemory.instance().newInstance(Client2.class);
+            NoHeapRealtimeThread rt2 = (Client2) ImmortalMemory.instance().newInstance(Client2.class);
 
             rt1.start();
             rt2.start();
+            rt2.join();
+            rt1.join();
         }
         catch (Throwable e)
         {
             e.printStackTrace();
             System.exit(-1);
         }
+        NativeTimeStamp.OutputLogRecords();
     }
 }

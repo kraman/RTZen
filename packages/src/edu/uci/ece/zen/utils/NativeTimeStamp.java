@@ -104,7 +104,7 @@ public class NativeTimeStamp {
     //    oFile.close();
     }
 
-    public static void RecordTime(int type)
+    public synchronized static void RecordTime(int type)
     {
         if (recordingMode_ != DISABLE_RECORDING)
         {

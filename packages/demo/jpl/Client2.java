@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 
 import javax.realtime.ImmortalMemory;
-import javax.realtime.RealtimeThread;
+import javax.realtime.NoHeapRealtimeThread;
 
 import org.omg.CORBA.ORB;
 
@@ -19,7 +19,7 @@ import edu.uci.ece.zen.utils.NativeTimeStamp;
  * @version 1.0
  */
 
-public class Client2 extends RealtimeThread
+public class Client2 extends NoHeapRealtimeThread
 {
     private static final int A_SECOND = 1000;
     private static final int INITIAL_SLEEP = A_SECOND;
@@ -119,10 +119,10 @@ public class Client2 extends RealtimeThread
             {
                 //System.out.print("# ");
                 //System.out.println(server.getMessage(id, array1));
-                NativeTimeStamp.RecordTime(21);
+                NativeTimeStamp.RecordTime(22);
                 server.getMessage(id, array1);
             
-                NativeTimeStamp.RecordTime(21);
+                NativeTimeStamp.RecordTime(22);
                  
                 sleep(REQUEST_SLEEP);
 
@@ -139,11 +139,9 @@ public class Client2 extends RealtimeThread
             long end = System.currentTimeMillis();
             System.err.println((double) RUN_NUM / ((end - start) / 1000.0));
 
-            NativeTimeStamp.OutputLogRecords();
-            Runtime.getRuntime().exec("mv timeRecords.txt timeRecords.1.2.2.128.txt");
-
-
-            System.exit(0);
+            //NativeTimeStamp.OutputLogRecords();
+            //Runtime.getRuntime().exec("mv timeRecords.txt timeRecords.1.2.2.128.txt");
+            System.out.println( "Client 2 complete" );
         }
         catch (Exception e)
         {

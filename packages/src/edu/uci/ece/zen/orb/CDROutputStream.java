@@ -17,8 +17,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     private static Queue cdrCache;
     static {
         try {
-            cdrCache = (Queue) ImmortalMemory.instance().newInstance(
-                    Queue.class);
+            cdrCache = (Queue) ImmortalMemory.instance().newInstance( Queue.class );
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, CDROutputStream.class, "static <init>", e);
             System.exit(-1);
@@ -31,19 +30,14 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     public static CDROutputStream instance() {
         try {
-            if (cdrCache.isEmpty()){
-                CDROutputStream cdr = (CDROutputStream) ImmortalMemory
-                    .instance().newInstance(CDROutputStream.class);
+            CDROutputStream cdr = (CDROutputStream) cdrCache.dequeue();
+            if ( cdr == null ){
+                cdr = (CDROutputStream) ImmortalMemory.instance().newInstance(CDROutputStream.class);
                 cdr.inUse = true;
                 return cdr;
-
-
             } else {
-
-                CDROutputStream cdr = (CDROutputStream) cdrCache.dequeue();
                 cdr.inUse = true;
                 return cdr;
-
             }
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, CDROutputStream.class, "instance", e);
