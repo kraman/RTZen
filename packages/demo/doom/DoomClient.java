@@ -81,7 +81,7 @@ public class DoomClient extends JPanel
             boolean flag = false;
 
             curMap = callServer.join(name);
-			
+
             if(!curMap.success)
             {
                 playerTextArea.setText("Join failed!");
@@ -91,7 +91,7 @@ public class DoomClient extends JPanel
             goButton.setEnabled(false);
             stopButton.setEnabled(true);
         }
-		else if(actionevent.getActionCommand() == "Stop")
+        else if(actionevent.getActionCommand() == "Stop")
         {
             callServer.exit(name);
             gamePane.stopRunning();
@@ -99,7 +99,7 @@ public class DoomClient extends JPanel
             stopButton.setEnabled(false);
             goButton.setEnabled(true);
         }
-		else if(actionevent.getActionCommand() == "Name")
+        else if(actionevent.getActionCommand() == "Name")
             name = nameField.getText();
     }
 
@@ -202,41 +202,41 @@ public class DoomClient extends JPanel
 
     private void lookUpRegistrar()
     {
-		try
-		{
-			// initialize and get reference to the ORB
-			org.omg.CORBA.ORB zen = org.omg.CORBA.ORB.init ((String[])null, null);
-	
-			// Get reference to naming service
-			// org.omg.CORBA.Object obj = zen.resolve_initial_references("NameService");
-			// NamingContextExt ctxExt = NamingContextExtHelper.narrow( obj );
-			// NameComponent[] name = ctxExt.to_name( "CallServer" );
-	
-			// Resolve name to object
-			// org.omg.CORBA.Object object = ctxExt.resolve( name );	
+        try
+        {
+            // initialize and get reference to the ORB
+            org.omg.CORBA.ORB zen = org.omg.CORBA.ORB.init ((String[])null, null);
 
-			// Try to do that using file instead
-			String ior = "";
-			File iorfile = new File( "CallServer_IOR.txt" );
-			BufferedReader br = new BufferedReader( new FileReader(iorfile) );
-			ior = br.readLine();
-			System.out.println( "===========================IOR read========================================" );
-			org.omg.CORBA.Object object = zen.string_to_object(ior);
-			System.out.println( "===================Trying to establish connection==========================" );
+            // Get reference to naming service
+            // org.omg.CORBA.Object obj = zen.resolve_initial_references("NameService");
+            // NamingContextExt ctxExt = NamingContextExtHelper.narrow( obj );
+            // NameComponent[] name = ctxExt.to_name( "CallServer" );
+
+            // Resolve name to object
+            // org.omg.CORBA.Object object = ctxExt.resolve( name );
+
+            // Try to do that using file instead
+            String ior = "";
+            File iorfile = new File( "CallServer_IOR.txt" );
+            BufferedReader br = new BufferedReader( new FileReader(iorfile) );
+            ior = br.readLine();
+            System.out.println( "===========================IOR read========================================" );
+            org.omg.CORBA.Object object = zen.string_to_object(ior);
+            System.out.println( "===================Trying to establish connection==========================" );
 
 
 
-			callServer = CallServerHelper.narrow(object);
-		}
+            callServer = CallServerHelper.unchecked_narrow(object);
+        }
                 //catch (UserException e)
                 //{
                 //        System.err.println("Could not locate object in naming service");
                 //        e.printStackTrace();
                 // }
-		catch (IOException e) {
-		    System.out.println("IO Exception, probably IOR file not found: " + e);
-		    e.printStackTrace();
-		}
+        catch (IOException e) {
+            System.out.println("IO Exception, probably IOR file not found: " + e);
+            e.printStackTrace();
+        }
     }
 
     public static void main(String args[])
@@ -299,7 +299,7 @@ public class DoomClient extends JPanel
         for(int i = 0; i < playerTable.getPlayerCount(); i++)
         {
             Player player = playerTable.getPlayer(i);
-			s += player.name + "\n";
+            s += player.name + "\n";
         }
 
         playerTextArea.setText(s);
