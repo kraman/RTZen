@@ -20,7 +20,7 @@ public class RequestMessage extends
 
     private static RequestMessage rm;
 
-    private byte[] reqPrin = new byte[0];
+//    private byte[] reqPrin = new byte[0];
 
     private static  Queue queue = Queue.fromImmortal();
 
@@ -33,8 +33,10 @@ public class RequestMessage extends
         ZenProperties.logger.log("RequestMessage1");
         header = RequestHeader.instance(header);
 
+//        header.init(clr.contexts, messageId, clr.responseExpected,
+//                clr.objectKey, clr.operation, reqPrin);
         header.init(clr.contexts, messageId, clr.responseExpected,
-                clr.objectKey, clr.operation, reqPrin);
+                clr.objectKey, clr.operation);
     }
     static int drawn = 0;
     public static RequestMessage getMessage() {
@@ -52,7 +54,7 @@ public class RequestMessage extends
             ZenProperties.logger.log(Logger.WARN, RequestMessage.class, "getMessage", e);
         }
         return null;
-*/        
+*/
     }
 /*
     public RequestMessage(ORB orb, ReadBuffer stream) {

@@ -5,13 +5,13 @@ import edu.uci.ece.zen.utils.ZenProperties;
 
 /**
  * Helper class for : RequestHeader_1_0
- * 
+ *
  * @author OpenORB Compiler
  */
 public class RequestHeaderHelper {
     /**
      * Insert RequestHeader_1_0 into an any
-     * 
+     *
      * @param a
      *            an any
      * @param t
@@ -22,7 +22,7 @@ public class RequestHeaderHelper {
      */
     /**
      * Extract RequestHeader_1_0 from an any
-     * 
+     *
      * @param a
      *            an any
      * @return the extracted RequestHeader_1_0 value public static
@@ -37,7 +37,7 @@ public class RequestHeaderHelper {
     //private static boolean _working = false;
     /**
      * Return the RequestHeader_1_0 TypeCode
-     * 
+     *
      * @return a TypeCode public static org.omg.CORBA.TypeCode type() { if (_tc ==
      *         null) { synchronized(org.omg.CORBA.TypeCode.class) { if (_tc !=
      *         null) return _tc; if (_working) return
@@ -68,14 +68,14 @@ public class RequestHeaderHelper {
      */
     /**
      * Return the RequestHeader_1_0 IDL ID
-     * 
+     *
      * @return an ID public static String id() { return _id; } private final
      *         static String _id = "IDL:omg.org/GIOP/RequestHeader_1_0:1.0";
      */
 
     /**
      * Read RequestHeader_1_0 from a marshalled stream
-     * 
+     *
      * @param istream
      *            the input stream
      * @return the readed RequestHeader_1_0 value
@@ -110,18 +110,18 @@ public class RequestHeaderHelper {
         //istream.read_octet_array(new_one.requesting_principal, 0,
         // new_one.requesting_principal_length);
 
-        new_one.requesting_principal = FString
-                .instance(new_one.requesting_principal);
-        int rp_length = istream.read_ulong();
+//        new_one.requesting_principal = FString
+//                .instance(new_one.requesting_principal);
+//        int rp_length = istream.read_ulong();
         //new_one.requesting_principal.append(rp_length);
-        new_one.requesting_principal.read(istream, rp_length);
+//        new_one.requesting_principal.read(istream, rp_length);
 
         return new_one;
     }
 
     /**
      * Write RequestHeader_1_0 into a marshalled stream
-     * 
+     *
      * @param ostream
      *            the output stream
      * @param value
@@ -151,8 +151,8 @@ public class RequestHeaderHelper {
         value.operation.write(ostream);
         ostream.write_octet((byte) 0);
 
-        ostream.write_ulong(value.requesting_principal.length());
-        value.requesting_principal.write(ostream);
+//        ostream.write_ulong(value.requesting_principal.length());
+//        value.requesting_principal.write(ostream);
         //org.omg.CORBA.OctetSeqHelper.write(ostream,value.requesting_principal1);
         //ostream.write_ulong(value.requesting_principal_length);
         //ostream.write_octet_array(value.requesting_principal,

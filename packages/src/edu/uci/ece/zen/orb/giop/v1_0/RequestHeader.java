@@ -8,7 +8,7 @@ import edu.uci.ece.zen.utils.Logger;
 
 /**
  * Struct definition : RequestHeader_1_0
- * 
+ *
  * @author OpenORB Compiler
  */
 public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
@@ -16,7 +16,7 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
     public static RequestHeader instance(RequestHeader rh) {
 
         try {
-            if (rh == null) 
+            if (rh == null)
                 rh = (RequestHeader) ImmortalMemory.instance()
                     .newInstance(RequestHeader.class);
         } catch (Exception e) {
@@ -63,7 +63,7 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
      */
     //public byte[] requesting_principal = new byte[1024];
     //public int requesting_principal_length = 0;
-    public FString requesting_principal;
+//    public FString requesting_principal;
 
     //byte [] requesting_principal1;
 
@@ -75,7 +75,7 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
 
     /**
      * Constructor with fields initialization
-     * 
+     *
      * @param service_context
      *            service_context struct member
      * @param request_id
@@ -89,9 +89,11 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
      * @param requesting_principal
      *            requesting_principal struct member
      */
+//    public void init(FString service_context, int request_id,
+//            boolean response_expected, FString object_key, String operation,
+//            byte[] requesting_principal) {
     public void init(FString service_context, int request_id,
-            boolean response_expected, FString object_key, String operation,
-            byte[] requesting_principal) {
+            boolean response_expected, FString object_key, String operation) {
         this.service_context = service_context;
         this.request_id = request_id;
         this.response_expected = response_expected;
@@ -106,15 +108,15 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
         //this.operation1 = operation;
 
         //this.requesting_principal1 = requesting_principal;
-        this.requesting_principal = FString.instance(this.requesting_principal);
-        this.requesting_principal.append(requesting_principal);
+//        this.requesting_principal = FString.instance(this.requesting_principal);
+//        this.requesting_principal.append(requesting_principal);
     }
 
     public void reset(){
         service_context.reset();
         object_key.reset();
         operation.reset();
-        requesting_principal.reset();
+//        requesting_principal.reset();
     }
 
 }
