@@ -22,7 +22,6 @@ public class ActiveDemuxTable{
             idx.data = null;
             idx.inUse = false;
             idx.genCount++;
-            System.out.println( "genCount increased: " + idx.genCount );
             idx.next = freeList;
             freeList = idx;
         }
@@ -49,7 +48,6 @@ public class ActiveDemuxTable{
         for( int i=0;i<numEntries;i++ ){
             data[i] = new Node();
             data[i].idx = i;
-            System.out.print( "init " );
             push( data[i] );
         }
     }
@@ -69,7 +67,6 @@ public class ActiveDemuxTable{
     }
 
     public void unbind( int idx ){
-        System.out.print( "unbind " );
         push( data[idx] );
     }
 

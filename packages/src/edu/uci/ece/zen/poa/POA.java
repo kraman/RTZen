@@ -20,7 +20,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private org.omg.PortableServer.POAManager poaManager;
     private ServerRequestHandler serverRequestHandler;
     private Hashtable theChildren;
-    private SynchronizedInt numberOfCurrentRequests;
+    protected SynchronizedInt numberOfCurrentRequests;
     public  int poaState;
     protected int poaDemuxIndex;
     protected int poaDemuxCount;
@@ -202,7 +202,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         POARunnable r = new POARunnable(POARunnable.SERVANT_TO_REFERENCE);
         r.addParam( p_servant );
         r.addParam( RealtimeThread.getCurrentMemoryArea() );
-        System.out.println( "POA.servant_to_reference cur mem area: " + RealtimeThread.getCurrentMemoryArea() );
+        if(ZenProperties.devDbg) System.out.println( "POA.servant_to_reference cur mem area: " + RealtimeThread.getCurrentMemoryArea() );
         ExecuteInRunnable eir1 = new ExecuteInRunnable();
         eir1.init( r , poaMemoryArea );
         ExecuteInRunnable eir2 = new ExecuteInRunnable();
@@ -220,7 +220,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             case POARunnable.WrongPolicyException:
                 throw new WrongPolicy();
         }
-        System.out.println( "POA.servant_to_reference " + r.retVal );
+        if(ZenProperties.devDbg) System.out.println( "POA.servant_to_reference " + r.retVal );
         return (org.omg.CORBA.Object) r.retVal;
     }
 

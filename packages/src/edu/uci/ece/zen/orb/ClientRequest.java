@@ -34,27 +34,27 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         this.responseExpected = responseExpected;
         out = CDROutputStream.instance();
         
-        System.out.println( "1ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
-        System.out.println( "1ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
+        if(ZenProperties.devDbg) System.out.println( "1ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
+        if(ZenProperties.devDbg) System.out.println( "1ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
         
-        System.out.println( "ClientRequest 1" );
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest 1" );
         out.init( orb );
-        System.out.println( "ClientRequest 2" );
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest 2" );
         this.giopMajor = giopMajor;
         this.giopMinor = giopMinor;
-        System.out.println( "ClientRequest 3" );
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest 3" );
         LaneInfo ln = del.getLane();
-        System.out.println( "ClientRequest 5" );
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest 5" );
         transportScope = ln.transpScope;
-        System.out.println( "ClientRequest 6" );
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest 6" );
         objectKey = ln.getObjectKey();
-        System.out.println( "ClientRequest 7" );
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest 7" );
 
         //TODO:Assemble and write message header and policies here
 
 
-        System.out.println( "2ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
-        System.out.println( "2ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
+        if(ZenProperties.devDbg) System.out.println( "2ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
+        if(ZenProperties.devDbg) System.out.println( "2ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
         if(del.priorityModel == PriorityModel._CLIENT_PROPAGATED && del.serverPriority >= 0){
             contexts = new ServiceContext[1]; //kludge: of course there will be more than just 1
             contexts[0] = new ServiceContext();
@@ -70,18 +70,18 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
             //System.out.println("data " + contexts[0].context_data[0] + "-" + contexts[0].context_data[1] + "-" +
             //                             contexts[0].context_data[2] + "-" + contexts[0].context_data[3]);
 
-            System.out.println("CLIENT_PROPAGATED policy -- Sending priority: " + priority);
+            if(ZenProperties.devDbg) System.out.println("CLIENT_PROPAGATED policy -- Sending priority: " + priority);
             out1.free();
         }else{
              contexts = new ServiceContext[0];
         }
 
         messageId = WaitingStrategy.newMessageId();
-        System.out.println( "ClientRequest 8" );
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest 8" );
         edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructMessage( this , messageId , out );
-        System.out.println( "ClientRequest 9" );
-        System.out.println( "3ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
-        System.out.println( "3ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest 9" );
+        if(ZenProperties.devDbg) System.out.println( "3ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
+        if(ZenProperties.devDbg) System.out.println( "3ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
     }
 
     /**

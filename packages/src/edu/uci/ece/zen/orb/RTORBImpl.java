@@ -55,7 +55,7 @@ public class RTORBImpl
      * Operation create_threadpool
      */
     public int create_threadpool(int stacksize, int static_threads, int dynamic_threads, short default_priority, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
-        System.out.println("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_ CREATING THREADPOOL +_+_+_+_+_+_+_+_+_+_+_+_+_");
+        if(ZenProperties.devDbg) System.out.println("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_ CREATING THREADPOOL +_+_+_+_+_+_+_+_+_+_+_+_+_");
         orb.setUpORBChildRegion(acceptorRunnable);
         tpr.init(this, orb, stacksize, static_threads, dynamic_threads, default_priority, allow_request_buffering, max_buffered_requests, max_request_buffer_size);
         orb.setUpORBChildRegion(tpr);

@@ -15,10 +15,10 @@ public class WaiterRegistry extends edu.uci.ece.zen.utils.ActiveDemuxTable
     }
 
     public ScopedMemory getWaiter( int key ){
-        return (ScopedMemory) super.mapEntry( super.find( (long)key ));
+        return (ScopedMemory) super.mapEntry( super.find((long)key));
     }
 
     public void remove( int idx ){
-        super.unbind( idx );
+        super.unbind( super.find(idx) );
     }
 }

@@ -42,12 +42,12 @@ public class ConnectorRunnable implements Runnable{
         int iport = 0;
         iport |= port & 0xffff;
         String host2 = new String( this.host.getTrimData() );
-        System.out.println("Yuez in ConnectorRunnable 1");
+        if(ZenProperties.devDbg) System.out.println("Yuez in ConnectorRunnable 1");
         Transport trans = conn.internalConnect( host2 , iport , orb , (ORBImpl) orb.orbImplRegion.getPortal() );
-        System.out.println("Yuez in ConnectorRunnable 2 " + RealtimeThread.getCurrentMemoryArea());        
+        if(ZenProperties.devDbg) System.out.println("Yuez in ConnectorRunnable 2 " + RealtimeThread.getCurrentMemoryArea());        
         RealtimeThread transportThread = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);
         //RealtimeThread transportThread = new RealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);
-        System.out.println("Yuez in ConnectorRunnable 3");        
+        if(ZenProperties.devDbg) System.out.println("Yuez in ConnectorRunnable 3");        
         transportThread.start();
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( trans );
     }

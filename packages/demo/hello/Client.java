@@ -43,16 +43,20 @@ public class Client extends RealtimeThread
             org.omg.CORBA.Object object = orb.string_to_object(ior);
             System.out.println( "===================Trying to establish connection==========================" );
             HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
-            long start = System.currentTimeMillis();
             System.out.println( server.getMessage() );
-		/*
-            for( int i=0;i<10000;i++ ){
-            }
+	
+            System.out.println( "====================== Performance warmup =================================" );
+            for( int i=0;i<10000;i++ )
+                server.getMessage();
+
+            System.out.println( "====================== Performance benchmark ==============================" );
+            long start = System.currentTimeMillis();
+            for( int i=0;i<10000;i++ )
+                server.getMessage();
             long end = System.currentTimeMillis();
 
             System.err.println( 10000/((end-start)/1000.0) );
             System.exit(0);
-		 */
 	}
 	catch (Exception e)
 	{

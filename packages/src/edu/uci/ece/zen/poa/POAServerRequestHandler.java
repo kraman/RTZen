@@ -40,7 +40,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
      * </p>
      */
     public void handleRequest(RequestMessage req) {
-        System.out.println( "POAServerRequestHandler.handleRequest: Got a request to process: " + req );
+        if(ZenProperties.devDbg) System.out.println( "POAServerRequestHandler.handleRequest: Got a request to process: " + req );
         
        // gt the index into the Active Map
        FString objKey = new FString( 256 );
@@ -51,8 +51,8 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
 
        POA poa = null;
 
-       System.out.println( "IOR: " + index + "," + genCount );
-       System.out.println( "POA: " + index + "," + demuxTable.getGenCount(index) );
+       if(ZenProperties.devDbg) System.out.println( "IOR: " + index + "," + genCount );
+       if(ZenProperties.devDbg) System.out.println( "POA: " + index + "," + demuxTable.getGenCount(index) );
 
        if (demuxTable.getGenCount(index) == genCount) {
            poa = ((POA)this.demuxTable.mapEntry(index));

@@ -60,12 +60,12 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         org.omg.IOP.IORHelper.write( out , ior );
         out.getBuffer().dumpBuffer( this.ior );
         out.free();
-        System.out.println("ObjRefDel init 1");
+        if(ZenProperties.devDbg) System.out.println("ObjRefDel init 1");
         //process all the tagged profiles
         for( int i=0;i<ior.profiles.length;i++ ){   //go through each tagged profile
             processTaggedProfile( ior.profiles[i] , obj , orbImpl );
         }
-        System.out.println("ObjRefDel init 2");
+        if(ZenProperties.devDbg) System.out.println("ObjRefDel init 2");
         numLanes=0;
     }
 
@@ -80,7 +80,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         int priority = RealtimeThread.currentThread().getPriority();
         for( int i=0;i<priorityLanes.length;i++ ){
             LaneInfo ln = (LaneInfo) priorityLanes[i];
-            System.out.println( "Checking if " + priority + " is within " + ln.minPri + " <--> " + ln.maxPri );
+            if(ZenProperties.devDbg) System.out.println( "Checking if " + priority + " is within " + ln.minPri + " <--> " + ln.maxPri );
             if( ln.minPri <= priority && ln.maxPri >= priority )
                 return ln;
         }
@@ -89,7 +89,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     private void processTaggedProfile( TaggedProfile profile , ObjectImpl obj , ORBImpl orbImpl ){
         int tag = profile.tag;
-        System.out.println("processTaggedProfile " + tag);
+        if(ZenProperties.devDbg) System.out.println("processTaggedProfile " + tag);
 
         switch( tag ){
             case TAG_INTERNET_IOP.value:            //establish appropriate connections and register them
@@ -105,7 +105,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                     in.init( orb , rb );
                     in.setEndian( in.read_boolean() );*/
                     byte iiopMinor = data[2];
-                    System.out.println("iiop minor " + iiopMinor);
+                    if(ZenProperties.devDbg) System.out.println("iiop minor " + iiopMinor);
                     switch( iiopMinor ){
                         case 0:{
                                    org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read( in );
@@ -131,11 +131,11 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                        orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
                                    }
 
-                                   System.out.println("number of components: " + profilebody.components.length);
+                                   if(ZenProperties.devDbg) System.out.println("number of components: " + profilebody.components.length);
 
                                    for(int i = 0; i <  profilebody.components.length; ++i){
                                        TaggedComponent tc = profilebody.components[i];
-                                       System.out.println("found tag: " + tc.tag);
+                                       if(ZenProperties.devDbg) System.out.println("found tag: " + tc.tag);
 
                                        if(tc.tag == org.omg.IOP.TAG_POLICIES.value){
 
@@ -144,11 +144,11 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                            PolicyValue[] pvarr = PolicyValueSeqHelper.read(in1);
                                            in1.free();
 
-                                           System.out.println("number of policies: " + pvarr.length);
+                                           if(ZenProperties.devDbg) System.out.println("number of policies: " + pvarr.length);
 
                                            for(int j = 0; j < pvarr.length; ++j){
 
-                                               System.out.println("found policy value: " + pvarr[j].ptype);
+                                               if(ZenProperties.devDbg) System.out.println("found policy value: " + pvarr[j].ptype);
 
                                                CDRInputStream in2 = CDRInputStream.fromOctetSeq(pvarr[j].pvalue, orb);
                                                //PriorityModelPolicyHelper.extract(in2.read_any());
@@ -158,31 +158,31 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                                    case PRIORITY_MODEL_POLICY_TYPE.value:
 
 
-                                                       System.out.println("\tPRIORITY_MODEL_POLICY_TYPE");
+                                                       if(ZenProperties.devDbg) System.out.println("\tPRIORITY_MODEL_POLICY_TYPE");
                                                        priorityModel = in2.read_long();
                                                        serverPriority = in2.read_short();
-                                                       System.out.println("\tpriority model: " + priorityModel);
-                                                       System.out.println("\tpriority: " + serverPriority);
+                                                       if(ZenProperties.devDbg) System.out.println("\tpriority model: " + priorityModel);
+                                                       if(ZenProperties.devDbg) System.out.println("\tpriority: " + serverPriority);
                                                        break;
 
                                                    case THREADPOOL_POLICY_TYPE.value:
-                                                       System.out.println("\tTHREADPOOL_POLICY_TYPE");
+                                                       if(ZenProperties.devDbg) System.out.println("\tTHREADPOOL_POLICY_TYPE");
                                                        break;
 
                                                    case SERVER_PROTOCOL_POLICY_TYPE.value:
-                                                       System.out.println("\tSERVER_PROTOCOL_POLICY_TYPE");
+                                                       if(ZenProperties.devDbg) System.out.println("\tSERVER_PROTOCOL_POLICY_TYPE");
                                                        break;
 
                                                    case CLIENT_PROTOCOL_POLICY_TYPE.value:
-                                                       System.out.println("\tCLIENT_PROTOCOL_POLICY_TYPE");
+                                                       if(ZenProperties.devDbg) System.out.println("\tCLIENT_PROTOCOL_POLICY_TYPE");
                                                        break;
 
                                                    case PRIVATE_CONNECTION_POLICY_TYPE.value:
-                                                       System.out.println("\tPRIVATE_CONNECTION_POLICY_TYPE");
+                                                       if(ZenProperties.devDbg) System.out.println("\tPRIVATE_CONNECTION_POLICY_TYPE");
                                                        break;
 
                                                    case PRIORITY_BANDED_CONNECTION_POLICY_TYPE.value:
-                                                       System.out.println("\tPRIORITY_BANDED_CONNECTION_POLICY_TYPE");
+                                                       if(ZenProperties.devDbg) System.out.println("\tPRIORITY_BANDED_CONNECTION_POLICY_TYPE");
                                                        break;
 
                                                }

@@ -5,6 +5,7 @@ import javax.realtime.ScopedMemory;
 import edu.uci.ece.zen.orb.CDRInputStream;
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.orb.transport.Transport;
 import edu.uci.ece.zen.utils.ReadBuffer;
 
 /**
@@ -37,4 +38,10 @@ public abstract class GIOPMessage{
     }
     public final void setScope( ScopedMemory scope ) { this.scope = scope; }
     public final ScopedMemory getScope(){ return scope; }
+
+    protected Transport transport;
+    public void setTransport( Transport t ){
+        this.transport = t;
+    }
+    public Transport getTransport(){ return transport; }
 }

@@ -327,7 +327,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
      * @param cdr CDROutputSTream
      */
     public void write_CDROutputStream(CDROutputStream cdr) {
-        write_long( (int) cdr.buffer.getLimit() );
+        write_long( (int) cdr.buffer.getPosition() );
         //cdr.buffer.dumpBuffer( buffer );
     }
 
@@ -348,11 +348,10 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     public void setLocationMemento(){
         buffer.setLocationMemento();
     }
+
     public void updateLength(){
-        buffer.writeLongAtLocationMemento( (int) buffer.getLimit()-12 );
+        buffer.writeLongAtLocationMemento( (int) buffer.getPosition()-12 );
     }
-
-
 
     /**
      * Writes an any object from the the CDROutputStream.  This
@@ -366,26 +365,18 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         any.write_value(this);
     }
 
-
-
     /** Returns a CDROutputStream that will be encapsulated within
      * this stream.  Calld endEncapsulation() when finished writing to
      * it.
      */
     public CDROutputStream beginEncapsulation() {
-
-
         CDROutputStream cdr = edu.uci.ece.zen.orb.CDROutputStream.instance();
         cdr.init(orb);
         // The encapsulated header uses 0 for big-endian (Java's
         // representation) and 1 for little-endian
         cdr.write_octet((byte) 0);
         return cdr;
-
-        //return this;
     }
-
-
 
     /** Finish marshaling the CDROutputStream <code>cdr</code> into
      * this stream.
@@ -397,8 +388,6 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         cdr.free();
 
     }
-
-
 
     /**
      * Writes a TypeCode to this CDROutputStream.
@@ -612,10 +601,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         this.transcribe_union(tc, in, this);
     }
 
-
-
     public static final void transcribe_union(org.omg.CORBA.TypeCode tc, org.omg.CORBA.portable.InputStream in, org.omg.CORBA.portable.OutputStream out) {
-
         try {
 
             edu.uci.ece.zen.orb.TypeCode discriminatorType = (edu.uci.ece.zen.orb.TypeCode) edu.uci.ece.zen.orb.TypeCode.originalType(tc.discriminator_type());
@@ -703,7 +689,6 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
                 throw new org.omg.CORBA.NO_IMPLEMENT("Unhandled case");
             }
 
-
         } // end of try
 
         // These exceptions should never really happen, but are
@@ -715,9 +700,6 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             System.err.println("Bounds exception occurred in CDROutputStream.write_value_union");
         }
     }
-
-
-
 
     /**
      * Return the index of the member_label that the discriminator
@@ -849,8 +831,6 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     return member_index;
 
     } // end of method
-
-
 
     /**
      * Writes the value stored in the InputStream <code>in</code> to
@@ -1015,8 +995,6 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         }
     }
 
-
-
     // The method below is commented out for real-time Zen because it is not used.
 
     // Bruce added this class for use with Any's based on the fact
@@ -1036,6 +1014,4 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         return buffer_copy;
     }
     */
-
-
 }

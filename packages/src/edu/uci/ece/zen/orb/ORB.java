@@ -76,7 +76,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             props = new Properties();
 
         //Find the ORBId
-        System.out.println( "======================Locating OBR ID from ZenProperties====================" );
+        if(ZenProperties.devDbg) System.out.println( "======================Locating OBR ID from ZenProperties====================" );
         String orbId = ZenProperties.getORBId( args , props );
         if( orbId == null ){
             orbId = "edu.uci.ece.zen.orb.ORB." + nextOrbId();
@@ -87,20 +87,20 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         if( orbId.equals( "" ) ){
             return edu.uci.ece.zen.orb.ORB.orbSingleton;
         }else{
-            System.out.println( "======================Trying to locate the orb with that orbid==============" );
+            if(ZenProperties.devDbg) System.out.println( "======================Trying to locate the orb with that orbid==============" );
 
             FString fOrbId = new FString( orbId.length() );
             fOrbId.append( orbId );
 
             edu.uci.ece.zen.orb.ORB retVal = (edu.uci.ece.zen.orb.ORB) orbTable.get( fOrbId );
             if( retVal == null ){
-                System.out.println( "======================None found...new orb will mbe made====================" );
+                if(ZenProperties.devDbg) System.out.println( "======================None found...new orb will mbe made====================" );
                 if( unusedFacades.isEmpty() ){
                     throw new RuntimeException( "ORB number limit reached. Cannot create more ORB's. Please increase the number of ORB's in the zen.properties file." );
                 }
                 ScopedMemory mem = getScopedRegion();
                 retVal = (edu.uci.ece.zen.orb.ORB) unusedFacades.dequeue();
-                System.out.println( "======================Calling internal init now=============================" );
+                if(ZenProperties.devDbg) System.out.println( "======================Calling internal init now=============================" );
                 retVal.internalInit( mem , orbId , args , props );
             }
             return retVal;
@@ -196,9 +196,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private void internalInit( ScopedMemory mem , String orbId , String[] args , Properties props ){
         this.orbId.reset();
         this.orbId.append( orbId );
-        System.out.println( "======================Assigning the parent memory area======================" );
+        if(ZenProperties.devDbg) System.out.println( "======================Assigning the parent memory area======================" );
         this.parentMemoryArea = RealtimeThread.getCurrentMemoryArea();
-        System.out.println( "======================Filing ORBInitRunnable with values====================" );
+        if(ZenProperties.devDbg) System.out.println( "======================Filing ORBInitRunnable with values====================" );
         ORBInitRunnable orbInitRunnable = new ORBInitRunnable();
         orbInitRunnable.init( args , props , this );
         orbImplRegion = mem;
@@ -328,7 +328,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     public org.omg.CORBA.Object resolve_initial_references(String object_name) throws org.omg.CORBA.ORBPackage.InvalidName {
-        System.out.println( "======================Getting " + object_name + "=============================" );
+        if(ZenProperties.devDbg) System.out.println( "======================Getting " + object_name + "=============================" );
         if(object_name.equals("RTORB")){
             return getRTORB();
         }else if(object_name.equals("ORBPolicyManager")){

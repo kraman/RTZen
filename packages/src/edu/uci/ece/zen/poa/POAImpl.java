@@ -32,9 +32,6 @@ public class POAImpl{
     private POAServerRequestHandler                 serverRequestHandler;
     private POAImplRunnable                         poaImplRunnable;
 
-    // ---  Current Number of request executing in the POA ---
-    protected SynchronizedInt numberOfCurrentRequests;
-
     // --- Mutexes POA and varable specific to the create and destroy ops ---
     private Object createDestroyPOAMutex = new byte[0];
 
@@ -134,14 +131,14 @@ public class POAImpl{
      * @throws InvalidPolicyException
      */
     public void init( ORB orb , POA self , Policy[] policies , POA parent , POAManager manager , POARunnable prun ){
-        System.out.println( "POAImpl init 1" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 1" );
         this.orb = orb;
         this.self = self;
         this.parent = parent;
         this.manager = manager;
         this.tpId = 0;
         this.poaCurrent = new ThreadLocal();
-        System.out.println( "POAImpl init 2" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 2" );
 
         try{
             serverRequestHandler = (POAServerRequestHandler) ((ORBImpl)((ScopedMemory)orb.orbImplRegion).getPortal()).getServerRequestHandler();
@@ -152,10 +149,10 @@ public class POAImpl{
         }catch( Exception e1 ){
             e1.printStackTrace();
         }
-        System.out.println( "POAImpl init 3" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 3" );
         self.poaDemuxIndex = serverRequestHandler.addPOA( self.poaPath , self );
         self.poaDemuxCount = serverRequestHandler.getPOAGenCount( self.poaDemuxIndex );
-        System.out.println( "POAImpl init 4" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 4" );
 
 
         //make a local copy of the policies
@@ -166,43 +163,43 @@ public class POAImpl{
 
         for( int i=0;i<policyList.length;i++ )
             this.policyList[i] = policies[i].copy();
-        System.out.println( "POAImpl init 5" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 5" );
 
         //init the stratergies
         IntHolder ih = getIntHolder();
         this.threadPolicyStrategy = edu.uci.ece.zen.poa.mechanism.ThreadPolicyStrategy.init(policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
-        System.out.println( "POAImpl init 6" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 6" );
 
         this.idAssignmentStrategy = edu.uci.ece.zen.poa.mechanism.IdAssignmentStrategy.init(policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
-        System.out.println( "POAImpl init 7" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 7" );
 
         this.uniquenessStrategy = edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy.init(policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
-        System.out.println( "POAImpl init 8" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 8" );
 
         this.retentionStrategy = edu.uci.ece.zen.poa.mechanism.ServantRetentionStrategy.init(policyList, this.uniquenessStrategy,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
-        System.out.println( "POAImpl init 9" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 9" );
 
         this.lifespanStrategy = edu.uci.ece.zen.poa.mechanism.LifespanStrategy.init(this.policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
-        System.out.println( "POAImpl init 10" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 10" );
 
         this.activationStrategy = edu.uci.ece.zen.poa.mechanism.ActivationStrategy.init(this.policyList, this.idAssignmentStrategy, this.retentionStrategy,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
-        System.out.println( "POAImpl init 11" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 11" );
 
         this.requestProcessingStrategy = edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy.init(this.policyList,
                 this.retentionStrategy, this.uniquenessStrategy, this.threadPolicyStrategy, this , ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
-        System.out.println( "POAImpl init 12" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl init 12" );
 
         poaImplRunnable = new POAImplRunnable( self.poaMemoryArea );
         self.poaMemoryArea.setPortal( this );
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,null,null,self.poaMemoryArea,null,poaImplRunnable );
-        System.out.println( "======================starting nhrt in poa impl region=====================" );
+        if(ZenProperties.devDbg) System.out.println( "======================starting nhrt in poa impl region=====================" );
         nhrt.start();
     }
 
@@ -221,55 +218,54 @@ public class POAImpl{
      * </p>
      */
     public void handleRequest( RequestMessage req , MemoryArea requestScope , POARunnable prun ){
-        System.out.println( "POAImpl.handled 1" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 1" );
         IntHolder ih = getIntHolder();
 
-        if( this.poaCurrent.get() == null )
-            this.poaCurrent.set( new POACurrent() );
-        System.out.println( "POAImpl.handled 2" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 2" );
 
         validateProcessingState( ih ); // check for the state of the poa? if it is discarding then throw the transient exception...
         if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retIntHolder( ih ); return; }
-        System.out.println( "POAImpl.handled 3" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 3" );
 
         // Check the state of the POAManager. Here the POA is in active state
         prun.exception = POAManager.checkPOAManagerState(self.the_POAManager());
         if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retIntHolder( ih ); return; }
-        System.out.println( "POAImpl.handled 4" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 4" );
 
         // check if the POA has the persistent policy/or the transient
         FString objKey = getFString();
         req.getObjectKey( objKey );
-        System.out.println( "POAImpl.handled 5" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 5" );
         this.lifespanStrategy.validate( objKey , ih );
-        System.out.println( "POAImpl.handled 6" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 6" );
         retFString( objKey );
         if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retIntHolder( ih ); return; }
-        System.out.println( "POAImpl.handled 7" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 7" );
 
         try {
             ScopedMemory tpRegion = this.orb.getThreadPoolRegion(tpId);
-            System.out.println( "POAImpl.handled 8" );
+            if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 8" );
 
             ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );
-            System.out.println( "POAImpl.handled 10" );
+            if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 10" );
             tpr.init( self , (ScopedMemory) requestScope );
             eir.init( tpr , tpRegion );
-            System.out.println( "POAImpl.handled 11" );
+            if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 11" );
 
             HandleRequestRunnable hrr = (HandleRequestRunnable) requestScope.newInstance( HandleRequestRunnable.class );
             hrr.init( self , req );
-            System.out.println( "POAImpl.handled 12" );
+            if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 12" );
             ((ScopedMemory)requestScope).setPortal( hrr );
-            System.out.println( "POAImpl.handled 13" );
+            if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 13" );
 
             orb.orbImplRegion.executeInArea( eir );
-            System.out.println( "POAImpl.handled 14" );
+            if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 14" );
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here
             // -- Throw a transient exception
             prun.exception = POARunnable.TransientException;
+            ex.printStackTrace();
             return;
         }
     }
@@ -357,8 +353,8 @@ public class POAImpl{
         retFString( okey );
         retFString( oid );
         retIntHolder( ih );
-        System.out.println( "servant_to_reference " + retVal );
-        System.out.println( "servant_to_reference client area " + clientMemoryArea);
+        if(ZenProperties.devDbg) System.out.println( "servant_to_reference " + retVal );
+        if(ZenProperties.devDbg) System.out.println( "servant_to_reference client area " + clientMemoryArea);
         return retVal;
     }
 
@@ -428,12 +424,12 @@ public class POAImpl{
 
     private CreateReferenceWithObjectRunnable crwor;
     public synchronized org.omg.CORBA.Object create_reference_with_object_key( FString ok, final String intf, MemoryArea clientArea ) {
-        System.out.println( "create_reference_with_object_key 1" );
+        if(ZenProperties.devDbg) System.out.println( "create_reference_with_object_key 1" );
         if( crwor == null )
             crwor = new CreateReferenceWithObjectRunnable();
-        System.out.println( "create_reference_with_object_key 2" );
+        if(ZenProperties.devDbg) System.out.println( "create_reference_with_object_key 2" );
         crwor.init( ok, intf, clientArea, orb);
-        System.out.println( "create_reference_with_object_key 3" );
+        if(ZenProperties.devDbg) System.out.println( "create_reference_with_object_key 3" );
         try{
             orb.orbImplRegion.executeInArea(crwor);
             return crwor.retVal;
@@ -450,11 +446,11 @@ public class POAImpl{
 
     public SynchronizedInt getnumberOfCurrentRequests()
     {
-        return numberOfCurrentRequests;
+        return self.numberOfCurrentRequests;
     }
 
     public void finalize(){
-        System.out.println( "POAImpl GC'd" );
+        if(ZenProperties.devDbg) System.out.println( "POAImpl GC'd" );
     }
 
 }
@@ -485,27 +481,6 @@ class CreateReferenceWithObjectRunnable implements Runnable{
     }
 }
 
-class HandleRequestRunnable implements Runnable{
-    POA poa;
-    RequestMessage req;
-    IntHolder exceptionValue;
-
-    public void init( POA poa , RequestMessage req ){
-        this.poa = poa;
-        this.req = req;
-        exceptionValue = new IntHolder(0);
-    }
-
-    public void run(){
-        POAImpl pimpl = ((POAImpl)poa.poaMemoryArea.getPortal());
-        try{
-            pimpl.requestProcessingStrategy.handleRequest( req , poa , pimpl.numberOfCurrentRequests , exceptionValue );
-        }catch( Exception e ){
-            e.printStackTrace();
-        }
-    }
-}
-
 class POAImplRunnable implements Runnable{
     private boolean active;
     private ScopedMemory sm;
@@ -524,11 +499,11 @@ class POAImplRunnable implements Runnable{
     }
 
     public void run(){
-        System.out.println("getting portal for: " + sm );
-        System.out.println("inner thread: " + Thread.currentThread().toString());
+        if(ZenProperties.devDbg) System.out.println("getting portal for: " + sm );
+        if(ZenProperties.devDbg) System.out.println("inner thread: " + Thread.currentThread().toString());
 
         POAImpl poaImpl = (POAImpl) sm.getPortal();
-        System.out.println( "poa impl is " + poaImpl );
+        if(ZenProperties.devDbg) System.out.println( "poa impl is " + poaImpl );
         synchronized( poaImpl ){
             try{
                 while( active ){

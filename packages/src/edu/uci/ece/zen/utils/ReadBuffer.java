@@ -248,6 +248,7 @@ public class ReadBuffer{
         byte b2 = readByte();
         byte b3 = readByte();
         byte b4 = readByte();
+        //System.out.println( "" + ((int)b1) + " " + ((int)b2) + " " + ((int)b3) + " " + ((int)b4) );
         int ret=0;
         if( isLittleEndian ){
             ret |= b4 & 0xFF;

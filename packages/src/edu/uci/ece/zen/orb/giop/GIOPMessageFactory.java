@@ -136,6 +136,7 @@ public final class GIOPMessageFactory
                     throw new RuntimeException(""); //throw GIOP error here
             }   
         }while( false );
+        ret.setTransport( trans );
         return ret;
     }
 
@@ -214,6 +215,10 @@ public final class GIOPMessageFactory
             read += in.read( header , 0 , 12 );
        
         // Bytes 0,1,2,3 should equal 'GIOP'
+        //System.err.println( "----GIOP Message Header ----" );
+        //System.err.write( header , 0 , 12 );
+        //System.err.println( "\n---- ----" );
+
         if (  header[0] != magic[0]
               || header[1] != magic[1]
               || header[2] != magic[2]
@@ -233,20 +238,29 @@ public final class GIOPMessageFactory
         
         headerInfo.messageType = header[7];      //Message type (byte 7)
         
-        if( !headerInfo.isLittleEndian ){
-            headerInfo.messageSize += ((short)(header[8] & 0xFF)) << 24;
-            headerInfo.messageSize += ((short)(header[9] & 0xFF)) << 16;
-            headerInfo.messageSize += ((short)(header[10] & 0xFF)) << 8;
-            headerInfo.messageSize += ((short)(header[11] & 0xFF)) << 0;
+        headerInfo.messageSize = 0;
+        if( headerInfo.isLittleEndian ){
+            //System.out.println( "Little endian msg" );
+            //System.out.println( "" + ((int)header[11]) + " " + ((int)header[10]) + " " + ((int)header[9]) + " " + ((int)header[8]) );
+            headerInfo.messageSize |= header[11] & 0xFF;
+            headerInfo.messageSize <<= 8;
+            headerInfo.messageSize |= header[10] & 0xFF;
+            headerInfo.messageSize <<= 8;
+            headerInfo.messageSize |= header[9] & 0xFF;
+            headerInfo.messageSize <<= 8;
+            headerInfo.messageSize |= header[8] & 0xFF;
         }else{
-            headerInfo.messageSize += ((short)(header[11] & 0xFF)) << 24;
-            headerInfo.messageSize += ((short)(header[10] & 0xFF)) << 16;
-            headerInfo.messageSize += ((short)(header[9] & 0xFF)) << 8;
-            headerInfo.messageSize += ((short)(header[8] & 0xFF)) << 0;
+            //System.out.println( "Big endian msg" );
+            //System.out.println( "" + ((int)header[8]) + " " + ((int)header[9]) + " " + ((int)header[10]) + " " + ((int)header[11]) );
+            headerInfo.messageSize |= header[8] & 0xFF;
+            headerInfo.messageSize <<= 8;
+            headerInfo.messageSize |= header[9] & 0xFF;
+            headerInfo.messageSize <<= 8;
+            headerInfo.messageSize |= header[10] & 0xFF;
+            headerInfo.messageSize <<= 8;
+            headerInfo.messageSize |= header[11] & 0xFF;
         }
-        System.err.println( "----GIOP Message Header ----" );
-        System.err.write( header , 0 , 12 );
-        System.err.println( "---- ----" );
+        //System.out.println( "Message size " + headerInfo.messageSize );
     }
 
     /**
@@ -260,25 +274,27 @@ public final class GIOPMessageFactory
         //giop version
         out.write_octet( (byte)1 );
         out.write_octet( (byte)0 );
-        //message type
-        out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Request );
         //endian
         out.write_boolean( false );
+        //message type
+        out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Request );
         out.setLocationMemento();
         out.write_long(0);
         (new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId )).marshal( out );
     }
 
     public static CDROutputStream constructReplyMessage( ORB orb , RequestMessage req ){
-        CDROutputStream out = CDROutputStream.create( orb );
+        CDROutputStream out = CDROutputStream.instance();
+        out.init( orb );
+
         out.write_octet_array( magic , 0 , 4 );
         //giop version
         out.write_octet( (byte)1 );
-        out.write_octet( (byte)( req.getGiopVersion()/10) );
-        //message type
-        out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Reply );
+        out.write_octet( (byte)0 );
         //endian
         out.write_boolean( false );
+        //message type
+        out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Reply );
         out.setLocationMemento();
         out.write_long(0);
         
@@ -300,15 +316,17 @@ public final class GIOPMessageFactory
     }
 
     public static CDROutputStream constructExceptionMessage( ORB orb , RequestMessage req ){
-        CDROutputStream out = CDROutputStream.create( orb );
+        CDROutputStream out = CDROutputStream.instance();
+        out.init( orb );
+
         out.write_octet_array( magic , 0 , 4 );
         //giop version
         out.write_octet( (byte)1 );
-        out.write_octet( (byte)( req.getGiopVersion()/10) );
-        //message type
-        out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Reply );
+        out.write_octet( (byte)0 );
         //endian
         out.write_boolean( false );
+        //message type
+        out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Reply );
         out.setLocationMemento();
         out.write_long(0);
         

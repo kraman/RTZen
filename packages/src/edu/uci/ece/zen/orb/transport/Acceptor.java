@@ -2,6 +2,7 @@ package edu.uci.ece.zen.orb.transport;
 
 import javax.realtime.*;
 import org.omg.IOP.TaggedProfile;
+import edu.uci.ece.zen.utils.*;
 
 public abstract class Acceptor{
     protected edu.uci.ece.zen.orb.ORB orb;
@@ -41,7 +42,7 @@ public abstract class Acceptor{
     private ProfileRunnable prunnable;
     public synchronized TaggedProfile getProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion ){
         try{
-            System.out.println("Acceptor client region: " + clientRegion);
+            if(ZenProperties.devDbg) System.out.println("Acceptor client region: " + clientRegion);
             if( prunnable == null )
                 prunnable = new ProfileRunnable();
             prunnable.init( iiopMajorVersion , iiopMinorVersion , objKey, this );
@@ -56,7 +57,7 @@ public abstract class Acceptor{
     protected abstract TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey);
 
     public void finalize(){
-        System.out.println( "Acceptor region has been GC'd" );
+        if(ZenProperties.devDbg) System.out.println( "Acceptor region has been GC'd" );
     }
 }
 

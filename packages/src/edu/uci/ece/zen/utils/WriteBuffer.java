@@ -150,10 +150,10 @@ public class WriteBuffer{
 
     public void dumpBuffer( java.io.OutputStream out ) throws java.io.IOException{
         //System.err.println( "----BEGIN GIOP MESSAGE----" );
-        for( int i=0;i<limit/1024-1;i++ ){
+        for( int i=0;i<position/1024-1;i++ ){
             dumpByteArray( (byte[])buffers.elementAt(i) , 0 , 1024 , out );
         }
-        dumpByteArray( (byte[])buffers.elementAt(((int)(limit/1024))) , 0 , (int)(limit%1024) , out );
+        dumpByteArray( (byte[])buffers.elementAt(((int)(position/1024))) , 0 , (int)(position%1024) , out );
         //System.err.println( "\n----END GIOP MESSAGE----" );
     }
 
@@ -221,6 +221,7 @@ public class WriteBuffer{
         byte b2 = (byte) ((v >>> 16) & 0xFF);
         byte b3 = (byte) ((v >>> 8) & 0xFF);
         byte b4 = (byte) (v & 0xFF);
+        //System.out.println( "" + ((int)b1) + " " + ((int)b2) + " " + ((int)b3) + " " + ((int)b4) );
         if( isLittleEndian ){
             writeByte( b4 );
             writeByte( b3 );

@@ -16,7 +16,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
             sock = sock;
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
-            System.out.println( "Transport ready: " + istream + " " + ostream );
+            if(ZenProperties.devDbg) System.out.println( "Transport ready: " + istream + " " + ostream );
             setSockProps(sock, orb);
         }catch( Exception ex ){
             ZenProperties.logger.log(
@@ -30,14 +30,14 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
     public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl , String host , int port ){
         super( orb , orbImpl );
         try{
-            System.out.println( "Connecting to " + host + ":" + port );
+            if(ZenProperties.devDbg) System.out.println( "Connecting to " + host + ":" + port );
             sock = new java.net.Socket( host , port );
-            System.out.println( "Connected" );
+            if(ZenProperties.devDbg) System.out.println( "Connected" );
             //setSockProps(sock, orb);
             //             System.err.println( "sock = " + sock ); 
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
-            System.out.println( "Transport ready: " + istream + " " + ostream );
+            if(ZenProperties.devDbg) System.out.println( "Transport ready: " + istream + " " + ostream );
         }catch( Exception ex ){
             ZenProperties.logger.log(
                 Logger.WARN,
@@ -61,7 +61,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
 
         try{
             if(pm.recv_buffer_size > 0){
-                System.out.println("Setting socket props.");
+                if(ZenProperties.devDbg) System.out.println("Setting socket props.");
                 sock.setReceiveBufferSize(pm.recv_buffer_size);
                 sock.setSendBufferSize(pm.send_buffer_size);
                 sock.setTcpNoDelay(pm.no_delay);

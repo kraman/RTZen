@@ -127,6 +127,17 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
 
         POAImpl pimpl = (POAImpl) ((ScopedMemory)poa.poaMemoryArea).getPortal();
         // Logger.debug("logged debug 0");
+        if(ZenProperties.devDbg) System.out.println( pimpl );
+        if(ZenProperties.devDbg) System.out.println( pimpl.poaCurrent );
+        if(ZenProperties.devDbg) System.out.println( pimpl.poaCurrent.get() );
+        
+        try{
+            if( pimpl.poaCurrent.get() == null )
+                pimpl.poaCurrent.set( poa.poaMemoryArea.newInstance( POACurrent.class ));
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
+        
         ((POACurrent)pimpl.poaCurrent.get()).init(poa, okey, (org.omg.PortableServer.Servant) invokeHandler);
 
         ResponseHandler responseHandler = new ResponseHandler(((edu.uci.ece.zen.poa.POA) poa).getORB(),request );
@@ -160,7 +171,6 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
                         responseHandler);
         }
 
-
         // --- POST-INVOKE ---
         this.threadPolicyStrategy.exit(invokeHandler);
         synchronized (mutex) {
@@ -168,8 +178,11 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
             map.decrementActiveRequestsAndDeactivate();
         }
 
-        //reply.sendUsing(request.getTransport());
-        reply = null; // Enable GC of the reply Object
+        reply.updateLength();
+        WriteBuffer wbret = reply.getBuffer();
+        if(ZenProperties.devDbg) System.out.println( "MsgLen: " + (wbret.getPosition()-12) );
+        request.getTransport().send( wbret );
+        reply.free();
         //return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
     }
 }

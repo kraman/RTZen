@@ -1,5 +1,6 @@
 package edu.uci.ece.zen.poa.mechanism;
 
+import edu.uci.ece.zen.utils.*;
 
 /**
  * All the Utility functions related to the Policies in the POA are here
@@ -24,10 +25,10 @@ public class PolicyUtils{
             if (policyList[i] instanceof edu.uci.ece.zen.poa.policy.ServantRetentionPolicy) {
                 if (((edu.uci.ece.zen.poa.policy.ServantRetentionPolicy) policyList[i]).int_value()
                         == org.omg.PortableServer.ServantRetentionPolicyValue._RETAIN) {
-                    System.out.println ("Util found Retain policy");
+                    if(ZenProperties.devDbg) System.out.println ("Util found Retain policy");
                     return true;
                 } else {
-                    System.out.println ("Util found Non-Retain policy");
+                    if(ZenProperties.devDbg) System.out.println ("Util found Non-Retain policy");
                     return false;
                 }
             }
