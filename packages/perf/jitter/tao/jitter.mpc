@@ -4,7 +4,6 @@ project(*Client): taoclient {
     Source_Files {
 	client.cpp
 	jitterC.cpp
-	NativeTimeStamp.cpp
     }
 }
 
@@ -16,7 +15,6 @@ project(*Server): taoserver {
         server.cpp
 	jitterS.cpp
 	jitterC.cpp
-        NativeTimeStamp.cpp
     }
 }
 

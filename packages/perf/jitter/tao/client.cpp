@@ -2,7 +2,8 @@
 
 #include "jitterC.h"
 #include "ace/Get_Opt.h"
-#include "NativeTimeStamp.h"
+#include <stdio.h>
+//#include "NativeTimeStamp.h"
 //#include "ace/High_Res_Timer.h"
 //#include "ace/Sched_Params.h"
 //#include "ace/Stats.h"
@@ -15,11 +16,19 @@
 
 
 const char *ior = "file://ior.txt";
-int niterations = 1000;
-int nWarmUpIterations = 100;
+int niterations = 10000;
+int nWarmUpIterations = 5000;
 int do_dump_history = 0;
 int do_shutdown = 1;
 int length = 128;
+const int size_of_record = 36000;
+
+typedef struct _Record{
+  int pos;
+  double time_stamp;
+}Record;
+
+Record record_list[size_of_record];
 
 int
 parse_args (int argc, char *argv[])
@@ -81,8 +90,13 @@ main (int argc, char *argv[])
                             1);
         }
 
-	  NativeTimeStamp timeStamp; 
-	  timeStamp.Init(1, 20.0);
+      //NativeTimeStamp timeStamp; 
+      
+      //timeStamp.Init(1, 20.0);
+
+      struct timeval begin_time, start_time, end_time; //Ed Pla's timestamping can't be used on Solaris
+      
+       
 
 	  perf::jitter::OctetSeq *pOctetSeq;
 	  pOctetSeq = new perf::jitter::OctetSeq(length);
@@ -102,19 +116,38 @@ main (int argc, char *argv[])
       ACE_DEBUG ((LM_DEBUG, "============= performance test BYTE\n"));
 
       //ACE_hrtime_t test_start = ACE_OS::gethrtime ();
+
+      int index = 0;
+
+      gettimeofday(&begin_time, NULL);
+ 
       for (int i = 0; i < niterations; ++i)
         {
-
+          gettimeofday(&start_time, NULL);
           (void) roundtrip->putOctetSeq (*pOctetSeq  ACE_ENV_ARG_PARAMETER);
-		  timeStamp.RecordTime(21);
+          //timeStamp.RecordTime(21);
+          gettimeofday(&end_time, NULL);
+
+          record_list[index].pos = 22;
+          record_list[index++].time_stamp = (start_time.tv_sec-begin_time.tv_sec)*1000000 + (start_time.tv_usec-begin_time.tv_usec);
+          
+          record_list[index].pos = 22;
+          record_list[index++].time_stamp = (end_time.tv_sec-begin_time.tv_sec)*1000000 + (end_time.tv_usec-begin_time.tv_usec);
+
           ACE_TRY_CHECK;
-
-
         }
 
       ACE_DEBUG ((LM_DEBUG, "test finished\n"));
 
-	  timeStamp.OutputLogRecords();
+      FILE* _file = fopen("timeRecords.txt","w+");
+
+      for(int i=0; i<index; i++)
+      {
+          fprintf(_file, "%d,%d,%f\n", i, record_list[i].pos, record_list[i].time_stamp);
+      }
+      fclose(_file);
+
+      //timeStamp.OutputLogRecords();
 
     }
   ACE_CATCHANY

@@ -19,8 +19,7 @@ TAO_ROOT  ?= $(ACE_ROOT)/TAO
 FILES = \
   server \
   jitterS \
-  jitterC \
-  NativeTimeStamp
+  jitterC
 
 #----------------------------------------------------------------------------
 #       Include macros and targets
