@@ -18,7 +18,7 @@ import perf.TimeStamp.*;
 public class Client extends RealtimeThread
 {
 	public static final int warmUpIterations =   1000;
-	public static final int iterations       = 10000;
+	public static final int iterations       = 1000;
 
 	public static int seqSize = 4;
 	public static int testType =1;
