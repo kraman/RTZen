@@ -16,69 +16,10 @@
 		</idlc>
 	</target>
 
-   <!--<target name="all" depends="corba,giop,iiop,naming,messaging,imr"/>-->
-<!--
-   <target name="zen" if="zen.idl.compiler">
-       <echo message="Using Zen's IDL compiler"/>
-       <antcall target="imr">
-           <param name="idl.flags" value="-o"/>
-           <param name="gendir" value="${zen.gendir}/"/>
-           <param name="idl.dir" value="${zen.srcdir}/idl/omg"/>
-           <param name="classpath" value="${zen.classpath}"/>
-       </antcall>
-   </target>
-
-   <target name="idl">
-       <echo message="Using OpenOrb's IDL compiler"/>
-       <antcall target="Corba">
-           <param name="idl.flags" value="-silence -all -d"/>
-           <param name="gendir" value="${zen.gendir}"/>
-           <param name="classpath" value="${openorb.class.path}"/>
-           <param name="idl.dir" value="${zen.srcdir}/idl/omg/openorb-idl/idl"/>
-           <param name="idl.src" value="Corba.idl"/>
-       </antcall>
-   </target>
-
-    <target name="giop">
-        <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
-            <arg line="${idl.flags} ${gendir} ${idl.dir}/giop.idl"/>
-        </java>
-    </target>
-
-    <target name="iiop">
-         <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
-            <arg line="${idl.flags} ${gendir} ${idl.dir}/iiop.idl"/>
-        </java>
-    </target>
-
-    <target name="naming">
-         <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
-            <arg line="${idl.flags} ${gendir} ${idl.dir}/naming.idl"/>
-        </java>
-    </target>
-
-    <target name="messaging">
-         <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
-            <arg line="${idl.flags} ${gendir} ${idl.dir}/messaging.idl"/>
-        </java>
-    </target>
-
-    <target name="imr" depends="giop, iiop, naming, messaging">
-         <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
-            <arg line="${idl.flags} ${gendir} ${idl.dir}/imr.idl"/>
-        </java>
-    </target>
-
-    <target name="Corba">
-         <java classpath="${classpath}" dir="${idl.dir}" classname="${idl2java.compiler}" fork="yes">
-             <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
-        </java>
-    </target>
--->
     <target name="clean">
-      <delete dir="${zen.gendir}/org/omg/CORBA/GIOP"/>
-      <delete dir="${zen.gendir}/org/omg/IMR"/>
-   </target>
+        <delete dir="${zen.gendir}/org/omg/CORBA/GIOP"/>
+        <delete dir="${zen.gendir}/org/omg/IMR"/>
+    </target>
 
 </project>
 

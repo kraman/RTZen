@@ -88,7 +88,7 @@
         </ant>
 
         <echo message="Compiling IDL files"/>
-        <ant antfile="${zen.srcdir}/idl/build.xml"/>
+        <ant antfile="${zen.srcdir}/idl/omg/build.xml"/>
     </target>
 
     <target name="compile">
@@ -100,7 +100,7 @@
             failonerror = "true"
             fork = "true"
             target="1.1"
-			debug="true"
+			debug="${zen.debug}"
             bootclasspath="${zen.rtbootclasspath}"
             includeJavaRuntime="yes"
             >
@@ -129,7 +129,7 @@
             out="${zen.libdir}/libZen.so"
             bootclasspath="${zen.rtbootclasspath}"
             classpath="${jRate_classpath}:${zen.classdir}"
-            debug="true"
+            debug="${zen.debug}"
             >
             <fileset dir="${zen.srcdir}">
                <patternset refid="sources"/>
@@ -165,6 +165,9 @@
     <target name="clean">
         <!-- Clean the idldepends Ant task -->
         <ant antfile="${idldepend.dir}/build.xml" dir="${idldepend.dir}" target="clean"/>
+
+        <!-- Clean IDL-generated files -->
+        <ant antfile="${zen.srcdir}/idl/omg/build.xml" target="clean"/>
 
         <delete dir="${zen.srcdir}/generated"/>
     </target>

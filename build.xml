@@ -112,7 +112,10 @@ public class VersionStamp{
       <delete file="bin/${zen.unix.exec}"/>
       <delete file="bin/${idl.win.exec}"/>
       <delete file="bin/${idl.unix.exec}"/>
+      <delete file="bin/${naming.win.exec}"/>
+      <delete file="bin/${naming.unix.exec}"/>
       <delete file="zen-build-bootstrap.properties"/>
+      <delete file="packages/src/edu/uci/ece/zen/utils/VersionStamp.java"/>
    </target>
 </project>
 

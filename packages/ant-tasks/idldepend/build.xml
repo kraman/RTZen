@@ -17,6 +17,8 @@
 
 	<target name="clean">
 		 <delete dir="${build.dir}"/>
+         <delete file="idldepend.zip"/>
+         <delete file="idldepend.jar"/>
 	</target>
 
 	<target name="prepare">
