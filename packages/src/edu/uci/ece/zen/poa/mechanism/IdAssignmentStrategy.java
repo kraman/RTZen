@@ -2,6 +2,7 @@ package edu.uci.ece.zen.poa.mechanism;
 
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.poa.*;
+import org.omg.CORBA.IntHolder;
 
 /**
  * The class <code>IdAssignmentStrategy</code> takes care of creating
@@ -21,8 +22,8 @@ abstract public class IdAssignmentStrategy {
      * @param policy org.omg.CORBA.Policy[]
      * @return IdAssignmentStrategy
      */
-    public static IdAssignmentStrategy init(org.omg.CORBA.Policy[] policy , org.omg.CORBA.IntHolder ih ) {
-        ih.value = IdAssignmentStrategy.NoException;
+    public static IdAssignmentStrategy init(org.omg.CORBA.Policy[] policy , IntHolder exceptionValue ) {
+        exceptionValue.value = IdAssignmentStrategy.NoException;
         if (Util.useSystemIdPolicy(policy)) {
 //            return new SystemIdStrategy();
         } else {
@@ -34,12 +35,12 @@ abstract public class IdAssignmentStrategy {
     /**
      * @throws WrongPolicy
      */
-    public abstract void nextId( FString id_out , org.omg.CORBA.IntHolder ih );
+    public abstract void nextId( FString id_out , org.omg.CORBA.IntHolder exceptionValue );
     public abstract boolean isPresent(int PolicyName);
     /**
      * @throws WrongPolicy
      */
-    public abstract void validate(int policy , org.omg.CORBA.IntHolder ih );
+    public abstract void validate(int policy , IntHolder exceptionValue );
     public abstract boolean verifyID( FString id );
 }
 
