@@ -36,9 +36,9 @@ public class ByteArrayCache{
         System.out.println( "byteArrayCache.getByteArray 2");
             if( byteBuffers.isEmpty() ){
         System.out.println( "byteArrayCache.getByteArray 3");
-                imm.executeInArea( bac );
-                //return (byte[]) imm.newArray( byte.class , 1024 );
-                return bac.getByteArray();
+                //imm.executeInArea( bac );
+                return (byte[]) imm.newArray( byte.class , 1024 );
+                //return bac.getByteArray();
             }else{
         System.out.println( "byteArrayCache.getByteArray 4");
                 return (byte[]) byteBuffers.dequeue();

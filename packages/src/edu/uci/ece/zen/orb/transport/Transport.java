@@ -26,27 +26,27 @@ public abstract class Transport implements Runnable{
      * </p>
      */
     public final void run(){
-        system.out.println( "transport.Transport.run 1" );
+        System.out.println( "transport.Transport.run 1" );
         messageProcessor = new MessageProcessor( this , orb );
-        system.out.println( "transport.Transport.run 2" );
+        System.out.println( "transport.Transport.run 2" );
         NoHeapRealtimeThread messageProcessorThr = new NoHeapRealtimeThread( messageProcessor );
-        system.out.println( "transport.Transport.run 3" );
+        System.out.println( "transport.Transport.run 3" );
         messageProcessorThr.setDaemon( true );
-        system.out.println( "transport.Transport.run 4" );
+        System.out.println( "transport.Transport.run 4" );
         messageProcessorThr.start();
-        system.out.println( "transport.Transport.run 5" );
+        System.out.println( "transport.Transport.run 5" );
         try{
-        system.out.println( "transport.Transport.run 6" );
+        System.out.println( "transport.Transport.run 6" );
             synchronized( waitObj ){
-        system.out.println( "transport.Transport.run 7" );
+        System.out.println( "transport.Transport.run 7" );
                 waitObj.wait();
-        system.out.println( "transport.Transport.run 8" );
+        System.out.println( "transport.Transport.run 8" );
             }
-        system.out.println( "transport.Transport.run 9" );
+        System.out.println( "transport.Transport.run 9" );
         }catch( InterruptedException ie ){
             //ignore exception. Always happens on shutdown
         }
-        system.out.println( "transport.Transport.run 10" );
+        System.out.println( "transport.Transport.run 10" );
     }
     
     /**
@@ -105,29 +105,29 @@ class MessageProcessor implements Runnable{
     }
 
     public void run(){
-        system.out.println( "transport.MessageProcessor.run 1" );
+        System.out.println( "transport.MessageProcessor.run 1" );
         isActive = true;
-        system.out.println( "transport.MessageProcessor.run 2" );
+        System.out.println( "transport.MessageProcessor.run 2" );
         GIOPMessageRunnable gmr = new GIOPMessageRunnable( orb , trans );
-        system.out.println( "transport.MessageProcessor.run 3" );
+        System.out.println( "transport.MessageProcessor.run 3" );
         while( isActive ){
-        system.out.println( "transport.MessageProcessor.run 4" );
+        System.out.println( "transport.MessageProcessor.run 4" );
             if( ZenProperties.dbg )
                 System.err.println( "Waiting for message to come in..." );
-        system.out.println( "transport.MessageProcessor.run 5" );
+        System.out.println( "transport.MessageProcessor.run 5" );
             ScopedMemory messageScope = ORB.getScopedRegion();
-        system.out.println( "transport.MessageProcessor.run 6" );
+        System.out.println( "transport.MessageProcessor.run 6" );
             gmr.setRequestScope( messageScope );
-        system.out.println( "transport.MessageProcessor.run 7" );
+        System.out.println( "transport.MessageProcessor.run 7" );
 
             ExecuteInRunnable eir = ExecuteInRunnable.instance();
-        system.out.println( "transport.MessageProcessor.run 8" );
+        System.out.println( "transport.MessageProcessor.run 8" );
             eir.init( gmr , messageScope );
-        system.out.println( "transport.MessageProcessor.run 9" );
+        System.out.println( "transport.MessageProcessor.run 9" );
             try{
-        system.out.println( "transport.MessageProcessor.run 10" );
+        System.out.println( "transport.MessageProcessor.run 10" );
                 orb.orbImplRegion.executeInArea( eir );
-        system.out.println( "transport.MessageProcessor.run 11" );
+        System.out.println( "transport.MessageProcessor.run 11" );
             }catch( Exception e ){
                 ZenProperties.logger.log(
                     Logger.SEVERE,
@@ -136,11 +136,11 @@ class MessageProcessor implements Runnable{
                     "Could not process message due to exception: " + e.toString()
                     );
             }
-        system.out.println( "transport.MessageProcessor.run 12" );
+        System.out.println( "transport.MessageProcessor.run 12" );
             ORB.freeScopedRegion( messageScope );
-        system.out.println( "transport.MessageProcessor.run 13" );
+        System.out.println( "transport.MessageProcessor.run 13" );
             eir.free();
-        system.out.println( "transport.MessageProcessor.run 14" );
+        System.out.println( "transport.MessageProcessor.run 14" );
         }
         synchronized( this ){
             this.notifyAll();

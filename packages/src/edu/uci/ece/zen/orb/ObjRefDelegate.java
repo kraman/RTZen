@@ -152,7 +152,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         System.out.println( "ObjRefDelegate.processTaggedProfile 22" );
                                 if( transportScope == null ){
         System.out.println( "ObjRefDelegate.processTaggedProfile 23" );
-                                    Connector connector = edu.uci.ece.zen.orb.transport.iiop.Connector.instance();
+                                    edu.uci.ece.zen.orb.transport.Connector connector = edu.uci.ece.zen.orb.transport.iiop.Connector.instance();
         System.out.println( "ObjRefDelegate.processTaggedProfile 23-1" );
                                     transportScope = connector.connect( profilebody.host , profilebody.port , orb );
         System.out.println( "ObjRefDelegate.processTaggedProfile 24" );

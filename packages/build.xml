@@ -55,6 +55,8 @@
             <include name="src/edu/uci/ece/zen/orb/giop/GIOPMessage.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/GIOPMessageFactory.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/v1_0/**.java"/>
+            <include name="src/edu/uci/ece/zen/orb/giop/v1_1/**.java"/>
+            <include name="src/edu/uci/ece/zen/orb/giop/v1_2/**.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ServerRequest.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
