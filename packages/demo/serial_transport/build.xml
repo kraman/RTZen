@@ -1,0 +1,26 @@
+<project name="Serial Transport Demo" default="compile">
+
+    <property name="package.dir" value="demo/serial_transport"/>
+    <property name="idl.src" value="airplane.idl"/>
+
+	<import file="../../../init.xml"/>
+	<import file="../demo_tasks.xml"/>
+
+    <target name="compile">
+		<idlc file="${zen.srcdir}/${package.dir}/${idl.src}"/>
+		<demo.compile/>
+    </target>
+
+    <target name="server">
+        <demo.run classname="demo.serial_transport.Server"/>
+    </target>
+
+    <target name="client">
+        <demo.run classname="demo.serial_transport.Client"/>
+    </target>
+
+    <target name="clean">
+		<demo.clean/>
+    </target>
+
+</project>

@@ -1,0 +1,17 @@
+module demo
+{
+	module serial_transport
+	{
+        struct WayPoint
+        {
+            long latitude;
+            long longitude;
+            short altitude;
+        };
+
+		interface Airplane
+		{
+            oneway void SendWayPoint(in short id, in WayPoint waypoint);
+        };
+	};
+};
