@@ -1,0 +1,12 @@
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_1 1111 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_2 2221 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_3 3331 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_1 1112 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_2 2222 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_3 3332 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_1 1113 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_2 2223 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_3 3333 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_1 1114 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_2 2224 &
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.rtcorba.threadpool.Client ior_3 3334 &
