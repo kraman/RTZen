@@ -149,7 +149,7 @@ function startServer(){
     elif [ $1 -eq 3 ]; then
         HOST_IP=`host -t A $HOST | grep -v alias | awk ' { print $4 }'`
 # TAO SERVANT
-		EXEC_CMD="tao/server -ORBListenEndpoints iiop://1.2@$HOST_IP/hostname_in_ior=$HOST_IP"
+		EXEC_CMD="tao_linux/server -ORBListenEndpoints iiop://1.2@$HOST_IP/hostname_in_ior=$HOST_IP"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
 		$EXEC_CMD&
@@ -398,7 +398,7 @@ function startClient(){
 		echo $EXEC_CMD
 		$EXEC_CMD
 	elif [ $1 -eq 3 ]; then
-		EXEC_CMD="tao/client -l $3"
+		EXEC_CMD="tao_linux/client -l $3"
 		echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD

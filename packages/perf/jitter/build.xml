@@ -6,7 +6,7 @@
 	<import file="../../../init.xml"/>
 	<import file="../../demo/demo_tasks.xml"/>
 
-    <property name="CORBA.dir" value="${zen.srcdir}/${package.dir}/tao"/>
+    <property name="CORBA.dir" value="${zen.srcdir}/${package.dir}/tao_linux"/>
     <target name="compile">
 		<idlc file="${zen.srcdir}/${package.dir}/${idl.src}"/>
 		<demo.compile/>
