@@ -32,6 +32,7 @@
 
    <target name="packages">
       <ant antfile="${zen.srcdir}/build.xml"/>
+      <ant antfile="${zen.srcdir}/perf/cPrint/build.xml"/>
       <antcall target="track_size"/>
    </target>
    
