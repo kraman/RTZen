@@ -15,6 +15,7 @@ public class ORBImpl{
         properties.addPropertiesFromArgs( args );
         properties.addProperties( props );
         this.orbFacade = orbFacade;
+        ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( this );
         orbImplRunnable = new ORBImplRunnable();
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( orbImplRunnable );
         nhrt.start();
@@ -67,7 +68,7 @@ class ORBImplRunnable implements Runnable{
     public void run(){
         System.out.println( Thread.currentThread() + "OrbImplRunnable.run 1" );
         ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
-        System.out.println( Thread.currentThread() + "OrbImplRunnable.run 2" );
+        System.out.println( Thread.currentThread() + "OrbImplRunnable.run 2 "+orbImpl );
         synchronized( orbImpl ){
             try{
         System.out.println( Thread.currentThread() + "OrbImplRunnable.run 3" );
