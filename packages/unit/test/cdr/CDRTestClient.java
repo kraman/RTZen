@@ -27,7 +27,7 @@ public class CDRTestClient extends RealtimeThread
 	public void run(){
 		try{
 
-			ORB orb = new ORB.init((String[]) null, null);
+			ORB orb = ORB.init((String[]) null, null);
 
 			BufferedReader br = new BufferedReader (new FileReader( "ior.txt" ));
 			String ior = br.readLine();
@@ -52,13 +52,13 @@ public class CDRTestClient extends RealtimeThread
 
 		short shinVal = 100;
 		ShortHolder shoutVal = new ShortHolder((short)101);
-	    short shretVal = datatypes.echoShort( shinVal, shoutVal);
+	    short shretVal = stub.echoShort( shinVal, shoutVal);
 
-	    if(shcretVal == 100){
+	    if(shretVal == 100){
 			System.out.println("return value wrong in echoShort()");
 		}
 
-		if(shcoutVal.value == 102){
+		if(shoutVal.value == 102){
 			System.out.println("out value wrong in echoShort()");
 		}
     }
