@@ -8,14 +8,17 @@ package demo.hello;
 
 public class HelloWorldImpl extends HelloWorldPOA
 {
+     public static edu.oswego.cs.dl.util.concurrent.Semaphore semaphore;
     /**
      * Gets a message from the Hello World Server.
      */
-    public int aa()
+    public void aa()
     {
-        //System.out.println( "******************  WOOHOO! Request got here....now sending back. ********************" );
+        System.out.println( "******************  WOOHOO! Request got here1 ********************" );
+        if(semaphore!=null) semaphore.release();
+        System.out.println( "******************  WOOHOO! Request got here2 ********************" );
         //return "Hello To the Zen World!!!";
-        return 42;
+        //return 42;
     }
 }
 

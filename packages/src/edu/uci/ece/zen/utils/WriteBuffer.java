@@ -424,7 +424,6 @@ public class WriteBuffer {
     }
 
     public void writeLongAtLocationMemento(int val) {
-        Thread.dumpStack();
         long tmp = position;
         position = mementoPosition;
         System.out.println( "len to write: " + val );

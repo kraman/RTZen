@@ -17,7 +17,9 @@ import org.omg.PortableServer.*;
 public class Server extends RealtimeThread
 {
     String[] args;
-    
+
+    public static String iorfile = "ior.txt";
+    static ORB zen;
     public static void main(String[] args) throws Exception
     {
         //System.out.println( "=====================Creating RT Thread in server==========================" );
@@ -39,8 +41,8 @@ public class Server extends RealtimeThread
     {
         try
         {
-            //System.out.println( "=====================Calling ORB Init in server============================" );
-            ORB zen = ORB.init( args , null);
+            System.out.println( "=====================Calling ORB Init in server============================" );
+            if (zen == null) zen = ORB.init( args , null);
             //System.out.println( "=====================ORB Init complete in server===========================" );
 
             POA rootPOA = POAHelper.narrow(zen.resolve_initial_references("RootPOA"));
@@ -55,12 +57,12 @@ public class Server extends RealtimeThread
             System.out.println("Running Hello World Example... ");
             System.out.println( "[Server] " + ior );
 
-            BufferedWriter bw = new BufferedWriter( new FileWriter("ior.txt") );
+            BufferedWriter bw = new BufferedWriter( new FileWriter(iorfile) );
             bw.write(ior);
             bw.close();
 
             //System.out.println( "============================ ZEN.run() ====================================" );
-			zen.run();
+            zen.run();
         }
         catch (Exception e)
         {

@@ -113,10 +113,10 @@ public abstract class Transport implements Runnable {
         try {
             java.io.OutputStream out = getOutputStream();
             msg.dumpBuffer(out);
-        
-        if (ZenProperties.dbg) ZenProperties.logger.log("\n\n\n\n\n\n\n\n");
+
+        //if (ZenProperties.dbg) ZenProperties.logger.log("\n\n\n\n\n\n\n\n");
         if (ZenProperties.dbg) ZenProperties.logger.log(msg.toString());
-        if (ZenProperties.dbg) ZenProperties.logger.log("\n\n\n\n\n\n\n\n");
+        //if (ZenProperties.dbg) ZenProperties.logger.log("\n\n\n\n\n\n\n\n");
 
 
             out.flush();
@@ -246,18 +246,18 @@ class GIOPMessageRunnable implements Runnable {
                 ZenProperties.logger.log("Inside GMR run: RequestMessage");
                 trans.orbImpl.getServerRequestHandler().handleRequest(
                         (edu.uci.ece.zen.orb.giop.type.RequestMessage) message);
-            
+
             }else if (message instanceof edu.uci.ece.zen.orb.giop.type.LocateRequestMessage) {
                 //this is provisional until we get it working right
                 //just return OBJECT_HERE for now
                 CDROutputStream out = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.
-                         constructLocateReplyMessage(orb, 
+                         constructLocateReplyMessage(orb,
                          (edu.uci.ece.zen.orb.giop.type.LocateRequestMessage)message);
                 trans.send(out.getBuffer());
                 out.free();
-                
+
             }else if (message instanceof edu.uci.ece.zen.orb.giop.type.ReplyMessage) {
-                ZenProperties.logger.log("Inside GMR run: ReplyMessage");                
+                ZenProperties.logger.log("Inside GMR run: ReplyMessage");
                 ScopedMemory waiterRegion = orb.getWaiterRegion(message
                         .getRequestId());
                 wsnr.init(message, waiterRegion);
@@ -274,9 +274,9 @@ class GIOPMessageRunnable implements Runnable {
                 }
             }else{
                     ZenProperties.logger.log(Logger.SEVERE, getClass(),
-                                    "run", "Message type not supported.");                
+                                    "run", "Message type not supported.");
             }
-            
+
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(2223);
         } catch (java.io.IOException ioex) {
             //TODO: do something here
@@ -288,7 +288,7 @@ class GIOPMessageRunnable implements Runnable {
                 e.printStackTrace();
             }
             ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", ioex);
-            
+
         }
 
     }

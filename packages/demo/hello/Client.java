@@ -16,6 +16,9 @@ import edu.uci.ece.zen.utils.Logger;
 
 public class Client extends RealtimeThread
 {
+
+    public static String iorfile = "ior.txt";
+    static ORB orb;
     public static void main(String[] args) throws Exception
     {
         if(args.length > 0)
@@ -39,17 +42,18 @@ public class Client extends RealtimeThread
         {
 
            System.out.println( "=====================Calling ORB Init in client============================" );
-            ORB orb = ORB.init((String[])null, null);
+            if (orb == null) orb = ORB.init((String[])null, null);
             System.out.println( "=====================ORB Init complete in client===========================" );
             String ior = "";
-            File iorfile = new File( "ior.txt" );
-            BufferedReader br = new BufferedReader( new FileReader(iorfile) );
+            File iorfile2 = new File( iorfile );
+            BufferedReader br = new BufferedReader( new FileReader(iorfile2) );
             ior = br.readLine();
             System.out.println( "===========================IOR read========================================" );
             org.omg.CORBA.Object object = orb.string_to_object(ior);
             System.out.println( "===================Trying to establish connection==========================" );
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
-            System.out.println( server.aa() );
+            //System.out.println(  );
+            server.aa();
 
 /*
             // Create a scope for running requests in, so that we don't waste the scope we are in.
@@ -62,11 +66,11 @@ public class Client extends RealtimeThread
 */
             System.out.println( "====================== Performance warmup =================================" );
             for( int i=0;i<warmupNum;i++ ){
-                
+
                 server.aa();
                 //sleep(500);
                 //sm.enter(r);
-                if(i % 100 == 0){        
+                if(i % 100 == 0){
                     Logger.write(i);
                     Logger.writeln();
                 }
