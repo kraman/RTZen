@@ -30,6 +30,7 @@
             <include name="generated/org/omg/PortableServer/**"/> 
             <include name="generated/org/omg/Messaging/**"/> 
             <include name="generated/org/omg/TimeBase/**"/> 
+            <include name="generated/org/omg/CosNaming/**"/> 
         
         <!--*** Doug Lea's Concurrent Package ***-->
             <include name="src/edu/oswego/cs/dl/util/concurrent/**"/>
