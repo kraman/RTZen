@@ -55,9 +55,12 @@ public abstract class Logger{
     }
 
     public static void printMemStats(){
-        printMemStats(-1);
+        printMemStats(999999,ImmortalMemory.instance());
     }
-    
+
+    public static void printMemStatsImm(int code){
+        printMemStats(code, ImmortalMemory.instance());
+    }
     
     public static void printMemStats(int code){
     
@@ -131,6 +134,7 @@ public abstract class Logger{
     public static void printMemStats(edu.uci.ece.zen.orb.ORB orb){
 	    printMemStats(0,orb.parentMemoryArea);
 	    printMemStats(1,orb.orbImplRegion);
+	    printMemStats();
         //System.out.println("orb,"+orb.orbImplRegion.memoryConsumed()+","+orb.orbImplRegion.memoryRemaining());            
 	    //System.out.println("client,"+orb.parentMemoryArea.memoryConsumed()+","+orb.parentMemoryArea.memoryRemaining());            
 

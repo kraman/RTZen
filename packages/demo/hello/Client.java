@@ -44,22 +44,33 @@ public class Client extends RealtimeThread
             System.out.println( "===========================IOR read========================================" );
             org.omg.CORBA.Object object = orb.string_to_object(ior);
             System.out.println( "===================Trying to establish connection==========================" );
-            HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
+            final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
             System.out.println( server.getMessage() );
+
+
+            // Create a scope for running requests in, so that we don't waste the scope we are in.
+            ScopedMemory sm = new LTMemory(32000, 100000);
+            Runnable r = new Runnable() {
+                public void run() {
+                    server.getMessage();
+                }
+            };
 
             System.out.println( "====================== Performance warmup =================================" );
             for( int i=0;i<runNum;i++ ){
-                server.getMessage();
-                if(i % 250 == 0){
+                //server.getMessage();
+                sm.enter(r);
+                //if(i % 250 == 0){
                     Logger.write(i);
                     Logger.writeln();
-                }
+                //}
             }
 
             System.out.println( "====================== Performance benchmark ==============================" );
             long start = System.currentTimeMillis();
             for( int i=0;i<runNum;i++ ){
-                server.getMessage();
+                //server.getMessage();
+                sm.enter(r);
                 if(i % 500 == 0){
                     Logger.write(i);
                     Logger.writeln();

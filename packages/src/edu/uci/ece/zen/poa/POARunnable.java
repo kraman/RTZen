@@ -95,7 +95,6 @@ public class POARunnable implements Runnable {
     }
 
     public void run() {
-        //edu.uci.ece.zen.utils.Logger.printMemStats(311);
         Object portal = ((ScopedMemory) RealtimeThread.getCurrentMemoryArea())
                 .getPortal();
         POAImpl pimpl = null;

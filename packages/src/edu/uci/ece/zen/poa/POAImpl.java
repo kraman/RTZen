@@ -346,7 +346,9 @@ public class POAImpl {
             //((ScopedMemory)requestScope).setPo{rtal( hrr );
             ZenProperties.logger.log("POAImpl.handled 13");
             req.associatePOA(self);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(318);
             orb.orbImplRegion.executeInArea(eir);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(319);
             ZenProperties.logger.log("POAImpl.handled 14");
             orb.freeEIR(eir);
         } catch (Exception ex) {

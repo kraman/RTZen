@@ -47,11 +47,16 @@ public class MSGRunnable implements Runnable {
             _output.write_boolean(_result);
             reply = (CDROutputStream) _output;
         } else {
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(324);
+           String op = rm.getOperation().toString();
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(325);
+           
             reply = (CDROutputStream) ((InvokeHandler) servant)
-                    ._invoke(rm.getOperation().toString(),
+                    ._invoke(op,
                             (org.omg.CORBA.portable.InputStream) rm
                                     .getCDRInputStream(), rh);
         }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(326);
 
         if (rm.getResponseExpected() == 1) {
             reply.updateLength();

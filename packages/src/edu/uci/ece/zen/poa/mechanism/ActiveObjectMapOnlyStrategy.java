@@ -167,6 +167,7 @@ public final class ActiveObjectMapOnlyStrategy extends
             map.incrementActiveRequests();
         }
         this.threadPolicyStrategy.enter(invokeHandler);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(32);
 
         ScopedMemory sm = poa.getORB().getScopedRegion();
         MSGRunnable msgr = getMSGR();
@@ -174,6 +175,7 @@ public final class ActiveObjectMapOnlyStrategy extends
         sm.enter(msgr);
         retMSGR(msgr);
         poa.getORB().freeScopedRegion(sm);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(33);
 
         /*
          * if (request.getOperation().equals("_is_a") ) { boolean _result =

@@ -142,12 +142,15 @@ public class WriteBuffer {
     }
 
     public void writeByteArray(byte[] v, int offset, int length) {
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(505);
         ensureCapacity(length);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(506);
         while (length > 0) {
             byte[] buffer = (byte[]) buffers.elementAt((int) (position / 1024));
             int curBufPos = (int) (position % 1024);
             int copyLength = 1024 - curBufPos;
             if (copyLength > length) copyLength = length;
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(507);
             System.arraycopy(v, offset, buffer, curBufPos, copyLength);
             offset += copyLength;
             length -= copyLength;
