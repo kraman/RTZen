@@ -33,8 +33,8 @@ public class TestImpl extends TestPOA
             if (servant_thread_priority != priority)
                 System.out.println( "ERROR: servant thread priority is not equal to method argument.");
 
-            System.out.println("Client priority: " + priority + " Servant thread priority: " + servant_thread_priority);
-
+            System.out.println("\n\n\tClient priority: " + priority + " Servant thread priority: " + servant_thread_priority);
+            System.out.println();
         }catch(Exception e){
             e.printStackTrace();
         }

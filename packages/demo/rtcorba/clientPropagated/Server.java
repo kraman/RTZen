@@ -60,11 +60,6 @@ public class Server extends RealtimeThread
             // and register Test object with it.
             org.omg.CORBA.Policy [] poa_policy_list = new org.omg.CORBA.Policy[2];
 
-            //NON Standard -- using this until we can get some other stuff working
-
-            //edu.uci.ece.zen.orb.transport.iiop.Acceptor.enableComponents = true;
-            //edu.uci.ece.zen.orb.transport.iiop.Acceptor.serverPriority = 0;
-            //edu.uci.ece.zen.orb.transport.iiop.Acceptor.priorityModel = org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED.value();
             System.out.println("Max prio " + PriorityScheduler.instance().getMaxPriority());
             System.out.println("Min prio " + PriorityScheduler.instance().getMinPriority());
             System.out.println("Norm prio " + PriorityScheduler.instance().getNormPriority());
@@ -83,7 +78,7 @@ public class Server extends RealtimeThread
             
             //POA childPOA = rootPOA.create_POA ("Child_POA",poaManager,poa_policy_list);
             // pass null for manager for now, I think it's the same manager as root poa
-            POA childPOA = rootPOA.create_POA ("Child_POA",null,poa_policy_list);
+            POA childPOA = rootPOA.create_POA ("Child_POA",poaManager,poa_policy_list);
 
 
             TestImpl impl = new TestImpl(orb);

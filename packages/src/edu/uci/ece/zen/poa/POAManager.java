@@ -259,10 +259,16 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
     }
 
     protected void register(org.omg.PortableServer.POA poa) {
+
         synchronized (this) {
             for (int i = 0; i < numRegisteredPOAs; i++)
                 if (registeredPOAs[i].equals((edu.uci.ece.zen.poa.POA) poa)) return;
-            registeredPOAs[numRegisteredPOAs++] = poa;
+            
+            if(numRegisteredPOAs < registeredPOAs.length)
+                registeredPOAs[numRegisteredPOAs++] = poa;
+            else{
+                throw new RuntimeException("Not enough POAManager slots. Please allocate more with doc.zen.poa.maxNumPOAManagers property.");
+            }
         }
     }
 

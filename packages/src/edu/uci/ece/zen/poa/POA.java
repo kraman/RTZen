@@ -191,7 +191,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
 
         this.poaName.reset();
         this.poaName.append(poaName);
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAI init:0 ");
+        if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("---------------------POAI init:0 ");
         this.poaPath.reset();
         if (parent == null) {
             this.poaPath.append('/');
@@ -200,14 +200,14 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
         }
         this.poaPath.append(this.poaName.getData(), 0, this.poaName.length());
         this.poaPath.append('/');
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAI init1 ");
+        if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("---------------------POAI init1 ");
         if (manager == null) manager = POAManager.instance();
         this.poaManager = manager;
         ((POAManager) poaManager).register((org.omg.PortableServer.POA) this);
 
         theChildren.clear();
         numberOfCurrentRequests.reset();
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAI init:2 ");
+        if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("---------------------POAI init:2 ");
         POARunnable r = new POARunnable(POARunnable.INIT);
         r.addParam(orb);
         r.addParam(this);
@@ -227,7 +227,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
             //orb.freeEIR(eir1);
             //orb.freeEIR(eir2);
         }
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAI init:3 ");
+        if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("---------------------POAI init:3 ");
         poaState = POA.CREATION_COMPLETE;
     }
 
@@ -377,7 +377,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
         r.addParam(p_servant);
         r.addParam(RealtimeThread.getCurrentMemoryArea());
 
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("POA.servant_to_reference cur mem area: " + RealtimeThread.getCurrentMemoryArea());
+        if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("POA.servant_to_reference cur mem area: " + RealtimeThread.getCurrentMemoryArea());
         ExecuteInRunnable eir1 = new ExecuteInRunnable();//orb.getEIR();
         eir1.init(r, this.poaMemoryArea);
         ExecuteInRunnable eir2 = new ExecuteInRunnable();//orb.getEIR();
@@ -399,7 +399,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
             case POARunnable.WrongPolicyException:
                 throw new WrongPolicy();
         }
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("POA.servant_to_reference " + r.retVal);
+        if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("POA.servant_to_reference " + r.retVal);
         return (org.omg.CORBA.Object) r.retVal;
     }
 

@@ -47,51 +47,6 @@ public class MSGRunnable implements Runnable {
             ResponseHandler rh = new ResponseHandler(orb, rm);
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(323);
 
-            ///// Parse service context here
-
-            FString contexts = rm.getServiceContexts();
-
-            if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("MSGRunnable REQUEST SC: " + contexts.decode());
-
-            ReadBuffer rb = contexts.toReadBuffer();
-
-            //if (ZenBuildProperties.dInvocationsbg) System.out.println("#############REPLY RB: " + rb.toString());
-
-            int size = rb.readLong();
-
-            if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("MSGRunnable REPLY CONTEXT size: " + size);
-            //orb.getRTCurrent().the_priority((short) javax.realtime.PriorityScheduler.instance().getNormPriority()); //kludge
-            for(int i = 0; i < size; ++i){
-
-                int id = rb.readLong();
-                if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("MSGRunnable REPLY CONTEXT id: " + id);
-
-                if(id == org.omg.IOP.RTCorbaPriority.value){
-                    if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("MSGRunnable REPLY CONTEXT id:RTCorbaPriority");
-                    //if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable CUR thread priority: " + orb.getRTCurrent().the_priority());
-
-                    rb.readLong(); //eat length
-
-                    short priority = (short)rb.readLong();
-
-                    if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("MSGRunnable RECEIVED thread priority: " + priority);
-
-                    rm.setPriority(priority);
-                    orb.getRTCurrent().the_priority(priority);
-
-                    if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("MSGRunnable NEW thread priority: " + orb.getRTCurrent().the_priority());
-
-                } else{ // just eat
-                    if(ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("MSGRunnable Skipping unknown service context " + id);
-                    int byteLen = rb.readLong();
-                    for(int i1 = 0; i1 < byteLen; ++i1)
-                        rb.readByte();
-                }
-            }
-
-            rb.free();
-            /////////// end parse service context
-
             if (rm.getOperation().equals("_is_a")) {
                 boolean _result = servant._is_a(rm.getCDRInputStream()
                         .read_string());
