@@ -26,7 +26,7 @@ public class Client2 extends RealtimeThread
     private static final int REQUEST_SLEEP = 10;
     public static final int RUN_NUM = 10000;
     public static final int ARRAY_SIZE = 10;
-    public static final int WARM_UP = 2000;
+    public static final int WARM_UP = 3000;
 
     static int[] array1 = new int[ARRAY_SIZE];
 
@@ -99,6 +99,14 @@ public class Client2 extends RealtimeThread
                 NativeTimeStamp.RecordTime(20);
                 server.getMessage(id, array1);
                 NativeTimeStamp.RecordTime(20);
+                sleep(REQUEST_SLEEP);
+
+                if (i != 0 && i % 500 == 0)
+                {
+                    Logger.write(i);
+                    Logger.writeln();
+                }
+
  
             }
 
