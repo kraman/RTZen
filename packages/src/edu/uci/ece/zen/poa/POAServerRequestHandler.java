@@ -13,7 +13,7 @@ public class POAServerRequestHandler extends
 
     public POAServerRequestHandler() {
         int numPOAs = Integer.parseInt(ZenProperties.getGlobalProperty(
-                "doc.zen.poa.maxNumPOAs", "1"));
+                "doc.zen.poa.maxNumPOAs", "5")); // Why is it here too?
         demuxTable = new edu.uci.ece.zen.utils.ActiveDemuxTable();
         demuxTable.init(numPOAs);
     }

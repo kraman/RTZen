@@ -12,8 +12,13 @@ import org.omg.PortableServer.ServantManager;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.ORBImpl;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
+import edu.uci.ece.zen.poa.mechanism.ActivationStrategy;
 import edu.uci.ece.zen.poa.mechanism.DefaultServantStrategy;
+import edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy;
 import edu.uci.ece.zen.poa.mechanism.RetainStrategy;
+import edu.uci.ece.zen.poa.mechanism.SystemIdStrategy;
+//import edu.uci.ece.zen.poa.mechanism.RetainStrategy;
+import edu.uci.ece.zen.poa.mechanism.ThreadPolicyStrategy;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
@@ -151,8 +156,7 @@ public class POAImpl {
      * 
      * @throws InvalidPolicyException
      */
-    public void init(ORB orb, POA self, Policy[] policies, POA parent,
-            POAManager manager, POARunnable prun) {
+    public void init(ORB orb, POA self, Policy[] policies, POA parent, POAManager manager, POARunnable prun) {
         ZenProperties.logger.log("POAImpl init 1");
         this.orb = orb;
         this.self = self;
@@ -178,6 +182,8 @@ public class POAImpl {
         self.poaDemuxCount = serverRequestHandler.getPOAGenCount(self.poaDemuxIndex);
         ZenProperties.logger.log("POAImpl init 4");
 
+        // MOVE THIS
+        
         //make a local copy of the policies
         if (policies != null) this.policyList = new Policy[policies.length];
         else this.policyList = new Policy[0];
@@ -188,8 +194,7 @@ public class POAImpl {
 
         //init the stratergies
         IntHolder ih = getIntHolder();
-        this.threadPolicyStrategy = edu.uci.ece.zen.poa.mechanism.ThreadPolicyStrategy
-                .init(policyList, ih);
+        this.threadPolicyStrategy = ThreadPolicyStrategy.init(policyList, ih);
         if (ih.value != 0) {
             retIntHolder(ih);
             prun.exception = POARunnable.InvalidPolicyException;
@@ -243,11 +248,15 @@ public class POAImpl {
         }
         ZenProperties.logger.log("POAImpl init 11");
 
-        this.requestProcessingStrategy = edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy
-                .init(this.policyList, this.retentionStrategy,
+        
+        
+        //XXX Here is the problem *****
+        this.requestProcessingStrategy = 
+            edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy.init(this.policyList, this.retentionStrategy,
                         this.uniquenessStrategy, this.threadPolicyStrategy,
                         this, ih);
         if (ih.value != 0) {
+//            ZenProperties.logger.log("ih.value is: " + ih.value); // delete it.
             retIntHolder(ih);
             prun.exception = POARunnable.InvalidPolicyException;
             return;
@@ -255,6 +264,8 @@ public class POAImpl {
         ZenProperties.logger.log("POAImpl init 12");
         retIntHolder(ih);
 
+        // THROUHG HERE
+        
         poaImplRunnable = new POAImplRunnable(self.poaMemoryArea);
         self.poaMemoryArea.setPortal(this);
         NoHeapRealtimeThread nhrt = 
@@ -373,9 +384,9 @@ public class POAImpl {
      *             UNIQUE_ID/MYULTIPLE_ID policies.
      * @return The object reference for that particular servant.
      */
-    public org.omg.CORBA.Object servant_to_reference(
-            final org.omg.PortableServer.Servant p_servant,
-            MemoryArea clientMemoryArea, POARunnable prun) {
+    public org.omg.CORBA.Object servant_to_reference(final org.omg.PortableServer.Servant p_servant,
+            										 MemoryArea clientMemoryArea, POARunnable prun) 
+    {
 
         //check if this method is being called as a part of an upcall
         /*
@@ -389,7 +400,7 @@ public class POAImpl {
          * POA has the RETAIN and UNIQUE_ID in place. //NOTE: A ServantNotActive
          * exception was being squelched here.
          */
-
+        
         FString okey = getFString();
         FString oid = getFString();
         IntHolder ih = getIntHolder();
@@ -418,9 +429,7 @@ public class POAImpl {
                         retPOAHashMap(map);
                         break;
                     }
-                    //Dont do this right now. will do it later when IOR is
-                    // being
-                    // created
+                    //Dont do this right now. will do it later when IOR is being created 
                     //orb.set_delegate ( p_servant );
 
                     int index = this.retentionStrategy.bindDemuxIndex(map, ih);
@@ -429,8 +438,7 @@ public class POAImpl {
                         retPOAHashMap(map);
                         break;
                     }
-                    int genCount = this.retentionStrategy
-                            .getGenCount(index, ih);
+                    int genCount = this.retentionStrategy.getGenCount(index, ih);
                     if (ih.value != POARunnable.NoException) {
                         prun.exception = ih.value;
                         retPOAHashMap(map);
@@ -460,7 +468,7 @@ public class POAImpl {
                     break;
                 }
 
-                int index = this.retentionStrategy.bindDemuxIndex(map, ih);
+                int index = this.retentionStrategy.find(oid, ih);
                 if (ih.value != POARunnable.NoException) {
                     prun.exception = ih.value;
                     break;
@@ -507,8 +515,79 @@ public class POAImpl {
     public void id_to_reference(byte[] oid, MemoryArea mem, POARunnable prun) {
     }
 
-    public void activate_object(Servant servant, MemoryArea mem,
-            POARunnable prun) {
+    /**
+     * 
+     * @param servant
+     * @param mem
+     * @param prun
+     */
+    public void activate_object(Servant servant, MemoryArea mem, POARunnable prun) 
+    {
+        if (!(idAssignmentStrategy instanceof SystemIdStrategy && 
+              retentionStrategy instanceof RetainStrategy))
+        {
+            prun.exception = POARunnable.WrongPolicyException;
+            return;
+        }
+        
+        IntHolder ih = getIntHolder();
+        FString okey = getFString();
+        FString oid = getFString();
+        
+        this.retentionStrategy.getObjectID(servant, oid, ih); // We know this is RetainStrategy
+        
+        // If the servant is already active, return
+        if (ih.value != POARunnable.ServantNotActiveException)
+        {
+            prun.exception = POARunnable.SERVANT_ALREADY_ACTIVE;
+            retIntHolder(ih);
+            retFString(okey);
+            retFString(oid);
+            return;
+        }        
+        
+
+         this.idAssignmentStrategy.nextId(oid, ih);
+         if (ih.value != POARunnable.NoException) 
+         {
+             prun.exception = ih.value;
+             retIntHolder(ih);
+             retFString(okey);
+             retFString(oid);
+             return;
+         }
+
+         POAHashMap map = getPOAHashMap();
+         map.init(oid, servant);
+
+         this.retentionStrategy.add(oid, map, ih);
+         if (ih.value != POARunnable.NoException) 
+         {
+            prun.exception = ih.value;
+            retPOAHashMap(map);
+            retIntHolder(ih);
+            retFString(okey);
+            retFString(oid);
+            return;
+         }
+
+         this.retentionStrategy.bindDemuxIndex(map, ih);
+         if (ih.value != POARunnable.NoException) 
+         {
+            prun.exception = ih.value;
+            retPOAHashMap(map);
+            retIntHolder(ih);
+            retFString(okey);
+            retFString(oid);
+            return;
+         }
+
+         retPOAHashMap(map);
+         retIntHolder(ih);
+         retFString(okey);
+         retFString(oid);
+         prun.exception = POARunnable.NoException;
+
     }
 
     public void activate_object_with_id(byte[] oid, Servant servant,

@@ -79,6 +79,8 @@ public class POARunnable implements Runnable {
     public static final int InternalException = 10;
     
     public static final int NoServant = 11; // Add by Hojjat & Juan
+    
+    public static final int SERVANT_ALREADY_ACTIVE = 12; // Add by Hojjat & Juan
 
     private int operation;
 
@@ -121,9 +123,8 @@ public class POARunnable implements Runnable {
                 pimpl.servant_to_id((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
                 break;
             case SERVANT_TO_REFERENCE:
-                retVal = pimpl.servant_to_reference(
-                        (Servant) args.elementAt(0), (MemoryArea) args
-                                .elementAt(1), this);
+                System.out.println(portal); // delete it
+                retVal = pimpl.servant_to_reference((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
                 break;
             case REFERENCE_TO_SERVANT:
                 pimpl.reference_to_servant((org.omg.CORBA.Object) args
@@ -144,8 +145,9 @@ public class POARunnable implements Runnable {
                         (MemoryArea) args.elementAt(1), this);
                 break;
             case ACTIVATE_OBJECT:
-                pimpl.activate_object((Servant) args.elementAt(0),
-                        (MemoryArea) args.elementAt(1), this);
+                pimpl.activate_object((Servant) args.elementAt(0), 
+                                      (MemoryArea) args.elementAt(1), 
+                                      this);
                 break;
             case ACTIVATE_OBJECT_WITH_ID:
                 pimpl.activate_object_with_id((byte[]) args.elementAt(0),
