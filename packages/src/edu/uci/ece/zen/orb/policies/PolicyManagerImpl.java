@@ -1,6 +1,7 @@
 package edu.uci.ece.zen.orb.policies;
 
 import org.omg.CORBA.*;
+import javax.realtime.*;
 
 /**
  * This class implements the Policy Manager
@@ -13,6 +14,11 @@ public class PolicyManagerImpl
     implements PolicyManager
 {
     private Policy[] policies;
+    private MemoryArea orbMemoryArea;
+
+    public PolicyManagerImpl(){
+        orbMemoryArea = RealtimeThread.getCurrentMemoryArea();
+    }
 
     /**
      * Operation get_policy_overrides
@@ -55,7 +61,8 @@ public class PolicyManagerImpl
         if(set_add.value() == SetOverrideType._ADD_OVERRIDE){
             throw new org.omg.CORBA.NO_IMPLEMENT();
         }else{  // if(set_add.value() == SetOverrideType._SET_OVERRIDE){
-            this.policies = policies;
+            //this.policies = policies;
+            //this.policies = orbMemoryArea.newArray(Policy.class, policies.length);
         }
     }
 

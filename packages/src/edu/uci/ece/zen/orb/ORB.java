@@ -128,6 +128,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private String orbId;
     private RTORB rtorb;
     private PolicyManager policyManager;
+    public MemoryArea [] threadpoolList;
 
     public ORB(){
         orbInitRunnable = new ORBInitRunnable();
@@ -139,11 +140,12 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         waiterRegistry = new WaiterRegistry();
         waiterRegistry.init( 100 );
         executeInRunnableCache = new Queue();
-        rtorb = new RTORBImpl();
+        rtorb = new RTORBImpl(this);
         policyManager = new PolicyManagerImpl();
+        threadpoolList = new MemoryArea[10];//KLUDGE: need to set up property for max TPs
     }
 
-    private ExecuteInRunnable getEIR(){
+    public ExecuteInRunnable getEIR(){
         ExecuteInRunnable ret = (ExecuteInRunnable) executeInRunnableCache.dequeue();
         if( ret == null ){
             try{
@@ -155,7 +157,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         return ret;
     }
 
-    private void freeEIR( ExecuteInRunnable r ){
+    public void freeEIR( ExecuteInRunnable r ){
         executeInRunnableCache.enqueue( r );
     }
 
@@ -583,7 +585,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
      */
     // LEFT FOR KRISHNA TO IMPLEMENT
     public void cancelRequest(int request_id) {
-        throw new org.omg.CORBA.NO_IMPLEMENT("ORB.cancelRequest(int) not implemented");   
+        throw new org.omg.CORBA.NO_IMPLEMENT("ORB.cancelRequest(int) not implemented");
     }
 
 

@@ -2,6 +2,8 @@ package edu.uci.ece.zen.orb;
 
 import org.omg.RTCORBA.*;
 import edu.uci.ece.zen.orb.policies.*;
+import edu.uci.ece.zen.utils.*;
+import javax.realtime.*;
 
 /**
  * Implementation of the RTORB
@@ -12,6 +14,14 @@ public class RTORBImpl
         extends org.omg.CORBA.LocalObject
         implements RTORB
 {
+    private ORB orb;
+    private ThreadPoolRunnable tpr;
+
+    public RTORBImpl(ORB orb){
+        this.orb = orb;
+        tpr = new ThreadPoolRunnable();
+    }
+
     /**
      * Operation create_mutex
      */
@@ -30,15 +40,43 @@ public class RTORBImpl
      * Operation create_threadpool
      */
     public int create_threadpool(int stacksize, int static_threads, int dynamic_threads, short default_priority, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
-
-        throw new org.omg.CORBA.NO_IMPLEMENT();
+        tpr.init(stacksize, static_threads, dynamic_threads, default_priority, allow_request_buffering, max_buffered_requests, max_request_buffer_size);
+        return setUpThreadPool();
     }
 
     /**
      * Operation create_threadpool_with_lanes
      */
     public int create_threadpool_with_lanes(int stacksize, org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allow_borrowing, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
-        throw new org.omg.CORBA.NO_IMPLEMENT();
+        tpr.init(stacksize, lanes, allow_borrowing, allow_request_buffering, max_buffered_requests, max_request_buffer_size );
+        return setUpThreadPool();
+    }
+
+    private int setUpThreadPool(){
+        ExecuteInRunnable r = orb.getEIR();
+        ScopedMemory sm = orb.getScopedRegion();
+
+        r.init(tpr, sm);
+        try{
+            orb.orbImplRegion.executeInArea( r );
+        }catch( Exception e ){
+            ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.RTORBImpl",
+                "create_threadpool",
+                "Could not create threadpool due to exception: " + e.toString()
+                );
+            System.exit(-1);
+        }
+        orb.freeEIR( r );
+
+        //KLUDGE: need to set up property for max TPs
+        int tmpID = tpID;
+        tpID++;
+
+        return tmpID;
+
+        //throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     /**
@@ -117,9 +155,63 @@ public class RTORBImpl
     static PrivateConnectionPolicy pcp = new PrivateConnectionPolicyImpl();
     public static TCPProtocolProperties tcpPP = new TCPProtocolPropertiesImpl();
 
+    int tpID = 0;
 
+
+    class ThreadPoolRunnable implements Runnable{
+
+        int stacksize;
+        org.omg.RTCORBA.ThreadpoolLane[] lanes;
+        boolean allowBorrowing;
+        boolean allowRequestBuffering;
+        int maxBufferedRequests;
+        int maxRequestBufferSize;
+        int staticThreads;
+        int dynamicThreads;
+        short defaultPriority;
+
+        public ThreadPoolRunnable(){
+            stacksize = -1;
+        }
+
+        public void init(int stacksize, int static_threads, int dynamic_threads, short default_priority, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
+            this.stacksize = stacksize;
+            this.staticThreads = static_threads;
+            this.dynamicThreads = dynamic_threads;
+            this.defaultPriority = default_priority;
+            this.allowRequestBuffering = allow_request_buffering;
+            this.maxBufferedRequests = max_buffered_requests;
+            this.maxRequestBufferSize = max_request_buffer_size;
+            this.lanes = null;
+        }
+
+        public void init(int stacksize, org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allow_borrowing, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
+            this.stacksize = stacksize;
+            this.lanes = lanes;
+            this.allowBorrowing = allow_borrowing;
+            this.allowRequestBuffering = allow_request_buffering;
+            this.maxBufferedRequests = max_buffered_requests;
+            this.maxRequestBufferSize = max_request_buffer_size;
+        }
+
+        public void run(){
+            //make sure this has been initialized
+            if(stacksize >= 0){
+                ThreadPool tp;
+                if(lanes == null)
+                    tp = new ThreadPool(stacksize, staticThreads, dynamicThreads, defaultPriority, allowRequestBuffering, maxBufferedRequests, maxRequestBufferSize);
+                else
+                    tp = new ThreadPool(stacksize, allowRequestBuffering, maxBufferedRequests, maxRequestBufferSize, lanes, allowBorrowing );
+
+                orb.threadpoolList[tpID] = RealtimeThread.getCurrentMemoryArea();
+
+                ((ScopedMemory)orb.threadpoolList[tpID]).setPortal(tp);
+
+                stacksize = -1;
+            }
+        }
+    }
 }
-
 
 /*
 privilieged aspect TCPProtocolPropertiesAspect{
