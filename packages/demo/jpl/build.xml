@@ -52,9 +52,19 @@
     </target -->
 
     
-    <target name="client">
-        <demo.run classname="demo.jpl.Client"/>
+    <target name="client1">
+        <java fork="yes" classname="demo.jpl.Client1">
+            <jvmarg line="${zen.jvm.properties}"/>
+            <arg line="${zen.srcdir}/${package.dir}/ior1.txt 1"/>
+        </java>    
     </target>    
+    
+    <target name="client2">
+        <java fork="yes" classname="demo.jpl.Client2">
+            <jvmarg line="${zen.jvm.properties}"/>
+            <arg line="${zen.srcdir}/${package.dir}/ior2.txt 2"/>
+        </java> 
+    </target>   
     
     <!-- set "jacorb.home" properly to use jacorb examples -->
     <!--

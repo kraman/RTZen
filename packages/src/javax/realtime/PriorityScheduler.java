@@ -23,7 +23,15 @@ public final class PriorityScheduler {
         return MIN_PRIORITY;
     }
 
+    public static int getMinPriority(Thread t){
+        return MIN_PRIORITY;
+    }
+
     public int getMaxPriority(){
+        return MAX_PRIORITY;
+    }
+
+    public static int getMaxPriority(Thread t){
         return MAX_PRIORITY;
     }
 

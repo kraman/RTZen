@@ -40,7 +40,7 @@
         <javac
             srcdir="${zen.srcdir}:${zen.gendir}"
             destdir="${zen.classdir}"
-            includes="${package.dir}/**.java"
+            includes="${package.dir}/**"
             debug="${zen.debug}"
             optimize="${zen.optimization}"
             target="${javac.target}"

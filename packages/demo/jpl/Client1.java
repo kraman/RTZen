@@ -36,7 +36,7 @@ public class Client1 extends RealtimeThread
     static String fileName;
 
     static int id;
-    
+
     /**
      * Main function.
      */
@@ -47,14 +47,15 @@ public class Client1 extends RealtimeThread
             if (args.length < 2)
             {
                 System.out.println("Usage: Client1 <iorfile> <#id>");
+                System.exit(0);
             }
-            
+
             fileName = args[0];
             id = Integer.parseInt(args[1]);
             System.out.println("==============Creating RT Thread in client ==============");
             RealtimeThread rt = (Client1) ImmortalMemory.instance().newInstance(Client1.class);
             System.out.println("==============Starting RT Thread in client==============");
-            rt.start();            
+            rt.start();
         }
         catch (Throwable e)
         {
@@ -62,8 +63,8 @@ public class Client1 extends RealtimeThread
             System.exit(-1);
         }
     }
-    
-    
+
+
     public void run()
     {
         try
@@ -96,7 +97,7 @@ public class Client1 extends RealtimeThread
 
                 if (i != 0 && i % 500 == 0)
                 {
-                    Logger.write(i); 
+                    Logger.write(i);
                     Logger.writeln();
                 }
             }
@@ -111,7 +112,7 @@ public class Client1 extends RealtimeThread
             System.exit(-1);
         }
     }
-    
 
-    
+
+
 }
