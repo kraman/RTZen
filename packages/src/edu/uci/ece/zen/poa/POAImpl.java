@@ -17,6 +17,10 @@ import edu.uci.ece.zen.poa.mechanism.DefaultServantStrategy;
 import edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy;
 import edu.uci.ece.zen.poa.mechanism.RetainStrategy;
 import edu.uci.ece.zen.poa.mechanism.SystemIdStrategy;
+import edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy;
+import edu.uci.ece.zen.poa.mechanism.ServantRetentionStrategy;
+
+
 //import edu.uci.ece.zen.poa.mechanism.RetainStrategy;
 import edu.uci.ece.zen.poa.mechanism.ThreadPolicyStrategy;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
@@ -30,6 +34,7 @@ public class POAImpl {
     //////////////////////////////////////////////////////////////////
     //// DATA MEMBERS /////
     /////////////////////////////////////////////////////////////////
+
     // -- ZEN ORB ---
     MemoryArea thisMemory;
 
@@ -91,10 +96,10 @@ public class POAImpl {
 
     POAManager manager;
 
-    int tpId;
-
-    public ThreadLocal poaCurrent;
-
+    int threadPoolId = 0; // this default value means: "use the same thread pool of RootPOA (0)"
+    
+    //public ThreadLocal poaCurrent; //TODO It cannot be used.
+        
     // --- POA Cached Objects ---
     Queue poaHashMapQueue;
 
@@ -162,9 +167,12 @@ public class POAImpl {
         this.self = self;
         this.parent = parent;
         this.manager = manager;
-        this.tpId = 0;
-        this.poaCurrent = new ThreadLocal();
-        this.poaCurrent.get();
+        //this.tpId = 0;
+        ZenProperties.logger.log("POAImpl init 2");
+
+        //this.poaCurrent = new ThreadLocal(); //TODO It cannot be used.
+        //this.poaCurrent.get();
+
         ZenProperties.logger.log("POAImpl init 2");
 
         try {
@@ -192,6 +200,39 @@ public class POAImpl {
         for (int i = 0; i < policyList.length; i++)
             this.policyList[i] = policies[i].copy();
         ZenProperties.logger.log("POAImpl init 5");
+
+        if (this.policyList[i] instanceof org.omg.RTCORBA.ThreadpoolPolicy)
+        {
+                this.threadPoolId = ((org.omg.RTCORBA.ThreadpoolPolicy) this.policyList[i]).threadpool();
+
+                // validating threadpoolid
+                //                int parentDepth = RealtimeThread.getMemoryAreaStackDepth() - 1;
+                //                ScopedMemory orbImplMem =
+                //                    (ScopedMemory) RealtimeThread.getOuterMemoryArea(parentDepth);
+                //                
+                //                boolean isThreadPoolIDValid;
+                //                try
+                //                {
+                //                    orbImplMem.executeInArea(new Runnable()
+                //                        {
+                //                                public void run()
+                //                                {
+                //                                    ScopedMemory mem = (ScopedMemory) RealtimeThread.getCurrentMemoryArea();
+                //                                    RTORBImpl orbImpl = (RTORBImpl) mem.getPortal();
+                //                                    isThreadPoolIDValid = orbImpl.validateThreadPoolID();
+                //                                }
+                //                            }
+                //                            );
+                //                } catch (InaccessibleAreaException e)
+                //                {
+                //                    
+                //                }
+                //                
+                //                if (isThreadPoolIDValid)
+                //                {
+                //                 this.threadPoolId = id;
+                //                }
+        }
 
         //init the stratergies
         IntHolder ih = getIntHolder();
@@ -272,6 +313,7 @@ public class POAImpl {
         NoHeapRealtimeThread nhrt =
             new NoHeapRealtimeThread(null, null, null, self.poaMemoryArea, null, poaImplRunnable);
         ZenProperties.logger.log("======================starting nhrt in poa impl region=====================");
+
         nhrt.start();
     }
 
@@ -297,7 +339,7 @@ public class POAImpl {
         ZenProperties.logger.log("POAImpl.handled 1");
         IntHolder ih = getIntHolder();
 
-        ZenProperties.logger.log("POAImpl.handled 2");
+        //ZenProperties.logger.log("POAImpl.handled 1" );
 
         validateProcessingState(ih); // check for the state of the poa? if it is
         // discarding then throw the transient
@@ -410,12 +452,16 @@ public class POAImpl {
         org.omg.CORBA.Object retVal = null;
 
         this.retentionStrategy.getObjectID(p_servant, oid, ih);
-        switch (ih.value) {
-            case POARunnable.ServantNotActiveException: {
-                if (this.activationStrategy
-                        .validate(edu.uci.ece.zen.poa.mechanism.ActivationStrategy.IMPLICIT_ACTIVATION)
-                        || this.uniquenessStrategy
-                                .validate(edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy.MULTIPLE_ID)) {
+        
+        switch (ih.value)
+        {
+        case POARunnable.ServantNotActiveException:
+        {
+            if (this.activationStrategy
+                    .validate(edu.uci.ece.zen.poa.mechanism.ActivationStrategy.IMPLICIT_ACTIVATION)
+                    || this.uniquenessStrategy
+                            .validate(edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy.MULTIPLE_ID))
+            {
 
                     this.idAssignmentStrategy.nextId(oid, ih);
                     if (ih.value != POARunnable.NoException) {
@@ -749,8 +795,10 @@ class POAImplRunnable implements Runnable {
     }
 
     public void run() {
-        if (ZenProperties.dbg) ZenProperties.logger.log("getting portal for: " + sm);
-        if (ZenProperties.dbg) ZenProperties.logger.log("inner thread: " + Thread.currentThread().toString());
+        if (ZenProperties.dbg)
+            ZenProperties.logger.log("getting portal for: " + sm);
+        if (ZenProperties.dbg)
+            ZenProperties.logger.log("inner thread: " + Thread.currentThread().toString());
 
         POAImpl poaImpl = (POAImpl) sm.getPortal();
         if (ZenProperties.dbg) ZenProperties.logger.log("poa impl is " + poaImpl);
