@@ -48,6 +48,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             //Set up storage for memoryAreas
             unusedMemoryAreas = (Queue) imm.newInstance( Queue.class );
             scopeMemorySize = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.scopedMemorySize" , "1048576" ));
+            for( int i=0;i<50;i++ )
+                unusedMemoryAreas.enqueue( new LTMemory( 0 , scopeMemorySize ) );
 
             //Set up connection registry
             maxSupportedConnections = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.maxConnectionsPerORB" , "100" ));
@@ -284,22 +286,21 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     public synchronized org.omg.CORBA.Object string_to_object(String str) {
-        int line=1;
-        System.out.println ( "orb.string_to_object "+(line++) );
+        System.out.println ( "orb.string_to_object 1" );
         org.omg.IOP.IOR ior = IOR.parseString( this , str );
-        System.out.println ( "orb.string_to_object "+(line++) );
+        System.out.println ( "orb.string_to_object 2" );
         org.omg.CORBA.portable.ObjectImpl objImpl = new ObjectImpl( ior );
-        System.out.println ( "orb.string_to_object "+(line++) );
+        System.out.println ( "orb.string_to_object 3" );
         strToObjRunnable.init( ior , objImpl );
-        System.out.println ( "orb.string_to_object "+(line++) );
+        System.out.println ( "orb.string_to_object 4" );
 
         ExecuteInRunnable r = ExecuteInRunnable.instance();
-        System.out.println ( "orb.string_to_object "+(line++) );
+        System.out.println ( "orb.string_to_object 5" );
         r.init( strToObjRunnable , this.orbImplRegion );
-        System.out.println ( "orb.string_to_object "+(line++) );
+        System.out.println ( "orb.string_to_object 6" );
         try{
             parentMemoryArea.executeInArea( r );
-        System.out.println ( "orb.string_to_object "+(line++) );
+        System.out.println ( "orb.string_to_object 7" );
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.SEVERE,
@@ -308,9 +309,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 "Could not get object due to exception: " + e.toString()
                 );
         }
-        System.out.println ( "orb.string_to_object "+(line++) );
+        System.out.println ( "orb.string_to_object 8" );
         r.free();
-        System.out.println ( "orb.string_to_object "+(line++) );
+        System.out.println ( "orb.string_to_object 9" );
 
         return objImpl;
     }
@@ -562,11 +563,11 @@ class ORBInitRunnable implements Runnable{
     public void run(){
         ScopedMemory curMem = ((ScopedMemory) RealtimeThread.getCurrentMemoryArea());
         if( curMem.getPortal() == null ){
-            System.out.println( "--" );
+            System.out.println( Thread.currentThread() + "--" );
             ORBImpl orbImpl = new ORBImpl( args , props , orbFacade );
-            System.out.println( "---" );
+            System.out.println( Thread.currentThread() + "---" );
             curMem.setPortal( orbImpl );
-            System.out.println( "----" );
+            System.out.println( Thread.currentThread() + "----" );
         }else{
             ((ORBImpl)curMem.getPortal()).setProperties( args , props );
         }
@@ -581,19 +582,17 @@ class ORBStrToObjRunnable implements Runnable{
     }
 
     public void init( org.omg.IOP.IOR ior , org.omg.CORBA.portable.ObjectImpl objImpl ){
-        System.out.println( "In ORBStrToObjRunnable.init()" );
+        System.out.println( Thread.currentThread() + "In ORBStrToObjRunnable.init()" );
         this.ior = ior;
         this.objImpl = objImpl;
-        System.out.println( "Exiting ORBStrToObjRunnable.init()" );
+        System.out.println( Thread.currentThread() + "Exiting ORBStrToObjRunnable.init()" );
     }
 
     public void run(){
-        System.out.println( "In ORBStrToObjRunnable.run()" );
+        System.out.println( Thread.currentThread() + "In ORBStrToObjRunnable.run()" );
         ORBImpl orbImpl = ((ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal()  );
-        System.out.println( "---" );
+        System.out.println( Thread.currentThread() + "---" );
         orbImpl.string_to_object( ior , objImpl );
-        System.out.println( "Exiting ORBStrToObjRunnable.run()" );
+        System.out.println( Thread.currentThread() + "Exiting ORBStrToObjRunnable.run()" );
     }
 }
-
-

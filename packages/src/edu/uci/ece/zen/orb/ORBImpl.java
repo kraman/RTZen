@@ -29,13 +29,13 @@ public class ORBImpl{
     }
 
     public void string_to_object( org.omg.IOP.IOR ior , org.omg.CORBA.portable.ObjectImpl objImpl ){
-        System.out.println( "OrbImpl.string_to_object 1" );
+        System.out.println( Thread.currentThread() + "OrbImpl.string_to_object 1" );
         ObjRefDelegate delegate = ObjRefDelegate.instance();
-        System.out.println( "OrbImpl.string_to_object 2" );
+        System.out.println( Thread.currentThread() + "OrbImpl.string_to_object 2" );
         delegate.init( ior , (edu.uci.ece.zen.orb.ObjectImpl) objImpl , orbFacade );
-        System.out.println( "OrbImpl.string_to_object 3" );
+        System.out.println( Thread.currentThread() + "OrbImpl.string_to_object 3" );
         objImpl._set_delegate( delegate );
-        System.out.println( "OrbImpl.string_to_object 4" );
+        System.out.println( Thread.currentThread() + "OrbImpl.string_to_object 4" );
     }
 }
 
@@ -51,10 +51,14 @@ class ORBImplRunnable implements Runnable{
     }
 
     public void run(){
+        System.out.println( Thread.currentThread() + "OrbImplRunnable.run 1" );
         ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
+        System.out.println( Thread.currentThread() + "OrbImplRunnable.run 2" );
         synchronized( orbImpl ){
             try{
+        System.out.println( Thread.currentThread() + "OrbImplRunnable.run 3" );
                 orbImpl.wait();
+        System.out.println( Thread.currentThread() + "OrbImplRunnable.run 4" );
             }catch( InterruptedException ie ){
                 ZenProperties.logger.log(
                         Logger.INFO ,
@@ -64,6 +68,7 @@ class ORBImplRunnable implements Runnable{
             }
             active=false;
         }
+        System.out.println( Thread.currentThread() + "OrbImplRunnable.run 5" );
     }
 
 }

@@ -776,7 +776,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
             for (int i = 0; i < union_memCount; i++) {
                 if( ZenProperties.dbg )
-                    System.out.println("CDR Istream :: Writing >> " + i);
+                    System.out.println( Thread.currentThread() +"CDR Istream :: Writing >> " + i);
                 org.omg.CORBA.Any uLabel = orb.create_any();
                 if ( i != default_index ) {
                     uLabel.read_value(cdr, discriminator);

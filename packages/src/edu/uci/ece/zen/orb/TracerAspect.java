@@ -39,7 +39,7 @@ public aspect TracerAspect{
 /*
     before( ): tracer() {
         hash.put(thisJoinPoint.getSignature().toString(),"");
-        System.out.println(thisJoinPoint.getSignature().toString());
+        System.out.println( Thread.currentThread() +thisJoinPoint.getSignature().toString());
         //hash.put(thisJoinPoint.toString(),"");
     }
 */
@@ -66,7 +66,7 @@ public aspect TracerAspect{
                 else       sb.append("|");
 
             }
-            System.out.println(sb + "entering: " + sig );
+            System.out.println( Thread.currentThread() +sb + "entering: " + sig );
             buf++;
         }
     }
@@ -83,7 +83,7 @@ public aspect TracerAspect{
                 else       sb.append("|");
 
             }
-            System.out.println(sb + "exiting: " + sig );
+            System.out.println( Thread.currentThread() +sb + "exiting: " + sig );
         }
     }
 
@@ -98,7 +98,7 @@ public aspect TracerAspect{
                 else       sb.append("|");
 
             }
-            System.out.println(sb + "exiting: " + sig + " as exception: " + e);
+            System.out.println( Thread.currentThread() +sb + "exiting: " + sig + " as exception: " + e);
         }
     }
 /*
@@ -118,7 +118,7 @@ public aspect TracerAspect{
             //&& !cflow(call( *..*.new(..) ))
             {
 
-        System.out.println("new: " + thisJoinPoint.getSignature().toLongString());
+        System.out.println( Thread.currentThread() +"new: " + thisJoinPoint.getSignature().toLongString());
 
 
         IObjectProfileNode profile = ObjectProfiler.profile (obj);
@@ -139,21 +139,21 @@ trying to profile java libs
 
             {
 
-        System.out.println("calljava: " + thisJoinPoint.getSignature().toLongString());
+        System.out.println( Thread.currentThread() +"calljava: " + thisJoinPoint.getSignature().toLongString());
     }
 
     after():initialization( java..*.new(..) )
 
             {
 
-        System.out.println("initializejava: " + thisJoinPoint.getSignature().toLongString());
+        System.out.println( Thread.currentThread() +"initializejava: " + thisJoinPoint.getSignature().toLongString());
     }
 
     after():preinitialization( java..*.new(..) )
 
             {
 
-        System.out.println("preinitializejava: " + thisJoinPoint.getSignature().toLongString());
+        System.out.println( Thread.currentThread() +"preinitializejava: " + thisJoinPoint.getSignature().toLongString());
     }
 */
 
@@ -166,7 +166,7 @@ trying to profile java libs
     //staticinitialization(class *..*.*)
     //staticinitialization(java.lang.Object+)
     && cflow(call( * *..TracerAspect.printTrace(..) )){
-        System.out.println("statinit: " + thisJoinPointStaticPart.getSignature().toLongString());
+        System.out.println( Thread.currentThread() +"statinit: " + thisJoinPointStaticPart.getSignature().toLongString());
 
     }
 
@@ -177,20 +177,20 @@ trying to profile java libs
 
         String [] trace = new String[hash.size()];
 
-        System.out.println("\n\n****************** TRACE: ordered list of calls...");
+        System.out.println( Thread.currentThread() +"\n\n****************** TRACE: ordered list of calls...");
         numMeth = 0;
         int i = 0;
         for (i = 0; enum.hasMoreElements() ; ++i) {
             trace[i] = enum.nextElement().toString();
-            System.out.println(trace[i]);
+            System.out.println( Thread.currentThread() +trace[i]);
         }
         numMeth = i;
 
         java.util.Arrays.sort(trace);
 
-        System.out.println("\n\n****************** TRACE: alphabetized list of calls...");
+        System.out.println( Thread.currentThread() +"\n\n****************** TRACE: alphabetized list of calls...");
         for (i = 0; i < trace.length ; ++i)
-            System.out.println(trace[i]);
+            System.out.println( Thread.currentThread() +trace[i]);
 
 
         enum = classes.keys();
@@ -206,7 +206,7 @@ trying to profile java libs
 
         int total = 0;
 
-        System.out.println("\n\n****************** TRACE: list of classes...");
+        System.out.println( Thread.currentThread() +"\n\n****************** TRACE: list of classes...");
         for (i = 0; i < trace.length ; ++i){
             System.out.print(trace[i]);
             try{
@@ -214,7 +214,7 @@ trying to profile java libs
                 file = new java.io.FileInputStream(clsname);
                 int size = (int)file.getChannel().size();
                 total += size;
-                System.out.println("\t" + size);
+                System.out.println( Thread.currentThread() +"\t" + size);
 
 /*
                 Object obj = null;//new String [] {new String ("JavaWorld"), new String ("JavaWorld")};
@@ -234,7 +234,7 @@ trying to profile java libs
             }
         }
 
-        System.out.println("\n\n TOTAL: " + total);
+        System.out.println( Thread.currentThread() +"\n\n TOTAL: " + total);
 /*
         try{
             ZipInputStream zip = new ZipInputStream(new FileInputStream("../../../packages/demo/hello_min/jar/shrunk.jar"));
@@ -252,8 +252,8 @@ trying to profile java libs
                     name = name.replace('/','.');
                     name = name.substring(0,ind);
 
-                    System.out.println(name);
-                    //System.out.println();
+                    System.out.println( Thread.currentThread() +name);
+                    //System.out.println( Thread.currentThread() +);
                     try{
                         Class cls = Class.forName(name);
                         Method [] meth = cls.getDeclaredMethods();
@@ -273,28 +273,28 @@ trying to profile java libs
                                 minus++;
                             }
 
-                            System.out.println(meth[i].toString());
+                            System.out.println( Thread.currentThread() +meth[i].toString());
                         }
-                        //System.out.println(.toString());
+                        //System.out.println( Thread.currentThread() +.toString());
                     }catch(Throwable t){
                         //e.printStackTrace();
-                        System.out.println(t);
+                        System.out.println( Thread.currentThread() +t);
                     }
-                    System.out.println("************************************");
+                    System.out.println( Thread.currentThread() +"************************************");
                 }
-                //System.out.println(ze.getName());
+                //System.out.println( Thread.currentThread() +ze.getName());
             }
 
-            System.out.println("------: " + minus);
-            System.out.println("++++++: " + plus);
-            System.out.println("num of meth for trace: " + numMeth);
+            System.out.println( Thread.currentThread() +"------: " + minus);
+            System.out.println( Thread.currentThread() +"++++++: " + plus);
+            System.out.println( Thread.currentThread() +"num of meth for trace: " + numMeth);
 
             String [] matches = new String[matchV.size()];
             for(i = 0; i < matches.length; ++i)
                 matches[i] = matchV.get(i).toString();
             java.util.Arrays.sort(matches);
             for(i = 0; i < matches.length; ++i)
-                System.out.println(matches[i]);
+                System.out.println( Thread.currentThread() +matches[i]);
 
 
 
@@ -320,8 +320,8 @@ trying to profile java libs
                                         m.toString().replaceAll(" *throws.*","").replace('$','.') + ") {\n");
                         //bw.write("        throw new Exception(\"This code has been removed.\");\n");
 
-                        bw.write("        System.out.println(\"This code has been removed.\");\n");
-                        bw.write("        System.out.println(\"new: \" + thisJoinPoint.getSignature().toLongString());\n");
+                        bw.write("        System.out.println( Thread.currentThread() +\"This code has been removed.\");\n");
+                        bw.write("        System.out.println( Thread.currentThread() +\"new: \" + thisJoinPoint.getSignature().toLongString());\n");
                         if(!ret.equals("void")){
                             bw.write("        return ");
                             if(ret.equals("boolean"))
@@ -343,7 +343,7 @@ trying to profile java libs
             bw.close();
         }catch(Exception e){
             e.printStackTrace();
-            System.out.println("done");
+            System.out.println( Thread.currentThread() +"done");
         }
 */
 

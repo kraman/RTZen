@@ -46,42 +46,42 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     private int numLanes;
 
     protected void init( org.omg.IOP.IOR ior , ObjectImpl obj , ORB orb ){
-        System.out.println( "ObjRefDelegate.init 1" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 1" );
         referenceCount=1;
-        System.out.println( "ObjRefDelegate.init 2" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 2" );
         this.orb = orb;
-        System.out.println( "ObjRefDelegate.init 3" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 3" );
 
         this.ior = WriteBuffer.instance();
-        System.out.println( "ObjRefDelegate.init 4" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 4" );
         this.ior.init();
-        System.out.println( "ObjRefDelegate.init 5" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 5" );
 
         CDROutputStream out = CDROutputStream.instance();
-        System.out.println( "ObjRefDelegate.init 6" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 6" );
         out.init( orb );
-        System.out.println( "ObjRefDelegate.init 7" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 7" );
         org.omg.IOP.IORHelper.write( out , ior );
-        System.out.println( "ObjRefDelegate.init 8" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 8" );
         out.getBuffer().dumpBuffer( this.ior );
-        System.out.println( "ObjRefDelegate.init 9" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 9" );
         out.free();
-        System.out.println( "ObjRefDelegate.init 10" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 10" );
 
         //process all the tagged profiles
         for( int i=0;i<ior.profiles.length;i++ ){   //go through each tagged profile
-        System.out.println( "ObjRefDelegate.init 11" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 11" );
             processTaggedProfile( ior.profiles[i] , obj );
-        System.out.println( "ObjRefDelegate.init 12" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 12" );
         }
-        System.out.println( "ObjRefDelegate.init 13" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 13" );
         numLanes=0;
-        System.out.println( "ObjRefDelegate.init 14" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.init 14" );
     }
 
     public synchronized void addLaneData( int min , int max , ScopedMemory transport , byte[] objectKey ){
         if( ZenProperties.dbg )
-            System.out.println( "New lane info: " + min + " <--> " + max + "  :  " + transport );
+            System.out.println( Thread.currentThread() + "New lane info: " + min + " <--> " + max + "  :  " + transport );
         priorityLanes[numLanes++].init( min , max , transport , objectKey );
     }
 
@@ -96,73 +96,73 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     private void processTaggedProfile( TaggedProfile profile , ObjectImpl obj ){
-        System.out.println( "ObjRefDelegate.processTaggedProfile 01" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 01" );
         int tag = profile.tag;
-        System.out.println( "ObjRefDelegate.processTaggedProfile 02" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 02" );
         switch( tag ){
             case TAG_INTERNET_IOP.value:            //establish appropriate connections and register them
                 {
-        System.out.println( "ObjRefDelegate.processTaggedProfile 03" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 03" );
                     byte[] data = profile.profile_data;
-        System.out.println( "ObjRefDelegate.processTaggedProfile 04" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 04" );
                     ReadBuffer rb = ReadBuffer.instance();
-        System.out.println( "ObjRefDelegate.processTaggedProfile 05" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 05" );
                     rb.init();
-        System.out.println( "ObjRefDelegate.processTaggedProfile 06" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 06" );
                     rb.writeByteArray( data , 0 , data.length );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 07" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 07" );
                     CDRInputStream in = CDRInputStream.instance();
-        System.out.println( "ObjRefDelegate.processTaggedProfile 08" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 08" );
                     in.init( orb , rb );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 09" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 09" );
                     in.setEndian( in.read_boolean() );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 10" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 10" );
                     byte iiopMinor = data[2];
-        System.out.println( "ObjRefDelegate.processTaggedProfile 11" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 11" );
                     try{
                         switch( iiopMinor ){
                             case 0:{
-        System.out.println( "ObjRefDelegate.processTaggedProfile 11-0" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 11-0" );
                                 org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read( in );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 12" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 12" );
                                 long connectionKey = ConnectionRegistry.ip2long( profilebody.host , profilebody.port );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 13" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 13" );
                                 ScopedMemory transportScope = orb.getConnectionRegistry().getConnection( connectionKey );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 14" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 14" );
                                 if( transportScope == null ){
-        System.out.println( "ObjRefDelegate.processTaggedProfile 15" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 15" );
                                     transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector.instance().connect( profilebody.host , profilebody.port , orb );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 16" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 16" );
                                     orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 17" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 17" );
                                 }
 
                                 addLaneData( Thread.MIN_PRIORITY , Thread.MAX_PRIORITY , transportScope , profilebody.object_key );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 18" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 18" );
                             }break;
                             case 1:{
-        System.out.println( "ObjRefDelegate.processTaggedProfile 11-1" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 11-1" );
                                 org.omg.IIOP.ProfileBody_1_1 profilebody = org.omg.IIOP.ProfileBody_1_1Helper.read( in );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 19" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 19" );
                                 long connectionKey = ConnectionRegistry.ip2long( profilebody.host , profilebody.port );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 20" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 20" );
                                 //System.err.println( orb );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 21" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 21" );
                                 ScopedMemory transportScope = orb.getConnectionRegistry().getConnection( connectionKey );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 22" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 22" );
                                 if( transportScope == null ){
-        System.out.println( "ObjRefDelegate.processTaggedProfile 23" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 23" );
                                     edu.uci.ece.zen.orb.transport.Connector connector = edu.uci.ece.zen.orb.transport.iiop.Connector.instance();
-        System.out.println( "ObjRefDelegate.processTaggedProfile 23-1" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 23-1" );
                                     transportScope = connector.connect( profilebody.host , profilebody.port , orb );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 24" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 24" );
                                     orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 25" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 25" );
                                 }
                             
                                 //TODO: process priority policies here and add the appropriate lanes
                                 addLaneData( NoHeapRealtimeThread.MIN_PRIORITY , NoHeapRealtimeThread.MAX_PRIORITY , transportScope , profilebody.object_key );
-        System.out.println( "ObjRefDelegate.processTaggedProfile 26" );
+        System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 26" );
                             }break;
                         }
                     }catch( HashtableOverflowException hoe ){

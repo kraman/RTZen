@@ -51,11 +51,16 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
      * </p>
      */   
     public CDRInputStream invoke(){
+        System.out.println( Thread.currentThread() + "In client memory: " + RealtimeThread.getCurrentMemoryArea() );
         out.updateLength();
         if( ZenProperties.dbg )
             System.err.println( "Sending message" );
         MessageComposerRunnable mcr = new MessageComposerRunnable( this );
         ScopedMemory messageScope = orb.getScopedRegion();
+
+        System.out.println( Thread.currentThread() + "ORBImpl perent memory: " + orb.parentMemoryArea );
+        System.out.println( Thread.currentThread() + "ORBImpl memory: " + orb.orbImplRegion );
+        System.out.println( Thread.currentThread() + "message memory: " + messageScope );
 
         ExecuteInRunnable erOrbMem = ExecuteInRunnable.instance();
         ExecuteInRunnable erMsgMem = ExecuteInRunnable.instance();
@@ -64,7 +69,10 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         erMsgMem.init( mcr, messageScope );
 
         try{
-            orb.parentMemoryArea.executeInArea( erOrbMem );
+            if( orb.parentMemoryArea == RealtimeThread.getCurrentMemoryArea() )
+                erOrbMem.run();
+            else
+                orb.parentMemoryArea.executeInArea( erOrbMem );
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.SEVERE,
@@ -91,7 +99,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
 
     public void releaseWaiter(){
         if( ZenProperties.dbg )
-            System.err.println( "Waiter registered for req id: " + messageId );
+            System.err.println( "Waiter released for req id: " + messageId );
         orb.releaseWaiter( messageId );
     }
 
@@ -155,6 +163,7 @@ class MessageComposerRunnable implements Runnable{
      * </p>
      */
     public void run(){
+        System.out.println( Thread.currentThread() + "In memory: " + RealtimeThread.getCurrentMemoryArea() );
         //setup waiting stratergy
         WaitingStrategy waitingStrategy = null;
         if( clr.responseExpected )
@@ -165,7 +174,9 @@ class MessageComposerRunnable implements Runnable{
             System.err.println( "Waiter registered" );
 
         ExecuteInRunnable eir = ExecuteInRunnable.instance();
-        eir.init( new SendMessageRunnable( clr.out.getBuffer() ) , clr.transportScope );
+        SendMessageRunnable smr = SendMessageRunnable.instance();
+        smr.init( clr.out.getBuffer() );
+        eir.init( smr , clr.transportScope );
         success = true;
         try{
             clr.orb.orbImplRegion.executeInArea( eir );
@@ -182,6 +193,7 @@ class MessageComposerRunnable implements Runnable{
         }finally{
             eir.free();
             clr.out.free();
+            smr.free();
             if( ZenProperties.dbg )
                 System.err.println( "Message sent" );
         }
@@ -200,7 +212,36 @@ class MessageComposerRunnable implements Runnable{
 }
 
 class SendMessageRunnable implements Runnable{
+
+    private static Queue sendMessageRunnableCache;
+    static{
+        try{
+            sendMessageRunnableCache = (Queue) ImmortalMemory.instance().newInstance( Queue.class );
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
+    }
+    
+    public static SendMessageRunnable instance(){
+        SendMessageRunnable r = (SendMessageRunnable) sendMessageRunnableCache.dequeue();
+        if( r == null ){
+            try{
+                return (SendMessageRunnable) ImmortalMemory.instance().newInstance( SendMessageRunnable.class );
+            }catch( Exception e ){
+                e.printStackTrace();
+            }
+        }else
+            return r;
+        return null;
+    }
+
+    private static void release( SendMessageRunnable r ){
+        sendMessageRunnableCache.enqueue( r );
+    }
+    
     WriteBuffer msg;
+
+    public SendMessageRunnable(){}
 
     /**
      * Client upcall:
@@ -208,7 +249,7 @@ class SendMessageRunnable implements Runnable{
      *     Client scope --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; <b>Message scope/Waiter region</b> --&gt; Transport scope
      * </p>
      */
-    public SendMessageRunnable( WriteBuffer buffer ){
+    public void init( WriteBuffer buffer ){
         this.msg = buffer;
     }
 
@@ -221,5 +262,9 @@ class SendMessageRunnable implements Runnable{
     public void run(){
         edu.uci.ece.zen.orb.transport.Transport trans = (edu.uci.ece.zen.orb.transport.Transport) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
         trans.send( msg );
+    }
+
+    public void free(){
+        SendMessageRunnable.release( this );
     }
 }

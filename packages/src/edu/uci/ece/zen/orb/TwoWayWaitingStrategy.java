@@ -6,32 +6,41 @@ import javax.realtime.*;
 import edu.oswego.cs.dl.util.concurrent.*;
 
 public class TwoWayWaitingStrategy extends WaitingStrategy{
-    Semaphore clientSem;
-    Semaphore transpSem;
     CDRInputStream replyMsg;
+    Object waitObject;
 
     TwoWayWaitingStrategy(){
-        clientSem = new Semaphore(0);
-        transpSem = new Semaphore(0);
+        waitObject = new Integer(0);
     }
     
     public void replyReceived( GIOPMessage reply ){
+        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.replyReceived 1" );
         this.replyMsg = reply.getCDRInputStream();
-        clientSem.release();
+        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.replyReceived 2" );
         try{
-            transpSem.acquire();
+        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.replyReceived 4" );
+            synchronized( waitObject ){
+                waitObject.notify();
+            }
+        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.replyReceived 5" );
         }catch( Exception e ){
             e.printStackTrace();
         }
+        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.replyReceived 6" );
     }
 
     public CDRInputStream waitForReply(){
+        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.waitForReply 1" );
         try{
-            clientSem.acquire();
+        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.waitForReply 2" );
+            synchronized( waitObject ){
+                waitObject.wait();
+            }
+        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.waitForReply 3" );
         }catch( Exception e ){
             e.printStackTrace();
         }
-        transpSem.release();
+        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.waitForReply 5" );
         return replyMsg;
     }
 }
