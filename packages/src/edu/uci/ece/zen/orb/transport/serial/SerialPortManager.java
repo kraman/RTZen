@@ -32,7 +32,7 @@ public class SerialPortManager
     {
         try
         {
-            serialPort = SerialPortFactory.createRMISerialPort();
+            serialPort = SerialPortFactory.createCommAPISerialPort();
         }
         catch (IOException e)
         {

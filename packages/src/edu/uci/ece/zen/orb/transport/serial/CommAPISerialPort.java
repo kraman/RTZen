@@ -113,9 +113,10 @@ System.out.println("CommAPISerialPort: <init>: no serial port found!");
                         throw new IOException("Buffer is full");
                     }
 
-                    inputStream.read(inputBuffer, bytesRead, bytesAvailable);
+                    bytesRead += inputStream.read(
+                        inputBuffer, bytesRead, Math.min(bytesAvailable, messageLength-bytesRead));
 
-                    System.out.println("CommAPISerialPort: serialEvent: done reading chunk, " + bytesAvailable + " bytes were read");
+                    System.out.println("CommAPISerialPort: serialEvent: done reading chunk, " + bytesAvailable + " bytes total have been read for the current message");
 
                     // If an entire message has been read, tell getMessage that a message is available
                     if (bytesRead == messageLength)
