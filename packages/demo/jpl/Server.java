@@ -57,6 +57,7 @@ public class Server extends RealtimeThread
     {
         try
         {
+            //edu.uci.ece.zen.utils.IntHashtable.main(null);
             System.out.println( "=====================Calling ORB Init in server============================" );
             orb = ORB.init(args , null);
             System.out.println( "=====================ORB Init complete in server===========================" );
