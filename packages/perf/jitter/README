@@ -8,7 +8,9 @@ This package implements the tests for RTZen and for TAO. A package with the
 same name exists in regular Zen, which implements the according test on 
 regular Zen. 
 
-This package uses the package perf.TimeStamp, which implements a native time stamp driver, for the tests of RTZen on RI and TAO. The TimeStamp driver was taken from Ed Pla, it uses unix commands to get an accurate (more granular than 1ms) time stamp. Since OVM doesn't support JNI so far, we use the System.nanoTime() to get the TimeStamp for the test of RTZen on OVM interpreter and j2c.
+This package uses the package perf.TimeStamp, which implements a native time stamp driver, for the tests of RTZen on RI and TAO. The TimeStamp driver was taken from Ed Pla, it uses unix commands to get an accurate (more granular than 1ms) time stamp. In order to use this timestamp, you need to compile in packages/perf/TimeStamp directory after you compile in the packages/perj/jitter directory.
+
+Since OVM doesn't support JNI so far, we use the System.nanoTime() to get the TimeStamp for the test of RTZen on OVM interpreter and j2c. So we have another client test program called OVMClient.java. 
 
 During the test each individual call is measured, this allows jitter calculations later on. 
 
@@ -22,7 +24,7 @@ To run a local measurement test for RTZen on Simulated RTSJ VM (We wrote some "f
 To run a local measurement test for RTZen on TimeSys RI:
  ./run_tests both 2 2 
 
-To run a local measurement test for TAO:
+To run a local measurement test for TAO (You need to ant compileCORBA first):
  ./run_tests both 3 3 
 
 To run a local measurement test for RTZen on OVM interpreter:
