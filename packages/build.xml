@@ -47,14 +47,18 @@
             <include name="src/edu/uci/ece/zen/orb/giop/v1_0/**.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/v1_1/**.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/v1_2/**.java"/>
+            <include name="src/edu/uci/ece/zen/orb/giop/IOP/**.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/type/**.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ServerRequest.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TracerAspect.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TypeCodeAspect.java"/>
+
             <include name="src/edu/uci/ece/zen/poa/**"/>
+
             <exclude name="src/edu/uci/ece/zen/orb/resolvers/**"/>
+
             <exclude name="src/edu/uci/ece/zen/poa/mechanism/ServantLocatorStrategy.java"/>
 
         <!--*** classes that jRate cant compile ***-->
@@ -91,6 +95,8 @@
             <patternset>
                 <include name="src/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java" if="compiler_jRate"/>
                 <include name="src/javax/**" if="compiler_jdk"/>
+                <!--classpath="${basedir}/../fake_rtjava/lib/foundation.jar"
+                -->
             </patternset>
             
             <classpath>

@@ -29,4 +29,12 @@ public class RealtimeThread extends Thread{
         System.out.println("current thread is: " + Thread.currentThread() + " class:" + Thread.currentThread().getClass().toString());
         return new RealtimeThread(null,null,null,null,null,null);
     }
+
+    public static MemoryArea getOuterMemoryArea(int index){
+        return (MemoryArea)memHash.get(Thread.currentThread());
+    }
+
+    public static int getMemoryAreaStackDepth(){
+        return 0;
+    }
 }
