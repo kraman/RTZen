@@ -1,6 +1,7 @@
 package edu.uci.ece.zen.poa.mechanism;
 
 import edu.uci.ece.zen.utils.*;
+import org.omg.CORBA.IntHolder;
 
 /**
  * The class <code>IdUniquenessStrategy</code> creates
@@ -21,8 +22,8 @@ public abstract class IdUniquenessStrategy {
      * @param policy Policy[] Policy list  
      * @return IdUniquenessStrategy create Id Uniqueness Strategy
      */
-    public static IdUniquenessStrategy init(org.omg.CORBA.Policy[] policy, org.omg.CORBA.IntHolder ih ) {
-        ih.value = POARunnable.NoException;
+    public static IdUniquenessStrategy init(org.omg.CORBA.Policy[] policy, IntHolder exceptionValue ) {
+        exceptionValue.value = POARunnable.NoException;
         if (Util.useUniqueIdPolicy(policy)) {
 //            return new UniqueIdStrategy();
         } else {
@@ -31,6 +32,6 @@ public abstract class IdUniquenessStrategy {
         return null;
     }
 
-    public abstract boolean validate(int policyName);
+    public abstract void validate(int policyName, IntHolder exceptionValue);
 }
 
