@@ -44,8 +44,11 @@ public class CDRTestClient extends RealtimeThread
 			stub = DataTypesHelper.unchecked_narrow( obj );
 
 			testShort();
-			//testLong();
-			//testLongLong();
+			testDouble();
+			testBoolean();
+			testString();
+			testOctet();
+			//test();
 			//testUShort();
 
 
@@ -69,7 +72,7 @@ public class CDRTestClient extends RealtimeThread
 
 	    if(shoutVal.value != 102){
 		    System.out.println("out value wrong in echoShort()");
-		    System.out.println("The expected value is 100 and the actual value is "+shoutVal);
+		    System.out.println("The expected value is 102 and the actual value is "+shoutVal);
 
 	    }
 	}
@@ -138,6 +141,25 @@ public class CDRTestClient extends RealtimeThread
 
 
     }
+
+
+    public void testOctet(){
+
+			octet oinVal = 100;
+			OctetHolder ooutVal = new OctetHolder((octet)101);
+		    byte oretVal = stub.echoOctet( oinVal, ooutVal);
+
+		    if(oretVal != 100){
+			    System.out.println("return value wrong in echoOctet()");
+			    System.out.println("The expected value is 100 and the actual value is "+oretVal);
+		    }
+
+		    if(ooutVal.value != 102){
+			    System.out.println("out value wrong in echoOctet()");
+			    System.out.println("The expected value is 102 and the actual value is "+ooutVal);
+
+		    }
+	}
 
 
 	/*

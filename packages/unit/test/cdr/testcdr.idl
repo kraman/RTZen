@@ -28,6 +28,7 @@ module unit{
             double echoDouble( in double inVal ,  out double outVal);
             boolean echoBoolean( in boolean inVal ,  out boolean outVal);
             string echoString( in string inVal ,  out string outVal);
+            octet echoOctet( in octet inVal ,  out octet outVal ); 
             
             
             

@@ -55,11 +55,21 @@ public class DataTypesImpl extends DataTypesPOA
 		        String sretVal = sinVal;
 		        soutVal.value = "After";
 
-		        //System.out.println("[server]In Value Received:"+ sinVal);
-		        //System.out.println("[server]Out Value Sent to the Client:"+ soutVal.value);
-		        //System.out.println("InOut Value:"+ inOutVal.value);
-		        //System.out.println("[server]Returning Value from server:"+sretVal);
+
 		        return sretVal;
+    }
+
+
+    public short echoShort( octet oinVal , org.omg.CORBA.ShortHolder ooutVal) {
+
+			if(oinVal != 100){
+				System.out.println("in value wrong in echoOctet()");
+				System.out.println("The expected value is 100 and the actual value is "+oinVal);
+		    }
+
+		    byte oretVal = oinVal;
+		    ooutVal.value = (byte)102;
+		    return shretVal;
     }
 
 
