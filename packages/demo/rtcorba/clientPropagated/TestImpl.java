@@ -11,12 +11,27 @@ package demo.rtcorba.clientPropagated;
 public class TestImpl extends TestPOA
 
 {
+
     /**
      *
      */
     public void test_method (short priority)
     {
-        System.out.println("Priority: " + priority);
+        try{
+            org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(_orb().resolve_initial_references("RTCurrent"));
+            System.out.println("Priority: " + priority);
+
+            short servant_thread_priority = rtcur.the_priority();
+
+            // Print out the info.
+            if (servant_thread_priority != priority)
+                System.out.println( "ERROR: servant thread priority is not equal to method argument.");
+
+            System.out.println("Client priority: " + priority + " Servant thread priority: " + servant_thread_priority);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
 

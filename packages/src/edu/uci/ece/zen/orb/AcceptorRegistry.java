@@ -11,13 +11,14 @@ import org.omg.IOP.TaggedProfile;
 
 import edu.uci.ece.zen.orb.transport.Acceptor;
 import edu.uci.ece.zen.utils.FString;
+import edu.uci.ece.zen.utils.ZenProperties;
 
 /**
  * This is a registry for all Acceptor objects that are created for incomming
  * connections. Current this class uses a java.util.Vector class to store the
  * acceptors but this will replaced later. Also, there is currently no way to
  * remove an acceptor once it has been added.
- * 
+ *
  * @author Krishna Raman
  */
 public class AcceptorRegistry {
@@ -28,7 +29,7 @@ public class AcceptorRegistry {
      * Function to return all transport profiles for acceptors stored in this
      * registry. The profile objects are created in the client area that is
      * passed in.
-     * 
+     *
      * @param objKey
      *            The object key to embed in the profile.
      * @param clientArea
@@ -109,6 +110,6 @@ class ARRunnable implements Runnable {
     public void run() {
         Acceptor acc = (Acceptor) ((ScopedMemory) RealtimeThread
                 .getCurrentMemoryArea()).getPortal();
-        tpList[index] = acc.getProfile((byte) 1, (byte) 0, objKey, ma);
+        tpList[index] = acc.getProfile((byte) 1, ZenProperties.iiopMinor, objKey, ma);
     }
 }

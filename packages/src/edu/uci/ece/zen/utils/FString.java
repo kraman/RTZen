@@ -144,6 +144,20 @@ public class FString {
     }
 
     /**
+     * Convert to a ReadBuffer in case parsing is needed.
+     *
+     */
+    public ReadBuffer toReadBuffer() {
+
+        ReadBuffer readBuf = ReadBuffer.instance();
+        readBuf.init();
+        readBuf.setEndian(false);
+        readBuf.writeByteArray(data, 0, currentSize);
+
+        return readBuf;
+    }
+
+    /**
      * Reads length bytes from the CDR stream into the FString. This function
      * does not throw an ArrayIndexOutOfBounds is the amount of space in the
      * FString is not enough.
