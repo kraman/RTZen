@@ -85,6 +85,7 @@
 
     <target name="compile">
         <echo message="Compiling OMG and Zen sources"/>
+        <echo message="Current rt classpath is: ${zen.rtbootclasspath}"/>
 
         <javac
             destdir="${zen.classdir}"
