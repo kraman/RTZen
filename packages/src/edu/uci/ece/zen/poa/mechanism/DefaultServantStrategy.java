@@ -1,10 +1,6 @@
-/* --------------------------------------------------------------------------*
- * $Id: DefaultServantStrategy.java,v 1.8 2004/02/17 22:51:00 pmartini Exp $
- *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
 
-// --- OMG Specific imports ---
 import org.omg.CORBA.CompletionStatus;
 
 import edu.uci.ece.zen.orb.ResponseHandler;
@@ -21,13 +17,20 @@ public class DefaultServantStrategy extends
  * @throws org.omg.PortableServer.POAPackage.InvalidPolicy
  */
     public void initialize(ServantRetentionStrategy retain,
-            ThreadPolicyStrategy threadStrategy) throws
-                org.omg.PortableServer.POAPackage.InvalidPolicy {
+            ThreadPolicyStrategy threadStrategy, IntHolder exceptionValue) 
+    {
+        exceptionValue.value = POARunnable.NoException;
+        if (retain instanceof ServantRetentionStrategy) 
+        {
             if(retain instanceof RetainStrategy)
                 this.retentionStrategy = (RetainStrategy) retain;
-            else
-                this.retentionStrategy = (NonRetainStrategy)retain;
-        this.threadPolicyStrategy = threadStrategy;
+        }
+        else 
+        {
+            this.retentionStrategy = (NonRetainStrategy) retain;
+            this.threadPolicyStrategy = threadStrategy;
+        }
+
     }
 
 /**
@@ -35,12 +38,15 @@ public class DefaultServantStrategy extends
  * @param servant java.lang.Object
  * @throws org.omg.PortableServer.POAPackage.WrongPolicy
  */
-    public synchronized void setInvokeHandler(java.lang.Object servant)throws
-                org.omg.PortableServer.POAPackage.WrongPolicy {
-        try {
+    public synchronized void setInvokeHandler(java.lang.Object servant, IntHolder exceptionValue)
+    {
+        exceptionValue.value = POARunnable.NoException;
+        if(servant instanceof org.omg.PortableServer.Servant)
+        {
             this.servant = (org.omg.PortableServer.Servant) servant;
-        } catch (java.lang.ClassCastException ex) {
-            throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+        } else
+            exceptionValue.value = POARunnable.WrongPolicyException;
+            return null;
         }
 
     }
@@ -51,12 +57,14 @@ public class DefaultServantStrategy extends
  * @return boolean
  * @throws org.omg.PortableServer.POAPackage.WrongPolicy
  */
-    public boolean validate(int policyName) throws
-                org.omg.PortableServer.POAPackage.WrongPolicy {
+    public boolean validate(int policyName, IntHolder exceptionValue)
+    {
+        exceptionValue.value = POARunnable.NoException;
         if (RequestProcessingStrategy.DEFAULT_SERVANT == policyName) {
             return true;
         } else {
-            throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+            exceptionValue.value = POARunnable.WrongPolicyException;
+            return false;
         }
     }
 
@@ -67,17 +75,19 @@ public class DefaultServantStrategy extends
  * @throws org.omg.PortableServer.POAPackage.WrongPolicy
  * @throws org.omg.PortableServer.POAPackage.ObjectNotActive
  */
-    public Object getRequestProcessor(int name) throws
-                org.omg.PortableServer.POAPackage.ObjectNotActive,
-                org.omg.PortableServer.POAPackage.WrongPolicy {
+    public Object getRequestProcessor(int name, IntHolder excpetionValue)
+    {
+        exceptionValue.value = POARunnable.NoException;
         if (this.validate(name)) {
             if (this.servant != null) {
                 return this.servant;
             } else {
-                throw new org.omg.PortableServer.POAPackage.ObjectNotActive();
+                exceptionValue.value = POARunnable.ObjectNotActiveException;
+               return null; 
             }
         } else {
-            throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+            exceptionValue.value = POARunnable.WrongPolicyException;
+            return null;
         }
 
     }
@@ -91,20 +101,24 @@ public class DefaultServantStrategy extends
 
     public int handleRequest(ServerRequest request,
             edu.uci.ece.zen.poa.POA poa,
-            edu.uci.ece.zen.poa.SynchronizedInt requests) {
+            edu.uci.ece.zen.poa.SynchronizedInt requests, exceptionValue) {
+        exceptionValue.value = POARunnable.NoException;
         if (this.retentionStrategy != null) {
-            try {
-                return handleIfRetain(request, poa, requests);
+                int tmp = handleIfRetain(request, poa, requests, exceptionValue);
             } // can thorw ObjectNotActive, ClassCastException and WrongPolicy
-            catch (Exception ex) {}
+        if (exceptionValue.value != 0) 
+        {
+            //something happened here and nothing is done
+            exceptionValue.value = POARunnable.NoException;
         }
 
         edu.uci.ece.zen.poa.ObjectKey ok = request.getObjectKey();
-        edu.uci.ece.zen.poa.ObjectID  oid = new edu.uci.ece.zen.poa.ObjectID(ok.getId());
+        byte[] oid = ok.getId();
 
         // handling as if non retain is in place
         if (this.servant == null) {
-            throw new org.omg.CORBA.OBJ_ADAPTER(3, CompletionStatus.COMPLETED_NO);
+            exceptionValue.value = POARunnable.ObjAdapterException;
+            return null;
         }
 
         org.omg.PortableServer.Servant myServant = this.servant;
@@ -163,11 +177,11 @@ public class DefaultServantStrategy extends
 
     private int handleIfRetain(ServerRequest request,
             edu.uci.ece.zen.poa.POA poa,
-            edu.uci.ece.zen.poa.SynchronizedInt requests)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy,
-                org.omg.PortableServer.POAPackage.ObjectNotActive {
+            edu.uci.ece.zen.poa.SynchronizedInt requests, IntHolder exceptionValue)
+    {
+        exceptionValue.value = POARunnable.NoException;
         edu.uci.ece.zen.poa.ObjectKey ok = request.getObjectKey();
-        edu.uci.ece.zen.poa.ObjectID  oid = new edu.uci.ece.zen.poa.ObjectID(ok.getId());
+        byte[] oid = ok.getId();
 
         edu.uci.ece.zen.poa.POAHashMap okey = this.retentionStrategy.getHashMap(oid);
 
@@ -176,8 +190,8 @@ public class DefaultServantStrategy extends
         org.omg.CORBA.portable.InvokeHandler invokeHandler = (org.omg.CORBA.portable.InvokeHandler) okey.getServant();
 
         if (okey == null || !okey.isActive()) {
-            throw new org.omg.CORBA.OBJECT_NOT_EXIST(2,
-                    CompletionStatus.COMPLETED_NO);
+            exceptionValue.value = POARunnable.ObjNotExistException;
+            return null;
         }
         // --PRE-INVOKE
         synchronized (mutex) {
