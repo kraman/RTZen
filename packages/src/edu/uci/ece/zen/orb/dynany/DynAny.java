@@ -955,8 +955,7 @@ public class DynAny extends org.omg.CORBA.LocalObject implements org.omg.Dynamic
      * @param e Exception whose mesage and stack trace will be printed.
      */
     protected void handleShouldntHappenException(Exception e) {
-        System.out.println("An exception occurred indicating an internal error that should be fixed: " + e.toString());
-        e.printStackTrace();
+        ZenProperties.logger.log(Logger.SEVERE, getClass(), "handleShouldntHappenException(Exception)", "An exception occurred indicating an internal error that should be fixed.", e);
     }
 
 

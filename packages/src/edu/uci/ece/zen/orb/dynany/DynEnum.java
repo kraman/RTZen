@@ -136,7 +136,7 @@ public class DynEnum extends DynAny implements org.omg.DynamicAny.DynEnum {
         }
         // These shouldn't happen, but BadKind and Bounds can be thrown by the member_name method
         catch (Exception e) {
-            System.out.println("get_as_string failed " + e);
+            ZenProperties.logger.log(Logger.SEVERE, getClass(), "get_as_string()", e);
         }
         return null;
     }

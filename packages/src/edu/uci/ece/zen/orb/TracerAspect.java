@@ -66,7 +66,7 @@ public aspect TracerAspect{
                 else       sb.append("|");
 
             }
-            System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + sb + "entering: " + sig );
+            ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + sb + "entering: " + sig );
             buf++;
         }
     }
@@ -83,7 +83,7 @@ public aspect TracerAspect{
                 else       sb.append("|");
 
             }
-            System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + sb + "exiting: " + sig );
+            ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + sb + "exiting: " + sig );
         }
     }
 
@@ -98,7 +98,7 @@ public aspect TracerAspect{
                 else       sb.append("|");
 
             }
-            System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + sb + "exiting: " + sig + " as exception: " + e);
+            ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + sb + "exiting: " + sig + " as exception: " + e);
         }
     }
 /*
@@ -166,7 +166,7 @@ trying to profile java libs
     //staticinitialization(class *..*.*)
     //staticinitialization(java.lang.Object+)
     && cflow(call( * *..TracerAspect.printTrace(..) )){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "statinit: " + thisJoinPointStaticPart.getSignature().toLongString());
+        ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "statinit: " + thisJoinPointStaticPart.getSignature().toLongString());
 
     }
 
@@ -177,20 +177,20 @@ trying to profile java libs
 
         String [] trace = new String[hash.size()];
 
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "\n\n****************** TRACE: ordered list of calls...");
+        ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "\n\n****************** TRACE: ordered list of calls...");
         numMeth = 0;
         int i = 0;
         for (i = 0; enum.hasMoreElements() ; ++i) {
             trace[i] = enum.nextElement().toString();
-            System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + trace[i]);
+            ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + trace[i]);
         }
         numMeth = i;
 
         java.util.Arrays.sort(trace);
 
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "\n\n****************** TRACE: alphabetized list of calls...");
+        ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "\n\n****************** TRACE: alphabetized list of calls...");
         for (i = 0; i < trace.length ; ++i)
-            System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + trace[i]);
+            ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + trace[i]);
 
 
         enum = classes.keys();
@@ -206,15 +206,15 @@ trying to profile java libs
 
         int total = 0;
 
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "\n\n****************** TRACE: list of classes...");
+        ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "\n\n****************** TRACE: list of classes...");
         for (i = 0; i < trace.length ; ++i){
-            System.out.print(trace[i]);
+            ZenProperties.logger.log(trace[i]);
             try{
                 String clsname = "../../../classes/"+trace[i].replace('.','/')+".class";
                 file = new java.io.FileInputStream(clsname);
                 int size = (int)file.getChannel().size();
                 total += size;
-                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "\t" + size);
+                ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "\t" + size);
 
 /*
                 Object obj = null;//new String [] {new String ("JavaWorld"), new String ("JavaWorld")};
@@ -234,7 +234,7 @@ trying to profile java libs
             }
         }
 
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "\n\n TOTAL: " + total);
+        ZenProperties.logger.log( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "\n\n TOTAL: " + total);
 /*
         try{
             ZipInputStream zip = new ZipInputStream(new FileInputStream("../../../packages/demo/hello_min/jar/shrunk.jar"));

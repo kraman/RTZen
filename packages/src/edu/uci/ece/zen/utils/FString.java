@@ -33,7 +33,7 @@ public class FString {
     public static FString instance(FString fs) {
         if (fs == null) {
             fs = fromImmortal();
-            System.out.println("new FString");
+            ZenProperties.logger.log("new FString");
         } else {
             fs.reset();
         }

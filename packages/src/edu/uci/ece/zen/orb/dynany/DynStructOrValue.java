@@ -55,8 +55,7 @@ public abstract class DynStructOrValue extends DynAny {
         }
         // InvalidTypeCode, BadKind, or Bounds exceptions may be thrown
         catch( Exception e ) {
-            System.out.println("Error: Unable to create DynStruct correctly, but trying to continue anyway");
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, getClass(), "<init>", "Unable to create DynStruct correctly, but trying to continue anyway", e);
         }
 
         // Set the currentPosition.
@@ -423,8 +422,7 @@ public abstract class DynStructOrValue extends DynAny {
         }
         // This will never happen, but is required for member_count() method
         catch (org.omg.CORBA.TypeCodePackage.BadKind bk) {
-            System.out.println("Error " + bk);
-            bk.printStackTrace();
+            ZenProperties.logger.log(Logger.SEVERE, getClass(), "checkPositionValid()", bk);
         }
 
 

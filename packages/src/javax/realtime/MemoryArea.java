@@ -45,7 +45,7 @@ public abstract class MemoryArea {
         //Thread.dumpStack();
         MemoryArea old = RealtimeThread.getCurrentMemoryArea();
         RealtimeThread.setCurrentMemoryArea(this);
-        System.out.println("enter(): " + Thread.currentThread().toString());
+        ZenProperties.logger.log("enter(): " + Thread.currentThread().toString());
         logic.run();
         RealtimeThread.setCurrentMemoryArea(old);
         //System.err.println( "RTSJ: Return from memory area
