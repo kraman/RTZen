@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-
+import java.util.StringTokenizer;
 /**
  * This class implements a simple jitter time measurement 
  * 
@@ -181,7 +181,15 @@ public class OVMClient extends RealtimeThread
 				//NativeTimeStamp.OutputLogRecords();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("timeRecords.txt")));
                 for(int m = 0; m<timeStampsArray.length; m++){
-                    out.println(m+","+"21,"+timeStampsArray[m]);
+                    String temp = timeStampsArray[m].toString();
+                    StringTokenizer st = new StringTokenizer(temp," ");
+                    String msString = st.nextToken();
+                    st.nextToken(); //"ms,"
+                    String nsString = st.nextToken();
+                    double ms = Double.parseDouble(msString.substring(1, msString.length()));                    
+                    double ns = Double.parseDouble(nsString);
+                    double sec = ms*0.001+ns*0.000000001;                    
+                    out.println(m+","+"21,"+sec);
                 }
                 out.flush();
                 out.close();     
