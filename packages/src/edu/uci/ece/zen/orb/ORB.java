@@ -203,8 +203,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         orbInitRunnable.init( args , props , this );
         orbImplRegion = mem;
 
+        executeInORBRegion(orbInitRunnable);
+        /*
         ExecuteInRunnable r = new ExecuteInRunnable();
-
         r.init( orbInitRunnable , mem);
         try{
             System.out.println( "======================Calling ExecuteInRunnable=============================" );
@@ -218,6 +219,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
             System.exit(-1);
         }
+        */
     }
 
     private void isNotDestroyed(){
@@ -237,6 +239,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         ORBInitRunnable orbInitRunnable = new ORBInitRunnable();
         orbInitRunnable.init( args , props , this );
 
+        executeInORBRegion(orbInitRunnable);
+/*
         ExecuteInRunnable r = new ExecuteInRunnable();
         r.init( orbInitRunnable , this.orbImplRegion );
         try{
@@ -250,6 +254,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
             System.exit(-1);
         }
+        */
     }
 
     //For Multithreaded ORB's
@@ -444,6 +449,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
         ORBStrToObjRunnable strToObjRunnable = new ORBStrToObjRunnable();
         strToObjRunnable.init( ior , objImpl );
+
+
+        executeInORBRegion(strToObjRunnable);
+        /*
         ExecuteInRunnable r = new ExecuteInRunnable();
         r.init( strToObjRunnable , this.orbImplRegion );
         try{
@@ -457,6 +466,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
             e.printStackTrace();
         }
+        */
+
+
         return objImpl;
     }
 
@@ -517,7 +529,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         return acceptorRegistry;
     }
 
-    private void executeInORBRegion(Runnable runnable){
+    public void executeInORBRegion(Runnable runnable){
         ExecuteInRunnable r = new ExecuteInRunnable();
 
         r.init(runnable, orbImplRegion);
@@ -529,7 +541,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 Logger.FATAL,
                 "edu.uci.ece.zen.orb.ORB",
                 "",
-                "" + e.toString()
+                e.toString()
                 );
             System.exit(-1);
         }
