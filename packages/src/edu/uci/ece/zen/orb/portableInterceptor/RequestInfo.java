@@ -18,7 +18,7 @@ public class RequestInfo extends org.omg.CORBA.LocalObject
         return requestMessage.getOperation().toString();
     }
 
-    // these can't be accessed in Java
+    // these can't be accessed in Java -- according to the spec
     public org.omg.Dynamic.Parameter[] arguments() {
         throw new NO_RESOURCES("Can't access this info", 1,
                 CompletionStatus.COMPLETED_MAYBE);
@@ -113,7 +113,7 @@ public class RequestInfo extends org.omg.CORBA.LocalObject
 
     // this is set in the client and server aspects
     // it contains information that is needed by this class
-    public edu.uci.ece.zen.orb.giop.type.RequestMessage requestMessage;
+    public edu.uci.ece.zen.orb.protocol.type.RequestMessage requestMessage;
 
-    public edu.uci.ece.zen.orb.giop.type.ReplyMessage replyMessage;
+    public edu.uci.ece.zen.orb.protocol.type.ReplyMessage replyMessage;
 }

@@ -68,6 +68,10 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.protocol.type.ReplyMessage
         return header.reply_status;
     }
 
+    public void setReplyStatus(int stat) {
+        header.reply_status = stat;
+    }
+
     public FString getServiceContexts() {
         return header.service_context;
     }
