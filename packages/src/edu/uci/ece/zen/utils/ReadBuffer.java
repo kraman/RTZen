@@ -441,7 +441,7 @@ public class ReadBuffer {
         for(int i = 0; i < len; ++i)
             fs.append(readByte());
 
-        if (isString) readByte();
+        if (isString) readByte(); //eat an xtra byte if not just byte array
         return fs;
     }
 

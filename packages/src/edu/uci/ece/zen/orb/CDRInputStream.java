@@ -10,6 +10,7 @@ import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.orb.IOR;
 
 public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
@@ -171,6 +172,15 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     public String read_string() {
         return buffer.readString();
     }
+    
+    /**
+     * Read an FString from CDR Encapsulation.
+     *
+     * @return Read FString.
+     */
+    public FString read_fstring() {
+        return buffer.readFString(true);
+    }    
 
     // Read a string without advancing nextByteToRead.
     // This is needed by the Delegate.
