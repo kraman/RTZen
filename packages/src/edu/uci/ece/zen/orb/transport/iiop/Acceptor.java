@@ -75,7 +75,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
             edu.uci.ece.zen.utils.Logger.printThreadStack();
             if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Acceptor version " + version);
             if (ZenBuildProperties.dbgIOR) {
-                ZenProperties.logger.log("Acceptor, the current memoery is :" + javax.realtime.RealtimeThread .getCurrentMemoryArea());
+                ZenProperties.logger.log("Acceptor, the current memory is :" + javax.realtime.RealtimeThread .getCurrentMemoryArea());
                 ZenProperties.logger.log("Acceptor, the memory of ssock is " + javax.realtime.MemoryArea .getMemoryArea(ssock));
                 ZenProperties.logger.log("Acceptor getHostAddress" + ssock.getInetAddress().getHostAddress());
                 ZenProperties.logger.log("Acceptor getLocalPort()" + (short) ssock.getLocalPort());

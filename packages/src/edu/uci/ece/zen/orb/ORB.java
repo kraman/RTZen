@@ -478,6 +478,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public RTCurrent getRTCurrent() {
+        ZenProperties.logger.log("Getting RTCurrent.....");
         /*
         RTCurrentRunnable rtrun = RTCurrentRunnable.instance(parentMemoryArea);
         rtrun.init(orbImplRegion);
