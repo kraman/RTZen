@@ -25,6 +25,7 @@ module unit{
        
 
             short echoShort( in short inVal ,  out short outVal );
+            double echoDouble( in double inVal ,  out double outVal);
 /*            long echoLong( in long inVal ,  out long outVal );
             long long echoLongLong( in long long inVal ,  out long long  outVal);
             ushort echoUShort( in ushort inVal ,  out ushort outVal ); */
@@ -33,7 +34,7 @@ module unit{
             ulong echoULong( in ulong inVal ,  out ulong outVal );
             ulonglong echoULongLong( in ulonglong inVal ,  out ulonglong  outVal);
             float echoFloat( in float inVal ,  out float outVal );  
-            double echoDouble( in double inVal ,  out double outVal);
+            
             ldouble echoLongDouble( in longdouble inVal ,  out longdouble outVal);
             fixed echoFixed( in fixed inVal ,  out fixed outVal );
             char echoChar( in char inVal ,  out char outVal );

@@ -16,7 +16,22 @@ public class DataTypesImpl extends DataTypesPOA
 	    short shretVal = shinVal;
 	    shoutVal.value = 102;
 	    return shretVal;
-    }/*
+    }
+
+    public double echoDouble( double dinVal , org.omg.CORBA.DoubleHolder doutVal)
+	{
+
+		    if(dinVal != 100){
+						System.out.println("in value wrong in echoDouble()");
+						System.out.println("The expected value is 1.0e10 and the actual value is "+dinVal);
+				    }
+
+	        double dretVal = dinVal;
+	        doutVal.value = 1.0e12;
+	        return dretVal;
+    }
+
+    /*
 
     public int echoLong( int iinVal , org.omg.CORBA.IntHolder ioutVal){
 
