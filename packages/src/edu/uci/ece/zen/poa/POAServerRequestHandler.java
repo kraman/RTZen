@@ -20,8 +20,8 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
         demuxTable.init( numPOAs );
     }
 
-    public abstract int addPOA( FString path, org.omg.PortableServer.POA poa );
-        demuxTable.put(poaPath , poa);
+    public int addPOA( FString path, org.omg.PortableServer.POA poa ){
+        demuxTable.put( path , poa );
         return demuxTable.getIndex( poaPath );
     }
 
@@ -41,17 +41,17 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
      */
     public void handleRequest(RequestMessage req) {
        // gt the index into the Active Map
-       FString fs = new FString( 256 );
-       req.getObjectKey( fs );
+       FString objKey = new FString( 256 );
+       req.getObjectKey( objKey );
 
-       int index = ObjectKeyHelper.getPOAIndex( fs );
-       int genCount = ObjectKeyHelper.getPOAGeneration( fs );
+       int index = ObjectKeyHelper.getPOAIndex( objKey );
+       int genCount = ObjectKeyHelper.getPOAGeneration( objKey );
 
        POA poa = null;
 
        if (demuxTable.getGeneration(index) == genCount) {
            poa = this.demuxTable.mapEntry(index).poa;
-       } else if (ObjectKeyHelper.isPersistant( objKey )) {
+       } else if (ObjectKeyHelper.isPersistent( objKey )) {
            throw new org.omg.CORBA.NO_IMPLEMENT();
            /* Transient objects only for now
            byte[] poaPath = ObjectKeyHelper.getPOAPathName( objKey );
@@ -258,7 +258,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
     }
 
     public org.omg.CORBA.Object getRoot() {
-        return orb.getRootPOA();
+        return orb.rootPOA;
     }
 
     /**

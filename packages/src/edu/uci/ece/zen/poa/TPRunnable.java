@@ -9,19 +9,19 @@ import edu.uci.ece.zen.poa.mechanism.*;
 public class TPRunnable implements Runnable{
 
     POA poa;
-    ScopedRegion req;
+    ScopedMemory req;
 
     public TPRunnable(){}
 
-    public void init( ScopedRegion sreq ){
+    public void init( POA poa , ScopedMemory sreq ){
         this.poa = poa;
         this.req = sreq;
     }
 
     public void run(){
-        ThreadPool tp = ((ScopedRegion)RealtimeThread.getCurrentMemoryArea()).getPortal();
-        tp.execute( sreq , 0 , 99 );
-        sreq.waitTillInvoked();
+        ThreadPool tp = (ThreadPool) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
+        tp.execute( req , (short)0 , (short)99 );
+        //KLUDGE: ?? sreq.waitTillInvoked();
     }
 }
 

@@ -8,14 +8,13 @@ import edu.uci.ece.zen.orb.ServerReply;
 import edu.uci.ece.zen.orb.ServerRequest;
 
 
-public class DefaultServantStrategy extends
-            RequestProcessingStrategy {
-/**
- *
- * @param retain ServantRetentionStrategy
- * @param threadStrategy ThreadPolicyStrategy
- * @throws org.omg.PortableServer.POAPackage.InvalidPolicy
- */
+public class DefaultServantStrategy extends RequestProcessingStrategy {
+    /**
+     *
+     * @param retain ServantRetentionStrategy
+     * @param threadStrategy ThreadPolicyStrategy
+     * @throws org.omg.PortableServer.POAPackage.InvalidPolicy
+     */
     public void initialize(ServantRetentionStrategy retain,
             ThreadPolicyStrategy threadStrategy, IntHolder exceptionValue) 
     {
@@ -33,30 +32,30 @@ public class DefaultServantStrategy extends
 
     }
 
-/**
- *
- * @param servant java.lang.Object
- * @throws org.omg.PortableServer.POAPackage.WrongPolicy
- */
+    /**
+     *
+     * @param servant java.lang.Object
+     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
+     */
     public synchronized void setInvokeHandler(java.lang.Object servant, IntHolder exceptionValue)
     {
         exceptionValue.value = POARunnable.NoException;
         if(servant instanceof org.omg.PortableServer.Servant)
         {
             this.servant = (org.omg.PortableServer.Servant) servant;
-        } else
+        } else {
             exceptionValue.value = POARunnable.WrongPolicyException;
             return null;
         }
 
     }
 
-/**
- *
- * @param policyName
- * @return boolean
- * @throws org.omg.PortableServer.POAPackage.WrongPolicy
- */
+    /**
+     *
+     * @param policyName
+     * @return boolean
+     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
+     */
     public boolean validate(int policyName, IntHolder exceptionValue)
     {
         exceptionValue.value = POARunnable.NoException;
@@ -68,13 +67,13 @@ public class DefaultServantStrategy extends
         }
     }
 
-/**
- *
- * @param name int
- * @return Object
- * @throws org.omg.PortableServer.POAPackage.WrongPolicy
- * @throws org.omg.PortableServer.POAPackage.ObjectNotActive
- */
+    /**
+     *
+     * @param name int
+     * @return Object
+     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
+     * @throws org.omg.PortableServer.POAPackage.ObjectNotActive
+     */
     public Object getRequestProcessor(int name, IntHolder excpetionValue)
     {
         exceptionValue.value = POARunnable.NoException;
@@ -91,17 +90,15 @@ public class DefaultServantStrategy extends
         }
 
     }
-/**
- *
- * @param request ServerRequest
- * @param poa edu.uci.ece.zen.poa.POA
- * @param requests edu.uci.ece.zen.poa.SynchronizedInt
- * @return int
- */
 
-    public int handleRequest(ServerRequest request,
-            edu.uci.ece.zen.poa.POA poa,
-            edu.uci.ece.zen.poa.SynchronizedInt requests, exceptionValue) {
+    /**
+     *
+     * @param request ServerRequest
+     * @param poa edu.uci.ece.zen.poa.POA
+     * @param requests edu.uci.ece.zen.poa.SynchronizedInt
+     * @return int
+     */
+    public int handleRequest(ServerRequest request, edu.uci.ece.zen.poa.POA poa, edu.uci.ece.zen.poa.SynchronizedInt requests, exceptionValue) {
         exceptionValue.value = POARunnable.NoException;
         if (this.retentionStrategy != null) {
                 int tmp = handleIfRetain(request, poa, requests, exceptionValue);

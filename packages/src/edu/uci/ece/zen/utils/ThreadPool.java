@@ -1,6 +1,7 @@
 package edu.uci.ece.zen.utils;
 
 import javax.realtime.*;
+import edu.uci.ece.zen.orb.*;
 
 public class ThreadPool{
     Lane lanes[];
@@ -214,7 +215,7 @@ class ThreadSleepRunnable implements Runnable{
                 //process the task in the portal of the scoped region
                 eir.init( ir , task );
                 try{
-                    eir.executeInArea( lane.tp.orb.orbImplRegion );
+                    lane.tp.orb.orbImplRegion.executeInArea( eir );
                 }catch( Exception e ){
                     e.printStackTrace();
                 }

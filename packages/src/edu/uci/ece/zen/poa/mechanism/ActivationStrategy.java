@@ -28,26 +28,25 @@ public abstract class ActivationStrategy {
     public static ActivationStrategy init(Policy[] policy, IdAssignmentStrategy assignmentStrategy,
              ServantRetentionStrategy retentionStrategy , IntHolder exceptionValue ){
 
-        exceptionValue.value = ActivationStrategy.NoException;
+        exceptionValue.value = POARunnable.NoException;
         if (PolicyUtils.useImplicitActivationPolicy(policy)) {
             // Check if the other policies are Retain and System Id
             retentionStrategy.validate(ServantRetentionStrategy.RETAIN,exceptionValue );
-            if( exceptionValue.value != ServantRetentionStrategy.NoException ){
-                exceptionValue.value = ServantRetentionStrategy.InvalidPolicyException;
+            if( exceptionValue.value != POARunnable.NoException ){
+                exceptionValue.value = POARunnable.InvalidPolicyException;
                 return null;
             }
 
             assignmentStrategy.validate(IdAssignmentStrategy.SYSTEM_ID,exceptionValue);
-            if( exceptionValue.value != IdAssignmentStrategy.NoException ){
-                exceptionValue.value = IdAssignmentStrategy.InvalidPolicyException;
+            if( exceptionValue.value != POARunnable.NoException ){
+                exceptionValue.value = POARunnable.InvalidPolicyException;
                 return null;
             }
 
-//            return new ImplicitActivationStrategy();
+            return new ImplicitActivationStrategy();
         }else{
-//            return new ExplicitActivationStrategy();
+            return new ExplicitActivationStrategy();
         }
-        return null;
     }
 
     public abstract boolean validate(int name);

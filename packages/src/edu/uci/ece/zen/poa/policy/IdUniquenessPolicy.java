@@ -4,6 +4,8 @@
 
 package edu.uci.ece.zen.poa.policy;
 
+import org.omg.PortableServer.*;
+
 /**
  * The class <code>IdUniquenessPolicy</code> is the
  * ZEN specific implementation of IdUniquenessPolicy.

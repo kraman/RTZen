@@ -16,7 +16,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
 
     private ORB orb;
     private POA parent;
-    private ScopedMemory poaMemoryArea;
+    protected ScopedMemory poaMemoryArea;
     private org.omg.PortableServer.POAManager poaManager;
     private ServerRequestHandler serverRequestHandler;
     private Hashtable theChildren;

@@ -4,6 +4,7 @@ package edu.uci.ece.zen.poa.mechanism;
 // --- ZEN Imports ---
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.poa.*;
+import org.omg.CORBA.IntHolder;
 
 // --- OMG Imports ---
 import org.omg.CORBA.IntHolder;
@@ -27,12 +28,11 @@ abstract public class LifespanStrategy {
     public static LifespanStrategy init(org.omg.CORBA.Policy[] policy , IntHolder excetpionValue ) {
         excetpionValue.value = POARunnable.NoException;
 
-        if (PolicyUtils.usetransientpolicy(policy)) { 
-//            return new TransientStrategy(); 
+        if (PolicyUtils.useTransientPolicy(policy)) { 
+            return new TransientStrategy(); 
         }else{
-//            return new PersistentStrategy();
+            return new PersistentStrategy();
         }
-        return null;
     }
 
     /**
@@ -48,7 +48,7 @@ abstract public class LifespanStrategy {
      * @param oid specifies the Object Id of the Object Key
      * @param poaLoc ActiveDemuxLoc
      */
-    abstract public void create(FString path_name, FString oid, ActiveDemuxLoc poaLoc , FString okey_out );
+    abstract public void create(FString path_name, FString oid, int poaLocIndex , int poaLocCount , FString okey_out );
     abstract public void create(FString path_name, FString oid, int poaLocIndex , int poaLocCount , int servLocIndex , int servLocCount , FString okey_out );
 
     /**

@@ -2,6 +2,7 @@ package edu.uci.ece.zen.poa.mechanism;
 
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.poa.*;
+import org.omg.CORBA.IntHolder;
 
 /**
  * The class <code>ServantRetentionStrategy</code> creates a POA with  
@@ -66,7 +67,7 @@ public abstract class ServantRetentionStrategy {
      * @exception org.omg.PortableServer.POAPackage.WrongPolicy is thrown if
      * invoked on the Non Retain Strategy.
      */
-    public abstract void add( FString ok, edu.uci.ece.zen.poa.POAHashMap map );
+    public abstract void add( FString ok, edu.uci.ece.zen.poa.POAHashMap map , IntHolder exceptionValue );
 
     /**
      * <code> validate </code> checks if the strategy associated is the same as
@@ -94,7 +95,7 @@ public abstract class ServantRetentionStrategy {
      * invoked on the Non Retain Strategy
      */
     public abstract boolean objectIDPresent( FString ok , org.omg.CORBA.IntHolder ih );
-    public abstract edu.uci.ece.zen.poa.POAHashMap getHashMap( FString map , org.omg.CORBA.IntHolder ih )
+    public abstract edu.uci.ece.zen.poa.POAHashMap getHashMap( FString map , org.omg.CORBA.IntHolder ih );
     public abstract int bindDemuxIndex( edu.uci.ece.zen.poa.POAHashMap oid , org.omg.CORBA.IntHolder ih );
     public abstract boolean unbindDemuxIndex( FString oid , org.omg.CORBA.IntHolder ih );
     public abstract int getGenCount(int index , org.omg.CORBA.IntHolder ih );

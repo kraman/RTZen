@@ -1,12 +1,8 @@
-/* --------------------------------------------------------------------------*
- * $Id: TransientStrategy.java,v 1.6 2003/09/03 20:44:19 spart Exp $
- *--------------------------------------------------------------------------*/
-
 package edu.uci.ece.zen.poa.mechanism;
 
-
-import edu.uci.ece.zen.poa.ActiveDemuxLoc;
-
+import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.utils.*;
+import org.omg.CORBA.IntHolder;
 
 public final class TransientStrategy extends LifespanStrategy {
 
@@ -26,6 +22,9 @@ public final class TransientStrategy extends LifespanStrategy {
         timeStamp[nextFreeByte++] = (byte) ((value >>> 16) & 0xFF);
         timeStamp[nextFreeByte++] = (byte) ((value >>> 8) & 0xFF);
         timeStamp[nextFreeByte++] = (byte) (value & 0xFF);
+
+        this.ftimeStamp = new FString( 8 );
+        ftimeStamp.append( timeStamp );
     }
 
    /**
@@ -44,12 +43,8 @@ public final class TransientStrategy extends LifespanStrategy {
     * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
     */
 
-    public edu.uci.ece.zen.poa.ObjectKey create(String path_name,
-                                                byte[] oid,
-                                                ActiveDemuxLoc index) {
-
-        return IdNoHintStrategy.create(prefix, oid, this.timeStamp,
-                index.marshall());
+    public void create(FString path_name, FString oid, int index , int genCount , FString okey_out ) {
+        IdNoHintStrategy.create( prefix, oid, this.ftimeStamp, index , genCount , okey_out );
     }
 
    /**
@@ -60,14 +55,8 @@ public final class TransientStrategy extends LifespanStrategy {
     * @param servLoc servant index
     * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
     */
-    public edu.uci.ece.zen.poa.ObjectKey create(String path_name,
-            byte[] oid,
-            ActiveDemuxLoc poaLoc,
-            ActiveDemuxLoc servLoc) {
-
-        return IdHintStrategy.create(prefix, oid, this.timeStamp,
-                poaLoc.marshall(), servLoc.marshall());
-
+    public void create(FString path_name, FString oid, int poaLocIndex , int poaLocGenCount , int servLocIndex , int servLocGenCount , FString okey_out ) {
+        IdHintStrategy.create(prefix, oid, this.ftimeStamp, poaLocIndex , poaLocGenCount , servLocIndex , servLocGenCount , okey_out );
     }
 
    /**
@@ -75,18 +64,16 @@ public final class TransientStrategy extends LifespanStrategy {
     * @param ok object Key
     * @throws org.omg.CORBA.OBJECT_NOT_EXIST
     */
-    public void validate(edu.uci.ece.zen.poa.ObjectKey ok)
-        throws org.omg.CORBA.OBJECT_NOT_EXIST {
-        if (!ok.compareTimeStamps(this.timeStamp) && ok.isPersistent()) {
-
+    public void validate( FString ok , IntHolder exceptionHolder ){
+        exceptionHolder.value = POARunnable.NoException;
+        if (!ObjectKeyHelper.compareTimeStamps(this.ftimeStamp, ok ) && ObjectKeyHelper.isPersistent( ok )) {
             // if (this.value != ok.timeStamp())
-            throw new org.omg.CORBA.OBJECT_NOT_EXIST(2,
-                    org.omg.CORBA.CompletionStatus.COMPLETED_NO);
+            exceptionHolder.value = POARunnable.ObjNotExistException;
         }
-
     }
 
     protected long  value; // contains the time stamp of the POA
     protected static char prefix = 'T';   // Transient Prefix
     protected byte[] timeStamp;
+    protected FString ftimeStamp;
 }

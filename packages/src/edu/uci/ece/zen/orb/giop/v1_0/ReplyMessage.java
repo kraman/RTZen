@@ -18,6 +18,8 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
         messageBody = stream;
     }
 
+    public ReplyMessage( ORB orb , org.omg.IOP>ServiceContext[] scontext , int request_id , 
+
     public int getRequestId() { return header.request_id; }
 
     public int getReplyStatus() { return header.reply_status.value(); }

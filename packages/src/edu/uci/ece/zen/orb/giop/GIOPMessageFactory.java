@@ -269,13 +269,15 @@ public final class GIOPMessageFactory
         (new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId )).marshal( out );
     }
 
-    /**
-     * Client upcall:
-     * <p>
-     *     Client scope --&gt; <b>Message scope/Waiter region</b> --ex in --&gt; Immortal --&gt; Transport scope
-     * </p>
-     */
-    public static void constructReplyMessage( RequestMessage req , CDROutputStream out ){
+    public static CDROutputStream constructReplyMessage( ORB orb , RequestMessage req , CDROutputStream out , boolean errorOccured ){
+        CDROutoutStream out = CDROutputStream.create( orb );
+        GIOPMessage msg = null;
+        switch( req.getGiopVersion() ){
+            case 10:
+                msg = new  edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage( orb , 
+            case 11:
+            case 12:
+        }
     }
 
 

@@ -35,7 +35,7 @@ public class POAImpl{
     private int                                     poaDemuxCount;
 
     // ---  Current Number of request executing in the POA ---
-    private SynchronizedInt numberOfCurrentRequests;
+    protected SynchronizedInt numberOfCurrentRequests;
 
     // --- Mutexes POA and varable specific to the create and destroy ops ---
     private Object createDestroyPOAMutex = new byte[0];
@@ -166,7 +166,7 @@ public class POAImpl{
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
         
         this.requestProcessingStrategy = edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy.init(this.policyList,
-                this.retentionStrategy, this.uniquenessStrategy, this.threadPolicyStrategy,ih);
+                this.retentionStrategy, this.uniquenessStrategy, this.threadPolicyStrategy, ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
     }
 
@@ -210,7 +210,7 @@ public class POAImpl{
             eir.init( tpr , tpRegion );
 
             HandleRequestRunnable hrr = (HandleRequestRunnable) requestScope.newInstance( HandleRequestRunnable.class );
-            hrr.init( poa , req );
+            hrr.init( self , req );
             requestScope.setPortal( hrr );
             
             orb.orbImplRegion.executeInArea( eir );
@@ -439,7 +439,7 @@ class HandleRequestRunnable implements Runnable{
     public void run(){
         POAImpl pimpl = ((POAImpl)poa.poaMemoryArea.getPortal());
         try{
-            pimpl.requestProcessingStrategy.handleRequest( req , poa , pimpl.numRequests );
+            pimpl.requestProcessingStrategy.handleRequest( req , poa , pimpl.numberOfCurrentRequests );
         }catch( Exception e ){
             e.printStackTrace();
         }

@@ -1,8 +1,8 @@
-/* --------------------------------------------------------------------------*
- * $Id: SystemIdStrategy.java,v 1.5 2003/08/05 23:37:28 nshankar Exp $
- *--------------------------------------------------------------------------*/
-
 package edu.uci.ece.zen.poa.mechanism;
+
+import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.utils.*;
+import org.omg.CORBA.IntHolder;
 
 
 public final class SystemIdStrategy extends IdAssignmentStrategy {
@@ -18,11 +18,9 @@ public final class SystemIdStrategy extends IdAssignmentStrategy {
     * Obtain new system id.
     * @return byte[]
     */
-    public byte[] nextId()
-        throws org.omg.PortableServer.POAPackage.WrongPolicy {
-
-        // write the integer into a byte array!
-        return writeInt(++id);
+    public void nextId( FString id_out , IntHolder exceptionValue ){
+        exceptionValue.value = POARunnable.NoException;
+        writeInt(++id , id_out );
     }
     
    /**
@@ -42,10 +40,10 @@ public final class SystemIdStrategy extends IdAssignmentStrategy {
     * validate policy type
     * @param policy policy-type
     */
-    public void validate(int policy)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy {
+    public void validate(int policy , IntHolder exceptionValue){
+        exceptionValue.value = POARunnable.NoException;
         if (!isPresent(policy)) {
-            throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+            exceptionValue.value = POARunnable.WrongPolicyException;
         }
     }
 
@@ -54,28 +52,22 @@ public final class SystemIdStrategy extends IdAssignmentStrategy {
      * @param id
      * @return boolean true if yes, else false
      */
-   public boolean verifyID(byte[] id) {
+   public boolean verifyID( FString id) {
         // The only possible way of identification is if this id
         // corresponds to an integer else it could not be generated
         // by the system
-        try {
-            Integer.parseInt(new String(id));
-            return true;
-        } catch (NumberFormatException nux) {}
-        return false;
+        boolean retVal = true;
+        for( int i=0;i<id.length()&&retVal;i++ )
+            if( '0' > id.getData()[i] || id.getData()[i] > '9' )
+                retVal = false;
+        return retVal;
     }
 
-    private byte[] writeInt(int value) {
-
-        byte[] buffer = new byte[4];
-        int nextFreeByte = 0;
-
-        buffer[nextFreeByte++] = (byte) ((value >>> 24) & 0xFF);
-        buffer[nextFreeByte++] = (byte) ((value >>> 16) & 0xFF);
-        buffer[nextFreeByte++] = (byte) ((value >>> 8) & 0xFF);
-        buffer[nextFreeByte++] = (byte) (value & 0xFF);
-
-        return buffer;
+    private void writeInt(int value , FString id_out ) {
+        id_out.append((byte) ((value >>> 24) & 0xFF));
+        id_out.append((byte) ((value >>> 16) & 0xFF));
+        id_out.append((byte) ((value >>> 8) & 0xFF));
+        id_out.append((byte) (value & 0xFF));
     }
 
     private int id;

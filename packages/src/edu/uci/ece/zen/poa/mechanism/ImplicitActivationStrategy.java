@@ -10,12 +10,7 @@ public final class ImplicitActivationStrategy extends ActivationStrategy {
      * @param name Strategies integer value
      * @return boolean true if same, else false.
      */
-    public void validate(int name, IntHolder exceptionValue ) {
-        if (ActivationStrategy.IMPLICIT_ACTIVATION == name) {
-            exceptionValue.value = ActivationStrategy.NoException;
-        } else {
-            exceptionValue.value = ActivationStrategy.InvalidPolicyException;
-        }
+    public boolean validate(int name) {
+        return (ActivationStrategy.IMPLICIT_ACTIVATION == name);
     }
-
 }

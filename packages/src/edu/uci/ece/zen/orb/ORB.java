@@ -131,6 +131,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     //public RTORB rtorb;
     //public PolicyManager policyManager;
     public MemoryArea [] threadpoolList;
+    public org.omg.PortableServer.POA rootPOA;
 
     private FString orbId;
 

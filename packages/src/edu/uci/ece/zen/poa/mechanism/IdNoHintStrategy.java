@@ -3,9 +3,9 @@
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
-
-import edu.uci.ece.zen.poa.ObjectKey;
-
+import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.utils.*;
+import org.omg.CORBA.IntHolder;
 
 final public class IdNoHintStrategy {
 
@@ -18,11 +18,7 @@ final public class IdNoHintStrategy {
      * @param poaIndex byte[]
      * @return ObjectKey representation
      */
-    public static void create(char prefix,
-                                   FString objectId,
-                                   FString time,
-                                   FString poaIndex,
-                                   FString okey_out) {
+    public static void create(char prefix, FString objectId, FString time, int poaIndex, int poaGenCount , FString okey_out) {
         // length = prefix + length of the time stamp <8 bytes> + hint byte
 
         okey_out.reset();
@@ -35,7 +31,8 @@ final public class IdNoHintStrategy {
         okey_out.append(time.getData(), 0, time.length());
 
         // write out the active Object Map index
-        okey_out.append(poaIndex.getData(), 0, poaIndex.length()); 
+        write_int( okey_out , poaIndex );
+        write_int( okey_out , poaGenCount );
 
         // copy the Object Id
         okey_out.append(objectId.getData(), 0, objectId.length()); 
@@ -50,12 +47,7 @@ final public class IdNoHintStrategy {
      * @param poaIndex byte[]
      * @return ObjectKey
      */
-    public static void create(char prefix,
-                                   FString poaPath,
-                                   FString time,
-                                   FString objectId,
-                                   FString poaIndex,
-                                   FString okey_out) {
+    public static void create(char prefix, FString poaPath, FString time, FString objectId, int poaIndex, int poaGenCount , FString okey_out) {
 
         // first get the number of bytes that are needed for creating
         // the object key
@@ -71,18 +63,20 @@ final public class IdNoHintStrategy {
         okey_out.append( (byte) 0); // No hints present
         // write out the time
         okey_out.append(time.getData(), 0, time.length()); 
+
         // write out the active Object Map index
-        okey_out.append(poaIndex.getData(), 0, poaIndex.length()); 
+        write_int( okey_out , poaIndex );
+        write_int( okey_out , poaGenCount );
 
         write_int(okey_out, poaPath.length());
-        okey_out.append(poaName.getData(), 0, poaName.length());
+        okey_out.append(poaPath.getData(), 0, poaPath.length());
 
         // copy the Object Id
         okey_out.append(objectId.getData(), 0, objectId.length()); 
 
     }
 
-    private static void write_int(byte[] okey_out, int value) {
+    private static void write_int( FString okey_out, int value) {
         okey_out.append( (byte) ((value >>> 24) & 0xFF));
         okey_out.append( (byte) ((value >>> 16) & 0xFF));
         okey_out.append( (byte) ((value >>> 8) & 0xFF));

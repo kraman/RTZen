@@ -1,17 +1,13 @@
 package edu.uci.ece.zen.poa.mechanism;
 
-
-import edu.uci.ece.zen.poa.ActiveDemuxLoc;
+import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.utils.*;
 import org.omg.CORBA.IntHolder;
 
-
 public final class PersistentStrategy extends LifespanStrategy {
-
     public PersistentStrategy() {
         this.value = -1;
-
         timeStamp.reset();
-
         timeStamp.append((byte) ((value >>> 56) & 0xFF));
         timeStamp.append((byte) ((value >>> 48) & 0xFF));
         timeStamp.append((byte) ((value >>> 40) & 0xFF));
@@ -38,12 +34,9 @@ public final class PersistentStrategy extends LifespanStrategy {
     * @param loc active demux location
     * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
     */
-    public void  create(FString path_name,
-                                                FString oid,
-                                                ActiveDemuxLoc loc, FString okey_out) {
+    public void  create(FString path_name, FString oid, int locIndex , int locGenCount , FString okey_out) {
     // I don't know what you want here, but the loc is a byte[] and needs to be a FString.  Maybe create one and append?
-        return IdNoHintStrategy.create(PersistentStrategy.prefix, path_name,
-                this.timeStamp, oid, loc.marshall(), okey_out);
+        IdNoHintStrategy.create(PersistentStrategy.prefix, path_name, this.timeStamp, oid, locIndex , locGenCount, okey_out);
     }
 
    /**
@@ -54,14 +47,10 @@ public final class PersistentStrategy extends LifespanStrategy {
     * @param servLoc demxu location of the servant
     * @return edu.uci.ece.zen.poa.ObjectKey
     */
-    public edu.uci.ece.zen.poa.ObjectKey create(FString path_name,
-                                                FString oid,
-                                                ActiveDemuxLoc poaLoc,
-                                                ActiveDemuxLoc servLoc) {
-
+    public void create(FString path_name, FString oid, int poaLocIndex , int poaLocGenCount ,
+            int servLocIndex , int servLocGenCount , FString okey_out ) {
         // Same as above
-        return IdHintStrategy.create(PersistentStrategy.prefix, path_name,
-                this.timeStamp, oid, poaLoc.marshall(), servLoc.marshall());
+        IdHintStrategy.create(PersistentStrategy.prefix, path_name, this.timeStamp, oid, poaLocIndex , poaLocGenCount , servLocIndex , servLocGenCount , okey_out );
 
     }
 
@@ -70,11 +59,10 @@ public final class PersistentStrategy extends LifespanStrategy {
     * @param ok ObjectKey
     * @throws org.omg.CORBA.OBJECT_NOT_EXIST
     */
-    public void validate(edu.uci.ece.zen.poa.ObjectKey ok, IntHolder exceptionValue
+    public void validate( FString ok, IntHolder exceptionValue )
     {
         exceptionValue.value = POARunnable.NoException;
-
-        if (!ok.isPersistent() && !ok.compareTimeStamps(this.timeStamp)) {
+        if (! ObjectKeyHelper.isPersistent( ok ) && !ObjectKeyHelper.compareTimeStamps(this.timeStamp , ok )) {
             exceptionValue.value = POARunnable.ObjNotExistException;
         }
     }

@@ -1,10 +1,9 @@
 package edu.uci.ece.zen.poa.mechanism;
 
-import edu.uci.ece.zen.orb.ServerRequest;
-import edu.uci.ece.zen.sys.ZenProperties;
 import org.omg.CORBA.IntHolder;
 import edu.uci.ece.zen.poa.*;
 import edu.uci.ece.zen.utils.*;
+import edu.uci.ece.zen.orb.giop.type.*;
 
 /**
  * The class <code>RequestProcessingStrategy</code> takes care of creating
@@ -36,16 +35,10 @@ public abstract class RequestProcessingStrategy {
      */
 
     
-    public static RequestProcessingStrategy init(
-            org.omg.CORBA.Policy[] policy,
-            ServantRetentionStrategy retentionStrategy,
-            IdUniquenessStrategy uniquenessStrategy,
-            ThreadPolicyStrategy threadStrategy,
-            IntHolder exceptionValue)
+    public static RequestProcessingStrategy init( org.omg.CORBA.Policy[] policy, ServantRetentionStrategy retentionStrategy, IdUniquenessStrategy uniquenessStrategy,
+            ThreadPolicyStrategy threadStrategy, IntHolder exceptionValue)
     {
         exceptionValue.value = RequestProcessingStrategy.NoException;
-    public static RequestProcessingStrategy init( org.omg.CORBA.Policy[] policy, ServantRetentionStrategy retentionStrategy,
-            IdUniquenessStrategy uniquenessStrategy, ThreadPolicyStrategy threadStrategy , org.omg.CORBA.IntHolder ih ){
 
         if (PolicyUtils.useServantManagerPolicy(policy)) 
         {
@@ -75,7 +68,7 @@ public abstract class RequestProcessingStrategy {
 
         if (PolicyUtils.useDefaultServantPolicy(policy)) {
 
-            if (uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID, IntHolder exceptionValue)) 
+            if (uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID, exceptionValue)) 
             {
                 exceptionValue.value = InvalidPolicyException;
                 return null;

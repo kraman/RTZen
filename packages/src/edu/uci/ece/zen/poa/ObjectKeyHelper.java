@@ -8,7 +8,7 @@ public class ObjectKeyHelper {
      * @param start
      * @return int
      */
-    private int read_int( byte[] contents , int start ) {
+    private static int read_int( byte[] contents , int start ) {
         int first = contents[start++];
         int second = contents[start++];
         int third = contents[start++];
@@ -55,9 +55,9 @@ public class ObjectKeyHelper {
      * Return the active demux location of the POA in the ObjectKey
      * @return int
      */
-    public int poaIndex( FString objKey ) {
+    public static int getPOAIndex( FString objKey ) {
         int start = 10; // first two are prefix and hints followed by time
-        int index = this.read_int( objKey.getData() , start);
+        int index = read_int( objKey.getData() , start);
         return index;
     }
 
@@ -65,7 +65,7 @@ public class ObjectKeyHelper {
      * Return the generation count of the POA index in the Object Key
      * @return int
      */
-    public int poaIndexGenCount( FString objKey ) {
+    public static int getPOAGeneration( FString objKey ) {
         int start = 14;
         int count = read_int( objKey.getData() , start);
 
@@ -75,12 +75,12 @@ public class ObjectKeyHelper {
 
     // /////////////////////////////////////////////////////////////////////
 
-    public int servDemuxIndex( FString objKey ) {
+    public static int servDemuxIndex( FString objKey ) {
         int start = 18; // place where the servant index will start
         return read_int( objKey.getData() , start );
     }
 
-    public int servDemuxGenCount( FString objKey ) {
+    public static int servDemuxGenCount( FString objKey ) {
         int start = 18; // place where the servant index will start
         return read_int( objKey.getData() , start+4 );
     }
@@ -91,7 +91,7 @@ public class ObjectKeyHelper {
      * Returns true if the POA has Persisten Lifespan policy.
      * @return boolean
      */
-    public boolean isPersistent( FString objKey ) {
+    public static boolean isPersistent( FString objKey ) {
         return (objKey.getData()[0] == (byte) ('P' & 0xFF));
     }
 
@@ -99,7 +99,7 @@ public class ObjectKeyHelper {
      * Return if the object key has hints corresponding to servant demux location
      * @return boolean
      */
-    public boolean hasHints( FString objKey ) {
+    public static boolean hasHints( FString objKey ) {
         return objKey.getData()[1] == (byte) 1;
     }
 
@@ -107,7 +107,7 @@ public class ObjectKeyHelper {
      * This method returns the POAPath.
      * @return String
      */
-    public void getPOAPathName( FString objKey , FString poaPathOut ) {
+    public static void getPOAPathName( FString objKey , FString poaPathOut ) {
         poaPathOut.reset();
         if (isPersistent( objKey )) {
             int start = 26;
@@ -121,11 +121,11 @@ public class ObjectKeyHelper {
      * Compare transient objectkey time stamps 
      *@return boolean
      */
-    public boolean compareTimeStamps( FString objKey1 , FString objKey2 ) {
+    public static boolean compareTimeStamps( FString timeStamp , FString objKey ) {
         int i = 0, j = 2; // First two bytes are the hints and the prefix
 
         while (i < 8) {
-            if (objKey1.getData()[j++] != objKey2.getData()[i++]) {
+            if (timeStamp.getData()[j++] != objKey.getData()[i++]) {
                 return false;
             }
         }
@@ -138,7 +138,7 @@ public class ObjectKeyHelper {
      * Return the object id embedded in the Object Key
      * @return byte[]
      */
-    public void getId( FString objKey , FString oidOut ) {
+    public static void getId( FString objKey , FString oidOut ) {
         oidOut.reset();
 
         // check if POA does have hints

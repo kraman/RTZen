@@ -4,6 +4,9 @@
 
 package edu.uci.ece.zen.poa.mechanism;
 
+import org.omg.CORBA.IntHolder;
+import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.utils.*;
 
 public final class UserIdStrategy extends IdAssignmentStrategy {
     
@@ -17,9 +20,9 @@ public final class UserIdStrategy extends IdAssignmentStrategy {
     * @return byte[] next id
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public byte[] nextId() throws
-                org.omg.PortableServer.POAPackage.WrongPolicy {
-        throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+    public void nextId( FString oid_out , IntHolder exceptionValue ){
+        exceptionValue.value = POARunnable.WrongPolicyException;
+        oid_out.reset();
     }
 
    /**
@@ -40,10 +43,10 @@ public final class UserIdStrategy extends IdAssignmentStrategy {
     * @param policy type
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public void validate(int policy)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy {
+    public void validate(int policy , IntHolder exceptionValue){
+        exceptionValue.value = POARunnable.NoException;
         if (!isPresent(policy)) {
-            throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+            exceptionValue.value = POARunnable.WrongPolicyException;
         }
     }
 
@@ -53,7 +56,7 @@ public final class UserIdStrategy extends IdAssignmentStrategy {
     * @param id  user id
     * @return boolean true always
     */
-    public boolean verifyID(byte[] id) {
+    public boolean verifyID( FString id) {
         return true;
     }
 

@@ -14,8 +14,9 @@ import org.omg.CORBA.IntHolder;
  */
 abstract public class IdAssignmentStrategy {
 
-    public static final int NoException = 0;
-    public static final int WrongPolicyException = 1;
+    // --- Ids for the strategies ---
+    public static final int USER_ID = 0;
+    public static final int SYSTEM_ID = 1;
 
     /**
      *
@@ -23,13 +24,12 @@ abstract public class IdAssignmentStrategy {
      * @return IdAssignmentStrategy
      */
     public static IdAssignmentStrategy init(org.omg.CORBA.Policy[] policy , IntHolder exceptionValue ) {
-        exceptionValue.value = IdAssignmentStrategy.NoException;
-        if (Util.useSystemIdPolicy(policy)) {
-//            return new SystemIdStrategy();
+        exceptionValue.value = POARunnable.NoException;
+        if (PolicyUtils.useSystemIdPolicy(policy)) {
+            return new SystemIdStrategy();
         } else {
-//            return new UserIdStrategy();
+            return new UserIdStrategy();
         }
-        return null;
     }
 
     /**

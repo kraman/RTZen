@@ -35,7 +35,6 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     }
 
     public static CDROutputStream create(edu.uci.ece.zen.orb.ORB orb){
-
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN

@@ -9,11 +9,7 @@ public final class MultipleIdStrategy extends
      * @param policy policy value
      * @return boolean ture if same, else false
      */
-    public void  validate(int policy, IntHolder exceptionValue) {
-            if (IdUniquenessStrategy.MULTIPLE_ID == policy) {
-                exceptionValue.value = POARunnable.NoException;
-            } else {
-                exceptionValue.value = POARunnable.FalseException;
-            }
+    public boolean validate(int policy) {
+        return (IdUniquenessStrategy.MULTIPLE_ID == policy);
     }
 }

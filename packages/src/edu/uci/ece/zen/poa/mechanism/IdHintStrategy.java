@@ -1,7 +1,8 @@
 package edu.uci.ece.zen.poa.mechanism;
 
-import edu.uci.ece.zen.poa.ObjectKey;
 import org.omg.CORBA.IntHolder;
+import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.utils.*;
 
 
 /**
@@ -20,24 +21,17 @@ import org.omg.CORBA.IntHolder;
  * sequential integers.
  *
  */
-
 final public class IdHintStrategy {
-
-
-/**
- *
- * @param prefix char
- * @param objectId FString
- * @param time FString
- * @param poaIndex FString
- * @param servIndex FString
- * @return ObjectKey
- */
-    public static ObjectKey create(char prefix,
-            FString objectId,
-            FString time,
-            FString poaIndex,
-            FString servIndex, FString ok_out) {
+    /**
+     * @param prefix char
+     * @param objectId FString
+     * @param time FString
+     * @param poaIndex FString
+     * @param servIndex FString
+     * @return ObjectKey
+     */
+    public static void create(char prefix, FString objectId, FString time, int poaIndex , int poaGenCount ,
+            int servIndex, int servGenCount ,  FString ok_out) {
 
         // length = prefix + <no of bytes that poaPathName occupies> +
         // poaPathName + length of the time stamp <8 bytes>
@@ -45,43 +39,38 @@ final public class IdHintStrategy {
         // poaPathName
 
         ok_out.reset();
-        
-
-
-        ok_out.append( (byte)prefix & 0xFF);
+        ok_out.append( (byte)(prefix & 0xFF) );
         ok_out.append( (byte) 1);
         // write out the time
-        ok_key.append( time.getData() , 0 , time.length() );
+        ok_out.append( time.getData() , 0 , time.length() );
         // write out the active Object Map index
-        ok_out.append(poaIndex.getData(), 0, poaIndex.length()); 
+        write_int( ok_out , poaIndex );
+        write_int( ok_out , poaGenCount );
 
         // write out the servant index
-        ok_out.append(servIndex.getData(), 0, servIndex.length())
+        write_int( ok_out , servIndex );
+        write_int( ok_out , servGenCount );
 
         // copy the Object Id
-        ok_out.append(ojbectId.getData(), 0, objectId.length()); 
+        ok_out.append(objectId.getData(), 0, objectId.length()); 
         // Logger.debug("Okey Created: Transient Hint Strategy  = "
         // + new String(temp));
         // Logger.debug("Start = " + start);
     }
 
     // ObjectKey with hints around: Persistent
-/**
- *
- * @param prefix char
- * @param path_name String
- * @param time byte[]
- * @param oid byte[]
- * @param poaIndex byte[]
- * @param servIndex byte[]
- * @return ObjectKey
- */
-    public static void create(char prefix,
-            FString path_name,
-            FString time,
-            FString oid,
-            FString poaIndex,
-            FString servIndex, FString objKey_out) {
+    /**
+     *
+     * @param prefix char
+     * @param path_name String
+     * @param time byte[]
+     * @param oid byte[]
+     * @param poaIndex byte[]
+     * @param servIndex byte[]
+     * @return ObjectKey
+     */
+    public static void create(char prefix, FString path_name, FString time, FString oid,  int poaIndex , int poaGenCount ,
+            int servIndex, int servGenCount , FString objKey_out) {
 
         // length = prefix + <no of bytes that poaPathName occupies> +
         // poaPathName + length of the time stamp <8 bytes>
@@ -91,39 +80,32 @@ final public class IdHintStrategy {
         // first get the number of bytes that are needed for creating
         // the object key
         objKey_out.reset(); 
-        byte[] pathName = path_name.getBytes();
-
-
-        byte[] temp = new byte[count];
-        int start = 0;
-
-        objKey.append( (byte) (prefix & 0xFF));
-        objKey.append( (byte) 1);
+        objKey_out.append( (byte) (prefix & 0xFF));
+        objKey_out.append( (byte) 1);
 
         // write out the time
-        objKey.append(time.getData(), 0, time.length()); 
-        // write out the POA index
-        objKey.append(poaIndex.getData(), 0, poaIndex.length()); 
+        objKey_out.append(time.getData(), 0, time.length()); 
 
-        // write out the servant Index
-        objKey.append(servIndex.getData(), 0, servIndex.length()); 
+        // write out the active Object Map index
+        write_int( objKey_out , poaIndex );
+        write_int( objKey_out , poaGenCount );
+
+        // write out the servant index
+        write_int( objKey_out , servIndex );
+        write_int( objKey_out , servGenCount );
 
         // write the POANanme and string
-        wrtie_int(objKey, pathName.length()); 
-        start = write_int(temp, start, pathName.length);
-        objKey.append(pathName.getData(), 0, pathName.length());
+        write_int(objKey_out , path_name.length()); 
+        objKey_out.append(path_name.getData(), 0, path_name.length());
 
         // copy the Object Id
-        objKey.append(oid.getData(), 0, oid.length()); 
-
+        objKey_out.append(oid.getData(), 0, oid.length()); 
     }
 
-    private static void write_int(byte[] okey_out, int value) {
+    private static void write_int(FString okey_out, int value) {
         okey_out.append((byte) ((value >>> 24) & 0xFF));
         okey_out.append((byte) ((value >>> 16) & 0xFF));
         okey_out.append((byte) ((value >>> 8) & 0xFF));
         okey_out.append((byte) (value & 0xFF));
-
     }
-
 }
