@@ -45,17 +45,18 @@ public class Client extends RealtimeThread
             HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
             System.out.println( server.getMsg() );
 	
-            System.out.println( "====================== Performance warmup =================================" );
+            /*System.out.println( "====================== Performance warmup =================================" );
             for( int i=0;i<10000;i++ )
+ 
                 server.getMsg();
-
+/*
             System.out.println( "====================== Performance benchmark ==============================" );
             long start = System.currentTimeMillis();
             for( int i=0;i<10000;i++ )
                 server.getMsg();
             long end = System.currentTimeMillis();
 
-            System.err.println( 10000/((end-start)/1000.0) );
+            System.err.println( 10000/((end-start)/1000.0) ); */
             System.exit(0);
 	}
 	catch (Exception e)
