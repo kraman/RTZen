@@ -8,7 +8,9 @@ public class DataTypesImpl extends DataTypesPOA
 
 	public short echoShort( short shinVal , org.omg.CORBA.ShortHolder shoutVal) {
 
-		(shinVal == 100)?:System.out.println("in value wrong in echoShort()");
+		if(shinVal != 0){
+			System.out.println("in value wrong in echoShort()");
+	    }
 
 	    short shretVal = shinVal;
 	    shoutVal.value = 102;
