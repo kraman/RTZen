@@ -1,25 +1,13 @@
-<!-- $Id: build.xml,v 1.7 2004/02/25 08:15:19 kraman Exp $ -->
 <project name="Zen Source Packages" default="all" basedir="./..">
-
    <property file="zen-build-bootstrap.properties"/>
    <property file="zen-build.properties"/>
 
-<!--
-    <taskdef 
-        resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
-        <classpath>
-            <pathelement location="${zen.classpath}"/>    
-        </classpath>
-    </taskdef>
--->    
-    <!-- I need to have this one here to work with Windows. 
-         The one above doesn't work for some reason.-->
     <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"/>
-    <!--<taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>-->
+    <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
+
+    <import file="property_processor.xml"/>
 
     <patternset id="sources" >
-        <!--*** Ant Extensions ***-->
-
         <!--*** OMG Sources ***-->
             <include name="src/edu/uci/ece/zen/utils/Logger.java"/>
             <include name="src/edu/uci/ece/zen/utils/**"/>
@@ -75,39 +63,14 @@
             <exclude name="src/edu/oswego/cs/dl/util/concurrent/CopyOnWriteArraySet.java"/>
             <exclude name="src/edu/oswego/cs/dl/util/concurrent/ObservableSync.java"/>
             <include name="src/edu/uci/ece/zen/utils/Logger.java"/>
-
     </patternset>
 
-    <target name="all" depends="idl, compile, lib"/>
+    <target name="all" depends="idl, compile, lib, jRate"/>
 
     <target name="idl">
         <echo message="Compiling IDL files"/>
         <ant antfile="${zen.srcdir}/idl/build.xml"/>
-    </target>    
-
-    <target name="lib">
-    <!--
-        <jRate
-            optimizeLevel="2"
-            libDirs="${zen.jRateLibDir}"
-            sharedLib="true"
-            destdir="${zen.libdir}"
-            out="${zen.libdir}/libZen.so"
-            debug="true"
-            >
-            <fileset
-                dir="${zen.srcdir}"
-                >
-               <patternset refid="sources"/>
-            </fileset>
-        </jRate>
-    -->
-        <jar 
-        jarfile="${zen.libdir}/rteverything.jar" 
-        basedir="${zen.classdir}" 
-        includes="org/omg/**,edu/**"
-        />
-    </target>     
+    </target>
 
     <target name="compile">
         <echo message="Compiling OMG and Zen sources"/>
@@ -118,14 +81,14 @@
             failonerror = "true"
             fork = "true"
             target="1.1"
-            bootclasspath="/home/kraman/OpenVM/OpenVM_bin/src/syslib/user/ovm_rt_user.jar"
+            bootclasspath="${zen.rtbootclasspath}"
+            includeJavaRuntime="yes"
             >
-              
             
             <patternset refid="sources"/>
             <patternset>
-                <include name="src/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java"/>
-                <exclude name="src/javax/**"/>                
+                <include name="src/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java" if="compiler_jRate"/>
+                <include name="src/javax/**" if="compiler_jdk"/>
             </patternset>
             
             <classpath>
@@ -134,41 +97,36 @@
         </javac>
     </target>
 
-    <target name="zenlib" if="zen.lib">
+    <target name="jRate" if="compiler_jRate">
+        <jRate
+            optimizeLevel="2"
+            libDirs="${zen.jRateLibDir}"
+            sharedLib="true"
+            destdir="${zen.libdir}"
+            out="${zen.libdir}/libZen.so"
+            debug="true"
+            >
+            <fileset dir="${zen.srcdir}">
+               <patternset refid="sources"/>
+            </fileset>
+        </jRate>
+    </target>
+
+    <target name="lib">
         <jar 
-        jarfile="${zen.libdir}/zen.jar" 
-        basedir="${zen.classdir}" 
-        includes="edu/uci/ece/zen/**"
-        />
-        <jar 
-        jarfile="${zen.libdir}/omg.jar" 
-        basedir="${zen.classdir}" 
-        includes="org/omg/**"
-        />
-        <jar 
-        jarfile="${zen.libdir}/everything.jar" 
+        jarfile="${zen.libdir}/RTZen.jar" 
         basedir="${zen.classdir}" 
         includes="org/omg/**,edu/**"
+        />
+        <jar 
+        jarfile="${zen.libdir}/realtime.jar" 
+        basedir="${zen.classdir}" 
+        includes="javax/realtime/**"
         />
     </target>
 
     <target name="clean">
-        <!--<echo message="Cleaning Zen JUnit tests"/>-->
-        <!--<ant antfile="${zen.srcdir}/tests/build.xml" target="clean"/>-->
-
         <echo message="Removing generated directory all its contents"/>
         <delete failonerror="false" dir="${zen.srcdir}/generated"/>
     </target>
-
-    <target name="clover">
-        <delete dir="${clover.temp}"/>
-        <delete dir="${clover.html}"/>
-        <antcall target="idl"/>
-        <ant antfile="${zen.srcdir}/clover.xml" inheritRefs="true"/>
-        <antcall target="lib"/>
-        <ant antfile="${zen.srcdir}/tests/build.xml"/>
-        <ant antfile="${zen.srcdir}/tests/build.xml" target="test"/>
-        <ant antfile="${zen.srcdir}/clover.xml" target="clover.html"/>
-    </target>    
-    
 </project>

@@ -114,27 +114,27 @@ class MessageProcessor implements Runnable{
         isActive = true;
         if(ZenProperties.devDbg) System.out.println("Krishna noodle 1");
         GIOPMessageRunnable gmr = new GIOPMessageRunnable( orb , trans );
-         if(ZenProperties.devDbg) System.out.println("Krishna noodle 2");
+        if(ZenProperties.devDbg) System.out.println("Krishna noodle 2");
          
         ExecuteInRunnable eir = new ExecuteInRunnable();
-         if(ZenProperties.devDbg) System.out.println("Krishna noodle 3");
+        if(ZenProperties.devDbg) System.out.println("Krishna noodle 3");
          
 
         while( isActive ){
-             if(ZenProperties.devDbg) System.out.println("Krishna noodle 4");
+            if(ZenProperties.devDbg) System.out.println("Krishna noodle 4");
              
             ScopedMemory messageScope = ORB.getScopedRegion();
-             if(ZenProperties.devDbg) System.out.println("Krishna noodle 5");
+            if(ZenProperties.devDbg) System.out.println("Krishna noodle 5");
              
             gmr.setRequestScope( messageScope );
-             if(ZenProperties.devDbg) System.out.println("Krishna noodle 6");
+            if(ZenProperties.devDbg) System.out.println("Krishna noodle 6");
              
 
             eir.init( gmr , messageScope );
-             if(ZenProperties.devDbg) System.out.println("Krishna noodle 7");
+            if(ZenProperties.devDbg) System.out.println("Krishna noodle 7");
              
             try{
-             if(ZenProperties.devDbg) System.out.println("Krishna noodle 8");
+                if(ZenProperties.devDbg) System.out.println("Krishna noodle 8");
              
                 orb.orbImplRegion.executeInArea( eir );
             }catch( Exception e ){

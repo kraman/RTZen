@@ -1,32 +1,23 @@
-<project name="Zen ORB Hello Demo" default="IdlCheck" basedir="../../..">
-
+<project name="Zen ORB Hello Demo" default="all" basedir="../../..">
     <property file="zen-build-bootstrap.properties"/>
     <property file="zen-build.properties"/>
+    <import file="${zen.srcdir}/property_processor.xml"/>
     
     <property name="package.dir" value="${zen.srcdir}/demo/hello"/>
     <property name="idl.src" value="hello.idl"/>
 
-   <target name="IdlCheck" depends="zen, openorb"/>
-   
-   <target name="zen" if="zen.idl.compiler">
-       <antcall target="compile">
-           <param name="idl.flags" value="-o"/>
-           <param name="gendir" value="${zen.gendir}/"/>
-           <param name="idl.dir" value="${package.dir}"/>
-           <param name="classpath" value="${zen.classpath}"/>
-       </antcall>
-   </target>
+    <target name="all" depends="openorb , compile, jRate"/>
 
-   <target name="openorb" if="openorb.idl.compiler">
-       <antcall target="compile">
+    <target name="openorb">
+       <antcall target="idl">
            <param name="idl.flags" value="-all -d"/>
            <param name="gendir" value="${zen.gendir}"/>
            <param name="classpath" value="${openorb.class.path}"/>
            <param name="idl.dir" value="${package.dir}"/>
        </antcall>
-   </target>
+    </target>
 
-   <target name="idl">
+    <target name="idl">
       <java classpath="${classpath}"
             dir="${zen.gendir}"
             classname="${idl2java.compiler}"
@@ -35,28 +26,29 @@
       </java>
    </target>
 
-   <target name="compile" depends="idl">
+   <target name="compile">
       <javac srcdir="${zen.srcdir}:${zen.gendir}"
              destdir="${zen.classdir}"
              classpath="${classpath}"
              debug="${zen.debug}"
              optimize="${zen.optimization}"
              includes="demo/hello/**.java"
-            target="1.1"
-            bootclasspath="/home/kraman/OpenVM/OpenVM_bin/src/syslib/user/ovm_rt_user.jar"
+             target="1.1"
+             bootclasspath="${zen.rtbootclasspath}"
+             includeJavaRuntime="yes"
              >
-             
-             <patternset>
-                <include name="src/edu/uci/ece/zen/util/TracerAspect.java" if="zen.aspects.trace"/>
-             </patternset> 
       </javac>
+
       <jar 
         jarfile="${zen.libdir}/hello_world.jar" 
         basedir="${zen.classdir}" 
         includes="demo/hello/**"
         />
+    </target>
+
+    <target name="jRate" if="compiler_jRate">
       <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate"/>
-      <!-- <jRate
+      <jRate
             optimizeLevel="2"
             libDirs="${zen.jRateLibDir}"
             additionalLinkOptions="-L${zen.libdir} -lZen"
@@ -74,12 +66,7 @@
                     <include name="demo/hello/**.java"/>
                 </patternset>
             </fileset>
-      </jRate>-->
-        <jar 
-        jarfile="${zen.libdir}/demo_hello.jar" 
-        basedir="${zen.classdir}" 
-        includes="demo/hello/**"
-        />
+       </jRate>
    </target>
 
     <target name="server">
@@ -104,4 +91,3 @@
       </delete> 
     </target>
 </project>
-

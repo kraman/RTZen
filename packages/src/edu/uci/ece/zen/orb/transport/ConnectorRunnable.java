@@ -21,12 +21,16 @@ public class ConnectorRunnable implements Runnable{
     }
 
     public void run(){
+        if(ZenProperties.devDbg) System.out.println( "ConnectorRunnable 1" );
         GetHostRunnable ghr = new GetHostRunnable( host );
+        if(ZenProperties.devDbg) System.out.println( "ConnectorRunnable 2" );
         try{
             HeapMemory.instance().executeInArea( ghr );
+            if(ZenProperties.devDbg) System.out.println( "ConnectorRunnable 3" );
         }catch( Exception e ){
             e.printStackTrace();
         }
+        if(ZenProperties.devDbg) System.out.println( "ConnectorRunnable 4" + ghr.inetaddr );
 
         int iport = 0;
         iport |= port & 0xffff;

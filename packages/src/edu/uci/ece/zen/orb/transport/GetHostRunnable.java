@@ -16,6 +16,7 @@ class GetHostRunnable implements Runnable{
     public void run(){
         try{
             inetaddr = InetAddress.getByName( new String(host.getBytes()) );
+            inetaddr.getHostAddress();
         }catch( Exception e ){
             e.printStackTrace();
         }
