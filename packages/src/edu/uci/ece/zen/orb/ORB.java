@@ -665,37 +665,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         }
     }
 
-    public static Object getQueuedInstance(Class cls, Queue q) {
-
-        if(q == null){
-            ZenProperties.logger.log(Logger.FATAL, cls, "getQueuedInstance", "Queue not created");
-            return null;
-        }
-
-        if(ZenBuildProperties.dbgDataStructures) {
-            System.out.write( 'q' );
-            System.out.write( '_' );
-            System.out.write( 'i' );
-            System.out.write( 'n' );
-            System.out.write( 's' );
-            System.out.write( 't' );
-            Logger.writeln( q.size() );
-            //System.out.println(cls.toString() + " current queue size: " + q.size());
-        }
-
-        Object ret = q.dequeue();
-        if( ret == null ){
-            try {
-                ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", "Creating new instance.");
-                ret = ImmortalMemory.instance().newInstance(cls);
-            } catch (Exception e) {
-                ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
-            }
-        }
-        return ret;
-    }
-
-
     ///////////////////////////////////////////////////////////////////////////
     ////////////////// DON'T CARE ABOUT THESE /////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
