@@ -26,7 +26,7 @@ import org.omg.RTCORBA.RTORBHelper;
 public class Server extends RealtimeThread
 {
     private static final int ITERATION_FACTOR_2 = 1;
-    private static final int ITERTATION_FACTOR_1 = 1000;
+    private static final int ITERTATION_FACTOR_1 = 20;
     public String[] args;
     
     public static void main(String[] args) throws Exception

@@ -21,11 +21,11 @@ public final class ZenProperties {
 
     public static final boolean dbgThreadStack = false;
 
-    public static final boolean CAN_USE_STRINGS = true;
+    public static final boolean CAN_USE_STRINGS = false;
 
     /* set to true to allow printing about memory usage */
 
-    public static final boolean memDbg = false;
+    public static final boolean memDbg = true;
 
     /* configure the memory debugger   */
     public static final float trim = (float)0.8; //To what extent we will trim the data

@@ -24,8 +24,9 @@ public class Client2 extends RealtimeThread
     private static final int A_SECOND = 1000;
     private static final int INITIAL_SLEEP = A_SECOND;
     private static final int REQUEST_SLEEP = 100;
-    public static final int RUN_NUM = 50000;
+    public static final int RUN_NUM = 5000;
     public static final int ARRAY_SIZE = 10;
+    public static final int WARM_UP = 1000;
 
     static int[] array1 = new int[ARRAY_SIZE];
 
@@ -92,6 +93,13 @@ public class Client2 extends RealtimeThread
 
             sleep(INITIAL_SLEEP);
 
+            System.out.println("==============Warm Up==============");
+            
+            for (int i=0; i<WARM_UP; i++){
+                server.getMessage(id, array1);
+            }
+
+
             System.out.println("==============Performance benchmark==============");
             long start = System.currentTimeMillis();
             for (int i = 0; i < RUN_NUM; i++)
@@ -104,14 +112,14 @@ public class Client2 extends RealtimeThread
                  
                 sleep(REQUEST_SLEEP);
 
-                /*
+                
 
                 if (i != 0 && i % 500 == 0)
                 {
                     Logger.write(i);
                     Logger.writeln();
                 }
-                */
+                
             }
             long end = System.currentTimeMillis();
             System.err.println((double) RUN_NUM / ((end - start) / 1000.0));

@@ -35,106 +35,112 @@ public class MSGRunnable implements Runnable {
             ORB orb) {
         this.rm = rm;
         this.servant = servant;
-        //this.reply = reply;
+        this.reply = reply;
         this.orb = orb;
     }
 
     public void run() {
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(322);
-        ResponseHandler rh = new ResponseHandler(orb, rm);
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(323);
+        try{
 
-        ///// Parse service context here
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(322);
+            ResponseHandler rh = new ResponseHandler(orb, rm);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(323);
 
-        FString contexts = rm.getServiceContexts();
+            ///// Parse service context here
 
-        if (ZenProperties.dbg) System.out.println("MSGRunnable REQUEST SC: " + contexts.decode());
+            FString contexts = rm.getServiceContexts();
 
-        ReadBuffer rb = contexts.toReadBuffer();
+            if (ZenProperties.dbg) System.out.println("MSGRunnable REQUEST SC: " + contexts.decode());
 
-        //if (ZenProperties.dbg) System.out.println("#############REPLY RB: " + rb.toString());
+            ReadBuffer rb = contexts.toReadBuffer();
 
-        int size = rb.readLong();
+            //if (ZenProperties.dbg) System.out.println("#############REPLY RB: " + rb.toString());
 
-        if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT size: " + size);
+            int size = rb.readLong();
 
-        for(int i = 0; i < size; ++i){
+            if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT size: " + size);
 
-            int id = rb.readLong();
-            if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT id: " + id);
+            for(int i = 0; i < size; ++i){
 
-            if(id == org.omg.IOP.RTCorbaPriority.value){
-                if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT id:RTCorbaPriority");
-                if(ZenProperties.devDbg) System.out.println("MSGRunnable CUR thread priority: " + orb.getRTCurrent().the_priority());
+                int id = rb.readLong();
+                if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT id: " + id);
 
-                rb.readLong(); //eat length
+                if(id == org.omg.IOP.RTCorbaPriority.value){
+                    if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT id:RTCorbaPriority");
+                    if(ZenProperties.devDbg) System.out.println("MSGRunnable CUR thread priority: " + orb.getRTCurrent().the_priority());
 
-                short priority = (short)rb.readLong();
+                    rb.readLong(); //eat length
 
-                if(ZenProperties.devDbg) System.out.println("MSGRunnable RECEIVED thread priority: " + priority);
+                    short priority = (short)rb.readLong();
 
-                orb.getRTCurrent().the_priority(priority);
+                    if(ZenProperties.devDbg) System.out.println("MSGRunnable RECEIVED thread priority: " + priority);
 
-                if(ZenProperties.devDbg) System.out.println("MSGRunnable NEW thread priority: " + orb.getRTCurrent().the_priority());
+                    orb.getRTCurrent().the_priority(priority);
 
-            } else{ // just eat
-                if(ZenProperties.devDbg) System.out.println("MSGRunnable Skipping unknown service context " + id);
-                int byteLen = rb.readLong();
-                for(int i1 = 0; i1 < byteLen; ++i1)
-                    rb.readByte();
+                    if(ZenProperties.devDbg) System.out.println("MSGRunnable NEW thread priority: " + orb.getRTCurrent().the_priority());
+
+                } else{ // just eat
+                    if(ZenProperties.devDbg) System.out.println("MSGRunnable Skipping unknown service context " + id);
+                    int byteLen = rb.readLong();
+                    for(int i1 = 0; i1 < byteLen; ++i1)
+                        rb.readByte();
+                }
             }
-        }
 
-        rb.free();
-        /////////// end parse service context
+            rb.free();
+            /////////// end parse service context
 
-        if (rm.getOperation().equals("_is_a")) {
-            boolean _result = servant._is_a(rm.getCDRInputStream()
-                    .read_string());
-            org.omg.CORBA.portable.OutputStream _output = rh.createReply();
-            _output.write_boolean(_result);
-            reply = (CDROutputStream) _output;
-        } else if (rm.getOperation().equals("_non_existent")) {
-            boolean _result = servant._non_existent();
-            org.omg.CORBA.portable.OutputStream _output = rh.createReply();
-            _output.write_boolean(_result);
-            reply = (CDROutputStream) _output;
-        } else {
-            edu.uci.ece.zen.utils.Logger.printMemStatsImm(324);
-            String op = rm.getOperation().toString();
-            edu.uci.ece.zen.utils.Logger.printMemStatsImm(325);
+            if (rm.getOperation().equals("_is_a")) {
+                boolean _result = servant._is_a(rm.getCDRInputStream()
+                        .read_string());
+                org.omg.CORBA.portable.OutputStream _output = rh.createReply();
+                _output.write_boolean(_result);
+                reply = (CDROutputStream) _output;
+            } else if (rm.getOperation().equals("_non_existent")) {
+                boolean _result = servant._non_existent();
+                org.omg.CORBA.portable.OutputStream _output = rh.createReply();
+                _output.write_boolean(_result);
+                reply = (CDROutputStream) _output;
+            } else {
+                edu.uci.ece.zen.utils.Logger.printMemStatsImm(324);
+                String op = rm.getOperation().toString();
+                edu.uci.ece.zen.utils.Logger.printMemStatsImm(325);
 
-            reply = (CDROutputStream) ((InvokeHandler) servant)
+                reply = (CDROutputStream) ((InvokeHandler) servant)
                     ._invoke(op,
                             (org.omg.CORBA.portable.InputStream) rm
-                                    .getCDRInputStream(), rh);
+                            .getCDRInputStream(), rh);
 
-        }
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(326);
-
-        if (rm.getResponseExpected() == 1) {
-            reply.updateLength();
-            WriteBuffer wb = reply.getBuffer();
-
-            /*
-            if(ZenProperties.devDbg) {
-                ZenProperties.logger.log("wbdbg__Servant2: " + servant.toString() + " id: " + rm.getRequestId() + " reply: " + reply.toString());
-                ZenProperties.logger.log("wbdbg__Servant2: " + servant.toString() + " id: " + rm.getRequestId() + " wb: " + wb.toString());
-            }*/
-            SendRunnable sr = new SendRunnable();
-            ExecuteInRunnable eir = new ExecuteInRunnable();
-            sr.init(wb);
-            eir.init(sr, rm.getTransport());
-
-            try {
-                orb.orbImplRegion.executeInArea(eir);
-            } catch (Exception e) {
-                ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
             }
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(326);
+
+            if (rm.getResponseExpected() == 1) {
+                reply.updateLength();
+                WriteBuffer wb = reply.getBuffer();
+
+                /*
+                   if(ZenProperties.devDbg) {
+                   ZenProperties.logger.log("wbdbg__Servant2: " + servant.toString() + " id: " + rm.getRequestId() + " reply: " + reply.toString());
+                   ZenProperties.logger.log("wbdbg__Servant2: " + servant.toString() + " id: " + rm.getRequestId() + " wb: " + wb.toString());
+                   }*/
+                SendRunnable sr = new SendRunnable();
+                ExecuteInRunnable eir = new ExecuteInRunnable();
+                sr.init(wb);
+                eir.init(sr, rm.getTransport());
+
+                try {
+                    orb.orbImplRegion.executeInArea(eir);
+                } catch (Exception e) {
+                    ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
+                }
+            }
+            reply.free();
+            rm.free();
+            //((Transport)( rm.getTransport() ).getPortal()).send(wb);
+        }catch(Throwable ex){
+            ex.printStackTrace();
+            System.exit(-1);
         }
-        reply.free();
-        rm.free();
-        //((Transport)( rm.getTransport() ).getPortal()).send(wb);
     }
 }
 

@@ -7,7 +7,7 @@ package demo.jpl;
 
 public class HelloWorldImpl extends HelloWorldPOA
 {
-    private static int ITER = 10000;
+    //private static int ITER = 100;
     private int val;
     
     public HelloWorldImpl(int value)
@@ -20,13 +20,18 @@ public class HelloWorldImpl extends HelloWorldPOA
      */
     public int getMessage(int id, int[] array)
     {
-        for (int i = 0; i < this.val * ITER; i++)
-        {
-            int j = i % array.length; 
-            array[j] = id;
+        /*
+           for (int i = 0; i < this.val * ITER; i++)
+           {
+           int j = i % array.length; 
+           array[j] = id;
+           }
+         */
+        for (int i = 0; i<array.length; i++){
+            array[i] = array[i]*array[i]*array[i];
         }
         
-        System.out.println(id + " Request got here ! ...now sending it back. " + array[0]);
+        //System.out.println(id + " Request got here ! ...now sending it back. " + array[0]);
         return id;
     }
 }

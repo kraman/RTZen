@@ -22,8 +22,9 @@ public class Client1 extends RealtimeThread
     private static final int A_SECOND = 1000;
     private static final int INITIAL_SLEEP = A_SECOND;
     private static final int REQUEST_SLEEP = 10;
-    public static final int RUN_NUM = 50000;
+    public static final int RUN_NUM = 5000;
     public static final int ARRAY_SIZE = 200;
+    public static final int WARM_UP = 1000;
 
     static int[] array1 = new int[ARRAY_SIZE];
 
@@ -89,10 +90,15 @@ public class Client1 extends RealtimeThread
             System.out.println( "===================NativeTimeStamp gets initialized================" );
 
             sleep(INITIAL_SLEEP);
+             
+            System.out.println("==============Warm Up==============");
+            for (int i=0; i<WARM_UP; i++){
+                server.getMessage(id, array1);
+            }
 
             System.out.println("==============Performance benchmark==============");
             long start = System.currentTimeMillis();
-            for (int i = 0; i < RUN_NUM; i++)
+            for (int i = 0; RUN_TIME; i++)
             {
                 
                 //System.out.print("# ");
@@ -108,19 +114,33 @@ public class Client1 extends RealtimeThread
                     Logger.writeln();
                 }
                 */
+                
             }
             long end = System.currentTimeMillis();
             System.err.println((double) RUN_NUM / ((end - start) / 1000.0));
-            
+
             NativeTimeStamp.OutputLogRecords();
 
             System.exit(0);
+
         }
         catch (Exception e)
         {
             e.printStackTrace();
             System.exit(-1);
         }
+        /*
+        finally{
+
+            //long end = System.currentTimeMillis();
+            //System.err.println((double) RUN_NUM / ((end - start) / 1000.0));
+
+            NativeTimeStamp.OutputLogRecords();
+
+            System.exit(0);
+
+        }
+        */
     }
 
 
