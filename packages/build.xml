@@ -42,6 +42,7 @@
             <include name="src/edu/uci/ece/zen/orb/**.java"/>
             <include name="src/edu/uci/ece/zen/orb/policies/**.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/GIOPMessage.java"/>
+            <include name="src/edu/uci/ece/zen/orb/giop/SendRunnable.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/GIOPMessageFactory.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/MSGRunnable.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/GIOPHeaderInfo.java"/>

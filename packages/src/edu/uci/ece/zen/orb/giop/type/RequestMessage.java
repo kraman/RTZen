@@ -22,6 +22,12 @@ public abstract class RequestMessage extends GIOPMessage {
         super.init(orb, stream);
     }
 
+    Object poa;
+    public void associatePOA( Object poa ){
+        this.poa=poa;
+    }
+    public Object getAssociatedPoa(){ return poa; }
+
     // Abstract declarations in addition to those in GIOPMessage 
     public abstract FString getServiceContexts();
     public abstract FString getObjectKey( );

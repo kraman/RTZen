@@ -234,12 +234,10 @@ public class POAImpl{
         if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 4" );
 
         // check if the POA has the persistent policy/or the transient
-        FString objKey = getFString();
-        req.getObjectKey( objKey );
+        FString objKey = req.getObjectKey();
         if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 5" );
         this.lifespanStrategy.validate( objKey , ih );
         if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 6" );
-        retFString( objKey );
         if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retIntHolder( ih ); return; }
         if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 7" );
 

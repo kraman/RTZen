@@ -110,15 +110,13 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
 
         POAImpl pimpl = (POAImpl) ((ScopedMemory)poa.poaMemoryArea).getPortal();
 
-        FString okey = pimpl.getFString();
+        FString okey = request.getObjectKey();
         FString oid = pimpl.getFString();
-        request.getObjectKey( okey );
         ObjectKeyHelper.getId( okey , oid );
 
         // handling as if non retain is in place
         if (this.servant == null) {
             exceptionValue.value = POARunnable.ObjAdapterException;
-            pimpl.retFString( okey );
             pimpl.retFString( oid );
             return;
         }
@@ -158,7 +156,6 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
                 (org.omg.CORBA.portable.InputStream) request.getCDRInputStream(),
                 responseHandler);
         }
-        pimpl.retFString( okey );
         pimpl.retFString( oid );
 
         this.threadPolicyStrategy.exit(invokeHandler);
@@ -175,14 +172,12 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
     {
         exceptionValue.value = POARunnable.NoException;
         POAImpl pimpl = (POAImpl) ((ScopedMemory)poa.poaMemoryArea).getPortal();
-        FString ok = pimpl.getFString();
+        FString ok = request.getObjectKey();
         FString oid = pimpl.getFString();
-        request.getObjectKey( ok );
         ObjectKeyHelper.getId( ok , oid );
 
         edu.uci.ece.zen.poa.POAHashMap okey = this.retentionStrategy.getHashMap( oid , exceptionValue );
         if( exceptionValue.value != POARunnable.NoException ){
-            pimpl.retFString( ok );
             pimpl.retFString( oid );
         }
 
@@ -192,7 +187,6 @@ public class DefaultServantStrategy extends RequestProcessingStrategy {
 
         if (okey == null || !okey.isActive()) {
             exceptionValue.value = POARunnable.ObjNotExistException;
-            pimpl.retFString( ok );
             pimpl.retFString( oid );
             return;
         }

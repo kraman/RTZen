@@ -2,6 +2,8 @@ package edu.uci.ece.zen.utils;
 
 import javax.realtime.*;
 import edu.uci.ece.zen.orb.*;
+import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.orb.giop.type.*;
 
 public class ThreadPool{
     Lane lanes[];
@@ -41,13 +43,13 @@ public class ThreadPool{
         this.orb = orb;
     }
 
-    public boolean borrowThreadAndExecute( ScopedMemory task , int laneId ){
+    public boolean borrowThreadAndExecute( RequestMessage task , int laneId ){
         if( laneId != 0 )
             return lanes[laneId-1].getLeaderAndExecute( task , true );
         return false;
     }
 
-    public void execute( ScopedMemory task , short minPriority , short maxPriority ){
+    public void execute( RequestMessage task , short minPriority , short maxPriority ){
         //TODO: Have to improve performance here
         for( int i=0;i<lanes.length;i++ ){
             if( lanes[i].getPriority() > minPriority && lanes[i].getPriority() < maxPriority )
@@ -107,7 +109,7 @@ class Lane{
         thr.start();
     }
 
-    public synchronized boolean getLeaderAndExecute( ScopedMemory task , boolean forBorrowing ){
+    public synchronized boolean getLeaderAndExecute( RequestMessage task , boolean forBorrowing ){
         if( threads.isEmpty() ){
             if( numThreads < maxStaticThreads + maxDynamicThreads - 1 ){
                 //already at max thread limit, try borrowing
@@ -132,7 +134,7 @@ class Lane{
         return ((ThreadSleepRunnable) threads.dequeue()).execute( task );
     }
 
-    public boolean execute( ScopedMemory task ){
+    public boolean execute( RequestMessage task ){
         return getLeaderAndExecute( task , false );
     }
 
@@ -173,7 +175,7 @@ class Lane{
 
 class ThreadSleepRunnable implements Runnable{
     private boolean isActive;
-    private ScopedMemory task;
+    private RequestMessage task;
     private EventVariable taskAvailableEvent;
 
     private Thread myThread;
@@ -194,7 +196,7 @@ class ThreadSleepRunnable implements Runnable{
         this.lane = lane;
     }
     
-    public boolean execute( ScopedMemory task ){
+    public boolean execute( RequestMessage task ){
         if( !isActive ) return false;
         this.task = task;
         taskAvailableEvent.signal();
@@ -204,7 +206,7 @@ class ThreadSleepRunnable implements Runnable{
     public void run(){
         isActive = true;
         ExecuteInRunnable eir = new ExecuteInRunnable();
-        InvokeRunnable ir = new InvokeRunnable();
+        HandleRequestRunnable ir = new HandleRequestRunnable();
 
         try{
             while( isActive ){
@@ -212,7 +214,8 @@ class ThreadSleepRunnable implements Runnable{
                 taskAvailableEvent.stall();
 
                 //process the task in the portal of the scoped region
-                eir.init( ir , task );
+                ir.init( task );
+                eir.init( ir , ((edu.uci.ece.zen.poa.POA)task.getAssociatedPoa()).poaMemoryArea );
                 try{
                     lane.tp.orb.orbImplRegion.executeInArea( eir );
                 }catch( Exception e ){
@@ -231,15 +234,5 @@ class ThreadSleepRunnable implements Runnable{
             isActive = false;
         else
             myThread.interrupt();
-    }
-}
-
-class InvokeRunnable implements Runnable{
-    InvokeRunnable(){
-    }
-
-    public void run(){
-        Runnable r = (Runnable) ((ScopedMemory) NoHeapRealtimeThread.getCurrentMemoryArea() ).getPortal();
-        r.run();
     }
 }

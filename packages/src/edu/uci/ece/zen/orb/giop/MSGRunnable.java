@@ -3,25 +3,29 @@ package edu.uci.ece.zen.orb.giop;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.orb.transport.Transport;
 import edu.uci.ece.zen.orb.giop.type.RequestMessage;
+import edu.uci.ece.zen.orb.giop.*;
+import edu.uci.ece.zen.orb.*;
+import edu.uci.ece.zen.utils.*;
 import org.omg.PortableServer.Servant;
 import javax.realtime.*;
+import org.omg.CORBA.portable.InvokeHandler;
 
 public class MSGRunnable implements Runnable{
     RequestMessage rm;
     Servant servant;
     CDROutputStream reply;
-    ResponseHandler rh;
     ORB orb;
 
     public MSGRunnable(){}
-    public void init( RequestMessage rm, Servant servant, CDROutputStream reply, ResponseHandler rh, ORB orb ){
+    public void init( RequestMessage rm, Servant servant, CDROutputStream reply, ORB orb ){
         this.rm = rm;
         this.servant = servant;
         this.reply = reply;
-        this.rh = rh;
         this.orb = orb;
     }
     public void run(){
+       ResponseHandler rh = new ResponseHandler( orb , rm );
+        
        if (rm.getOperation().equals("_is_a") )
         {
             boolean _result = servant._is_a(rm.getCDRInputStream().read_string());
@@ -39,21 +43,21 @@ public class MSGRunnable implements Runnable{
         else
         {
             reply = (CDROutputStream)
-                ih._invoke(rm.getOperation().toString(),
-                        (org.omg.CORBA.portable.InputStream)rm.getCDRInputStream(),
-                        rh);
+            ((InvokeHandler)servant)._invoke(rm.getOperation().toString(), (org.omg.CORBA.portable.InputStream)rm.getCDRInputStream(), rh);
         }
 
         reply.updateLength();
         WriteBuffer wb = reply.getBuffer();
-        SendRunnalbe sr = new SendRunnable();
+        SendRunnable sr = new SendRunnable();
         ExecuteInRunnable eir = new ExecuteInRunnable();
         sr.init(wb);
         eir.init(sr, rm.getTransport());
-        orb.orbImplRegion.executeInArea(eir);
- 
+        try{
+            orb.orbImplRegion.executeInArea(eir);
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
         //((Transport)( (ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal()).send(wb);
-       
     }
 }
 

@@ -126,9 +126,8 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
             edu.uci.ece.zen.poa.SynchronizedInt requests , IntHolder exceptionValue ) {
         exceptionValue.value = POARunnable.NoException;
         InvokeHandler invokeHandler = null;
-        FString ok = new FString(255);
+        FString ok = request.getObjectKey();
         FString oid = pimpl.getFString();
-        request.getObjectKey( ok );
         ObjectKeyHelper.getId( ok , oid );
 
         POAHashMap map = null;

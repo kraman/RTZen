@@ -10,9 +10,9 @@ public class HandleRequestRunnable implements Runnable{
     RequestMessage req;
     IntHolder exceptionValue;
 
-    public void init( POA poa , RequestMessage req ){
-        this.poa = poa;
+    public void init( RequestMessage req ){
         this.req = req;
+        this.poa = (POA) req.getAssociatedPoa();
         exceptionValue = new IntHolder(0);
     }
 

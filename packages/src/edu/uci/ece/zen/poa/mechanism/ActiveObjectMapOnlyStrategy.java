@@ -142,10 +142,10 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
 
         ((POACurrent)pimpl.poaCurrent.get()).init(poa, okey, (org.omg.PortableServer.Servant) invokeHandler);
 
-        ResponseHandler responseHandler = ResponseHandler.instance();
-        responseHandler.init(((edu.uci.ece.zen.poa.POA) poa).getORB(),request );
+        //ResponseHandler responseHandler = ResponseHandler.instance();
+        //responseHandler.init(((edu.uci.ece.zen.poa.POA) poa).getORB(),request );
 
-        CDROutputStream reply;
+        CDROutputStream reply = null;
         synchronized (mutex) {
             requests.increment();
             map.incrementActiveRequests();
@@ -158,7 +158,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         ScopedMemory sm = poa.getORB().getScopedRegion();
 
         MSGRunnable msgr = poa.getORB().getMSGR();
-        msgr.init(request, reply, myServant, responseHandler);
+        msgr.init(request, myServant , reply, poa.getORB());
         sm.enter(msgr);
 
         /*if (request.getOperation().equals("_is_a") )

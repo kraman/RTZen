@@ -43,9 +43,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
         if(ZenProperties.devDbg) System.out.println( "POAServerRequestHandler.handleRequest: Got a request to process: " + req );
         
        // gt the index into the Active Map
-       FString objKey = new FString( 256 );     //TODO: Peter, Object key is already an FString....just get it...no need to create
-                                                //anything here
-       req.getObjectKey( objKey );
+       FString objKey = req.getObjectKey();
 
         System.out.println("Inside ServerRequestHandler.handleRequest and mem area: " + javax.realtime.RealtimeThread.getCurrentMemoryArea());
        int index = ObjectKeyHelper.getPOAIndex( objKey );
