@@ -1,0 +1,1380 @@
+<html>
+<!-- Creation date: 12/04/2002 -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>An ANT CORBA task</title>
+<meta name="Description" content="An ANT CORBA task">
+<meta name="Keywords" content="ant corba java orbacus jacorb">
+<meta name="Author" content="Luis Pena">
+<meta name="Generator" content="AceHTML 4 Pro">
+</head>
+<body>
+
+<table width="95%" border="0">
+		<tr>
+			<td width="150" align="left" valign="top" bgcolor="#BBBBFF">
+			<center><br>
+			<p><font color="#4444ff"><b>idldepend</b></font><br></p>
+		<font color="#4444ff"><a href="http://grasia.fdi.ucm.es/~luismi/idldepend">Home page</a></font>
+		<hr size="1" color="#7777FF" width="80%">
+		<a href="mailto:java_lmp@yahoo.co.uk?subject=webpage"><font size="-1">java_lmp@yahoo.co.uk</font></a><br><br>
+		<font size="-1"><b><i><font color="#4444ff">Last Updated:<br> 29th June 2004</font></i></b></font>
+		<hr size="1" color="#7777FF" width="80%">
+			</center>
+		</td>
+
+			<td width="4">
+		</td>
+
+			<td  valign="top">
+		<hr size="2" color="#663366" width="600">
+				 <center><font size="+3" color="#663366"><b><i>idldepend - an ANT CORBA task</i></b></font></center>
+		<hr size="2" color="#663366" width="600">
+		 <ul type="disc">
+					<li><a href="#Description">Description</a></li>
+					<li><a href="#Version">Version and CORBA compliance</a> (<b>new version</b> 0.61 the 29th June 2004)</li>
+					<li><a href="#LicenseAndDownload">License and download</a></li>
+					<li><a href="#Attributes">Attributes</a></li>
+					<li><a href="#NestedElements">Nested elements</a></li>
+					<li><a href="#Example">Example</a></li>
+					<li><a href="#UsingThePreprocessor">Using the preprocessor</a></li>
+					<li><a href="#UsingPackageAndTranslate">Using <i>package</i> and <i>translate</i></a></li>
+					<li><a href="#IDLCompiler">Invoking the idl compiler</a></li>
+					<li><a href="#Translation">Translation of compiler arguments</a>
+					<ul>
+					<li><a href="#JDK">JDK / IBM</a></li>
+					<li><a href="#Orbacus">Orbacus</a></li>
+					<li><a href="#Jacorb">Jacorb</a></li>
+					<li><a href="#OpenORB">OpenORB</a></li>
+					<li><a href="#Orbix">Orbix</a></li>
+					</ul></li>
+					<li><a href="#Troubleshooting">Troubleshooting</a></li>
+					<li><a href="#History">History changes</a></li>
+					<li><a href="#Bugs">Bugs and limitations</a></li>
+		 </ul>
+		<table border="0"><tr><td width="5"></td><td>
+			<p><i><a href="http://jakarta.apache.org/ant/index.html">Ant</a></i> is a powerful Java build tool, built on top of individual tasks.
+		I needed a task for the compilation of CORBA/IDL specifications, supporting at least two compilers: the one that comes
+		with Orbacus and the included with the JDK 1.4. As there was none at that moment, I built my own task, which turned
+		out to be not a very simple one: it features a complete preprocessor, and it has to parse the IDL specification.</p>
+		<p>Although my project didn't use any of the <i>advanced</i> possibilities of the Orbacus or JDK's compilers, like
+		specifying automatically a <i>package</i>, I wanted to include in this task most of the options that can be specified
+		through the command line on these compilers. Not all of them are supported, but the main ones (upon my undestanding)
+		are included. Additionally, the task supports as well other ORB compilers (Jacorb, OpenORB, Orbix, Orbacus, IBM).
+		</p>
+		</td></tr></table>
+		<hr size="1" color="#333399">
+		<table border="0"><tr><td width="5"></td><td>
+		<a name="Description"><h2><font color="#333399">Description</font></h2></a>
+		<p><i>idldepend</i> is a task verifying the dependencies of a CORBA/IDL file. It parses the file, verifying the Java files
+		that must be generated, taking in account the modifications that can happen due to command line parameters. If any
+		of the Java files is missing or is older than the source IDL specification, it launches the specified compiler,
+		being correctly supported those coming with Orbacus, Orbix, Jacorb, OpenORB, IBM and Sun'JDK distributions.To speed up
+		the process and avoid parsing unnecesarily the same files continuously, it keeps the dependencies into intermediate
+		files.</p>
+		<p>This task does not launch as well the Java compiler, that is, its output are Java files and not directly the final
+		bytecode.</p>
+		</td></tr></table>
+		<hr size="1" color="#333399">
+		<table border="0"><tr><td width="5"></td><td>
+		<a name="Version"><h2><font color="#333399">Version and CORBA compliance</font></h2></a>
+		<p>Current version, since the 29th June 2004 is <b><i>0.61</i></b>. It has been developed for Ant 1.4, and it has no problems
+		running under the newer 1.6 version (updates are in fact done using Ant 1.6). </p>
+      <p>Idldepend is compliant with the IDL to Java mapping defined for CORBA 2.4. Support for the mapping 1.2 -CORBA 3.0 compliant- is
+      under work (note as well that the current IDL to Java mapping is only CORBA 2.4 compliant!).<br>In particular, the following keywords
+      are not supported:
+		 <ul type="disc">
+					<li>component</li>
+					<li>consumes</li>
+					<li>finder</li>
+					<li>home</li>
+					<li>emits</li>
+					<li>eventtype</li>
+					<li>getraises</li>
+					<li>import</li>
+					<li>multiple</li>
+					<li>primarykey</li>
+					<li>provides</li>
+					<li>publishes</li>
+					<li>setraises</li>
+					<li>typeid</li>
+					<li>typeprefix</li>
+					<li>uses</li>
+		 </ul>
+      Note that all these keywords have been added with CORBA 3.0, and, by now, I have not knowledge of any ORB with Java mapping
+      supporting them.
+      </p>
+		<p>When a compiler desviates from the standard mapping, the result is therefore incorrect. Nevertheless,
+			 I have not tuned this program to include those compiler desviations, as they are usually harmless.</p>
+		<p>Following are the incompatibilities that I have detected so far (perhaps some have been solved after I checked them,
+		I do not verify periodically the correctness of the compilers):</p>
+		<ul type="disc">
+	    <li>JDK: it generates some extra files in case of valuetypes, to handle them more easily.</li>
+	    <li>Jacorb: it does not handle correctly valuetypes: it does not define a specific scope for them.</li>
+	    <li>Orbacus: if a preprocessor directive is commented out, it still treats the directive.</li>
+	    <li>OpenORB: the use of the parameter <i>side</i> is problematic. Define it as <i>client</i> is translated into
+		   <i>-nostub</i>, but the compiler treats it y disabling the generation of just the stub file, not the other
+		   files only used by the clients (like the helper and holder classes)</li>
+	    <li>Orbix: No incompatibilities detected so far.</li>
+ 		</ul>
+		</td></tr></table>
+		<hr size="1" color="#333399">
+		<table border="0"><tr><td width="5"></td><td>
+		<a name="LicenseAndDownload"><h2><font color="#333399">License and download</font></h2></a>
+		<p><i>idldepend</i> is delivered as it, without any responsabilities on the author. It is open source, it can be used
+		or modified without any limitations. Although the task is beta, it has completely covered my needs, and I consider the
+		source to have the quality enough to be distributed. Reported bugs have been solved and some extensions have been as well
+		included after the first version (look at the <a href="#History">history changes</a> section).</p>
+		<p>If some bug is found or the behaviour is not exactly the shown by the compiler, please send me a mail
+		(<a href="mailto:java_lmp@yahoo.co.uk?subject=idldpend">java_lmp@yahoo.co.uk</a>) and I will
+		promptly introduce the modifications. The task is distributed with source, and therefore you can make by your
+		own any changes.</p>
+		<p>Following are the downloadable files:
+		<ul type="square">
+      <li>Version 0.61. Latest version.
+		<ul type="disc">
+				<li>Source code (.zip format, 137.000 bytes), to be built using ant: <a href="idldepend-0-6-1.zip">idldepend-0-6-1.zip</a></li>
+				<li>Binary code (.jar file, 219.126 bytes): <a href="idldepend-0-6-1.jar">idldepend-0-6-1.jar</a></li>
+		</ul>
+      </li><li>Version 0.60 (30/05/04). <a href="idldepend-0-6-0.zip">idldepend-0-6-0.zip</a> and <a href="idldepend-0-6-0.jar">idldepend-0-6-0.jar</a>
+      </li><li>Version 0.54 (27/05/04). <a href="idldepend-0-5-4.zip">idldepend-0-5-4.zip</a> and <a href="idldepend-0-5-4.jar">idldepend-0-5-4.jar</a>
+      </li><li>Version 0.53 (24/05/04). <a href="idldepend-0-5-3.zip">idldepend-0-5-3.zip</a> and <a href="idldepend-0-5-3.jar">idldepend-0-5-3.jar</a>
+      </li><li>Version 0.52 (13/04/04). <a href="idldepend-0-5-2.zip">idldepend-0-5-2.zip</a> and <a href="idldepend-0-5-2.jar">idldepend-0-5-2.jar</a>
+      </li><li>Version 0.51 (03/04/04). <a href="idldepend-0-5-1.zip">idldepend-0-5-1.zip</a> and <a href="idldepend-0-5-1.jar">idldepend-0-5-1.jar</a>
+      </li><li>Version 0.50 (08/03/04). <a href="idldepend-0-5-0.zip">idldepend-0-5-0.zip</a> and <a href="idldepend-0-5-0.jar">idldepend-0-5-0.jar</a>
+      </li><li>Version 0.41 (10/01/04). <a href="idldepend-0-4-1.zip">idldepend-0-4-1.zip</a> and <a href="idldepend-0-4-1.jar">idldepend-0-4-1.jar</a>
+      </li><li>Version 0.40 (30/11/03). <a href="idldepend-0-4-0.zip">idldepend-0-4-0.zip</a> and <a href="idldepend-0-4-0.jar">idldepend-0-4-0.jar</a>
+      </li><li>Version 0.35 (27/11/03). <a href="idldepend-0-3-5.zip">idldepend-0-3-5.zip</a> and <a href="idldepend-0-3-5.jar">idldepend-0-3-5.jar</a>
+      </li><li>Version 0.34 (25/11/03). <a href="idldepend-0-3-4.zip">idldepend-0-3-4.zip</a> and <a href="idldepend-0-3-4.jar">idldepend-0-3-4.jar</a>
+      </li><li>Version 0.33 (23/08/03). <a href="idldepend-0-3-3.zip">idldepend-0-3-3.zip</a> and <a href="idldepend-0-3-3.jar">idldepend-0-3-3.jar</a>
+      </li><li>Version 0.32 (03/08/03). <a href="idldepend-0-3-2.zip">idldepend-0-3-2.zip</a> and <a href="idldepend-0-3-2.jar">idldepend-0-3-2.jar</a>
+      </li><li>Version 0.31 (16/07/03). <a href="idldepend-0-3-1.zip">idldepend-0-3-1.zip</a> and <a href="idldepend-0-3-1.jar">idldepend-0-3-1.jar</a>
+      </li><li>Version 0.30 (02/07/03). <a href="idldepend-0-3-0.zip">idldepend-0-3-0.zip</a> and <a href="idldepend-0-3-0.jar">idldepend-0-3-0.jar</a>
+      </li><li>Version 0.24 (15/06/03). <a href="idldepend-0-2-4.zip">idldepend-0-2-4.zip</a> and <a href="idldepend-0-2-4.jar">idldepend-0-2-4.jar</a>
+      </li><li>Version 0.23 (03/06/03). <a href="idldepend-0-2-3.zip">idldepend-0-2-3.zip</a> and <a href="idldepend-0-2-3.jar">idldepend-0-2-3.jar</a>
+      </li><li>Version 0.22 (07/04/03). <a href="idldepend-0-2-2.zip">idldepend-0-2-2.zip</a> and <a href="idldepend-0-2-2.jar">idldepend-0-2-2.jar</a>
+      </li><li>Version 0.20 (08/12/02). <a href="idldepend-0-2-0.zip">idldepend-0-2-0.zip</a> and <a href="idldepend-0-2-0.jar">idldepend-0-2-0.jar</a>
+      </li>
+      </ul>
+		In case of using the source code, you need to have <a href="http://jakarta.apache.org/ant/index.html">Ant</a> (to build the task) and
+		<a href="http://www.experimentalstuff.com/Technologies/JavaCC/">JavaCC</a> (only if modifying the grammars,
+		to parse them).
+		Please modify the ant script to define your own JavaCC home directory, and compile it just entering
+		'ant'.<br>
+		<i><b>Note</b></i>: To use the newest JavaCC version (3.2), it is needed to use, at least, ant 1.6. </p>
+		</p>
+		</td></tr></table>
+		<hr size="1" color="#333399">
+		<table border="0" width="100%"><tr><td width="5"></td><td>
+		<p><a name="Attributes"><h2><font color="#333399">Attributes</font></h2></a></p>
+		<table width="95%" border="1" align="center" bordercolor="#333399">
+			<tr style="font: oblique	bold; color: #333399">
+					<td width="100">Attribute</td>
+						<td>Description</td>
+					<td width="50">Required</td>
+						<td width="100">Default value</td>
+				</tr>
+				<tr>
+						<td><b>compiler</b></td>
+						<td><i>jdk / orbacus / jacorb / openorb / orbix / ibm</i>.<br>Specifies the compiler to use, which must be available on the
+				         <i>classpath (jdk/jacorb/openorb/ibm) </i>or in the <i>path (orbacus/orbix2k)</i>
+   					   <ul>Please note that, from version 0.51:<li>jacorb<b>2</b> is deprecated, and jacorb should be used instead.</li><li>
+					   Also from this version, the compilers for jacorb and openorb must be available from the classpath, not
+					   anymore from the path.</li></ul>
+                  </td>
+						<td><div align="center">no</div></td>
+						<td><i><div align="center">jdk</div></i></td>
+				</tr>
+				<tr>
+						<td><b>callCompiler</b></td>
+						<td><i>foreach / once / onceWithAll</i>.<br>Using <i>foreach</i>, the compiler is called each time that
+						a file is verified to have been modified, while with <i>once</i>, it is called only once, with all the
+						files. Please look at <a href="#IDLCompiler">invoking the idl compiler</a> for a deeper explanation.<br>
+						<i>New from version 0.53</i></li></ul>
+                  </td>
+						<td><div align="center">no</div></td>
+						<td><i><div align="center">foreach</div></i></td>
+				</tr>
+				<tr>
+						<td><b>compilerPath</b></td>
+						<td>Specifies the location of the idl compiler.<br>
+                  This is specially useful for <i>orbacus / orbix</i>, to avoid specifying explicitely the PATH to the compiler.<br>
+		  Note that if it is specified on the jdk / openORB ... compilers, the idl compiler is not invoked anymore through the classpath,
+		  but spawning a different process.
+                  </td>
+						<td><div align="center">no</div></td>
+						<td><i><div align="center">-</div></i></td>
+				</tr>
+				<tr>
+						<td><b>file</b></td>
+						<td><i>File</i>: specifies the file to be verified. This or the nested element <i>fileset</i> must be specified.</td>
+						<td><div align="center">no</div></td>
+						<td><i><div align="center">-</div></i></td>
+				</tr>
+				<tr>
+						<td><b>targetdir</b></td>
+						<td><i>File</i>: target directory used on compiler's generation.</td>
+						<td><div align="center">no</div></td>
+					<td><i><div align="center">as base dir</div></i></td>
+				</tr>
+				<tr>
+						<td><b>dependsdir</b></td>
+						<td><i>File</i>: directory used to store the dependency's files.</td>
+						<td><div align="center">no</div></td>
+					<td><i><div align="center">as targetdir</div></i></td>
+				</tr>
+				<tr>
+						<td><b>side</b></td>
+						<td><i>client / server / all / serverTIE / allTIE</i><br>
+						It specifies the kind of generation to be performed: for client or server purposes, and
+						 generating TIE files or not</td>
+						<td><div align="center">no</div></td>
+						<td><i><div align="center">allTIE</div></i></td>
+				</tr>
+				<tr>
+						<td><b>ami</b></td>
+						<td><i>no / callback</i><br>
+						It specifies whether to support AMI (asynchronous messaging interface).
+						It support currently only the <i>callback</i> model (i.e., not the polling)
+                  		</td>
+						<td><div align="center">no</div></td>
+						<td><i><div align="center">no</div></i></td>
+				</tr>
+				<tr>
+						<td><b>checkall</b></td>
+						<td><i>boolean</i>: it checks all the files that must be generated, including those coming out from
+						types defined in included files</td>
+						<td><div align="center">no</div></td>
+						<td><i><div align="center">false</div></i></td>
+				</tr>
+				<tr>
+						<td><b>force</b></td>
+						<td><i>boolean</i>: if set, it does not perform any check, launching the compiler directly.</td>
+						<td><div align="center">no</div></td>
+						<td><div align="center"><i>false</i></div></td>
+				</tr>
+				<tr>
+						<td><b>failOnError</b></td>
+						<td><i>boolean</i>: if set, the idl compiler is not launched if the parser's task finds an error.
+						</td>
+						<td><div align="center">no</div></td>
+						<td><div align="center"><i>false</i></div></td>
+				</tr>
+				<tr>
+						<td><b>preprocess</b></td>
+						<td><i>dismiss / store / storeFull / use / useFull</i><br>
+						Specifies the action on the preprocessed file, as described in the 
+						<a href="#UsingThePreprocessor">section below</a>.</td>
+						<td><div align="center">no</div></td>
+						<td><i><div align="center">dismiss</div></i></td>
+				</tr>
+				<tr>
+						<td><b>verbose</b></td>
+						<td><i>quiet / basic / debug</i><br> Specifies the task's verbosity level</td>
+						<td><div align="center">no</div></td>
+						<td><div align="center"><i>basic</i></div></td>
+				</tr>
+		</table>
+		</td></tr></table>
+		<hr size="1" color="#333399">
+		<table border="0" width="100%"><tr><td width="5"></td><td>
+		<p><a name="NestedElements"><h2><font color="#333399">Nested Elements</font></h2></a></p>
+		<table width="95%" border="1" align="center" bordercolor="#333399">
+			<tr style="font: oblique	bold; color: #333399">
+			   <td width="100">Element</td>
+				<td>Description</td>
+			</tr>
+			<tr>
+				<td><b>fileset</b></td>
+				<td><i>Fileset</i>: files to be compiled. This element is optional, but if the attribute <i>file</i> is not
+					 specified, there must be at least a <i>fileset</i> element.</td>
+			</tr>
+			<tr>
+				<td><b>include</b></td>
+				<td><i>Path</i>: specifies the <i>paths</i> to be used when looking for included files on the IDL files.</td>
+			</tr>
+			<tr>
+				<td><b>define</b></td>
+				<td>Macro definition, defined with the following attributes:
+			      <table width="100%" align="center" bordercolor="#333399">
+				      <tr style="font: oblique	bold; color: #333399">
+						   <td width="100">Attribute</td>
+							<td width="150">Description</td>
+						   <td width="50">Required</td>
+						   <td></td>
+					   </tr>
+						<tr>
+							<td><b>name</b></td>
+							<td>macro name</td>
+							<td><div align="center">yes</div></td>
+						   <td></td>
+						</tr>
+						<tr>
+							<td><b>value</b></td>
+							<td>macro value</td>
+							<td><div align="center">no</div></td>
+						   <td></td>
+						</tr>
+   			   </table>
+	   	   </td>
+			</tr>
+			<tr>
+				<td><b>undefine</b></td>
+				<td>Macro undefinition, defined with the following attributes:
+			      <table width="100%" align="center" bordercolor="#333399">
+				      <tr style="font: oblique	bold; color: #333399">
+						   <td width="100">Attribute</td>
+							<td width="150">Description</td>
+						   <td width="50">Required</td>
+						   <td></td>
+					   </tr>
+						<tr>
+							<td><b>name</b></td>
+							<td>macro name</td>
+							<td><div align="center">yes</div></td>
+						   <td></td>
+						</tr>
+   				</table>
+   			</td>
+			</tr>
+			<tr>
+				<td><b>package</b></td>
+				<td>Modifier used to change the final package for the generated Java files, prepending a given prefix.
+					Additional information is shown <a href="#UsingPackageAndTranslate">below</a>.<br>
+					Following are the attributes of this element:
+					<table width="100%" align="center" bordercolor="#333399">
+						<tr style="font: oblique	bold; color: #333399">
+							<td width="100">Attribute</td>
+							<td>Description</td>
+						</tr>
+						<tr>
+							<td><b>module</b></td>
+							<td><i>String</i>:The module on which the package prefix will be applied. Every type belonging to this module is
+								included inside the package given. When specified, the attribute <i>prefix</i> must be specified
+								as well.</td>
+						</tr>
+						<tr>
+							<td><b>prefix</b></td>
+							<td><i>String</i>:The package prefix to apply.</td>
+						</tr>
+						<tr>
+							<td><b>auto</b></td>
+							<td><i>boolean</i>: if set, it includes every file into a package whose name is taken the <i>prefix</i>
+							defined in the idl dile. It is only valid with <i>orbacus</i> and <i>openorb</i>.</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><b>translate</b></td>
+				<td>Modifier used to change the final package for the generated Java files, modifying the standard <i>package per module</i>
+						generation. Additional information is shown <a href="#UsingPackageAndTranslate">below</a>.<br>
+					Following are the attributes of this element (both are mandatory):
+					<table width="100%" align="center" bordercolor="#333399">
+						<tr style="font: oblique	bold; color: #333399">
+							<td width="100">Attribute</td>
+							<td>Description</td>
+						</tr>
+						<tr>
+							<td><b>module</b></td>
+							<td><i>String</i>: The module to translate.</td>
+						</tr>
+						<tr>
+							<td><b>package</b></td>
+							<td><i>String</i>: The package on which the previous module is translated</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><b>classpath</b></td>
+				<td>
+               Sets the classpath to use to launch the IDL compiler. A whole description of this element is given
+               in the ant manual, on the <a href="http://ant.apache.org/manual/using.html#path">Path-like Structures</a><br>
+            </td>
+			</tr>
+			<tr>
+				<td><b>path</b></td>
+				<td>
+               Sets the path to use when the IDL compiler is executed as an external program. This applies only to 
+               <i>orbacus</i> and <i>orbix</i> compilers; if the <i>compilerPath</i> is specified, it affects
+               to all the compilers.<br>
+               If it is used with <i>jdk</i> or <i>jacorb</i> and the <i>compilerPath</i> is not specified, a warning is
+               raised.<br>
+               A whole description of this element is given
+               in the ant manual, on the <a href="http://ant.apache.org/manual/using.html#path">Path-like Structures</a><br>
+            </td>
+			</tr>
+			<tr>
+				<td><b>arg</b></td>
+				<td><i>Argument</i>: additional argument to supply to the compiler. Note that if this argument modifies
+				the name of the files being generated, <i>force</i> should be set to <i>true</i>, as this task will not
+				be able to calculate correctly the dependencies<br>
+				Example: <i>&lt;arg value=&quot;-Gdsi&quot;&gt;</i><br>
+            <i>By mistake, this element was documented as <b>args</b> on previous versions</i></td>
+			</tr>
+		</table>
+		</td></tr></table>
+
+
+		<hr size="1" color="#333399">
+		<table border="0"><tr><td width="5"></td><td>
+		<a name="Example"><h2><font color="#333399">Example</font></h2></a>
+		<code>	<blockquote>
+							&lt;?xml version=&quot;1.0&quot;?&gt;<br>
+
+							&lt;project name=&quot;Sensei&quot; default=&quot;main&quot; basedir=&quot;.&quot;&gt;<br>
+								&nbsp;&nbsp;&lt;taskdef name=&quot;idlcheck&quot; classname=&quot;idldepend.IDLCheckerTask&quot;/&gt;<br>
+								<br>
+									&nbsp;&nbsp;&nbsp;&nbsp;&lt;target name=&quot;idl&quot;&gt;<br>
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;idlcheck compiler=&quot;jdk&quot; force=&quot;false&quot; checkAll=&quot;false&quot;<br>
+															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=&quot;basic&quot;<br>
+															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;targetDir=&quot;output&quot; dependsDir=&quot;dependencies&quot;&gt;<br>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;fileset dir=&quot;.&quot;&gt;<br>
+													&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;include name=&quot;*.idl&quot;/&gt;<br>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/fileset&gt;<br>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;include&gt;<br>
+													&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;pathelement path=&quot;..&quot;/&gt;<br>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/include&gt;<br>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;package module=&quot;example&quot; prefix=&quot;UNO&quot;/&gt;<br>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;translate module=&quot;CORBA_HP&quot; package=&quot;CORBA_HP.v2&quot;/&gt;<br>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;translate module=&quot;IfacePackage&quot; package=&quot;Interf&quot;/&gt;<br>
+										&nbsp;&nbsp;&nbsp;&nbsp;&lt;/idlcheck&gt;<br>
+									&nbsp;&nbsp;&lt;/target&gt;<br>
+							<br>
+									&nbsp;&nbsp;&nbsp;&nbsp;&lt;target name=&quot;main&quot; depends=&quot;idl&quot;&gt;<br>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;javac srcdir=&quot;output&quot; includes=&quot;**/*.java&quot;&gt;<br>
+									&nbsp;&nbsp;&nbsp;&lt;/target&gt;<br>
+								<br>
+							&lt;/project&gt;<br>
+			</blockquote> </code>
+		</td></tr></table>
+
+		<hr size="1" color="#333399">
+		<table border="0"><tr><td width="5"></td><td>
+		<a name="UsingThePreprocessor"><h2><font color="#333399">Using the preprocessor</font></h2></a>
+		<p>Since version 0.30, IDLdepend can store the preprocessed file (the IDL file after the C preprocessor
+		parses it), and even use it to generate the Java files. This feature is very valuable for those IDL compilers
+		that lack a full-featured preprocessor (<i>Jacorb</i> has problems with basic macros, and the <i>jdk</i> 
+		compiler has as well problems with basic preprocessing functionality, like macros defined across several
+		lines).</p>
+		<p>This functionality is specified with the attribute <i>preprocess</i>, which can have the following
+		values:</p>
+		<ul compact type="disc">
+				<li><b>dismiss</b>: <ul compact type="circle"><li>The preprocessed file is not stored.</li></ul></li>
+				<li><b>store</b>: <ul compact type="circle">
+					<li>The preprocessed file is stored, in the same directory as the dependencies (specified
+						with the attribute <i>dependsdir</i>).</li>
+					<li>This file has the same name as the original, plus a
+						4-digits hexadecimal number, plus '.idl'. The number is the same as used for the dependencies,
+						and it is unique for each file.</li>
+					<li>This file is <b>not fully</b> expanded: the <i>#include</i> directives are kept (but with the 
+						files to be included written with its absolute path).</li>
+					<li>If the attribute <i>force</i> is set to true, no preprocessed file is generated.</li>
+				</ul></li>
+				<li><b>storeFull</b>: <ul compact type="circle">
+					<li>The preprocessed file is stored, like it is done in case of <i>store</i></li>
+					<li>This file is <b>fully</b> expanded: the <i>#include</i> directives are handled, including
+						therefore the related file into the preprocessed file, like any C preprocessor would do.</li>
+					<li>If the attribute <i>force</i> is set to true, no preprocessed file is generated.</li>
+				</ul></li>
+				<li><b>use</b>: <ul compact type="circle">
+					<li>The preprocessed file is stored, like it is done in case of <i>store</i></li>
+					<li>This file is <b>not fully</b> expanded, like it is explained for <i>store</i></li>
+					<li>The preprocessed file is used as input for the IDL compiler; hereby the need to avoid
+						a full expansion, as the IDL compiler would generate otherwise the Java files for all
+						the encountered types.</li>
+					<li>If the attribute <i>force</i> is set to true, the preprocessed file is still generated.</li>
+				</ul></li>
+				<li><b>useFull</b>: <ul compact type="circle">
+					<li>The preprocessed file is stored, like it is done in case of <i>store</i></li>
+					<li>This file is <b>fully</b> expanded, like it is explained for <i>storeFull</i></li>
+					<li>The preprocessed file is used as input for the IDL compiler; note that in this case,
+						the compiler will generate Java code for all the types found in the included files.
+						Therefore, the attribute <i>checkAll</i> looses his meaning if this value is used.</li>
+					<li>If the attribute <i>force</i> is set to true, the preprocessed file is still generated.</li>
+				</ul></li>
+		</ul>
+		</table>
+		
+		<hr size="1" color="#333399">
+		<table border="0"><tr><td width="5"></td><td>
+		<a name="UsingPackageAndTranslate"><h2><font color="#333399">Using <i>package</i> and <i>translate</i></font></h2></a>
+		<p>These modifiers affect to the packages under which the final Java files are generated. For example: <i>package 
+		moduleA prefixA.prefixB</i> converts the file moduleA/moduleB/file.java into prefixA/prefixB/moduleB/file.java
+		The result of these modifications is not fully specified. <i>IDLdepend</i> just performs the translations made 
+		by the specific compiler, and each compiler behaves quite different. For example, when <i>translate</i> is used on 
+		the <i>jdk</i> compiler, it only affects to top-level modules, while under <i>jacorb</i> it modifies any given module;
+		 and this modifier is not applicable for <i>orbacus</i>.</p>
+		<p>Following is a brief description of its behaviour. In case of doubt, check directly the compiler:</p>
+		<ul compact type="disc">
+				<li>Package</li><ul compact type="circle">
+							<li><i>jdk</i><ul compact type="square">
+						 <li>equivalent to modifier <i>-pkgPrefix</i>.</li>
+				       <li><i>module</i> and <i>prefix</i> are mandatory, and <i>auto</i> is not supported.</li>
+						 <li><i>module</i> affects only to the top level module</li>
+						 <li><i>prefix</i> can be compound. I.e, it's possible to specify packageA.packageB</li>
+						 <li>It is applied before any <i>translate</i> modification.</li>
+				</ul></li>
+							<li><i>orbacus</i><ul compact type="square">
+						 <li>equivalent to modifiers <i>--package</i>, <i>--prefix-package</i> and <i>auto-package</i>.</li>
+				 <li>if <i>auto</i> is specified, no other attribute can be present. It is equivalent to <i>--auto-package</i></li>
+						 <li>if only <i>prefix</i> is specified, it is equivalent to <i>--package</i>, with priority over any <i>auto</i> modifier</li>
+						 <li>if <i>module</i> is specified, <i>prefix</i> must be specified as well, being in this case equivalent to
+						<i>--prefix-package</i>: it has priority over <i>--package</i></li>
+				</ul></li>
+							<li><i>jacorb</i><ul compact type="square">
+						 <li>equivalent to modifier <i>-p</i></li>
+				       <li>it only supports the <i>prefix</i> modifier.</li>
+						 <li>it's applied after any <i>translate</i> modification</li>
+				</ul></li>
+							<li><i>openorb</i><ul compact type="square">
+                     <li>equivalent to modifier <i>-package</i></li>
+		     <li><a name="OnceWithAll"><i><b>Important:</b></i></a>if <i>package</i> is used when compiling more than one <i>idl</i> files, openORB 
+		               will behave differently if these files are passed once by once than when they are passed all at once! For this reason, when
+			       the combination <i>openORB + package modifier</i> is used, it is convenient to pass the parameter
+			       <b><i>callCompiler=onceWithAll</i></b></li>
+				</ul></li>
+							<li><i>orbix</i><ul compact type="square">
+						 <li>The <i>prefix</i> is always required, while <i>module</i> is optional and the <i>auto</i> modifier not supported.
+						 <li>if no module is specified, it is equivalent to the Orbix parameter <i>-P prefix</i></li>
+						 <li>if the module is specified, it is equivalent to the Orbix parameter <i>-Pmodule=prefix</i></li>
+						 <li>If several matching <i>packages</i> are specified, it is only used the last one.</li>
+				</ul></li>
+						</ul>
+				<li>Translate</li><ul compact type="circle">
+							<li><i>jdk</i><ul compact type="square">
+						 <li>equivalent to modifier <i>-pkgTranslate</i>.</li>
+				 <li><i>module</i> and <i>package</i> are mandatory</li>
+						 <li><i>module</i> affects only to the top level module<b>s</b></li>
+						 <li><i>prefix</i> can be compound. I.e, it's possible to specify packageA.packageB</li>
+						 <li>It is applied after any <i>package</i> modification.</li>
+						 <li>If two <i>translates</i> are specified affecting the same module:<ul compact type="circle">
+						     <li>If both <i>translates</i> have the same module name, only the second one remains.</li>
+						     <li>Otherwise, the <i>translate</i> with a more specific module name will be applied first.</li>
+						 </ul></li>
+				</ul></li>
+							<li><i>orbacus</i><ul compact type="square">
+						 <li>Not supported</li>
+				</ul></li>
+							<li><i>jacorb</i><ul compact type="square">
+						 <li>equivalent to modifier <i>-i2jpackage</i>.</li>
+				 <li><i>module</i> and <i>package</i> are mandatory</li>
+						 <li><i>module</i> affects to any module in the type. It must be simple, i.e, moduleA.moduleB is not valid</li>
+						 <li><i>prefix</i> can be compound. I.e, it's possible to specify packageA.packageB</li>
+						 <li>It is applied before any <i>package</i> modification.</li>
+				</ul></li>
+							<li><i>openorb</i><ul compact type="square">
+						 <li>Not supported</li>
+				</ul></li>
+							<li><i>orbix</i><ul compact type="square">
+						 <li>Not supported</li>
+				</ul></li>
+						</ul>
+			</ul>
+		</td></tr></table>
+
+		<hr size="1" color="#333399">
+		<table border="0"><tr><td width="5"></td><td>
+		<a name="IDLCompiler"><h2><font color="#333399">Invoking the IDL compiler</font></h2></a>
+		<p>A number of attributes and nested elements control how the IDL compiler will be invoked from <i>idldepend</i>. Of course,
+		every single attribute or element modifies the way the IDL compiler is called, adding or modifying the parameters passed to it; this
+		section refers to <b>which</b> compiler is invoked and <b>how</b> the idl files are passed.</p>
+		
+		<p>Which compiler is invoked is specified via the attributes <b>compiler</b> and <b>compilerPath</b>, and nested elements
+		<b>classpath</b> and <b>path</b>. How the idl files are passed to the compiler is handled via the <b>callCompiler</b> attribute. From
+		these, only this last attribute requires a deeper explanation:
+		<ul>
+		<li>
+		  If callCompiler is set to <b>foreach</b>, each idl file is compiled separately. This is the default behaviour for two reasons:
+		  <ul><li>It was the only mode existing before version 0.53</li>
+		      <li>Some compilers only supports this mode (like JDK or IBM)</li></ul>		  
+		</li>
+		<li>
+		  If callCompiler is set to <b>once</b>, the compiler is only invoked once, passing all the idl files that require compilation.
+		  <ul><li>It should increase the performance, on those compilers that support it.</li>
+		      <li>It is mandatory in some cases. In special, for the <i>OpenORB</i> compiler, it behaves differently compiling two
+		      	  files sequentially or at once, when the <i>package</i> elements are used.</li></ul>		  
+		</li>
+		<li>
+		  If callCompiler is set to <b>onceWithAll</b>, the compiler is only invoked once. The main difference with <b>once</b> is that,
+		  if <i>idldepend</i> identifies that at least once idl file must be compiled, the compiler will be invoked with ALL the idl files,
+		  not only those requiring compilation.
+		  <ul><li>Obviously the performance will be worse.</li>
+		      <li>It is mandatory in some cases. In special, for the <i>OpenORB</i> compiler, as it behaves differently compiling 		     
+		       	  files sequentially or at once, it can be required to pass all the files on every compilation.</li></ul>		  
+		</li>
+		</ul>
+		
+		<p>The <b>callCompiler</b> functionality has been introduced to deal with the <i>OpenORB</i> compiler, though it could be useful
+		with other compilers as well. The <i>OpenORB</i> compiler contains currently a bug: if file <code>a.idl</code> includes the
+		file <code>b.idl</code> and both are passed at once to the idl compiler, <i>OpenORB</i> will not generate the code for the
+		types found in <code>b.idl</code> if it is passed in the command line after <code>a.idl</code>.<br>
+		To work around this bug, idldepend will reorder the idl files, passing first those without dependencies to the others (currently,
+		there are no mechanisms to disable this reordering)
+		</table>
+		
+				
+		<hr size="1" color="#333399">
+		<table border="0"><tr><td width="5"></td><td>
+		<a name="Translation"><h2><font color="#333399">Translation of compiler arguments</font></h2></a>
+		<p>Below is listed the translation of compiler arguments into the task parameters for the supported compilers</p>
+		<p>The lists are given following the compiler order. When a parameter is not supported, is explicitely writen.
+		Note that the <i>args</i> parameter in the task allows to specify any other parameter, but in that case the
+		task can become useless. When a parameter is not directly supported but it can still be specified using the
+		<i>args</i> parameter without any problem, it is as well explicitely writen</p><p></p>
+		</td></tr></table>
+		<table border="0"><tr><td width="20"></td><td>
+			<a name="JDK"><h3><font color="#333399">JDK (as to 1.4.0) and IBM JDK (3.0)</font></h3></a>
+			<table border="1" width="95%" align="center" bordercolor="#333399">
+			<tr style="font: oblique	bold; color: #333399">
+				<td width="250">compiler argument</td>
+				<td>task parameter</td>
+		    </tr>
+			<tr>
+				<td>-d &lt;symbol&gt;</td>
+				<td>define name=&lt;symbol&gt;</td>
+		    </tr>
+			<tr>
+				<td>-emitAll</td>
+				<td>checkAll=true</td>
+		    </tr>
+			<tr>
+				<td>-f&lt;side&gt;</td>
+				<td>side=&lt;side&gt; <br>Note that the side's names match what is expected by JDK (client, server...)</td>
+		    </tr>
+			<tr>
+				<td>-i &lt;include path&gt;</td>
+				<td>include</td>
+		    </tr>
+			<tr>
+				<td>-keep</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-noWarn</td>
+				<td>verbose="quiet" or "basic"</td>
+		    </tr>
+			<tr>
+				<td>-oldImpBase</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-pkgPrefix &lt;t&gt; &lt;prefix&gt;</td>
+				<td>package module=&lt;t&gt; prefix=&lt;prefix&gt;</td>
+		    </tr>
+			<tr>
+				<td>-pkgTranslate &lt;t&gt; &lt;pkg&gt;</td>
+				<td>translate module=&lt;t&gt; package=&lt;pkg&gt;</td>
+		    </tr>
+			<tr>
+				<td>-skeletonName</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-td &lt;dir&gt;</td>
+				<td>targetDir=&lt;dir&gt;</td>
+		    </tr>
+			<tr>
+				<td>-tieName</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-v, -verbose</td>
+				<td>verbose="debug"</td>
+		    </tr>
+			<tr>
+				<td>-version</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			</table>		
+		</td></tr></table>
+		<p></p>
+		<table border="0"><tr><td width="20"></td><td>
+			<a name="Orbacus"><h3><font color="#333399">Orbacus  (as to 4.1.0)</font></h3></a>
+			<table border="1" width="95%" align="center" bordercolor="#333399">
+			<tr style="font: oblique	bold; color: #333399">
+				<td width="250">compiler argument</td>
+				<td>task parameter</td>
+		    </tr>
+			<tr>
+				<td>-h, --help</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-v, --version</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-e, --cpp</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-d, --debug</td>
+				<td>verbose="debug"</td>
+		    </tr>
+			<tr>
+				<td>-DNAME</td>
+				<td>define name=NAME</td>
+		    </tr>
+			<tr>
+				<td>-DNAME=DEF</td>
+				<td>define name=NAME value=DEF</td>
+		    </tr>
+			<tr>
+				<td>-UNAME</td>
+				<td>undefine name=NAME</td>
+		    </tr>
+			<tr>
+				<td>-IDIR</td>
+				<td>include</td>
+		    </tr>
+			<tr>
+				<td>-E</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>--no-skeletons</td>
+				<td>side=client</td>
+		    </tr>
+			<tr>
+				<td>--no-comments</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>--tie</td>
+				<td>side=serverTIE or side=allTIE</td>
+		    </tr>
+			<tr>
+				<td>--clone</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>--all</td>
+				<td>checkAll=true</td>
+		    </tr>
+			<tr>
+				<td>--impl</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>--impl-tie</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>--package PKG</td>
+				<td>package prefix=PKG</td>
+		    </tr>
+			<tr>
+				<td>--prefix-package PRE PKG</td>
+				<td>package module=PRE prefix=PKG</td>
+		    </tr>
+			<tr>
+				<td>--auto-package</td>
+				<td>package auto=true</td>
+		    </tr>
+			<tr>
+				<td>--output-dir DIR</td>
+				<td>targetDIR=DIR</td>
+		    </tr>
+			<tr>
+				<td>--file-list FILE</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>--with-interceptor-args</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>--no-local-copy</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>--case-sensitive</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			</table>		
+		</td></tr></table>
+		<p></p>
+		<table border="0"><tr><td width="20"></td><td>
+			<a name="Jacorb"><h3><font color="#333399">Jacorb  (as to 1.4.1 and 2.0 beta 3)</font></h3></a>
+			<table border="1" width="95%" align="center" bordercolor="#333399">
+			<tr style="font: oblique	bold; color: #333399">
+				<td width="250">compiler argument</td>
+				<td>task parameter</td>
+		    </tr>
+			<tr>
+				<td>-syntax</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-noskel</td>
+				<td>side=client</td>
+		    </tr>
+			<tr>
+				<td>-nostub</td>
+				<td>side=server or side=serverTIE</td>
+		    </tr>
+			<tr>
+				<td>-Idir</td>
+				<td>include</td>
+		    </tr>
+			<tr>
+				<td>-sloppy_forward</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-sloppy_names</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-Dx</td>
+				<td>define name=x</td>
+		    </tr>
+			<tr>
+				<td>-Dx=y</td>
+				<td>define name=x value=y</td>
+		    </tr>
+			<tr>
+				<td>-Ux</td>
+				<td>undefine name=x</td>
+		    </tr>
+			<tr>
+				<td>-p pack</td>
+				<td>package prefix=pack</td>
+		    </tr>
+			<tr>
+				<td>-i2jpackage x:a.b.c</td>
+				<td>translate module=x package=a.b.c</td>
+		    </tr>
+			<tr>
+				<td>-i2jpackagefile</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-i</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-ir</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-global_import</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-d dir</td>
+				<td>targetDIR=dir</td>
+		    </tr>
+			<tr>
+				<td>-W 4</td>
+				<td>-verbose=debug</td>
+		    </tr>
+			<tr>
+				<td>-all</td>
+				<td>checkAll=true</td>
+		    </tr>
+			<tr>
+				<td>-v|version</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-h|help</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-backend</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-jdk14</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-nofinal</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-ami_callback</td>
+				<td>ami=callback</td>
+		    </tr>
+			<tr>
+				<td>-ami_polling</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			</table>
+		</td></tr></table>
+		<p></p>
+		<table border="0"><tr><td width="20"></td><td>
+			<a name="OpenORB"><h3><font color="#333399">OpenORB (as to 1.3 and 1.4)</font></h3></a>
+			<table border="1" width="95%" align="center" bordercolor="#333399">
+			<tr style="font: oblique	bold; color: #333399">
+				<td width="250">compiler argument</td>
+				<td>task parameter</td>
+		    </tr>
+			<tr>
+				<td>-release</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-d directory name</td>
+				<td>targetDIR=directory name</td>
+		    </tr>
+			<tr>
+				<td>-package package_name</td>
+				<td>package prefix=package_name</td>
+		    </tr>
+			<tr>
+				<td>-I</td>
+				<td>include</td>
+		    </tr>
+			<tr>
+				<td>-D</td>
+				<td>define</td>
+		    </tr>
+			<tr>
+				<td>-nostub</td>
+				<td>side=server or side=serverTIE</td>
+		    </tr>
+			<tr>
+				<td>-nolocalstub</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-noskeleton</td>
+				<td>side=client</td>
+		    </tr>
+			<tr>
+				<td>-notie</td>
+				<td>side=client or side=server or side=all</td>
+		    </tr>
+			<tr>
+				<td>-boa</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-dynamic</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-portablehelper</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-all</td>
+				<td>checkAll=true</td>
+		    </tr>
+			<tr>
+				<td>-noprefix</td>
+				<td>Should not be any <i>prefix auto=yes</i></td>
+		    </tr>
+			<tr>
+				<td>-noreverseprefix</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-native</td>
+				<td><i>Not supported</i></td>
+		    </tr>
+			<tr>
+				<td>-quiet</td>
+				<td><i>verbose=quiet</i></td>
+		    </tr>
+			<tr>
+				<td>-silence</td>
+				<td><i>verbose=quiet</i></td>
+		    </tr>
+			<tr>
+				<td>-verbose</td>
+				<td><i>verbose=debug</i></td>
+		    </tr>
+			<tr>
+				<td>-jdk1.4</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-invokeMethod</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-minTableSize</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-XgenerateValueFactory</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			<tr>
+				<td>-XgenerateValueImpl</td>
+				<td><i>Not supported (use args instead)</i></td>
+		    </tr>
+			</table>
+		</td></tr></table>
+		<p></p>
+		<table border="0"><tr><td width="20"></td><td>
+			<a name="Orbix"><h3><font color="#333399">Orbix  (2000)</font></h3></a>
+			<p>Please note that for this compiler, only the directly supported arguments are specified.<br>If no present in the table but still required,
+			   the <i>args</i> task attribute can be used.</p>
+			<p>In addition, if an argument is added via <b>arg</b> and this argument must be embedded <br>
+			in <b>jbase</b> or <b>jpoa</b>, like is the case for arguments starting <br>
+			by <b>-P, -O, -G, -M, -J, -V, -F</b>, the addition is handled automatically<br>
+			by idldepend, i.e., it is not required to add explicitely jbase or jpoa.</p>
+			<table border="1" width="95%" align="center" bordercolor="#333399">
+			<tr style="font: oblique	bold; color: #333399">
+				<td width="250">compiler argument</td>
+				<td>task parameter</td>
+		    </tr>
+			<tr>
+				<td>-jbase</td>
+				<td>side=client</td>
+		    </tr>
+			<tr>
+				<td>-jpoa</td>
+				<td>side=server</td>
+		    </tr>
+			<tr>
+				<td>-Idir</td>
+				<td>include</td>
+		    </tr>
+			<tr>
+				<td>-Dx</td>
+				<td>define name=x</td>
+		    </tr>
+			<tr>
+				<td>-Dx=y</td>
+				<td>define name=x value=y</td>
+		    </tr>
+			<tr>
+				<td>-Ux</td>
+				<td>undefine name=x</td>
+		    </tr>
+			<tr>
+				<td>-P pack</td>
+				<td>package prefix=pack</td>
+		    </tr>
+			<tr>
+				<td>-Px=y</td>
+				<td>package module=x package=y</td>
+		    </tr>
+			<tr>
+				<td>-Odir</td>
+				<td>targetDIR=dir</td>
+		    </tr>
+			<tr>
+				<td>-w</td>
+				<td>-verbose=quiet</td>
+		    </tr>
+			<tr>
+				<td>-v</td>
+				<td>-verbose=debug</td>
+		    </tr>
+			</table>
+		</td></tr></table>
+		<hr size="1" color="#333399">
+		<table border="0"><tr><td width="5"></td><td>
+		<a name="Troubleshooting"><h2><font color="#333399">Troubleshooting</font></h2></a>
+      <p>
+      In case of errors, the fastest way to verify what is happening is to make idldepend verbose, using the
+      attribute verbose=debug.
+      <ul>
+      <li><b>IDLDepend does not report obvious IDL errors.</b> <br>IDLDepend performs exclusively a syntax check, and
+         some errors cannot be verified. For example, an operation <i>void foo(in short long)</i> is an obvious error, but
+         under a syntax check it just means the use of a variable called <i>long</i>
+      </li>
+      <li><b>IDLDepend reports as erronoeus an IDL file that is perfectly parsed by the ORB.</b>
+      <br>Please send me the file to check the error.
+      </li>
+      <li><b>IDLDepend launches always the IDL compiler, even when no new files must be generated</b>
+      <br>Please verify that dependency files are generated (attribute <i>force=yes</i> not defined). These files
+      are generated in the directory given by the <i>dependsdir</i> attribute.
+      <br>In the directory with the <i>dependencies</i>, IDLDepend stores a file for each parsed IDL file; this
+      file has the same name as the IDL file, adding a 4-digits hexadecimal number, and the extension <i>.depends</i>
+      In this file, each line but the last one is prependend with:
+      <ul type="square"><li>
+         <b>&lt;</b>: the rest of the line contains the name of a file referenced by the current file.
+         <br>If the referenced file changes (its timestamp changes), this IDL file must be re-parsed.
+      </li><li>
+         <b>&gt;</b>: the rest of the line contains the name of a file generated from the current IDL file.
+         <br>If this file is older that the current IDL file or does not exist, it is needed to parse again
+         the IDL file to re-generate any depending files.
+      </li></ul>
+      By checking the content of this file, you can verify why IDLDepend is re-launching the idl compiler; in most of
+      the cases, because some file-to-be-generated is missing. If this is not the case, please send me the idl file
+      to verify its behaviour.
+      </li>
+      </ul>
+      </p>
+      
+	</td></tr></table>
+	<hr size="1" color="#333399">
+	<table border="0"><tr><td width="5"></td><td>
+	<a name="History"><h2><font color="#333399">History changes</font></h2></a>
+	<p>
+	<table border="1" width="95%" align="center" bordercolor="#333399">
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.61</br>29th June 2004</b>
+		</td></tr>		
+		<tr><td>
+		Support for the non-standard <b>pseudo</b> keyword is added.<p>
+		This keyword is used to define a pseudo object in the JacORB compiler; it is not standard OMG/IDL at all, and it is not
+		supported in the other compilers (JDK / IBM / OpenORB). In the JacORB compiler, it generates a simple abstract class for
+		the given interface (<code>pseudo interface Example {} </code> will generate the class Example.java at current scope,
+		without added helpers or holders).
+		</td></tr>		
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.60</br>30th May 2004</b>
+		</td></tr>		
+		<tr><td>
+		This version closes (hopefully), the issues concerning the usage of <i>package</i> with the OpenORB compiler
+		</td></tr>		
+		<tr><td>
+		Using <b>callCompiler=&quot;once&quot</b> or <b>callCompiler=&quot;onceWithAll&quot</b>, the list of idl files to compile is sorted, 
+		in such a way that files with less dependencies are first in the list. This is required for the <i>OpenORB</i> compiler, as explained
+		below. However, as it does not break any previous rule (<i>callCompiler</i> has just being introduced) and all my test suites compile
+		fine with this modification, I have preferred to make it the default behaviour, instead of adding still another attribute to control
+		this behaviour</br>
+      		<i>Explanation of the problem with OpenORB:</i>
+		If OpenORB compiler is called using a different <i>callCompiler</i> than <i>foreach</i>, the compiler reacts differently depending
+		on the order of the files passed. As an example, if <code>a.idl</code> depends on <code>b.idl</code>, it is important to pass first
+		<code>b.idl</code> to the compiler, or its associated java files will not be generated.<br>
+		</td></tr>		
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.54</br>27th May 2004</b>
+		</td></tr>		
+		<tr><td>
+		Mismatch between documentation and implementation for attribute <i>callCompiler</i>. The value <i>onceWithAll</i> was implemented
+		as <i>useAll</i>
+		</td></tr>		
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.53</br>24th May 2004</b>
+		</td></tr>		
+		<tr><td>
+		Included support for new compiler. The <i>compiler</i> attribute supports now the value <b>&quot;ibm&quot;</b>, to invoke directly
+		the idl compiler supplied with the IBM JDK (class <i>com.ibm.idl.toJavaPortable.Compile</i>).<br> This support has been provided
+		by <a href="mailto:Andreas.Ebbert@nokia.com?subject=webpage"><font size="-1">Andreas Ebbert</font></a>
+		</td></tr>		
+		<tr><td>
+		<a href="mailto:guillaume.cordina@trema.com?subject=webpage"><font size="-1">Guillaume Cordina</font></a> patched the OpenORB
+		part of <i>idldepend</i> to solve an issue related to the usage of <i>package</i> modifiers: if an <i>ant</i> script would include
+		a <i>package</i> modifier <b><code>x.y.z</code></b> (or, in general, any 3-level name), it would generate a dependency for the
+		file <b><code>y.z/x/...</code></b> instead of <b><code>z/y/x/...</code></b>.
+		<tr><td>
+		New attribute <b>callCompiler</b> that defines how the <i>IDL compiler</i> will be called. This attribute is quite required for
+		the openOrb compiler as described <a href="#OnceWithAll">above</a>. When the changes were made,
+		an optimization was added to call only once the compiler instead of the default mode, where the compiler is called
+		once per file. The &quot;slow&quot; mode remains as default for two reasons: it is the behaviour shown on previous versions, and
+		it is supported by every compiler.
+		</td></tr>		
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.52</br>13th April 2004</b>
+		</td></tr>		
+		<tr><td>
+		Solved a problem with Jacorb when ant 1.5 is used: only the first <i>idl</i> file would compile.<br>
+		</td></tr>
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.51</br>3rd April 2004</b>
+		</td></tr>		
+		<tr><td>
+		Jacorb and OpenOrb compilers are launched now <b>internally</b>, using the classpath. That means that it does not
+		depend anymore on the specific shell scripts (idl in Jacorb, idl2java in OpenORB), which are by default dependant
+		of the platform. This should as well improve the performance of the idldepend task.<br>
+		The main <b>side effect</b> is that any task depending on idldepend, using any of these compilers, must ensure now
+		that the classpath is perfectly specified, and not to rely anymore upon the path.<br>
+		</td></tr>
+		<tr><td>
+		It is deprecated the usage of <b>jacorb2</b> as compiler. It should be used <i>compiler=&quot;jacorb&quot;</i> instead.
+		Currently, only a warning is issued otherwise.<br>
+		</td></tr>		
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.50</br>8th March 2004</b>
+		</td></tr>
+		
+		<tr><td>The major change is that grammars are now generated with the latest <b>JavaCC</b> version. This lets the task being compiled as well with ant 1.6
+			This change should not affect to the <i>idldepend</i> functionality; however, in case of finding some newer
+			error not found on previous versions of <i>idldepend</i>, please get back to the version 0.42 and send me
+			a description of the problem.</td></tr>
+		<tr><td>It is now defined in the same way the constructs: <i>&quot;#ifdef __FOO__&quot;</i>, <i>&quot;#if defined(__FOO__)&quot;</i>, 
+			and <i>&quot;#if defined __FOO__ &quot;</i> (before, the latest construct was an error)<br>
+			Note that the IDL compiler can still handle them in different form; in special, the JDK compiler treats the
+			second one as a macro to be expanded.</td></tr>
+		<tr><td> Corrected the handling of packages when the Orbix compiler is used.</td></tr>
+		
+		<tr align="left" style="font: oblique	bold; color: #333399"> <td width="250">
+		<b></br>Version 0.41</br>10th January 2004</b></td> </tr>
+		
+		<tr><td> Corrected a bug associated to the verbosity output on the OpenORB compiler. </td></tr>
+		<tr><td> Corrected the documentation. The nested argument <b>arg</b> was previously stated as <b>args</b> </td></tr>
+
+
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.40</br>30th November 2003</b></td>
+		    </tr>
+			<tr><td>
+         Added support for <b>local</b> interfaces.
+			</td></tr>
+			<tr><td>
+         Added support for CORBA Messaging, using the attribute <b>ami</b>.
+			</td></tr>
+			<tr><td>
+         Updated documentation related to OpenORB 1.3
+			</td></tr>
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.35</br>27th November 2003</b></td>
+		    </tr>
+			<tr><td>
+         The nested element <b><i>classpath</i></b> applies now on every compiler, not only on JDK or Jacorb.
+			</td></tr>
+			<tr><td>
+			Added the nested element <b><i>path</i></b> and the attribute <b><i>compilerPath</i></b>
+			</td></tr>
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.34</br>25th November 2003</b></td>
+		    </tr>
+			<tr><td>
+			Added support for the new Jacorb 2.x version; its new IDL compiler exits from the JVM calling to System.exit(), and
+         aborting therefore the current ANT task. This version corrects this problem by executing the compiler externally, not
+         in the same JVM.
+			</td></tr>
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.33</br>23rd September 2003</b></td>
+		    </tr>
+			<tr><td>
+			<b>Important</b> bug solved: the IDL file was compiled every time, independently of the dependencies outcome, defeating
+         totally the purpose of idldepend. <i>Yeah, ashaming error :-(</i>
+			</td></tr>
+			<tr><td>
+			New functionality: support for <b><i>classpaths</i></b> as a nested element. Currently, it is only supported on
+         JDK and Jacorb compilers, as the others are launched outside the JVM.
+			</td></tr>
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.32</br>3rd September 2003</b></td>
+		    </tr>
+			<tr><td>
+			Bug solved: dependencies directory was requested even when it was not needed.<br>
+			</td></tr>
+			<tr><td>
+			Bug solved: if the dependencies file was valid, it would not launch the IDL compiler even
+				if the dependencies would show up that the compilation was needed.<br>
+			</td></tr>
+			<tr><td>
+			Mail direction changed: luismpena@gmx.net is now spam territory; long life to java_lmp@yahoo.co.uk<br>
+			</td></tr>
+			<tr><td>
+			<b>Limitation found</b>: if the JDK IDL compiler fails, <i>idldepend</i> will not fail, and the ant
+				task using idldepend will show: BUILD SUCCESSFUL. Unfortunately, this is a limitation on the
+				JDK IDL compiler: when it fails, does not return a error code.
+			</td></tr>
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.31</br>16th July 2003</b></td>
+		    </tr>
+			<tr><td>
+			Corrected a serie of bugs introduced with the additional preprocessing capabilities on
+			verion 0.30.
+			</td></tr>
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.30</br>2nd July 2003</b></td>
+		    </tr>
+			<tr><td>
+			Added new attribute, <b>preprocessor</b>, to enhance the preprocessor capabilities of IDLdepend,
+			and allow its usage on the IDL compilers.
+			</td></tr>
+			<tr><td>
+			  Corrected the handling of the predefined macro <i>##</i>, incorrect on previous versions.
+			</td></tr>
+			<tr><td>
+			  Modified the IDL grammar to allow the use of empty files (IDL files not defining types). In this
+			  case, IDLdepend will not fail, and it depends on the IDL compiler to handle them or fail, as the IDL
+			  grammar does not allow those files.
+			</td></tr>
+			<tr><td>
+			  Corrected the output of IDLdepend when it shows the command line used to execute the IDL compiler.
+			  From version 0.22, it shown on separate lines each parameter, with a final warning about the use of
+			  quotes that was reported as an error by some users. In addition, it made IDLdepend incompatible with
+			  the version 0.4 of <i>Ant</i>.<br>
+			  With the re-corrected behaviour, it shows the command line in one line, with appropiate use of quotes.
+			</td></tr>
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.24</br>15th June 2003</b></td>
+		    </tr>
+			<tr><td>
+			Added new attribute, <b>failOnError</b>, to stop the ANT task if the parser finds
+			a problem on the idl source. Its default value is false, to keep the consistency
+			with the previous releases; previously, if an error was found, the idl compiler
+			was executed to give an accurate description of the error. <br>
+			It has been updated as well the link to the JavaCC homepage.
+			</td></tr>
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.23</br>3rd June 2003</b></td>
+		    </tr>
+			<tr><td>
+			Using the JDK compiler, if two <i>translate</i> modifiers are specified affecting to
+			the same module, the more specific one must be applied first, independently of the
+			order on which are defined.</br>
+			That is, being defined two <i>translate</i> modifies with modules 'IP' and 'IP.DNS',
+			the second one must be applied for those elements defined under the module 'IP.DNS',
+			without applying the translation defined for 'IP'.</br>
+			Version 0.23 solves this problem. Documentation has been slightly revised as well.
+			</td></tr>
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.22</br>27th April 2003</b></td>
+		    </tr>
+			<tr><td>
+			Correct handling of directory paths including spaces. Thanks to <b><i>Jeff Downs</b></i>
+			for providing the patch that solves this problem.
+			</td></tr>
+			<tr align="left" style="font: oblique	bold; color: #333399">
+				<td width="250"></br><b>Version 0.2 </br>8th December 2002</b></td>
+		    </tr>
+			<tr><td>
+			When the IDL file defines types matching <b><i>java reserved</i></b> words, they must be prepended with an underscore.
+			Previous versions did not verify this point.
+			</td></tr>
+			<tr><td>
+			  Correct handling of <b><i>circular dependencies</i></b>: a file included through a circular dependency would let <i>ant</i>
+			  in an infinite loop.<br>
+  			  Handling circular dependencies, <i>idldepend</i> fixes now a limit on the recursion: if a file is
+			  included 400 times (without being completed its inclusion), it reports an error. This is usually due to a wrong
+			  circular dependency.
+			</td></tr>
+			<tr><td>
+			  Support for <b><i>Orbix 2000</i></b>, provided by <b><i>Brian Wallis</b></i>.
+			</td></tr>
+			<tr><td>
+			  Multiple dependencies to the same source are now reported only once.
+			</td></tr>
+			</table>
+		</p>
+		</td></tr></table>
+		<hr size="1" color="#333399">
+		<table border="0"><tr><td width="5"></td><td>
+		<a name="Bugs"><h2><font color="#333399">Bugs and Limitations</font></h2></a>
+		<ul>
+		<li><b>CORBA compliance support</b><br>
+            Please look to the section <a href="#Version">above</a>, to check the current compliance.
+		</li><li><b>JDK</b><br>
+            If the JDK IDL compiler fails, idldepend will not fail, and the ant task using idldepend will show: BUILD SUCCESSFUL. Unfortunately,
+            this is a limitation on the JDK IDL compiler: when it fails, does not return a error code.
+		</li><li><b>Performance</b><br>
+      		The main limitation of <i>idldepend</i> is currently its <b>performance</b>: it must duplicate most of the work that the compiler does
+      		to generate the files and therefore it can be expected it to require double the time that the compiler needs.<br>
+      		In fact, using the JDK compiler, it requires for long files with deep and recursive includes up to <b>six times</b> more. This time
+      		is only required for the first time, as the following times that <i>idldepend</i> is executed, it uses the created dependency files
+      		and then it is faster than the compiler (it <b>doubles</b> it speed).<br>
+      		That is, on its first execution, <i>idldepend</i> is much slower than using directly the IDL compiler, but following executions are
+      		faster than using the compiler. (and if there are no changes, it avoids of course the compilation of the generated .java files!).<br>
+      		This performance is due to the little experience I have with parsers. If you feel more confortable with it, feel free to improve it!
+		</li><li><b>ORBs support</b><br>
+      		I included support initially for JDK, Jacorb, OpenORB and Orbacus ORBs. The support for Orbix was included afterwards by Jeff Downs.<br>
+            Since then, most of the changes in <i>idldepend</i> have been the result of added functionality -like the preprocessor-, or
+            to solve reported bugs. In special, I have not tracked the IDL compilers to verify new command line options. As a result, it is
+            possible that the ORB version you are using it is not perfectly supported by idldepend. If this is the case, please report me the
+            change(s) to enhance this program.<br>		
+      </li>
+      </ul>
+		</td></tr></table>
+		</td>
+		</tr>
+</table>
+</body>
+</html>
