@@ -1,4 +1,4 @@
-package unit.test.cdr;
+
 
 import org.omg.CORBA.*;
 
@@ -22,7 +22,7 @@ public class DataTypesImpl extends DataTypesPOA
 	{
 
 		if(dinVal != 1.123456789)
-        {
+		{
 			System.out.println("in value wrong in echoDouble()");
 			System.out.println("The expected value is 1.123456789 and the actual value is "+dinVal);
 		}
@@ -75,32 +75,32 @@ public class DataTypesImpl extends DataTypesPOA
 
 
 	public byte[] echoOctetSeq(byte[] oseqinVal , unit.test.cdr.DataTypesPackage.octetSeqHolder oseqoutVal)
-    {
+	{
 
-    	if(oseqinVal.length != 2){
-		System.out.println("in value length wrong in echoOctetSeq");
-		System.out.println("The expected lenght is 2 and the actual lenght is "+oseqinVal.length);
+		if(oseqinVal.length != 2){
+			System.out.println("in value length wrong in echoOctetSeq");
+			System.out.println("The expected lenght is 2 and the actual lenght is "+oseqinVal.length);
+		}
+
+		if(oseqinVal[0] != 100){
+			System.out.println("in value wrong in testOctetSeq");
+			System.out.println("The expected value at positon 0 is 100 and the actual value is "+oseqinVal[0]);
+		}
+
+		if(oseqinVal[1] != 101){
+			System.out.println("in value wrong in testOctetSeq");
+			System.out.println("The expected value at positon 1 is 101 and the actual value is "+oseqinVal[1]);
+		}
+
+		byte[] oseqoutArr = {105,106,107};
+
+		byte[] oseqretVal = oseqinVal;
+
+		oseqoutVal.value = oseqoutArr;
+
+		return oseqretVal;
+
 	}
-
-	if(oseqinVal[0] != 100){
-		System.out.println("in value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 0 is 100 and the actual value is "+oseqinVal[0]);
-	}
-
-	if(oseqinVal[1] != 101){
-		System.out.println("in value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 1 is 101 and the actual value is "+oseqinVal[1]);
-	}
-
-	    byte[] oseqoutArr = {105,106,107};
-
-        byte[] oseqretVal = oseqinVal;
-
-        oseqoutVal.value = oseqoutArr;
-
-        return oseqretVal;
-
-    }
 
 	public unit.test.cdr.DataTypesPackage.str[] echoStructSeq(unit.test.cdr.DataTypesPackage.str[] strseqinVal, unit.test.cdr.DataTypesPackage.strSeqHolder strseqoutVal){
 
@@ -146,12 +146,12 @@ public class DataTypesImpl extends DataTypesPOA
 
 	public void onewayShort( short shinVal) {
 
-			if(shinVal != 100){
-				System.out.println("in value wrong in onewayShort()");
-				System.out.println("The expected value is 100 and the actual value is "+shinVal);
-			}
+		if(shinVal != 100){
+			System.out.println("in value wrong in onewayShort()");
+			System.out.println("The expected value is 100 and the actual value is "+shinVal);
+		}
 
-			return;
+		return;
 	}
 
 
@@ -339,44 +339,44 @@ public float[] echoFloatSeq(float[] fseqinVal , test.cdrstreams.DataTypesPackage
 	//System.out.println( fseqoutVal.value[0]+","+fseqoutVal.value[1]);
 
 	//System.out.println("[server]Returning Value from server:");
-        //System.out.println(fseqretVal[0]+","+fseqretVal[1]);
-        return fseqretVal;
-    }
+	//System.out.println(fseqretVal[0]+","+fseqretVal[1]);
+	return fseqretVal;
+}
 
-	public double[] echoDoubleSeq(double[] dseqinVal , test.cdrstreams.DataTypesPackage.doubleSeqHolder dseqoutVal)
-	{
-        double[] dseqoutArr = {4.345,5.456};
-        double[] dseqretVal = {1.0e10, 2.3e10};
+public double[] echoDoubleSeq(double[] dseqinVal , test.cdrstreams.DataTypesPackage.doubleSeqHolder dseqoutVal)
+{
+	double[] dseqoutArr = {4.345,5.456};
+	double[] dseqretVal = {1.0e10, 2.3e10};
 
-        dseqoutVal.value = dseqoutArr;
+	dseqoutVal.value = dseqoutArr;
 
-        System.out.println("[server]In Value Received:");
-        System.out.println( dseqinVal[0]+","+dseqinVal[1]);
-        System.out.println("[server]Out Value Sent to the Client:");
-        System.out.println( dseqoutVal.value[0]+","+dseqoutVal.value[1]);
+	System.out.println("[server]In Value Received:");
+	System.out.println( dseqinVal[0]+","+dseqinVal[1]);
+	System.out.println("[server]Out Value Sent to the Client:");
+	System.out.println( dseqoutVal.value[0]+","+dseqoutVal.value[1]);
 
-        System.out.println("[server]Returning Value from server:");
-        System.out.println(dseqretVal[0]+","+dseqretVal[1]);
-        return dseqretVal;
-    }
+	System.out.println("[server]Returning Value from server:");
+	System.out.println(dseqretVal[0]+","+dseqretVal[1]);
+	return dseqretVal;
+}
 
-	public int[] echoLongSeq(int[] iseqinVal , test.cdrstreams.DataTypesPackage.longSeqHolder iseqoutVal)
-    {
+public int[] echoLongSeq(int[] iseqinVal , test.cdrstreams.DataTypesPackage.longSeqHolder iseqoutVal)
+{
 
-	    int[] iseqoutArr = {4567,-5678};
-        //int[] iseqretVal = {-4321, 5432};
-        int[] iseqretVal = iseqinVal;
+	int[] iseqoutArr = {4567,-5678};
+	//int[] iseqretVal = {-4321, 5432};
+	int[] iseqretVal = iseqinVal;
 
-        iseqoutVal.value = iseqoutArr;
+	iseqoutVal.value = iseqoutArr;
 
-        //System.out.println("[server]In Value Received:");
-        //System.out.println( iseqinVal[0]+","+iseqinVal[1]);
-        //System.out.println("[server]Out Value Sent to the Client:");
-        //System.out.println( iseqoutVal.value[0]+","+iseqoutVal.value[1]);
+	//System.out.println("[server]In Value Received:");
+	//System.out.println( iseqinVal[0]+","+iseqinVal[1]);
+	//System.out.println("[server]Out Value Sent to the Client:");
+	//System.out.println( iseqoutVal.value[0]+","+iseqoutVal.value[1]);
 
-        //System.out.println("[server]Returning Value from server:");
-        //System.out.println(iseqretVal[0]+","+iseqretVal[1]);
-        return iseqretVal;
+	//System.out.println("[server]Returning Value from server:");
+	//System.out.println(iseqretVal[0]+","+iseqretVal[1]);
+	return iseqretVal;
 
-    }*/
+}*/
 }

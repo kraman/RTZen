@@ -19,15 +19,15 @@ import java.io.FileWriter;
 public class CDRTestServer extends RealtimeThread{
 
 	public static void main( String[] args){
-             try{
-//CDRTestServer rt = (CDRTestServer) (new RealtimeThread(null,null,null,new LTMemory(3000,300000),null,null) );
-		RealtimeThread rt = (CDRTestServer) ImmortalMemory.instance().newInstance( CDRTestServer.class );
-		rt.start();
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
-            System.exit(-1);
-        }
+		try{
+			//CDRTestServer rt = (CDRTestServer) (new RealtimeThread(null,null,null,new LTMemory(3000,300000),null,null) );
+			RealtimeThread rt = (CDRTestServer) ImmortalMemory.instance().newInstance( CDRTestServer.class );
+			rt.start();
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+			System.exit(-1);
+		}
 	}
 
 	public void run(){
