@@ -11,14 +11,14 @@ public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
             String host, int port, edu.uci.ece.zen.orb.ORB orb,
             edu.uci.ece.zen.orb.ORBImpl orbImpl) {
         System.err.println( "Serial transport: internalConnect() " );
-	try{
-		if( NativeSerialPort.instance().lock.attempt(0) ){
-		    return NativeSerialPort.instance().myTransport = new Transport(orb, orbImpl);
-		}else
-		    return NativeSerialPort.instance().myTransport;
-	}catch( Exception e ){
-	    return NativeSerialPort.instance().myTransport;
-	}
+        try{
+            if( SerialPortFactory.instance().lock.attempt(0) ){
+                return SerialPortFactory.instance().myTransport = new Transport(orb, orbImpl);
+            }else
+                return SerialPortFactory.instance().myTransport;
+        }catch( Exception e ){
+            return SerialPortFactory.instance().myTransport;
+        }
     }
 
     private static Connector _instance;

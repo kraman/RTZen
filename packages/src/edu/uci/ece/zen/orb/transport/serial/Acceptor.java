@@ -23,7 +23,7 @@ import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
 
 public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
-    private NativeSerialPort sock = NativeSerialPort.instance();
+    private SerialPort sock = SerialPortFactory.instance();
 
     public Acceptor(edu.uci.ece.zen.orb.ORB orb, edu.uci.ece.zen.orb.ORBImpl orbImpl) {
         super(orb, orbImpl);
@@ -36,7 +36,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
             sock.lock.acquire();
             Transport t = new Transport(orb, orbImpl, sock);
             registerTransport(t);
-	    orb.getConnectionRegistry().putConnection((long)-TAG_SERIAL.value,(ScopedMemory) RealtimeThread.getCurrentMemoryArea());
+        orb.getConnectionRegistry().putConnection((long)-TAG_SERIAL.value,(ScopedMemory) RealtimeThread.getCurrentMemoryArea());
         } catch (Exception ioex) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "accept", ioex);
         }
@@ -54,35 +54,35 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         temp.writeLong((int)objKey.length);
         temp.writeByteArray(objKey,0,objKey.length);
         TaggedProfile tp = new TaggedProfile();
-        tp.tag = TAG_SERIAL.value;   
+        tp.tag = TAG_SERIAL.value;
         tp.profile_data = new byte[(int)temp.getPosition()];//temp.getTrimData();
         ReadBuffer rb = temp.getReadBuffer();
         rb.readByteArray(tp.profile_data,0,(int)temp.getPosition());
         temp.free();
         rb.free();
-        
+
         //FString.free(temp);
-/*        
+/*
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
         //for some reason this already gets written
         out.write_boolean(false); //BIGENDIAN
         out.write_ulong(objKey.length);
         out.write_octet_array(objKey, 0, objKey.length);
-        if (ZenProperties.dbg) 
+        if (ZenProperties.dbg)
             ZenProperties.logger.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&Serial transport: getInternalProfile() obj key array size: " + objKey.length);
-        if (ZenProperties.dbg) 
+        if (ZenProperties.dbg)
             ZenProperties.logger.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&Serial transport: getInternalProfile() obj key marshaled size: " + out.getBuffer().getLimit());
         TaggedProfile tp = new TaggedProfile();
         tp.tag = TAG_SERIAL.value;
         tp.profile_data = new byte[(int)out.getBuffer().getLimit()];
         out.getBuffer().readByteArray(tp.profile_data, 0, (int) out.getBuffer().getLimit());
         out.free();
-        
+
         for(int i = 0 ; i < tp.profile_data.length ; ++i)
             if (ZenProperties.dbg) ZenProperties.logger.log("************************************** SERIAL obj key" + tp.profile_data[i]);
-                    
-*/        
+
+*/
         return tp;
     }
 
