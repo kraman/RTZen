@@ -1,0 +1,43 @@
+module demo
+{
+	module doom
+	{
+		struct Player
+		{
+			string name;
+			long xpos;
+			long ypos;
+		};
+
+		interface PlayerTable
+		{
+			boolean addPlayer(in string name, in long xpos, in long ypos);
+			boolean deletePlayer(in string name); 
+			boolean playerExists(in string name);
+			Player getPlayer(in long index);
+			boolean isEmpty();
+			long getPlayerCount();
+			boolean setXYpos(in string name, in long xpos, in long ypos);
+		};
+		
+		typedef sequence <octet> ByteArray;
+		typedef sequence <long> IntArray;
+
+		struct DoomMap
+		{
+			ByteArray ceilingMap;
+			ByteArray floorMap;
+			IntArray lightMap;
+			IntArray map;
+			boolean success;
+		};
+		
+		interface CallServer
+		{
+			boolean exit(in string s);
+			PlayerTable inform(in string name, in long xpos, in long ypos);
+			DoomMap join(in string s);
+		};
+	};
+};
+

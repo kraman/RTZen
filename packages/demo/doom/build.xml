@@ -1,0 +1,30 @@
+<project default="compile">
+
+	<property name="package.dir" value="demo/doom"/>
+	<property name="idl.src" value="doom.idl"/>
+
+	<import file="../../../init.xml"/>
+	<import file="../demo_tasks.xml"/>
+
+	<target name="compile">
+		<copy todir="${zen.classdir}/${package.dir}/images">
+			<fileset dir="${zen.srcdir}/${package.dir}/images"/>
+		</copy>
+    	<idlc file="${zen.srcdir}/${package.dir}/${idl.src}"/>
+		<demo.javac/>
+	</target>
+
+    <target name="server">
+        <demo.java classname="demo.doom.DoomServer"/>
+    </target> 
+
+    <target name="client">
+        <demo.java classname="demo.doom.DoomClient"/>
+    </target> 
+
+    <target name="clean">
+		<demo.delete/>
+    </target>
+
+</project>
+
