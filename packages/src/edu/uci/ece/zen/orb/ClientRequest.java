@@ -280,12 +280,13 @@ class MessageComposerRunnable implements Runnable{
                 waitingStrategy = new TwoWayWaitingStrategy();
                 ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( waitingStrategy );
             }
+            clr.registerWaiter();
         }
-        clr.registerWaiter();
+
         ExecuteInRunnable eir = clr.orb.getEIR();//new ExecuteInRunnable();
         SendMessageRunnable smr = SendMessageRunnable.instance();
         smr.init(clr.transportScope);
-        smr.init( clr.out.getBuffer() );
+        smr.init(clr.out.getBuffer());
         eir.init( smr , clr.transportScope );
         success = true;
         try{

@@ -46,16 +46,18 @@ public class MSGRunnable implements Runnable{
             ((InvokeHandler)servant)._invoke(rm.getOperation().toString(), (org.omg.CORBA.portable.InputStream)rm.getCDRInputStream(), rh);
         }
 
-        reply.updateLength();
-        WriteBuffer wb = reply.getBuffer();
-        SendRunnable sr = new SendRunnable();
-        ExecuteInRunnable eir = new ExecuteInRunnable();
-        sr.init(wb);
-        eir.init(sr, rm.getTransport());
-        try{
-            orb.orbImplRegion.executeInArea(eir);
-        }catch( Exception e ){
-            e.printStackTrace();
+        if( rm.getResponseExpected() == 1 ){
+            reply.updateLength();
+            WriteBuffer wb = reply.getBuffer();
+            SendRunnable sr = new SendRunnable();
+            ExecuteInRunnable eir = new ExecuteInRunnable();
+            sr.init(wb);
+            eir.init(sr, rm.getTransport());
+            try{
+                orb.orbImplRegion.executeInArea(eir);
+            }catch( Exception e ){
+                e.printStackTrace();
+            }
         }
         reply.free();
         //((Transport)( rm.getTransport() ).getPortal()).send(wb);

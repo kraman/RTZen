@@ -6,10 +6,23 @@ import org.omg.IOP.TaggedProfile;
 import edu.uci.ece.zen.orb.transport.Acceptor;
 import edu.uci.ece.zen.utils.*;
 
+/** This is a registry for all Acceptor objects that are created for incomming
+ * connections. Current this class uses a java.util.Vector class to store the
+ * acceptors but this will replaced later. Also, there is currently no way to
+ * remove an acceptor once it has been added.
+ * @author Krishna Raman
+ */
 public class AcceptorRegistry{
-
+    /** A normal java.util.Vector to store the acceptor objects. */
     private Vector list = new Vector();
 
+    /** Function to return all transport profiles for acceptors stored in this
+     * registry. The profile objects are created in the client area that is
+     * passed in.
+     * @param objKey The object key to embed in the profile.
+     * @param clientArea The memory area to create the profiles in.
+     * @return A array containing the list of transport profiles.
+     */
     public TaggedProfile[] getProfiles( FString objKey, MemoryArea clientArea)
             throws IllegalAccessException,InstantiationException,InaccessibleAreaException
     {
@@ -26,6 +39,9 @@ public class AcceptorRegistry{
         return tpList;
     }
 
+    /** This method adds the acceptor to the registry.
+     *
+     */
     public void addAcceptor(ScopedMemory acceptorArea){
         list.add(acceptorArea);
     }
