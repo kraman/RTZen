@@ -44,7 +44,7 @@ public abstract class Logger{
         MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
 	    long mem = ma.memoryConsumed();
         //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());            
-        if(edu.uci.ece.zen.utils.ZenProperties.memDbg) perf.cPrint.nativePrinter.print(code,(int)mem,0);
+        if(edu.uci.ece.zen.utils.ZenProperties.memDbg) perf.cPrint.nativePrinter.print(code,(int)mem,((ScopedMemory)ma).getReferenceCount());
         //System.out.println(ma.memoryConsumed());            
 		/* disabled was to verify that memory printing does not consume memory
 		   JNI call does not consume mem !!
