@@ -1,4 +1,4 @@
-<project name="RTRen ORB Hello Demo" default="all" basedir="../../..">
+<project name="RTZen ORB Hello Demo" default="all" basedir="../../..">
     <property file="zen-build-bootstrap.properties"/>
     <property file="zen-build.properties"/>
     <import file="${zen.srcdir}/property_processor.xml"/>
