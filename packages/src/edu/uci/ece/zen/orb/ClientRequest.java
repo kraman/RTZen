@@ -1,12 +1,11 @@
 package edu.uci.ece.zen.orb;
 
-import javax.realtime.ImmortalMemory;
 import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
 
 import org.omg.RTCORBA.PriorityModel;
 
-import edu.uci.ece.zen.orb.giop.IOP.ServiceContext;
+import edu.uci.ece.zen.orb.protocol.IOP.ServiceContext;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;

@@ -3,8 +3,6 @@ package edu.uci.ece.zen.orb;
 import javax.realtime.ScopedMemory;
 
 import edu.uci.ece.zen.utils.FString;
-import edu.uci.ece.zen.utils.Logger;
-import edu.uci.ece.zen.utils.ZenProperties;
 
 public class LaneInfo {
     public LaneInfo() {
