@@ -1,0 +1,12 @@
+module demo
+{
+	module octet_test
+	{
+		interface HelloWorld
+		{
+		    typedef sequence<octet> unbounded_seq;
+			long getMessage(in long id, in unbounded_seq mySeq);
+		};
+	};
+};
+
