@@ -21,7 +21,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
      * <p>
      *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
-     */   
+     */
     public ClientRequest( String operation , boolean responseExpected , byte giopMajor , byte giopMinor , ORB orb , ObjRefDelegate del )
     {
         this.orb = orb;
@@ -49,7 +49,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
      * <p>
      *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
-     */   
+     */
     public CDRInputStream invoke(){
         System.out.println( Thread.currentThread() + "In client memory: " + RealtimeThread.getCurrentMemoryArea() );
         out.updateLength();
@@ -83,7 +83,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         }
         erOrbMem.free();
         erMsgMem.free();
-                
+
         orb.freeScopedRegion( messageScope );
         if( mcr.success )
             return mcr.getReply();
@@ -104,7 +104,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
     }
 
     //Redirect OutputStream methods to CDROutputStream
-    
+
     public final void write_octet(final byte value) { out.write_octet(value); }
     public void write_octet_array(byte[] value, int offset, int length) { out.write_octet_array( value , offset , length ); }
     public void write_boolean(boolean value) { out.write_boolean( value ); }
@@ -151,7 +151,7 @@ class MessageComposerRunnable implements Runnable{
      * <p>
      *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
-     */   
+     */
     public MessageComposerRunnable( ClientRequest clr ){
         this.clr = clr;
     }
@@ -211,60 +211,3 @@ class MessageComposerRunnable implements Runnable{
     public CDRInputStream getReply(){ return reply; }
 }
 
-class SendMessageRunnable implements Runnable{
-
-    private static Queue sendMessageRunnableCache;
-    static{
-        try{
-            sendMessageRunnableCache = (Queue) ImmortalMemory.instance().newInstance( Queue.class );
-        }catch( Exception e ){
-            e.printStackTrace();
-        }
-    }
-    
-    public static SendMessageRunnable instance(){
-        SendMessageRunnable r = (SendMessageRunnable) sendMessageRunnableCache.dequeue();
-        if( r == null ){
-            try{
-                return (SendMessageRunnable) ImmortalMemory.instance().newInstance( SendMessageRunnable.class );
-            }catch( Exception e ){
-                e.printStackTrace();
-            }
-        }else
-            return r;
-        return null;
-    }
-
-    private static void release( SendMessageRunnable r ){
-        sendMessageRunnableCache.enqueue( r );
-    }
-    
-    WriteBuffer msg;
-
-    public SendMessageRunnable(){}
-
-    /**
-     * Client upcall:
-     * <p>
-     *     Client scope --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; <b>Message scope/Waiter region</b> --&gt; Transport scope
-     * </p>
-     */
-    public void init( WriteBuffer buffer ){
-        this.msg = buffer;
-    }
-
-    /**
-     * Client upcall:
-     * <p>
-     *     Client scope --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; <b>Transport scope</b>
-     * </p>
-     */
-    public void run(){
-        edu.uci.ece.zen.orb.transport.Transport trans = (edu.uci.ece.zen.orb.transport.Transport) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
-        trans.send( msg );
-    }
-
-    public void free(){
-        SendMessageRunnable.release( this );
-    }
-}
