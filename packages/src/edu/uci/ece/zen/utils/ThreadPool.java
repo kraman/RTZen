@@ -54,7 +54,7 @@ public class ThreadPool {
         this.acceptorRunnable = acceptorRunnable;
 
         this.lanes = new Lane[1];
-        acceptorRunnable.init( orb , defaultPriority , threadPoolId );
+        acceptorRunnable.init( orb , PriorityMappingImpl.toNative(defaultPriority) , threadPoolId );
         orb.setUpORBChildRegion( acceptorRunnable );
         this.lanes[0] = new Lane(stackSize, staticThreads, dynamicThreads,
                 defaultPriority, this, allowBorrowing, allowRequestBuffering,
@@ -87,7 +87,7 @@ public class ThreadPool {
                     " created with priority: " + lane_priority + 
                     " static_threads: " + static_threads + 
                     " dynamic_threads: " + dynamic_threads);            
-            acceptorRunnable.init( orb , lane_priority , threadPoolId );
+            acceptorRunnable.init( orb , PriorityMappingImpl.toNative(lane_priority) , threadPoolId );
             orb.setUpORBChildRegion( acceptorRunnable );
             this.lanes[i] = new Lane(stackSize, static_threads,
                     dynamic_threads, lane_priority, this,
@@ -117,7 +117,7 @@ public class ThreadPool {
         this.lanes = new Lane[lanes.length];
         for (int i = 0; i < lanes.length; i++){
             short lane_priority = lanes[i].lane_priority;//PriorityMappingImpl.toNative(lanes[i].lane_priority );
-            acceptorRunnable.init( orb , lane_priority, threadPoolId );
+            acceptorRunnable.init( orb , PriorityMappingImpl.toNative(lane_priority), threadPoolId );
             orb.setUpORBChildRegion( acceptorRunnable );
             this.lanes[i] = new Lane(stackSize, lanes[i].static_threads,
                     lanes[i].dynamic_threads, 
