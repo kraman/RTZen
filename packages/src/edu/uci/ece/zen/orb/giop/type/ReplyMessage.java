@@ -26,6 +26,6 @@ public abstract class ReplyMessage extends GIOPMessage {
 
     // Abstract declarations in addition to those in GIOPMessage
     public abstract int getReplyStatus();
-
     public abstract FString getServiceContexts();
+    public abstract void release();
 }

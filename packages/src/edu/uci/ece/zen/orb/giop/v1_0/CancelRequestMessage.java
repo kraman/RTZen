@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.v1_0;
+package edu.uci.ece.zen.orb.giop.standard.v1_0;
 
 import javax.realtime.ImmortalMemory;
 
@@ -58,6 +58,8 @@ public class CancelRequestMessage extends
     public int getGiopVersion() {
         return 10;
     }
+    
+    public void internalFree(){}
 }
 
 // client should call

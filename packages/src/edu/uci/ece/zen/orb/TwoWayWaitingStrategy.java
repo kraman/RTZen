@@ -54,7 +54,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
          */
         //TODO:remember to release the message....u only have 1
         clientSem.release();
-        ((edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage)reply).release();
+        ((edu.uci.ece.zen.orb.giop.type.ReplyMessage)reply).release();
     }
 
     public CDRInputStream waitForReply() {

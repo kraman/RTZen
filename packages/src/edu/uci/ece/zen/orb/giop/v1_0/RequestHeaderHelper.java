@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.v1_0;
+package edu.uci.ece.zen.orb.giop.standard.v1_0;
 
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;

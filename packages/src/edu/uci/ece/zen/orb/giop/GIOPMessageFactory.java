@@ -67,12 +67,12 @@ public final class GIOPMessageFactory {
                         case 0:
                             switch (mainMsgHdr.messageType) {
                                 case org.omg.GIOP.MsgType_1_0._Request:
-                                    ret = edu.uci.ece.zen.orb.giop.v1_0.RequestMessage
+                                    ret = edu.uci.ece.zen.orb.giop.standard.v1_0.RequestMessage
                                             .getMessage();
                                     ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._Reply:
-                                    ret = edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage
+                                    ret = edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyMessage
                                             .getMessage();
                                     ret.init(orb, buffer);
                                     break;
@@ -83,17 +83,17 @@ public final class GIOPMessageFactory {
                                     
                                     //this is provisional until we get it working right
                                     //just return OBJECT_HERE for now
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.
+                                    ret = new edu.uci.ece.zen.orb.giop.standard.v1_0.
                                             LocateRequestMessage(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._LocateReply:
-                                    ret = edu.uci.ece.zen.orb.giop.v1_0.LocateReplyMessage
+                                    ret = edu.uci.ece.zen.orb.giop.standard.v1_0.LocateReplyMessage
                                             .getMessage();
                                     ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._CloseConnection:
                                 case org.omg.GIOP.MsgType_1_0._CancelRequest:
-                                    ret = edu.uci.ece.zen.orb.giop.v1_0.CancelRequestMessage
+                                    ret = edu.uci.ece.zen.orb.giop.standard.v1_0.CancelRequestMessage
                                             .getMessage();
                                     ret.init(orb, buffer);
 
@@ -368,7 +368,7 @@ public final class GIOPMessageFactory {
         //(new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId
         // )).marshal( out );
 
-        edu.uci.ece.zen.orb.giop.v1_0.RequestMessage rm = edu.uci.ece.zen.orb.giop.v1_0.RequestMessage
+        edu.uci.ece.zen.orb.giop.standard.v1_0.RequestMessage rm = edu.uci.ece.zen.orb.giop.standard.v1_0.RequestMessage
                 .getMessage();
         rm.init(req, messageId);
         rm.marshal(out);
@@ -398,13 +398,13 @@ public final class GIOPMessageFactory {
 
         switch (req.getGiopVersion()) {
             case 10:
-                edu.uci.ece.zen.orb.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.giop.v1_0.ReplyHeader
+                edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeader
                         .instance();
                 rh.init(FString.instance(rh.service_context), req
                         .getRequestId(),
                         org.omg.GIOP.ReplyStatusType_1_0._NO_EXCEPTION);
                 rh.service_context.append(0);
-                edu.uci.ece.zen.orb.giop.v1_0.ReplyHeaderHelper.write(out, rh);
+                edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeaderHelper.write(out, rh);
                 break;
             /*
              * case 11: org.omg.GIOP.ReplyHeader_1_1Helper.write( out , new
@@ -471,13 +471,13 @@ public final class GIOPMessageFactory {
 
         switch (req.getGiopVersion()) {
             case 10:
-                edu.uci.ece.zen.orb.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.giop.v1_0.ReplyHeader
+                edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeader
                         .instance();
                 rh.init(FString.instance(rh.service_context), req
                         .getRequestId(),
                         org.omg.GIOP.ReplyStatusType_1_0._USER_EXCEPTION);
                 rh.service_context.append(0);
-                edu.uci.ece.zen.orb.giop.v1_0.ReplyHeaderHelper.write(out, rh);
+                edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeaderHelper.write(out, rh);
                 break;
             /*
              * case 11: org.omg.GIOP.ReplyHeader_1_1Helper.write( out , new

@@ -64,9 +64,12 @@ public abstract class GIOPMessage {
         return transport;
     }
 
-    public void free(){
+    public final void free(){
         if(istream != null) istream.free();
         istream = null;
+        internalFree();
         //messageBody.free();
     }
+    
+    public abstract void internalFree();
 }

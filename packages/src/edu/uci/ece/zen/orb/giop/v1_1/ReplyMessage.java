@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.v1_1;
+package edu.uci.ece.zen.orb.giop.standard.v1_1;
 
 import org.omg.GIOP.*;
 import edu.uci.ece.zen.orb.*;

@@ -80,7 +80,7 @@ public abstract class LocateReplyMessage extends GIOPMessage {
      * message that it is. Called by constructors.
      */
     protected void readBody() {
-        if (this instanceof edu.uci.ece.zen.orb.giop.v1_0.LocateReplyMessage) { //||
+        if (this instanceof edu.uci.ece.zen.orb.giop.standard.v1_0.LocateReplyMessage) { //||
             // this
             // instanceof
             // edu.uci.ece.zen.orb.giop.v1_1.LocateReplyMessage)

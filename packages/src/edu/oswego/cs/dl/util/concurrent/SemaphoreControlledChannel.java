@@ -69,12 +69,12 @@ public abstract class SemaphoreControlledChannel implements BoundedChannel {
             Integer.TYPE
         };
         Constructor ctor = semaphoreClass.getDeclaredConstructor(intarg);
-        Integer[] cap = {
+        Object[] cap = {
             new Integer(capacity)
         };
 
         putGuard_ = (Semaphore) (ctor.newInstance(cap));
-        Integer[] zero = {
+        Object[] zero = {
             new Integer(0)
         };
 

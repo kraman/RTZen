@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.v1_0;
+package edu.uci.ece.zen.orb.giop.standard.v1_0;
 
 import javax.realtime.ImmortalMemory;
 
@@ -85,7 +85,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
         queue.enqueue(this);
     }
 
-    public void free(){
+    public void internalFree(){
         super.free();
         release();
     }
