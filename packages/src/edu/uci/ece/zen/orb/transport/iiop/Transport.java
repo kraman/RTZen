@@ -12,8 +12,19 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
 
     public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl , java.net.Socket sock ){
         super( orb , orbImpl );
-        sock = sock;
-        setSockProps(sock, orb);
+        try{
+            sock = sock;
+            istream = sock.getInputStream();
+            ostream = sock.getOutputStream();
+            System.out.println( "Transport ready: " + istream + " " + ostream );
+            setSockProps(sock, orb);
+        }catch( Exception ex ){
+            ZenProperties.logger.log(
+                Logger.WARN,
+                "edu.uci.ece.zen.orb.transport.iiop.Transport",
+                "<cinit>",
+                "Error connecting to remote location. " + ex.toString() );
+        }
     }
 
     public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl , String host , int port ){
@@ -26,7 +37,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
             //             System.err.println( "sock = " + sock ); 
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
-            System.out.println( "Transport ready" );
+            System.out.println( "Transport ready: " + istream + " " + ostream );
         }catch( Exception ex ){
             ZenProperties.logger.log(
                 Logger.WARN,

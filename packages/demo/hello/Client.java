@@ -36,7 +36,7 @@ public class Client extends RealtimeThread
             ORB orb = ORB.init((String[])null, null);
             System.out.println( "=====================ORB Init complete in client===========================" );
             String ior = "";
-            File iorfile = new File( "/home/kraman/RTZen/packages/demo/hello/ior.txt" );
+            File iorfile = new File( "ior.txt" );
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
             ior = br.readLine();
             System.out.println( "===========================IOR read========================================" );

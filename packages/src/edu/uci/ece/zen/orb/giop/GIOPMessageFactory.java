@@ -208,7 +208,7 @@ public final class GIOPMessageFactory
      * @param headerInfo GIOPHeaderInfo object to fill with data read from header
     */
     public static void parseStreamForHeader(java.io.InputStream in, GIOPHeaderInfo headerInfo)  throws java.io.IOException{
-        System.out.println( "parseStreamForHeader 1" );
+        System.out.println( "parseStreamForHeader 1 " + in + javax.realtime.MemoryArea.getMemoryArea(in) );
         byte[] header = new byte[12];
         
         int read = 0;

@@ -20,7 +20,7 @@ public abstract class Transport implements Runnable{
         this.orb = orb;
         this.orbImpl = orbImpl;
         waitObj = new Integer(0);
-        System.out.println( "Transport being created somewhere" );
+        System.out.println( "Transport being created " + RealtimeThread.getCurrentMemoryArea() );
         Thread.dumpStack();
     }
 
