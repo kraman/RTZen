@@ -47,6 +47,8 @@ public final class GIOPMessageFactory
                                     ret = new edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage( orb , buffer );
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._LocateRequest :
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.LocateRequestMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_0._LocateReply :
                                 case org.omg.GIOP.MsgType_1_0._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_0._CancelRequest :

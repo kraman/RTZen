@@ -4,6 +4,8 @@
 
 package edu.uci.ece.zen.orb.giop;
 
+import edu.uci.ece.zen.orb.giop.GIOPMessage;
+
 /**
  * This object represents a response object.
  *

@@ -1,8 +1,11 @@
 package edu.uci.ece.zen.orb.giop.v1_0;
 
-import org.omg.GIOP.*;
-import edu.uci.ece.zen.utils.*;
-import edu.uci.ece.zen.orb.*;
+import org.omg.GIOP.ReplyHeader_1_0;
+import org.omg.GIOP.ReplyHeader_1_0Helper;
+
+import edu.uci.ece.zen.orb.CDROutputStream;
+import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.utils.ReadBuffer;
 
 public class ReplyMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage{
     private ReplyHeader_1_0 header;

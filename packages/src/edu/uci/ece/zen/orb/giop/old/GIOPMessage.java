@@ -1,9 +1,11 @@
 package edu.uci.ece.zen.orb.giop;
 
-import edu.uci.ece.zen.orb.*;
-import edu.uci.ece.zen.utils.*;
-import java.io.*;
-import javax.realtime.*;
+import javax.realtime.ScopedMemory;
+
+import edu.uci.ece.zen.orb.CDRInputStream;
+import edu.uci.ece.zen.orb.CDROutputStream;
+import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.utils.ReadBuffer;
 
 public abstract class GIOPMessage{
     protected CDRInputStream istream;

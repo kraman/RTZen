@@ -1,8 +1,12 @@
 package edu.uci.ece.zen.orb.giop.v1_0;
 
-import org.omg.GIOP.*;
-import edu.uci.ece.zen.utils.*;
-import edu.uci.ece.zen.orb.*;
+import org.omg.GIOP.RequestHeader_1_0;
+import org.omg.GIOP.RequestHeader_1_0Helper;
+
+import edu.uci.ece.zen.orb.CDROutputStream;
+import edu.uci.ece.zen.orb.ClientRequest;
+import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.utils.ReadBuffer;
 
 public class RequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage{
     private RequestHeader_1_0 header;

@@ -6,6 +6,8 @@ package edu.uci.ece.zen.orb.giop;
 
 import java.util.Vector;
 
+import edu.uci.ece.zen.orb.giop.GIOPMessage;
+
 /**
  * This object represents a request message object.
  *
