@@ -8,8 +8,8 @@ import edu.uci.ece.zen.utils.ReadBuffer;
  * @author bmiller
  *
   */
-public abstract class CancelMessage extends GIOPMessage {
-	public CancelMessage(ORB orb, ReadBuffer stream) {
+public abstract class CancelRequestMessage extends GIOPMessage {
+	public CancelRequestMessage(ORB orb, ReadBuffer stream) {
 		super(orb, stream);
 	}
 

@@ -9,8 +9,8 @@ import edu.uci.ece.zen.utils.ReadBuffer;
  * @see edu.uci.ece.zen.orb.giop.v1_0.CancelRequest
  * @author Bruce Miller
  */
-public class CancelMessage extends edu.uci.ece.zen.orb.giop.v1_0.CancelMessage { 
-    public CancelMessage(ORB orb, ReadBuffer stream) {
+public class CancelRequestMessage extends edu.uci.ece.zen.orb.giop.v1_0.CancelRequestMessage { 
+    public CancelRequestMessage(ORB orb, ReadBuffer stream) {
         super(orb, stream);
     }
 }

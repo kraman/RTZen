@@ -10,10 +10,10 @@ import edu.uci.ece.zen.utils.*;
  * @author Bruce Miller
  */
 
-public class CancelMessage extends edu.uci.ece.zen.orb.giop.type.CancelMessage {
+public class CancelRequestMessage extends edu.uci.ece.zen.orb.giop.type.CancelRequestMessage {
     private org.omg.GIOP.CancelRequestHeader header;
 
-    public CancelMessage(ORB orb, ReadBuffer stream) {
+    public CancelRequestMessage(ORB orb, ReadBuffer stream) {
         // Super's constructor sets and filles this.istream
         super (orb, stream);
         header = org.omg.GIOP.CancelRequestHeaderHelper.read (istream);

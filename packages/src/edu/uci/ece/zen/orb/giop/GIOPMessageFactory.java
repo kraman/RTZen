@@ -55,7 +55,7 @@ public final class GIOPMessageFactory
                                 case org.omg.GIOP.MsgType_1_0._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_0._CancelRequest :
                                     // A cancel request header is just the request id to cancel.
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.CancelMessage( orb, buffer );
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.CancelRequestMessage( orb, buffer );
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._MessageError :
                                     //TODO: Handle these properly
@@ -86,7 +86,7 @@ public final class GIOPMessageFactory
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
                                     // A cancel request header is just the request id to cancel.
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.CancelMessage( orb, buffer );
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.CancelRequestMessage( orb, buffer );
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_1._MessageError :

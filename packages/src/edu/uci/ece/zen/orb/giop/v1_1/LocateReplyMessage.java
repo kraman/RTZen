@@ -15,12 +15,11 @@ public class LocateReplyMessage extends edu.uci.ece.zen.orb.giop.type.LocateRepl
 	public LocateReplyMessage(ORB orb, ReadBuffer stream) {
         super (orb, stream);
         header = LocateReplyHeader_1_1Helper.read(istream);
-        messageBody = stream;
+        readBody();
+        messageBody = null; // message body is read by the call to readBody(), retrieve it using accessor methods
 	}
 
     public int getRequestId() { return header.request_id; }
-
-    public int getReplyStatus() { return -1; }
 
     /**
      * @see edu.uci.ece.zen.orb.giop.GIOPMessage#marshal(edu.uci.ece.zen.orb.CDROutputStream)
@@ -29,5 +28,12 @@ public class LocateReplyMessage extends edu.uci.ece.zen.orb.giop.type.LocateRepl
         // LocateRequest messages contain only a GIOP header then the LocateRequestHeader
         LocateReplyHeader_1_1Helper.write(out, header);
     }
+
+    public int getReplyStatus() { return -1; }
+
+    public int getLocateStatusValue() {
+        return header.locate_status.value();
+    }
+
 
 }

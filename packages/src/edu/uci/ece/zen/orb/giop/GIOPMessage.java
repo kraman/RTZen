@@ -21,6 +21,7 @@ public abstract class GIOPMessage{
     }
 
     public abstract int getRequestId();
+    public abstract void marshal( CDROutputStream out );
 
     public CDRInputStream getCDRInputStream() {
         return istream;
@@ -28,5 +29,4 @@ public abstract class GIOPMessage{
     public final void setScope( ScopedMemory scope ) { this.scope = scope; }
     public final ScopedMemory getScope(){ return scope; }
 
-    public abstract void marshal( CDROutputStream out );
 }
