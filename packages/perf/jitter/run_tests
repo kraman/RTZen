@@ -108,11 +108,20 @@ function startServer(){
 		EXEC_CMD="$JAVA_START perf.jitter.Server $1"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
-		$EXEC_CMD&
-		echo $! > $STOPFNAME
-	elif [ $1 -eq 3 ]; then
-		HOST_IP=`host -t A $HOST | grep -v alias | awk ' { print $4 }'`
-		# TAO SERVANT
+        $EXEC_CMD&
+        echo $! > $STOPFNAME
+
+    elif [ $1 -eq 10 ]; then
+        # start ZEN server remote in simulated RT
+        EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 1 $1"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD&
+        #echo $! > $STOPFNAME
+    
+    elif [ $1 -eq 3 ]; then
+        HOST_IP=`host -t A $HOST | grep -v alias | awk ' { print $4 }'`
+# TAO SERVANT
 		EXEC_CMD="tao/server -ORBListenEndpoints iiop://1.2@$HOST_IP/hostname_in_ior=$HOST_IP"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
@@ -171,9 +180,18 @@ function stopServer(){
 			echo $EXEC_CMD
 			$EXEC_CMD
 			rm -f $STOPFNAME
-		else
-			printUsage "server was not stoped, can not find file '$STOPFNAME'"
-		fi
+        else
+            printUsage "server was not stoped, can not find file '$STOPFNAME'"
+        fi
+        elif [ $1 -eq 10 ]; then
+        # TimeSys JVM on node 0
+        # start ZEN server in simulated RT
+             EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 1 $1"
+             echo "Exec cmd:"
+             echo $EXEC_CMD
+             $EXEC_CMD
+        #echo $! > $STOPFNAME
+
     elif [ $1 -eq 20 ]; then
 		# TimeSys JVM on node 0
 		# start ZEN server in simulated RT
