@@ -161,6 +161,7 @@ parse_args (int argc, char *argv[])
 					    ACE_ERROR_RETURN ((LM_ERROR,
 								    "Unable to process <-l> option"),
 							    -1);
+                                    printf("The low priority has been set to %d", poa_priority);
 				    break;
 			    }
 
@@ -173,6 +174,7 @@ parse_args (int argc, char *argv[])
 					    ACE_ERROR_RETURN ((LM_ERROR,
 								    "Unable to process <-h> option"),
 							    -1);
+                                    printf("The high priority has been set to %d", object_priority);
 				    break;
 			    }
 

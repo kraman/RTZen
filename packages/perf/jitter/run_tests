@@ -1,6 +1,6 @@
 #!/bin/sh
 PROGNAME=$0
-SLEEPTIME=5
+SLEEPTIME=20
 
 function printUsage() {
 	echo "ERROR: $1"

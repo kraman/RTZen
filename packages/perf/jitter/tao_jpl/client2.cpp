@@ -21,10 +21,10 @@
 const char *ior = "file://test.ior"; //The ior file for both high and low priority task if it's client declared
 const char *ior1 = "file://test1.ior"; //The ior file for low priority task if it's server declared
 const char *ior2 = "file://test2.ior"; //The ior file for high priority task if it's server declared
-const int sleep_time = 10000; //The unit is microsecond
+const int sleep_time = 666666000; //The unit is microsecond
 const int iteration = 10000;
 const int array_size = 10; //The size of the array for high priority task
-const int warm_up = 5000;
+const int warm_up = 3000;
 int client_priority = 32767; //The default priority for high task is 0
 const int size_of_record = 100000; //The size of timestamp array
 //int whichIOR = 1;
