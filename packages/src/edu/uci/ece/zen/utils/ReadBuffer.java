@@ -10,26 +10,42 @@
 package edu.uci.ece.zen.utils;
 
 import java.util.Vector;
-
 import javax.realtime.ImmortalMemory;
 
 public class ReadBuffer {
-
+    /**Immortal memory cache of ReadBuffer objects*/
     private static Queue bufferCache;
 
-    private static int BYTE = 1;
-    private static int SHORT = 2;
-    private static int LONG = 4;
-    private static int LONGLONG = 8;
-    private static int numFree = 0; //just to debug the number of free buffers
-    private boolean enableAlignment = true;
+    /**Length of BYTE datatype=1*/
+    private static final int BYTE = 1;
+    /**Length of SHORT datatype=2*/
+    private static final int SHORT = 2;
+    /**Length of LONG datatype=4*/
+    private static final int LONG = 4;
+    /**Length of LONGLONG datatype=8*/
+    private static final int LONGLONG = 8;
 
+    /**Maximum number of byte[] that can be stored in a ReadBuffer*/
     private static int maxCap = 10;
+    /**Number of ReadBuffer objects to preallocate*/
     private static int preAlloc = 10;
-
-    public void setAlignment( boolean align ){
-        enableAlignment = align;
-    }
+    /**Array to maintain all byte[]*/
+    private byte[][] buffers;
+    /**Number of byte[] currently in use by this ReadBuffer*/
+    private int numBuffers;
+    /**True if this ReadBuffer deals with little endian data*/
+    private boolean isLittleEndian;
+    /**Holds the current byte[] idx*/
+    private int curBuffer;
+    /**Holds the current position of read pointer within curBuffer*/
+    private int curBufferPos;
+    
+    /**Overall position of read pointer within whole ReadBuffer*/
+    long position;
+    /**Overall amount of data stored within this ReadBuffer*/
+    long limit;
+    /**Overall capacity in this ReadBuffer. capacity = numBuffers*bufferSize*/
+    long capacity;
 
     static {
         try {
@@ -43,12 +59,12 @@ public class ReadBuffer {
         }
     }
 
+    /**Private method to preallocate a used defined number of ReadBuffer objects*/
     private static void preAllocate( int num ){
         try{
             for( int i=0;i<num;i++ ){
                 ZenProperties.logger.log(Logger.INFO, ReadBuffer.class, "preAllocate", "Creating new instance.");
                 ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
-                rb.id = idgen++;
                 bufferCache.enqueue( rb );
             }
         }catch( Exception e ){
@@ -56,126 +72,96 @@ public class ReadBuffer {
         }
     }
 
-    static int idgen = 0;
-    int id;
-
-    boolean inUse = false;
+    /**Returns a cached instance of the ReadBuffer object or creates a new one if no cached object is available*/
     public static ReadBuffer instance() {
-        try {
-            //Thread.dumpStack();
-                numFree--;
-                ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
-                if (ret == null) {
-                ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, "instance", "Creating new instance.");
-                    ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
-                    rb.id = idgen++;
-                    if(ZenBuildProperties.dbgDataStructures){
-                        System.out.write('r');
-                        System.out.write('b');
-                        System.out.write('u');
-                        System.out.write('f');
-                        System.out.write('1');
-                        edu.uci.ece.zen.utils.Logger.writeln(rb.id);
-                    }
-                    rb.inUse = true;
-                    return rb;
-                }else {
-                    //Thread.dumpStack();
-                    if(ret.inUse)
-                        ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class,
-                                "instance",
-                                "Buffer already in use.");
-                    //ret.previd = ret.id;
-                //ret.id = idgen++;
-                ret.inUse = true;
-                ret.init();
-
-                if(ZenBuildProperties.dbgDataStructures){
-                    System.out.write('r');
-                    System.out.write('b');
-                    System.out.write('u');
-                    System.out.write('f');
-                    System.out.write('2');
-                    edu.uci.ece.zen.utils.Logger.writeln(ret.id);
-                }
-                return ret;
-            }
-        } catch (Exception e) {
-            ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class, "instance", e);
-            System.exit(-1);
-        }
-        return null;
+        ReadBuffer rb = (ReadBuffer) Queue.getQueuedInstance( ReadBuffer.class , bufferCache );
+        rb.init();
+        return rb;
     }
 
+    /**Release an instance of the ReadBuffer and add it back into the cache*/
     private static void release(ReadBuffer self) {
         bufferCache.enqueue(self);
     }
 
-    private Vector buffers;
-
-    private boolean isLittleEndian;
-
-    long position;
-
-    long limit;
-
-    long capacity;
-
-    long nextGIOPInterrupt;
-
+    /**Default constructor of the ReadBuffer*/
     public ReadBuffer() {
         try {
-            buffers = (Vector) new Vector( maxCap );
+            buffers = new byte[maxCap][];
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, getClass(), "<init>", e);
             System.exit(-1);
         }
     }
-    public String toString(){
-        byte [] newarr = new byte[(int)limit];
-        for(int i = 0; i < limit; ++i)
-            newarr[i] = ((byte[]) buffers.elementAt((int) (i / 1024)))[i%1024];
-        return FString.byteArrayToString(newarr) + "\n\nlimit: " + limit;
-    }
+
+    /**Default initializer of ReadBuffer*/
     public void init() {
         position = capacity = limit = 0;
         peekString = null;
         peekStringPos = -1;
-        buffers.removeAllElements();
-        enableAlignment = true;
+        ensureCapacity(1);
+
+        curBuffer = 0;
+        curBufferPos = 0;
     }
 
-    public void init(Vector buffers, int limit, int capacity) {
-        peekString = null;
-        peekStringPos = -1;
-        this.buffers.removeAllElements();
-        for (int i = 0; i < buffers.size(); i++)
-            this.buffers.addElement(buffers.elementAt(i));
-        position = 0;
-        this.capacity = capacity;
-        this.limit = limit;
-        enableAlignment = true;
+    public void free() {
+        ByteArrayCache cache = ByteArrayCache.instance();
+        for (int i = 0; i < numBuffers; i++){
+            cache.returnByteArray( buffers[i] );
+        }
+        numBuffers = 0;
+        ReadBuffer.release(this);
+    }
+
+    public void freeWithoutBufferRelease() {
+        ReadBuffer.release(this);
     }
 
     public void resetMessagePosition() {
         peekString = null;
         peekStringPos = -1;
         position = 0;
+        curBufferPos = 0;
+        curBuffer = 0;
     }
 
-    public ReadBuffer readBuffer(int length) {
-        ReadBuffer out = ReadBuffer.instance();
-        byte[] tmpBuf = ByteArrayCache.instance().getByteArray();
+    private void ensureCapacity(int size) {
+        if (size <= 0) return;
+        while (limit+size > capacity) {
+            if( numBuffers+1 >= maxCap ){
+                ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class, "ensureCapacity", "Reached maximum buffer capacity. Try adjusting " +
+                        "readbuffer.size property. Current value is: " + maxCap);
+                System.exit(-1);
+            }
 
-        while (length > 0) {
-            int copyLen = length > tmpBuf.length ? tmpBuf.length : length;
-            readByteArray(tmpBuf, 0, copyLen);
-            out.writeByteArray(tmpBuf, 0, copyLen);
-            length -= copyLen;
+            byte[] byteArray = ByteArrayCache.instance().getByteArray();
+            buffers[numBuffers++] = byteArray;
+            capacity += byteArray.length;
+       }
+    }
+
+    public long getPosition() {
+        return position;
+    }
+
+    public long getLimit() {
+        return limit;
+    }
+
+    private void pad(int boundry) {
+        // The CDR alignment should count from the beginning of GIOP header.
+        // But the GIOP header is excluded in CDRInputStream position. So 12
+        // must be added. Yue Zhang on 09.22pm, 08/01/2004
+        int extraBytesUsed = (int) ((position+12) % boundry);
+        
+        if (extraBytesUsed != 0) {
+            int incr = boundry - extraBytesUsed;
+            position += incr;
         }
-        ByteArrayCache.instance().returnByteArray(tmpBuf);
 
-        return out;
+        curBuffer = (int)position/1024;
+        curBufferPos = (int)position%1024;
     }
 
     public void appendFromStream(java.io.InputStream stream, int numBytes) {
@@ -188,7 +174,7 @@ public class ReadBuffer {
                 numBytes -= readBytes;
 
                 while (readBytes > 0) {
-                    int read = stream.read((byte[]) buffers.elementAt((int) (limit / 1024)), ((int) limit % 1024), readBytes);
+                    int read = stream.read(buffers[(int)limit/1024], (int)limit%1024, readBytes);
                     readBytes -= read;
                     limit += read;
                 }
@@ -199,12 +185,10 @@ public class ReadBuffer {
     }
 
     public void writeByteArray(byte[] v, int offset, int length) {
-        //if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("ReadBuffer: writing byte arr of len " + length);
-
         ensureCapacity(length);
         while (length > 0) {
-            byte[] buffer = (byte[]) buffers.elementAt((int) (limit / 1024));
-            int curBufPos = (int) (limit % 1024);
+            byte[] buffer = buffers [(int)limit/1024];
+            int curBufPos = (int) (limit%1024);
             int copyLength = 1024 - curBufPos;
             if (copyLength > length) copyLength = length;
             System.arraycopy(v, offset, buffer, curBufPos, copyLength);
@@ -214,153 +198,43 @@ public class ReadBuffer {
         }
     }
 
-    public void free() {
-        if(!inUse){
-            ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
-                "free",
-                "Buffer already freed.");
-                //System.exit(-1);
-                //still deciding what to do here
-            return;
-        }
-        ByteArrayCache cache = ByteArrayCache.instance();
-        for (int i = 0; i < buffers.size(); i++){
-            cache.returnByteArray((byte[]) buffers.elementAt(i));
-            ba--;
-        }
-
-        if(ZenBuildProperties.dbgDataStructures){
-            System.out.write('b');
-            System.out.write('r');
-            edu.uci.ece.zen.utils.Logger.write(ba);
-            System.out.write(',');
-            edu.uci.ece.zen.utils.Logger.write(buffers.size());
-            System.out.write(',');
-            edu.uci.ece.zen.utils.Logger.writeln(bs);
-        }
-
-        inUse = false;
-
-        numFree++;
-        if(ZenBuildProperties.dbgDataStructures){
-            System.out.write('r');
-            System.out.write('b');
-            System.out.write('u');
-            System.out.write('f');
-            edu.uci.ece.zen.utils.Logger.write(numFree);
-            System.out.write(',');
-            edu.uci.ece.zen.utils.Logger.writeln(id);
-        }
-        ReadBuffer.release(this);
-    }
-
-    public void freeWithoutBufferRelease() {
-        ReadBuffer.release(this);
-    }
-
     public void setEndian(boolean isLittleEndian) {
         this.isLittleEndian = isLittleEndian;
     }
-    int ba = 0;
-    int bs = 0;
-    private void ensureCapacity(int size) {
-        if (size <= 0) return;
-        while (limit + size > capacity) {
-            edu.uci.ece.zen.utils.Logger.printMemStatsImm(711);
-            byte[] byteArray = ByteArrayCache.instance().getByteArray();
-            edu.uci.ece.zen.utils.Logger.printMemStatsImm(712);
-            capacity += byteArray.length;
-            if(buffers.size()+1 >= maxCap){
-                ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class,
-                    "ensureCapacity",
-                    "Reached maximum buffer capacity. Try adjusting " +
-                    "readbuffer.size property. Current value is: " + maxCap);
-                    //System.exit(-1);
-                    //still deciding what to do here
-            }
-            buffers.addElement(byteArray);
-            ba++;
-            bs = buffers.size();
-       }
-    }
-
-    public long getPosition() {
-        return position;
-    }
-
-    public long getLimit() {
-        return limit;
-    }
-
-    private void checkReadPositionLimit(int dlen) {
-        //TODO: See what to do here
-    }
-
-    private void pad(int boundry) {
-        if( !enableAlignment )
-            return;
-
-        int extraBytesUsed = (int) ((position + 12) % boundry);
-        // The CDR alignment should count from the beginning of GIOP header.  But the GIOP header is excluded in CDRInputStream position. So 12 must be added. Yue Zhang on 09.22pm, 08/01/2004
-        if (extraBytesUsed != 0) {
-            int incr = boundry - extraBytesUsed;
-            checkReadPositionLimit(incr);
-            position += incr;
-        }
-    }
-
+    
     public byte readByte() {
-
-        if (ZenBuildProperties.dbgInvocations)
-            if(!inUse){
-                ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
-                    "readByte",
-                    "Buffer already freed.");
-            }
-        checkReadPositionLimit(1);
-        //if (!inUse) System.out.println("IN USE:" + inUse);
-        byte[] curBuf = (byte[]) buffers.elementAt((int) (position / 1024));
-        byte ret = curBuf[(int) (position % 1024)];
-        position++;
-        //if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Read byte : " + ret);
+        pad(ReadBuffer.BYTE);
+        
+        byte ret = buffers[curBuffer][curBufferPos];
+        ++position;
+        ++curBufferPos;
         return ret;
     }
 
     public void readByteArray(byte[] v, int offset, int length) {
+        while(length>0){
+            int bytesLeft = 1024 - curBufferPos;
+            int bytesToCopy = bytesLeft > length ? length : bytesLeft;
+            System.arraycopy( buffers[curBuffer] , curBufferPos , v , offset, bytesToCopy );
+            
+            length -= bytesToCopy;
+            position += bytesToCopy;
+            offset += bytesToCopy;
+            curBufferPos += bytesToCopy;
 
-        if (ZenBuildProperties.dbgInvocations)
-            if(!inUse){
-                ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
-                    "readByte",
-                    "Buffer already freed.");
+            if( curBufferPos >= 1024 ){
+                curBuffer++;
+                curBufferPos = 0;
             }
-        checkReadPositionLimit(length);
-        while (length > 0) {
-            byte[] curBuf = (byte[]) buffers.elementAt((int) (position / 1024));
-            int curBufPos = (int) position % 1024;
-            int bytesLeft = 1024 - curBufPos;
-            if (bytesLeft > length) bytesLeft = length;
-            System.arraycopy(curBuf, curBufPos, v, offset, bytesLeft);
-
-            length -= bytesLeft;
-            position += bytesLeft;
-            offset += bytesLeft;
         }
-        /*
-        if (ZenBuildProperties.dbgIOR){
-            ZenProperties.logger.log("Read byte arr: " + FString.byteArrayToString(v, length));
-            for (int i = 0; i < v.length; i++)
-                System.out.println(i + "=" + v[i] + " ");
-
-        }*/
     }
 
     public short readShort() {
         pad(ReadBuffer.SHORT);
 
-        checkReadPositionLimit(ReadBuffer.SHORT);
-        byte b1 = readByte();
-        byte b2 = readByte();
+        byte b1 = buffers[curBuffer][curBufferPos++];
+        byte b2 = buffers[curBuffer][curBufferPos++];
+        position+=2;
 
         short ret = 0;
         if (isLittleEndian) {
@@ -378,13 +252,12 @@ public class ReadBuffer {
 
     public int readLong() {
         pad(ReadBuffer.LONG);
-        checkReadPositionLimit(ReadBuffer.LONG);
-        byte b1 = readByte();
-        byte b2 = readByte();
-        byte b3 = readByte();
-        byte b4 = readByte();
-        //System.out.println( "" + ((int)b1) + " " + ((int)b2) + " " +
-         //((int)b3) + " " + ((int)b4) );
+        byte b1 = buffers[curBuffer][curBufferPos++];
+        byte b2 = buffers[curBuffer][curBufferPos++];
+        byte b3 = buffers[curBuffer][curBufferPos++];
+        byte b4 = buffers[curBuffer][curBufferPos++];
+        position+=4;
+
         int ret = 0;
         if (isLittleEndian) {
             ret |= b4 & 0xFF;
@@ -394,7 +267,6 @@ public class ReadBuffer {
             ret |= b2 & 0xFF;
             ret <<= 8;
             ret |= b1 & 0xFF;
-            //System.err.println( "Crap ...little endian...Long is " + ret );
             return ret;
         } else {
             ret |= b1 & 0xFF;
@@ -411,27 +283,18 @@ public class ReadBuffer {
 
     public long readLongLong() {
         pad(ReadBuffer.LONGLONG);
-        checkReadPositionLimit(ReadBuffer.LONGLONG);
-        byte b1 = readByte();
-        byte b2 = readByte();
-        byte b3 = readByte();
-        byte b4 = readByte();
-        byte b5 = readByte();
-        byte b6 = readByte();
-        byte b7 = readByte();
-        byte b8 = readByte();
+        byte b1 = buffers[curBuffer][curBufferPos++];
+        byte b2 = buffers[curBuffer][curBufferPos++];
+        byte b3 = buffers[curBuffer][curBufferPos++];
+        byte b4 = buffers[curBuffer][curBufferPos++];
+        byte b5 = buffers[curBuffer][curBufferPos++];
+        byte b6 = buffers[curBuffer][curBufferPos++];
+        byte b7 = buffers[curBuffer][curBufferPos++];
+        byte b8 = buffers[curBuffer][curBufferPos++];
+        position+=4;
 
         long ret = 0;
         if (isLittleEndian) {
-            //    ret |= ((short)(b8 & 0xFF)) << 56;
-            //    ret |= ((short)(b7 & 0xFF)) << 48;
-            //    ret |= ((short)(b6 & 0xFF)) << 40;
-            //    ret |= ((short)(b5 & 0xFF)) << 32;
-            //    ret |= ((short)(b4 & 0xFF)) << 24;
-            //    ret |= ((short)(b3 & 0xFF)) << 16;
-            //    ret |= ((short)(b2 & 0xFF)) << 8;
-            //    ret |= ((short)(b1 & 0xFF)) << 0;
-            //Change back to the way in Zen
             ret += ((long) (b8 & 0xFF)) << 56;
             ret += ((long) (b7 & 0xFF)) << 48;
             ret += ((long) (b6 & 0xFF)) << 40;
@@ -442,13 +305,6 @@ public class ReadBuffer {
             ret += ((long) (b1 & 0xFF)) << 0;
             return ret;
         } else {
-            /*
-             * ret |= ((short)(b1 & 0xFF)) < < 56; ret |= ((short)(b2 & 0xFF)) < <
-             * 48; ret |= ((short)(b3 & 0xFF)) < < 40; ret |= ((short)(b4 &
-             * 0xFF)) < < 32; ret |= ((short)(b5 & 0xFF)) < < 24; ret |=
-             * ((short)(b6 & 0xFF)) < < 16; ret |= ((short)(b7 & 0xFF)) < < 8;
-             * ret |= ((short)(b8 & 0xFF)) < < 0;
-             */
             ret += ((long) (b1 & 0xFF)) << 56;
             ret += ((long) (b2 & 0xFF)) << 48;
             ret += ((long) (b3 & 0xFF)) << 40;
@@ -459,7 +315,6 @@ public class ReadBuffer {
             ret += ((long) (b8 & 0xFF)) << 0;
 
             return ret;
-
         }
     }
 
@@ -468,10 +323,11 @@ public class ReadBuffer {
         if( isString )
             len--;
         FString fs = FString.instance();
-        for(int i = 0; i < len; ++i)
-            fs.append(readByte());
-
+        byte[] tmp = ByteArrayCache.instance().getByteArray();
+        readByteArray( tmp , 0 , len );
+        fs.append( tmp , 0 , len );
         if (isString) readByte(); //eat an xtra byte if not just byte array
+        ByteArrayCache.instance().returnByteArray( tmp );
         return fs;
     }
 
@@ -487,7 +343,6 @@ public class ReadBuffer {
         byte buf[] = new byte[len];
         readByteArray(buf, 0, len);
         readByte();
-        //System.err.println( "Long is " + new String( buf ) );
         StringBuffer strbuf = new StringBuffer();
         for (int i = 0; i < len; i++)
             strbuf.append((char) buf[i]);
@@ -512,10 +367,9 @@ public class ReadBuffer {
 
     public void dumpBuffer(WriteBuffer out) {
         for (int i = 0; i < limit / 1024 - 1; i++) {
-            out.writeByteArray((byte[]) buffers.elementAt(i), 0, 1024);
+            out.writeByteArray(buffers[i], 0, 1024);
         }
-        out.writeByteArray((byte[]) buffers.elementAt(((int) (limit / 1024))),
-                0, (int) (limit % 1024));
+        out.writeByteArray(buffers[ (int)limit/1024], 0, (int) (limit % 1024));
     }
 
     /**
@@ -540,5 +394,40 @@ public class ReadBuffer {
      */
     public ReadBuffer getNextBuffer() {
         return nextBuffer;
+    }
+
+    public String toString(){
+        byte [] newarr = new byte[(int)limit];
+        for(int i = 0; i < limit; ++i)
+            newarr[i] = buffers[i/1024][i%1024];
+        return FString.byteArrayToString(newarr) + "\n\nlimit: " + limit;
+    }
+
+    /*
+    public void init(Vector buffers, int limit, int capacity) {
+        peekString = null;
+        peekStringPos = -1;
+        this.buffers.removeAllElements();
+        for (int i = 0; i < buffers.size(); i++)
+            this.buffers.addElement(buffers.elementAt(i));
+        position = 0;
+        this.capacity = capacity;
+        this.limit = limit;
+        enableAlignment = true;
+    }*/
+
+    public ReadBuffer readBuffer(int length) {
+        ReadBuffer out = ReadBuffer.instance();
+        byte[] tmpBuf = ByteArrayCache.instance().getByteArray();
+
+        while (length > 0) {
+            int copyLen = length > tmpBuf.length ? tmpBuf.length : length;
+            readByteArray(tmpBuf, 0, copyLen);
+            out.writeByteArray(tmpBuf, 0, copyLen);
+            length -= copyLen;
+        }
+        ByteArrayCache.instance().returnByteArray(tmpBuf);
+
+        return out;
     }
 }
