@@ -20,8 +20,8 @@ int niterations = 10000;
 int nWarmUpIterations = 5000;
 int do_dump_history = 0;
 int do_shutdown = 1;
-int length = 128;
-const int size_of_record = 36000;
+int length = 128; //the default value of the sequence size
+const int size_of_record = 60000;
 
 typedef struct _Record{
   int pos;
@@ -45,6 +45,7 @@ parse_args (int argc, char *argv[])
 
       case 'l':
         length = ACE_OS::atoi (get_opts.opt_arg ());
+        printf("Start the test of Octet sequence with the size of %d", length);
         break;
 
       case '?':
@@ -109,7 +110,7 @@ main (int argc, char *argv[])
 	  int index = 0;  
 
 
-      ACE_DEBUG ((LM_DEBUG, "============= warm up \n"));
+      ACE_DEBUG ((LM_DEBUG, "============= warm up =============== \n"));
       for (int j = 0; j < nWarmUpIterations; ++j)
         {
 		gettimeofday(&start_time, NULL);
@@ -123,7 +124,7 @@ main (int argc, char *argv[])
 		ACE_TRY_CHECK;
         }
 
-      ACE_DEBUG ((LM_DEBUG, "============= performance test BYTE\n"));
+      ACE_DEBUG ((LM_DEBUG, "============= performance test ===============\n"));
 
       //ACE_hrtime_t test_start = ACE_OS::gethrtime ();
 
