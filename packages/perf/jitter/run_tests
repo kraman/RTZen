@@ -182,7 +182,7 @@ function startServer(){
                 echo $! > $STOPFNAME
         elif [ $1 -eq 5 ]; then
                 # start ZEN server in OVM ahead_of_time compiler
-                EXEC_CMD="sh ./OVMServer_NAT/run.sh $1"
+                EXEC_CMD="sh run_server_nat.sh $1"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD&
@@ -348,7 +348,7 @@ function startClient(){
                 echo $EXEC_CMD
                 $EXEC_CMD
         elif [ $1 -eq 5 ]; then
-                EXEC_CMD="sh ./OVMClient_NAT/run.sh $2 $3"
+                EXEC_CMD="sh run_client_nat.sh $2 $3"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD
@@ -409,7 +409,7 @@ if [ $OPERATION == "both" -o $OPERATION == "client" ]; then
 			startServer $SERVERTYPE
 			
 			# delay a bit to give the server a chance
-			sleep 100 
+			sleep 15
 		fi
 
 		# startup the client (will terminate automatically after finishing)
