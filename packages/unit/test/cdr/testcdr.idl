@@ -28,6 +28,8 @@ module unit{
 	    	    
 	    typedef sequence<str> strSeq;
             typedef sequence<octet> octetSeq;
+            
+            
        
 
             short echoShort( in short inVal ,  out short outVal );
@@ -38,6 +40,8 @@ module unit{
             
             octetSeq echoOctetSeq ( in octetSeq inVal, out octetSeq outVal );
             strSeq echoStructSeq ( in strSeq inVal, out strSeq outVal );       
+            
+            oneway void onewayShort( in short inVal);
 
             
             
