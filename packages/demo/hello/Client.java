@@ -50,7 +50,7 @@ public class Client extends RealtimeThread
             System.out.println( "====================== Performance warmup =================================" );
             for( int i=0;i<runNum;i++ ){
                 server.getMessage();
-                if(i % 250 == 0)
+                if(i % 500 == 0)
                     System.out.println(i);
             }
 
