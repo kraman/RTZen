@@ -1,96 +1,42 @@
-<project name="RTZen ORB Hello Demo" default="all" basedir="../../..">
-    <property file="zen-build-bootstrap.properties"/>
-    <property file="zen-build.properties"/>
-    <import file="${zen.srcdir}/property_processor.xml"/>
-    
-    <property name="package.dir" value="${zen.srcdir}/demo/hello"/>
+<project name="RTZen ORB Hello Demo" default="compile">
+
+    <property name="package.dir" value="demo/hello"/>
     <property name="idl.src" value="hello.idl"/>
 
-    <target name="all" depends="openorb , compile, jRate"/>
+	<import file="../../../init.xml"/>
+	<import file="../demo_tasks.xml"/>
 
-    <target name="openorb">
-       <antcall target="idl">
-           <param name="idl.flags" value="-all -d"/>
-           <param name="gendir" value="${zen.gendir}"/>
-           <param name="classpath" value="${openorb.class.path}"/>
-           <param name="idl.dir" value="${package.dir}"/>
-       </antcall>
+    <target name="compile">
+		<idlc file="${zen.srcdir}/${package.dir}/${idl.src}"/>
+		<demo.compile/>
+        <jar
+            jarfile="${zen.libdir}/hello_world.jar"
+            basedir="${zen.classdir}"
+            includes="${package.dir}/**"/>
     </target>
 
-    <target name="idl">
-      <java classpath="${classpath}"
-            dir="${zen.gendir}"
-            classname="${idl2java.compiler}"
-            fork="yes">
-            <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
-      </java>
-   </target>
-
-   <target name="compile">
-      <javac srcdir="${zen.srcdir}:${zen.gendir}"
-             destdir="${zen.classdir}"
-             classpath="${classpath}"
-             debug="${zen.debug}"
-             optimize="${zen.optimization}"
-             includes="demo/hello/**.java"
-             target="1.1"
-             bootclasspath="${zen.rtbootclasspath}"
-             includeJavaRuntime="yes"
-             >
-      </javac>
-
-      <jar 
-        jarfile="${zen.libdir}/hello_world.jar" 
-        basedir="${zen.classdir}" 
-        includes="demo/hello/**"
-        />
+    <target name="compile.jrate" if="compiler_jRate">
+        <demo.compile.jrate main="demo.hello.Client" out="client">
+            <fileset dir="${zen.srcdir}/${package.dir}">
+                <include name="Client.java"/>
+                <exclude name="Server.java"/>
+            </fileset>
+            <fileset dir="${zen.gendir}/${package.dir}">
+                <include name="*.java"/>
+            </fileset>
+         </demo.compile.jrate>
     </target>
-
-    <target name="jRate" if="compiler_jRate">
-      <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
-      <jRate
-            optimizeLevel="2"
-            libDirs="${zen.jRateLibDir}"
-            additionalLinkOptions="-L ${zen.libdir} -lZen"
-            destdir="${zen.libdir}"
-            bootclasspath="${zen.rtbootclasspath}"
-            classpath="${jRate_classpath}:${zen.classdir}"
-            out="${package.dir}/client"
-            main="demo.hello.Client"
-            debug="true">
-            <fileset dir="${zen.srcdir}">
-                <patternset>
-                    <include name="demo/hello/Client.java"/>
-                    <exclude name="demo/hello/Server.java"/>
-                </patternset>
-            </fileset>
-            <fileset dir="${zen.gendir}">
-                <patternset>
-                    <include name="demo/hello/**.java"/>
-                </patternset>
-            </fileset>
-       </jRate>
-   </target>
 
     <target name="server">
-        <java classname="demo.hello.Server" fork="yes">
-            <jvmarg line="${zen.jvm.properties}"/>
-        </java>
-    </target> 
+        <demo.run classname="demo.hello.Server"/>
+    </target>
 
     <target name="client">
-        <java classname="demo.hello.Client" fork="yes">
-            <jvmarg line="${zen.jvm.properties} -Xms200M -Xmx500M"/>
-        </java>
-    </target> 
+        <demo.run classname="demo.hello.Client"/>
+    </target>
 
     <target name="clean">
-      <delete dir="${zen.gendir}/${package.dir}"/>
-      <delete dir="${zen.classdir}/${package.dir}"/>
-      <delete file="${package.dir}/client"/>
-      <delete file="${package.dir}/server"/>
-      <delete quiet="true" defaultexcludes="no"> 
-          <fileset dir="${package.dir}" includes="*.o"/> 
-      </delete> 
+		<demo.clean/>
     </target>
+
 </project>

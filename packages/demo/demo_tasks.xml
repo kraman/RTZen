@@ -12,16 +12,28 @@
         <delete includeEmptyDirs="true" failOnError="false">
             <fileset dir="${zen.gendir}/${package.dir}"/>
             <fileset dir="${zen.classdir}/${package.dir}"/>
-            <fileset dir="${zen.srcdir}/${package.dir}" includes="*.o"/>
+            <fileset
+                dir="${zen.srcdir}/${package.dir}"
+                includes="*.o,client,server"/>
         </delete>
-        <delete file="${zen.srcdir}/${package.dir}/client"/>
-        <delete file="${zen.srcdir}/${package.dir}/server"/>
     </presetdef>
 
     <presetdef name="demo.run">
         <java fork="yes">
             <jvmarg line="${zen.jvm.properties}"/>
         </java>
+    </presetdef>
+
+    <presetdef name="demo.compile.jrate">
+        <jRate
+            optimizeLevel="2"
+            libDirs="${zen.jRateLibDir}"
+            additionalLinkOptions="-L ${zen.libdir} -lZen"
+            destdir="${zen.libdir}"
+            bootclasspath="${zen.rtbootclasspath}"
+            classpath="${jRate_classpath}:${zen.classdir}"
+            debug="${zen.debug}">
+        </jRate>
     </presetdef>
 
     <presetdef name="demo.compile">
@@ -38,4 +50,3 @@
     </presetdef>
 
 </project>
-
