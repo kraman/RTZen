@@ -27,7 +27,7 @@ public abstract class GIOPMessage{
         this.istream = CDRInputStream.instance();
         this.istream.init( orb , stream );
     }
-
+    
     public abstract int getRequestId();
     public abstract void marshal( CDROutputStream out );
     public abstract int getGiopVersion();

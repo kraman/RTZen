@@ -112,13 +112,14 @@
     <target name="compile">
         <echo message="Compiling OMG and Zen sources"/>
       
-        <iajc  
+        <javac  
             destdir="${zen.classdir}"          
             srcdir="${zen.srcdir}"
             failonerror = "true"
             fork = "true"
-            maxmem="${build.maxmem}"
-            >  
+            
+            >
+              
             
             <patternset refid="sources"/>
             <patternset>
@@ -129,7 +130,7 @@
             <classpath>
                 <pathelement location="${zen.classpath}"/> 
             </classpath>
-        </iajc>
+        </javac>
     </target>
 
     <target name="zenlib" if="zen.lib">

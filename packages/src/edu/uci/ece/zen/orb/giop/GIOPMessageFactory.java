@@ -269,17 +269,65 @@ public final class GIOPMessageFactory
         (new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId )).marshal( out );
     }
 
-    public static CDROutputStream constructReplyMessage( ORB orb , RequestMessage req , CDROutputStream out , boolean errorOccured ){
-        CDROutoutStream out = CDROutputStream.create( orb );
-        GIOPMessage msg = null;
+    public static CDROutputStream constructReplyMessage( ORB orb , RequestMessage req ){
+        CDROutputStream out = CDROutputStream.create( orb );
+        out.write_octet_array( magic , 0 , 4 );
+        //giop version
+        out.write_octet( (byte)1 );
+        out.write_octet( (byte)( req.getGiopVersion()/10) );
+        //message type
+        out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Reply );
+        //endian
+        out.write_boolean( false );
+        out.setLocationMemento();
+        out.write_long(0);
+        
         switch( req.getGiopVersion() ){
             case 10:
-                msg = new  edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage( orb , 
+                org.omg.GIOP.ReplyHeader_1_0Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] , 
+                        req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.NO_EXCEPTION ));
+                break;
             case 11:
+                org.omg.GIOP.ReplyHeader_1_1Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] , 
+                        req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.NO_EXCEPTION ));                
+                break;
             case 12:
+                org.omg.GIOP.ReplyHeader_1_2Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_2( req.getRequestId() , 
+                        org.omg.GIOP.ReplyStatusType_1_2.NO_EXCEPTION , new org.omg.IOP.ServiceContext[0] ));       
+                break;
         }
+        return out;
     }
 
+    public static CDROutputStream constructExceptionMessage( ORB orb , RequestMessage req ){
+        CDROutputStream out = CDROutputStream.create( orb );
+        out.write_octet_array( magic , 0 , 4 );
+        //giop version
+        out.write_octet( (byte)1 );
+        out.write_octet( (byte)( req.getGiopVersion()/10) );
+        //message type
+        out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Reply );
+        //endian
+        out.write_boolean( false );
+        out.setLocationMemento();
+        out.write_long(0);
+        
+        switch( req.getGiopVersion() ){
+            case 10:
+                org.omg.GIOP.ReplyHeader_1_0Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] , 
+                        req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.USER_EXCEPTION ));
+                break;
+            case 11:
+                org.omg.GIOP.ReplyHeader_1_1Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] , 
+                        req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.USER_EXCEPTION ));                
+                break;
+            case 12:
+                org.omg.GIOP.ReplyHeader_1_2Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_2( req.getRequestId() , 
+                        org.omg.GIOP.ReplyStatusType_1_2.USER_EXCEPTION , new org.omg.IOP.ServiceContext[0] ));       
+                break;
+        }
+        return out;
+    }    
 
     /**
      * Read a CORBA long (Java int) from the input stream, using

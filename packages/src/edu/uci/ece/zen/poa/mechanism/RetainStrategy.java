@@ -5,8 +5,7 @@ import edu.uci.ece.zen.poa.ActiveDemuxServantTable;
 import org.omg.CORBA.IntHolder;
 
 
-public final class RetainStrategy extends
-            ServantRetentionStrategy {
+public final class RetainStrategy extends ServantRetentionStrategy {
     /**
      * Initialize the Retain Strategy
      * @param uniqueId IdUniquenessStrategy

@@ -95,7 +95,7 @@ public abstract class ServantRetentionStrategy {
      * invoked on the Non Retain Strategy
      */
     public abstract boolean objectIDPresent( FString ok , org.omg.CORBA.IntHolder ih );
-    public abstract edu.uci.ece.zen.poa.POAHashMap getHashMap( FString map , org.omg.CORBA.IntHolder ih );
+    public abstract edu.uci.ece.zen.poa.POAHashMap getHashMap( FString oid , org.omg.CORBA.IntHolder ih );
     public abstract int bindDemuxIndex( edu.uci.ece.zen.poa.POAHashMap oid , org.omg.CORBA.IntHolder ih );
     public abstract boolean unbindDemuxIndex( FString oid , org.omg.CORBA.IntHolder ih );
     public abstract int getGenCount(int index , org.omg.CORBA.IntHolder ih );

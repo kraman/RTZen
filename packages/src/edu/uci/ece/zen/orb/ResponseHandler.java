@@ -1,11 +1,14 @@
 package edu.uci.ece.zen.orb;
 
+import edu.uci.ece.zen.orb.giop.type.*;
+
 public class ResponseHandler implements org.omg.CORBA.portable.ResponseHandler {
-    public ResponseHandler(ORB orb, int requestID, byte majorVersion, byte minorVersion) {
-        this.requestID = requestID;
-        this.majorVersion = majorVersion;
-        this.minorVersion = minorVersion;
+    private RequestMessage req;
+    private ORB orb;
+    
+    public ResponseHandler(ORB orb, RequestMessage req ) {
         this.orb = orb;
+        this.req = req;
     }
 
     /**
@@ -14,7 +17,7 @@ public class ResponseHandler implements org.omg.CORBA.portable.ResponseHandler {
      * @return a <code>ServerReply</code> which inherits from <code>CDROutputStream</code>.
      */
     public org.omg.CORBA.portable.OutputStream createReply() {
-        return new ServerReply(orb, requestID, majorVersion, minorVersion);
+        return edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructReplyMessage( orb , req );
     }
 
     /**
@@ -24,13 +27,6 @@ public class ResponseHandler implements org.omg.CORBA.portable.ResponseHandler {
      * @return a <code>ServerReply</code> which inherits from <code>CDROutputStream</code>.
      */
     public org.omg.CORBA.portable.OutputStream createExceptionReply() {
-        return new ServerReply(orb, requestID, majorVersion, minorVersion,
-                org.omg.GIOP.ReplyStatusType_1_0._USER_EXCEPTION);
+        return edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructExceptionMessage( orb , req );
     }
-
-    // -- Private data     
-    private ORB orb;
-    protected int requestID;
-    protected byte majorVersion;
-    protected byte minorVersion;
 }

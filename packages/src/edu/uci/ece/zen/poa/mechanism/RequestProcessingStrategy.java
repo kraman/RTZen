@@ -38,35 +38,34 @@ public abstract class RequestProcessingStrategy {
     public static RequestProcessingStrategy init( org.omg.CORBA.Policy[] policy, ServantRetentionStrategy retentionStrategy, IdUniquenessStrategy uniquenessStrategy,
             ThreadPolicyStrategy threadStrategy, IntHolder exceptionValue)
     {
-        exceptionValue.value = RequestProcessingStrategy.NoException;
+        exceptionValue.value = POARunnable.NoException;
 
-        if (PolicyUtils.useServantManagerPolicy(policy)) 
+        if ( PolicyUtils.useServantManagerPolicy(policy) ) 
         {
-            retentionStrategy.validate(retentionStrategy.RETAIN);
+            retentionStrategy.validate(retentionStrategy.RETAIN , exceptionValue );
+            if( exceptionValue.value != POARunnable.NoException)
+                return null;
             ServantActivatorStrategy activator = new RequestProcessingStrategy();
-            activator.initialize(retentionStrategy, threadStrategy,
-                    uniquenessStrategy);
+            activator.initialize(retentionStrategy, threadStrategy,uniquenessStrategy);
 
-            if (exceptionValue.value)
+            if (exceptionValue.value == POARunnable.NoException)
                 return activator;    
             else
             {
-                exceptionValue.value = RequestProcessingStrategy.NoException;
-                boolean validatePolicy = retentionStrategy.validate(retentionStrategy.NON_RETAIN);
+                exceptionValue.value = POARunnable.NoException;
+                retentionStrategy.validate(retentionStrategy.NON_RETAIN , exceptionValue );
                 ServantLocatorStrategy locator = new ServantLocatorStrategy();
-                if (validatePolicy)
+                if (exceptionValue.value == POARunnable.NoException)
                     return locator;
                 else
                 {
-                    exceptionValue.value = RequestProcessingStrategy.InvalidPolicyException;
+                    exceptionValue.value = POARunnable.InvalidPolicyException;
                     return null;
                 }
             } 
-        }
+        } 
     
-
-
-        if (PolicyUtils.useDefaultServantPolicy(policy)) {
+        if ( PolicyUtils.useDefaultServantPolicy(policy) ) {
 
             if (uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID, exceptionValue)) 
             {
@@ -78,7 +77,7 @@ public abstract class RequestProcessingStrategy {
                 DefaultServantStrategy servant = (DefaultServantStrategy)
                         POAPolicyFactory.createPolicy(ZenProperties.getProperty(RequestProcessingStrategy.defaultServantPath));
 
-                servant.initialize(retentionStrategy, ;
+                //servant.initialize(retentionStrategy, ;
                 return servant;
             } catch (Exception ex2) {
                 throw new org.omg.PortableServer.POAPackage.InvalidPolicy();

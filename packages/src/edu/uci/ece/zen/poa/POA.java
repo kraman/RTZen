@@ -21,7 +21,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private ServerRequestHandler serverRequestHandler;
     private Hashtable theChildren;
     private SynchronizedInt numberOfCurrentRequests;
-    private int poaState;
+    public  int poaState;
     private int poaDemuxIndex;
     private int processingState = POA.ACTIVE;
     private AdapterActivator adapterActivator;
@@ -35,17 +35,17 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private boolean etherealize;
 
     /* Constants for the POA Class */
-    protected final String rootPoaString = "RootPOA";
-    protected static final int CREATING = 0;
-    protected static final int CREATION_COMPLETE = 1;
-    protected static final int DESTRUCTION_IN_PROGRESS = 3;
-    protected static final int DESTRUCTION_APPARANT = 4;
-    protected static final int DESTRUCTION_COMPLETE = 5;
+    public final String rootPoaString = "RootPOA";
+    public static final int CREATING = 0;
+    public static final int CREATION_COMPLETE = 1;
+    public static final int DESTRUCTION_IN_PROGRESS = 3;
+    public static final int DESTRUCTION_APPARANT = 4;
+    public static final int DESTRUCTION_COMPLETE = 5;
 
     /* Request Processing States */
-    protected static final int ACTIVE = 6;
-    protected static final int DISCARDING = 7;
-    protected static final int INACTIVE = 8;
+    public static final int ACTIVE = 6;
+    public static final int DISCARDING = 7;
+    public static final int INACTIVE = 8;
 
     static{
         try{

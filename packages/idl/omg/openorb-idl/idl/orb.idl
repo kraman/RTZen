@@ -419,7 +419,7 @@ module CORBA {
 
 
     // interface for the Current object
-    interface Current {};
+    local interface Current {};
 
     local interface PolicyCurrent : PolicyManager, Current{
     };

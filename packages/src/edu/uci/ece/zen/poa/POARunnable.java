@@ -36,6 +36,10 @@ public class POARunnable implements Runnable{
     public static final int ObjNotExistException = 4;
     public static final int ServantNotActiveException = 5;
     public static final int WrongPolicyException = 6;
+    public static final int BadInvOrderException = 7;
+    public static final int ObjNotActiveException = 8;
+    public static final int ForwardRequestException = 9;
+    public static final int InternalException = 10;
     
     private int operation;
     private Vector args;

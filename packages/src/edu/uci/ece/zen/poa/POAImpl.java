@@ -24,7 +24,7 @@ public class POAImpl{
 
     // --- POA Specific references ---
     private POA                                     parent;
-    private POA                                     self;
+    public  POA                                     self;
     private java.util.Hashtable                     theChildren;
     private org.omg.PortableServer.POAManager       poaManager;
     private org.omg.PortableServer.AdapterActivator adapterActivator;
@@ -74,6 +74,8 @@ public class POAImpl{
 
     POAManager manager;
     int tpId;
+    
+    public ThreadLocal poaCurrent;
 
     // --- POA Cached Objects ---
     Queue poaHashMapQueue;
@@ -86,7 +88,7 @@ public class POAImpl{
         poaIntHolderQueue = new Queue();
     }
 
-    protected POAHashMap getPOAHashMap(){
+    public POAHashMap getPOAHashMap(){
         POAHashMap ret = (POAHashMap) poaHashMapQueue.dequeue();
         if( ret == null ){
             ret = new POAHashMap();
@@ -94,7 +96,7 @@ public class POAImpl{
         return ret;
     }
 
-    protected void retPOAHashMap( POAHashMap map ){
+    public  void retPOAHashMap( POAHashMap map ){
         poaHashMapQueue.enqueue( map );
     }
 
@@ -186,6 +188,10 @@ public class POAImpl{
      */
     public void handleRequest( RequestMessage req , POARunnable prun ){
         IntHolder ih = getIntHolder();
+        
+        if( this.poaCurrent.get() == null )
+            this.poaCurrent.set( new POACurrent() );
+        
         validateProcessingState( ih ); // check for the state of the poa? if it is discarding then throw the transient exception...
         if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retIntHolder( ih ); return; }
 
