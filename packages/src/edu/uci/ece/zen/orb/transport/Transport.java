@@ -11,6 +11,8 @@ import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.poa.POARunnable;
+import edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo;
 
 public abstract class Transport implements Runnable {
     private Object waitObj;
@@ -26,7 +28,33 @@ public abstract class Transport implements Runnable {
 
     // 0 = POARunnable for POA.handleRequest
     // 1 = ExecuteInRunnable for POA.handleRequest
-    // 2 = GIOP Header
+    // 2 = Used for GIOP header byte array 
+    // 3 = Protocol Header
+
+    
+    /* This method helps to get the object stored in objectTable[]*/
+    public Object getObject(int num){
+        try{
+            if(num != 0 && num != 1 && num != 2 && num != 3){
+                ZenProperties.logger.log(Logger.WARN, Transport.class, "static <getObject>", "Wrong objectTable index in Transport.java");
+                return null;               
+            }
+            return objectTable[num];
+        }
+        catch(Exception ex){
+            ZenProperties.logger.log(Logger.WARN, Transport.class, "static <getObject>", ex);
+            return null;
+        }
+    }
+
+    public void setObject(Object obj, int num){
+        if((obj != null)&&( num == 0 || num == 1 || num == 2 || num ==3 )){
+            objectTable[num] = obj;
+        }
+        else{
+            ZenProperties.logger.log(Logger.WARN, Transport.class, "static <setObject>", "Wrong objectTable index in Transport.java or object is null");
+        }
+    }
 
     /**
      * <p>
@@ -38,7 +66,7 @@ public abstract class Transport implements Runnable {
         this.orb = orb;
         this.orbImpl = orbImpl;
         waitObj = new Integer(0);
-        objectTable = new Object[3];
+        objectTable = new Object[4];
         objectTable[2] = new byte[12];
         if (ZenProperties.dbg) ZenProperties.logger.log("Transport being created "
                 + RealtimeThread.getCurrentMemoryArea());
@@ -62,21 +90,23 @@ public abstract class Transport implements Runnable {
                 .getMemoryArea(messageProcessor).toString());
         if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
                 .getMemoryArea(this).toString());
-
-        RealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,
+        
+        RealtimeThread messageProcessorThr = new RealtimeThread(null,
                 null, null, RealtimeThread.getCurrentMemoryArea(), null,
                 messageProcessor);
 
         messageProcessorThr.setDaemon(true);
+
+
         if (ZenProperties.dbg) ZenProperties.logger.log(javax.realtime.RealtimeThread
                     .getCurrentMemoryArea().toString());
         if (ZenProperties.dbg) ZenProperties.logger.log(javax.realtime.MemoryArea
                     .getMemoryArea(messageProcessorThr).toString());
         messageProcessorThr.start();
-
         try {
             synchronized (waitObj) {
                 waitObj.wait();
+
             }
         } catch (InterruptedException ie) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "run", ie);
@@ -222,42 +252,84 @@ class GIOPMessageRunnable implements Runnable {
 
     //private static final String name = "Trans: ";
     public void run() {
+        //edu.uci.ece.zen.utils.Logger.printMemStats(301);
+
         edu.uci.ece.zen.orb.protocol.Message message = null;
 
+        //edu.uci.ece.zen.utils.Logger.printMemStats(302);
+
+
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(2220);
+
+ //       edu.uci.ece.zen.utils.Logger.printMemStats(303);
+
         try {
 
             statCount++;
+ //           edu.uci.ece.zen.utils.Logger.printMemStats(304);
+
             if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
                 //System.out.print(name);
                 edu.uci.ece.zen.utils.Logger.printMemStats(3);
                 edu.uci.ece.zen.utils.Logger.printMemStats(orb);
             }
+ //           edu.uci.ece.zen.utils.Logger.printMemStats(305);
+
             ZenProperties.logger.log("Inside GMR run");
             if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread.getCurrentMemoryArea().toString());
+ //           edu.uci.ece.zen.utils.Logger.printMemStats(306);
+
             message = edu.uci.ece.zen.orb.protocol.MessageFactory.parseStream(orb, trans);
+
+ //           edu.uci.ece.zen.utils.Logger.printMemStats(307);
+
             if (message instanceof edu.uci.ece.zen.orb.protocol.type.RequestMessage) {
                 ZenProperties.logger.log("Inside GMR run: RequestMessage");
+ //               edu.uci.ece.zen.utils.Logger.printMemStats(308);
+
                 trans.orbImpl.getServerRequestHandler().handleRequest(
                         (edu.uci.ece.zen.orb.protocol.type.RequestMessage) message);
+ //               edu.uci.ece.zen.utils.Logger.printMemStats(309);
+
             
             }else if (message instanceof edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage) {
                 //this is provisional until we get it working right
                 //just return OBJECT_HERE for now
+ //               edu.uci.ece.zen.utils.Logger.printMemStats(310);
+
                 CDROutputStream out = edu.uci.ece.zen.orb.protocol.MessageFactory.
                          constructLocateReplyMessage(orb, 
                          (edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage)message);
+ //               edu.uci.ece.zen.utils.Logger.printMemStats(311);
+
                 trans.send(out.getBuffer());
+ //               edu.uci.ece.zen.utils.Logger.printMemStats(312);
+
                 out.free();
+ //               edu.uci.ece.zen.utils.Logger.printMemStats(313);
+
                 
             }else if (message instanceof edu.uci.ece.zen.orb.protocol.type.ReplyMessage) {
                 ZenProperties.logger.log("Inside GMR run: ReplyMessage");                
+ //               edu.uci.ece.zen.utils.Logger.printMemStats(314);
+
                 ScopedMemory waiterRegion = orb.getWaiterRegion(message
                         .getRequestId());
+ //               edu.uci.ece.zen.utils.Logger.printMemStats(315);
+
                 wsnr.init(message, waiterRegion);
+
+ //               edu.uci.ece.zen.utils.Logger.printMemStats(316);
+
                 eir.init(wsnr, waiterRegion);
+ //               edu.uci.ece.zen.utils.Logger.printMemStats(317);
+
                 try {
+ //                   edu.uci.ece.zen.utils.Logger.printMemStats(318);
+
                     orb.orbImplRegion.executeInArea(eir);
+ //                   edu.uci.ece.zen.utils.Logger.printMemStats(319);
+
                 } catch (Exception e) {
                     ZenProperties.logger
                             .log(

@@ -66,8 +66,7 @@ public class ThreadPool {
 
     private int statCount = 0;
 
-    public void execute(RequestMessage task, short minPriority,
-            short maxPriority) {
+    public void execute(RequestMessage task, short minPriority, short maxPriority) {
         statCount++;
         if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
             edu.uci.ece.zen.utils.Logger.printMemStats(4);
@@ -75,9 +74,8 @@ public class ThreadPool {
 
         //TODO: Have to improve performance here
         for (int i = 0; i < lanes.length; i++) {
-            if (lanes[i].getPriority() > minPriority
-                    && lanes[i].getPriority() < maxPriority) lanes[i]
-                    .execute(task);
+            if (lanes[i].getPriority() >= minPriority && lanes[i].getPriority() <= maxPriority) 
+		lanes[i].execute(task);
         }
     }
 }
@@ -152,18 +150,17 @@ class Lane {
         thr.start();
     }
 
-    public synchronized boolean getLeaderAndExecute(RequestMessage task,
-            boolean forBorrowing) {
-        if (threads.isEmpty()) {
+    public synchronized boolean getLeaderAndExecute(RequestMessage task, boolean forBorrowing) {
+	ThreadSleepRunnable thr = (ThreadSleepRunnable) threads.dequeue();
+        if ( thr == null ) {
             //try to get a thread from somewhere else
-            if (numThreads < maxStaticThreads + maxDynamicThreads - 1) {
+            if (numThreads >= maxStaticThreads + maxDynamicThreads - 1) {
                 //already at max thread limit, try borrowing
                 if (allowBorrowing) {
                     boolean ret = tp.borrowThreadAndExecute(task, laneId);
                     if (!ret && allowRequestBuffering) {
                         synchronized (requestBuffer) {
-                            if (numBuffered < maxBufferedRequests
-                                    && !forBorrowing) {
+                            if (numBuffered < maxBufferedRequests && !forBorrowing) {
                                 requestBuffer.enqueue(task);
                                 numBuffered++;
                             }
@@ -172,7 +169,6 @@ class Lane {
                     }
                     return ret;
                 }
-                return false;
             } else {
                 newThread();
             }
@@ -180,22 +176,26 @@ class Lane {
 
         //still couldnt get a thread, wait for one to return
         try {
-            ThreadSleepRunnable runnable;
-            while (((runnable = (ThreadSleepRunnable) threads.dequeue()) == null)) {
-                synchronized (this) {
-                    this.wait();
+	    if( thr == null ){
+	        while (((thr = (ThreadSleepRunnable) threads.dequeue()) == null)) {
+                    synchronized (this) {
+                        this.wait();
+                    }
                 }
-            }
-            return runnable.execute(task);
+	    }
+            return thr.execute(task);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "getLeaderAndExecute", e);
+	    e.printStackTrace();
             return false;
         }
         
     }
 
     public boolean execute(RequestMessage task) {
-        return getLeaderAndExecute(task, false);
+	boolean b = getLeaderAndExecute(task, false);
+	//System.out.println( "Task executed with status: " + b );
+	return b;
     }
 
     private boolean checkRequestBuffer() {
@@ -306,7 +306,8 @@ class ThreadSleepRunnable implements Runnable {
                     getClass(), "run",
                     "Recieved an Interrupt exception. Shutting down.");
             //Ignore. Expected while shutting down.
-        } catch (Exception e1) {
+        } catch (Throwable e1) {
+	    e1.printStackTrace();
             ZenProperties.logger.log(Logger.WARN, getClass(), "run", e1);
         }
     }

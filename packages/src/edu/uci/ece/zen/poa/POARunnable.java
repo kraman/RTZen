@@ -100,98 +100,103 @@ public class POARunnable implements Runnable {
     }
 
     public void run() {
-        Object portal = ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
-        POAImpl pimpl = null;
-        if (portal != null) pimpl = (POAImpl) portal;
+        try{
+            Object portal = ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
+            POAImpl pimpl = null;
+            if (portal != null) pimpl = (POAImpl) portal;
 
-        switch (operation) {
-            case INIT:
-                pimpl = new POAImpl();
-                pimpl.init((ORB) args.elementAt(0), (POA) args.elementAt(1),
-                        (Policy[]) args.elementAt(2), (POA) args.elementAt(3),
-                        (POAManager) args.elementAt(4), this);
-                ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(pimpl);
-                break;
-            case HANDLE_REQUEST:
-                //System.out.println("Inside POARunnable.runa and memarea: " +
-                // RealtimeThread.getCurrentMemoryArea() + " and this: " +
-                // this);
-                pimpl.handleRequest(
-                        (edu.uci.ece.zen.orb.protocol.type.RequestMessage) args.elementAt(0), this);
-                break;
-            case SERVANT_TO_ID:
-                pimpl.servant_to_id((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
-                break;
-            case SERVANT_TO_REFERENCE:
-                System.out.println(portal); // delete it
-                retVal = pimpl.servant_to_reference((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
-                break;
-            case REFERENCE_TO_SERVANT:
-                pimpl.reference_to_servant((org.omg.CORBA.Object) args
-                        .elementAt(0), (MemoryArea) args.elementAt(1), this);
-                break;
-            case REFERENCE_TO_ID:
-                //                pimpl.reference_to_id( (org.omg.CORBA.Object)
-                // args.elementAt(0) ,
-                //                    (MemoryArea) args.elementAt(1) ,
-                //                    this );
-                break;
-            case ID_TO_SERVANT:
-                pimpl.id_to_servant((byte[]) args.elementAt(0),
-                        (MemoryArea) args.elementAt(1), this);
-                break;
-            case ID_TO_REFERENCE:
-                pimpl.id_to_reference((byte[]) args.elementAt(0),
-                        (MemoryArea) args.elementAt(1), this);
-                break;
-            case ACTIVATE_OBJECT:
-                pimpl.activate_object((Servant) args.elementAt(0), 
-                                      (MemoryArea) args.elementAt(1), 
-                                      this);
-                break;
-            case ACTIVATE_OBJECT_WITH_ID:
-                pimpl.activate_object_with_id((byte[]) args.elementAt(0),
-                        (Servant) args.elementAt(1), (MemoryArea) args
-                                .elementAt(2), this);
-                break;
-            case DEACTIVATE_OBJECT:
-                pimpl.deactivate_object((byte[]) args.elementAt(0),
-                        (MemoryArea) args.elementAt(1), this);
-                break;
-            case REMOVE_FROM_PARENT:
-                pimpl.removeFromParent((POA) args.elementAt(0));
-                break;
-            case DESTROY:
-                pimpl.destroy((POA) args.elementAt(0));
-                break;
-            case ID:
-                pimpl.id((MemoryArea) args.elementAt(0), this);
-                break;
-            case GET_SERVANT_MANAGER:
-                pimpl.get_servant_manager(this);
-                break;
-            case SET_SERVANT_MANAGER:
-                pimpl.set_servant_manager((ServantManager) args.elementAt(0),
-                        this);
-                break;
-            case GET_SERVANT:
-                pimpl.get_servant(this);
-                break;
-            case SET_SERVANT:
-                pimpl.set_servant((Servant) args.elementAt(0), this);
-                break;
-            case CREATE_REFERENCE:
-                pimpl.create_reference((String) args.elementAt(0),
-                        (MemoryArea) args.elementAt(1), this);
-                break;
-            case CREATE_REFERENCE_WITH_ID:
-                pimpl.create_reference_with_id((byte[]) args.elementAt(0),
-                        (String) args.elementAt(1), (MemoryArea) args
-                                .elementAt(2), this);
-            case GET_POLICY_LIST:
-                pimpl.policy_list((MemoryArea) args.elementAt(0), this);
-                break;
+            switch (operation) {
+                case INIT:
+                    pimpl = new POAImpl();
+                    pimpl.init((ORB) args.elementAt(0), (POA) args.elementAt(1),
+                            (Policy[]) args.elementAt(2), (POA) args.elementAt(3),
+                            (POAManager) args.elementAt(4), this);
+                    ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(pimpl);
+                    break;
+                case HANDLE_REQUEST:
+                    //System.out.println("Inside POARunnable.runa and memarea: " +
+                    // RealtimeThread.getCurrentMemoryArea() + " and this: " +
+                    // this);
+                    pimpl.handleRequest(
+                            (edu.uci.ece.zen.orb.protocol.type.RequestMessage) args.elementAt(0), this);
+                    break;
+                case SERVANT_TO_ID:
+                    pimpl.servant_to_id((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
+                    break;
+                case SERVANT_TO_REFERENCE:
+                    System.out.println(portal); // delete it
+                    retVal = pimpl.servant_to_reference((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
+                    break;
+                case REFERENCE_TO_SERVANT:
+                    pimpl.reference_to_servant((org.omg.CORBA.Object) args
+                            .elementAt(0), (MemoryArea) args.elementAt(1), this);
+                    break;
+                case REFERENCE_TO_ID:
+                    //                pimpl.reference_to_id( (org.omg.CORBA.Object)
+                    // args.elementAt(0) ,
+                    //                    (MemoryArea) args.elementAt(1) ,
+                    //                    this );
+                    break;
+                case ID_TO_SERVANT:
+                    pimpl.id_to_servant((byte[]) args.elementAt(0),
+                            (MemoryArea) args.elementAt(1), this);
+                    break;
+                case ID_TO_REFERENCE:
+                    pimpl.id_to_reference((byte[]) args.elementAt(0),
+                            (MemoryArea) args.elementAt(1), this);
+                    break;
+                case ACTIVATE_OBJECT:
+                    pimpl.activate_object((Servant) args.elementAt(0), 
+                            (MemoryArea) args.elementAt(1), 
+                            this);
+                    break;
+                case ACTIVATE_OBJECT_WITH_ID:
+                    pimpl.activate_object_with_id((byte[]) args.elementAt(0),
+                            (Servant) args.elementAt(1), (MemoryArea) args
+                            .elementAt(2), this);
+                    break;
+                case DEACTIVATE_OBJECT:
+                    pimpl.deactivate_object((byte[]) args.elementAt(0),
+                            (MemoryArea) args.elementAt(1), this);
+                    break;
+                case REMOVE_FROM_PARENT:
+                    pimpl.removeFromParent((POA) args.elementAt(0));
+                    break;
+                case DESTROY:
+                    pimpl.destroy((POA) args.elementAt(0));
+                    break;
+                case ID:
+                    pimpl.id((MemoryArea) args.elementAt(0), this);
+                    break;
+                case GET_SERVANT_MANAGER:
+                    pimpl.get_servant_manager(this);
+                    break;
+                case SET_SERVANT_MANAGER:
+                    pimpl.set_servant_manager((ServantManager) args.elementAt(0),
+                            this);
+                    break;
+                case GET_SERVANT:
+                    pimpl.get_servant(this);
+                    break;
+                case SET_SERVANT:
+                    pimpl.set_servant((Servant) args.elementAt(0), this);
+                    break;
+                case CREATE_REFERENCE:
+                    pimpl.create_reference((String) args.elementAt(0),
+                            (MemoryArea) args.elementAt(1), this);
+                    break;
+                case CREATE_REFERENCE_WITH_ID:
+                    pimpl.create_reference_with_id((byte[]) args.elementAt(0),
+                            (String) args.elementAt(1), (MemoryArea) args
+                            .elementAt(2), this);
+                case GET_POLICY_LIST:
+                    pimpl.policy_list((MemoryArea) args.elementAt(0), this);
+                    break;
+            }
+            args.clear();
         }
-        args.clear();
+        catch(Throwable ex){
+            ex.printStackTrace();
+        }
     }
 }

@@ -49,6 +49,7 @@ public class Client extends RealtimeThread
             org.omg.CORBA.Object object = orb.string_to_object(ior);
             System.out.println( "===================Trying to establish connection==========================" );
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
+            System.out.println( "===================Connection established...sending request================" );
             System.out.println( server.getMessage() );
 
 /*

@@ -211,9 +211,10 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
             requests.increment();
             map.incrementActiveRequests();
         }
-
+        /*
         ((edu.uci.ece.zen.poa.POACurrent) pimpl.poaCurrent.get()).init(poa, ok,
                 (org.omg.PortableServer.Servant) invokeHandler);
+        */
 
         ResponseHandler responseHandler = new ResponseHandler(poa.getORB(), request);
 

@@ -684,6 +684,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             ZenProperties.logger.log(Logger.FATAL,
                     getClass(), "create_threadpool",
                     "Could not create threadpool", e);
+            System.err.println("Caught Exception");
+            e.printStackTrace();           
             System.exit(-1);
         }
     }

@@ -70,7 +70,17 @@ public class ORBImpl {
 
         nhrt.start();
         try {
+/*
             rtCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
+            //rtCurrent = new ThreadLocal();
+            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
+            policyManager = (PolicyManagerImpl) (orbFacade.parentMemoryArea.newInstance(PolicyManagerImpl.class));
+            policyManager.init(orbFacade);
+*/            
+            /*
+             * rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance(
+             * RTORBImpl.class )); rtorb.init(orbFacade);
+             */
             orbFacade.getRTORB().create_threadpool(0,//stacksize,
                     1,//static_threads,
                     0,//dynamic_threads,
