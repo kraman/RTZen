@@ -19,15 +19,13 @@ public class RealtimeThread extends Thread {
 
     public static MemoryArea getCurrentMemoryArea() {
         MemoryArea mem = (MemoryArea) memHash.get(Thread.currentThread());
-
         if (mem == null) return HeapMemory.instance();
         else return mem;
     }
 
     public static RealtimeThread currentRealtimeThread() {
-
-        System.out.println("current thread is: " + Thread.currentThread()
-                + " class:" + Thread.currentThread().getClass().toString());
+        //System.out.println("current thread is: " + Thread.currentThread()
+        //        + " class:" + Thread.currentThread().getClass().toString());
         return new RealtimeThread(null, null, null, null, null, null);
     }
 
