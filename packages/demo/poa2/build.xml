@@ -52,9 +52,15 @@
     </target -->
 
     
-    <target name="client">
-        <demo.run classname="demo.poa2.Client"/>
+    <target name="client1">
+        <demo.run classname="demo.poa2.Client1"/>
+        <arg line="${zen.srcdir}/${package.dir}/ior1.txt"/>
     </target>    
+    
+    <target name="client2">
+        <demo.run classname="demo.poa2.Client2"/>
+        <arg line="${zen.srcdir}/${package.dir}/ior2.txt"/>
+    </target>       
     
     <!-- set "jacorb.home" properly to use jacorb examples -->
     <!--

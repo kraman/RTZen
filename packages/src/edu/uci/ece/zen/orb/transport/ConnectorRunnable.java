@@ -53,10 +53,11 @@ public class ConnectorRunnable implements Runnable {
             iport |= port & 0xffff;
             String host2=null;
             if( host != null ){
-                //host2 = new String(this.host.getTrimData());
+                if(ZenProperties.CAN_USE_STRINGS)
+                    host2 = new String(this.host.getTrimData());
                 FString.free(host);
             }
-            
+
             Transport trans = conn.internalConnect(host2, iport, orb,
                     (ORBImpl) orb.orbImplRegion.getPortal());
             if( trans != null ){
