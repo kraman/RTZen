@@ -95,7 +95,6 @@ public class ORBImpl{
         return ret;
     }
 
-    A
     protected void handleInvocation(){
     }
 
