@@ -21,7 +21,7 @@ public class Client_jni extends RealtimeThread
 	public static final int warmUpIterations =   5000;
 	public static final int iterations       = 10000;
 
-	public static int seqSize = 4;
+	public static int seqSize = 128;
 	public static int testType =1;
 
 	public static void main(String[] args) throws Exception
@@ -29,12 +29,13 @@ public class Client_jni extends RealtimeThread
 
 		/* pass the input parameters */
 		if ( args.length == 2 ) {
-			Client.testType = Integer.parseInt(args[0]);
-			Client.seqSize  = Integer.parseInt(args[1]);
+			Client_jni.testType = Integer.parseInt(args[0]);
+			Client_jni.seqSize  = Integer.parseInt(args[1]);
+                        System.out.println("Test for the sequence size of "+Client_jni.seqSize);
 		}
 
 		System.out.println( "=====================Creating RT Thread in client==========================" );
-		RealtimeThread rt = (Client) ImmortalMemory.instance().newInstance( Client.class );
+		RealtimeThread rt = (Client_jni) ImmortalMemory.instance().newInstance( Client_jni.class );
 		System.out.println( "=====================Starting RT Thread in client==========================" );
 		rt.start();
 	}
@@ -62,7 +63,7 @@ public class Client_jni extends RealtimeThread
 
 
 			// allocate the time stamper (to load the native lib)
-			NativeTimeStamp rtts = new NativeTimeStamp();
+			perf.TimeStamp.NativeTimeStamp rtts = new perf.TimeStamp.NativeTimeStamp();
 			NativeTimeStamp.Init(1, 20.0);
 
 

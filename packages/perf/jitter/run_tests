@@ -22,7 +22,7 @@ function printUsage() {
 		echo "    clientType  1  RTZen client on jRate (Ahead of time RTSJ VM"
 		echo "                2  TAO client"
 		echo "                3  JacORB client on Sun JVM"
-                echo "                4  Simulated RTZen client on Sun JVM 
+                echo "                4  Simulated RTZen client on Sun JVM" 
 
 		exit -1;
 
@@ -167,8 +167,7 @@ function startServer(){
 				sleep $SLEEPTIME
 				EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
 				$EXEC_CMD2&
-#echo $! > $STOPFNAME
-
+                                #echo $! > $STOPFNAME
 
            	else
                 printUsage "startServer, unknown server type '$1'"
@@ -181,7 +180,7 @@ function startServer(){
 function stopServer(){
 	echo "stop server "
 
-	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 -o $1 -eq 4]; then
+	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 -o $1 -eq 4 ]; then
 	
 		if [ -f $STOPFNAME ]; then
 		
@@ -214,7 +213,7 @@ function stopServer(){
 		echo $! > $STOPFNAME	
        
        elif [ $1 -eq 40 ]; then
-                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 4$1"
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 4 $1"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD
