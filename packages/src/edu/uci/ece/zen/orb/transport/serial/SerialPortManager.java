@@ -106,6 +106,7 @@ public class SerialPortManager
                 {
                     int messageLength = SerialPortSocketProtocol.encodeConnectionRequested(requestedConnection, buffer);
                     // System.out.println("SerialPortManager: connect: couldn't find local listener, sending request to remote host...");
+                    System.out.println("Zen serial port: sending a " + messageLength + "-byte message");
                     serialPort.sendMessage(buffer, messageLength);
                 }
 
@@ -142,127 +143,126 @@ public class SerialPortManager
                     // Block until a message is available
                     // System.out.println("SerialPortListener: run: calling serialPort.getMessage...");
                     int messageLength = serialPort.getMessage(message);
-                    // System.out.println("SerialPortListener: run: got a message! " + messageLength + " bytes long");
+                    System.out.println("Zen serial port: received a " + messageLength + "-byte message");
 
-                    if (message != null)
+                    Socket socket;
+                    SerialPortConnection connection, requestedConnection;
+
+                    switch (SerialPortSocketProtocol.getMessageType(message))
                     {
-                        Socket socket;
-                        SerialPortConnection connection, requestedConnection;
+                        case SerialPortSocketProtocol.CONNECTION_REQUESTED:
+                            // System.out.println("SerialPortListener: run: it's a connection request");
+                            requestedConnection = SerialPortSocketProtocol.decodeConnectionRequested(message, messageLength);
 
-                        switch (SerialPortSocketProtocol.getMessageType(message))
-                        {
-                            case SerialPortSocketProtocol.CONNECTION_REQUESTED:
-                                // System.out.println("SerialPortListener: run: it's a connection request");
-                                requestedConnection = SerialPortSocketProtocol.decodeConnectionRequested(message, messageLength);
+                            socket = new Socket();
+                            if (connect(requestedConnection.getPort(),
+                                        requestedConnection.getAddress().getHostName(),
+                                        socket,
+                                        false) != null)
+                            {
+                                messageLength = SerialPortSocketProtocol.encodeConnectionAccepted(
+                                    requestedConnection, socket, buffer);
+                                // System.out.println("SerialPortListener: run: sending connection accept message back to caller");
+                                System.out.println("Zen serial port: sending a " + messageLength + "-byte message");
+                                serialPort.sendMessage(buffer, messageLength);
+                            }
+                            else
+                            {
+                                messageLength = SerialPortSocketProtocol.encodeConnectionDenied(
+                                    requestedConnection, socket, buffer);
+                                // System.out.println("SerialPortListener: run: sending connection denied message back to caller");
+                                System.out.println("Zen serial port: sending a " + messageLength + "-byte message");
+                                serialPort.sendMessage(buffer, messageLength);
+                            }
 
-                                socket = new Socket();
-                                if (connect(requestedConnection.getPort(),
-                                            requestedConnection.getAddress().getHostName(),
-                                            socket,
-                                            false) != null)
+                            break;
+
+                        case SerialPortSocketProtocol.CONNECTION_ACCEPTED:
+                            // System.out.println("SerialPortListener: run: it's a connection accept");
+                            SerialPortConnection acceptedConnection = new SerialPortConnection();
+                            byte socketID = SerialPortSocketProtocol.decodeConnectionAccepted(message, messageLength, acceptedConnection);
+                            boolean connectionFound = false;
+
+                            // Walk through the list of requested connections and find the one that was accepted
+                            for (Iterator i = requestedConnections.iterator(); i.hasNext(); )
+                            {
+                                requestedConnection = (SerialPortConnection) i.next();
+                                if (requestedConnection.equals(acceptedConnection))
                                 {
-                                    messageLength = SerialPortSocketProtocol.encodeConnectionAccepted(
-                                        requestedConnection, socket, buffer);
-                                    // System.out.println("SerialPortListener: run: sending connection accept message back to caller");
-                                    serialPort.sendMessage(buffer, messageLength);
+                                    // The connection has been accepted, so move it to the connected list
+                                    i.remove();
+                                    connections.add(requestedConnection);
+
+                                    requestedConnection.getSocket().setID(socketID);
+
+                                    // System.out.println("SerialPortListener: run: found socket awaiting acceptance, connecting...");
+                                    requestedConnection.connect(requestedConnection.getSocket(), false, serialPort);
+
+                                    connectionFound = true;
+                                    break;
                                 }
-                                else
-                                {
-                                    messageLength = SerialPortSocketProtocol.encodeConnectionDenied(
-                                        requestedConnection, socket, buffer);
-                                    // System.out.println("SerialPortListener: run: sending connection denied message back to caller");
-                                    serialPort.sendMessage(buffer, messageLength);
-                                }
+                            }
 
-                                break;
-
-                            case SerialPortSocketProtocol.CONNECTION_ACCEPTED:
-                                // System.out.println("SerialPortListener: run: it's a connection accept");
-                                SerialPortConnection acceptedConnection = new SerialPortConnection();
-                                byte socketID = SerialPortSocketProtocol.decodeConnectionAccepted(message, messageLength, acceptedConnection);
-                                boolean connectionFound = false;
-
-                                // Walk through the list of requested connections and find the one that was accepted
-                                for (Iterator i = requestedConnections.iterator(); i.hasNext(); )
-                                {
-                                    requestedConnection = (SerialPortConnection) i.next();
-                                    if (requestedConnection.equals(acceptedConnection))
-                                    {
-                                        // The connection has been accepted, so move it to the connected list
-                                        i.remove();
-                                        connections.add(requestedConnection);
-
-                                        requestedConnection.getSocket().setID(socketID);
-
-                                        // System.out.println("SerialPortListener: run: found socket awaiting acceptance, connecting...");
-                                        requestedConnection.connect(requestedConnection.getSocket(), false, serialPort);
-
-                                        connectionFound = true;
-                                        break;
-                                    }
-                                }
-
-                                if (!connectionFound)
-                                {
-                                    edu.uci.ece.zen.utils.ZenProperties.logger.log(
-                                        edu.uci.ece.zen.utils.Logger.WARN,
-                                        getClass(), "run",
-                                        "Received response from remote host to connection request. Request was accepted, but the host address in the reply (" + acceptedConnection + ") is unknown.");
-                                }
-                                break;
-
-                            case SerialPortSocketProtocol.CONNECTION_DENIED:
-                                // System.out.println("SerialPortListener: run: it's a connection denied");
-                                connection = SerialPortSocketProtocol.decodeConnectionDenied(message, messageLength);
-                                // FIXME: We should interrupt the waiting connection here. Otherwise, it will
-                                // block forever, waiting for waitForConnection to return.
+                            if (!connectionFound)
+                            {
                                 edu.uci.ece.zen.utils.ZenProperties.logger.log(
                                     edu.uci.ece.zen.utils.Logger.WARN,
                                     getClass(), "run",
-                                    "Received response from remote host to connection request. Request was denied because host " + connection + " is unknown.");
-                                break;
+                                    "Received response from remote host to connection request. Request was accepted, but the host address in the reply (" + acceptedConnection + ") is unknown.");
+                            }
+                            break;
 
-                            case SerialPortSocketProtocol.SOCKET_DATA:
-                                // System.out.println("SerialPortListener: run: it's socket data");
-                                byte id = SerialPortSocketProtocol.getSocketID(message);
-                                boolean foundSocket = false;
+                        case SerialPortSocketProtocol.CONNECTION_DENIED:
+                            // System.out.println("SerialPortListener: run: it's a connection denied");
+                            connection = SerialPortSocketProtocol.decodeConnectionDenied(message, messageLength);
+                            // FIXME: We should interrupt the waiting connection here. Otherwise, it will
+                            // block forever, waiting for waitForConnection to return.
+                            edu.uci.ece.zen.utils.ZenProperties.logger.log(
+                                edu.uci.ece.zen.utils.Logger.WARN,
+                                getClass(), "run",
+                                "Received response from remote host to connection request. Request was denied because host " + connection + " is unknown.");
+                            break;
 
-                                // Find the connection that matches the socket ID we received
-                                for (Iterator i = connections.iterator(); i.hasNext(); )
+                        case SerialPortSocketProtocol.SOCKET_DATA:
+                            // System.out.println("SerialPortListener: run: it's socket data");
+                            byte id = SerialPortSocketProtocol.getSocketID(message);
+                            boolean foundSocket = false;
+
+                            // Find the connection that matches the socket ID we received
+                            for (Iterator i = connections.iterator(); i.hasNext(); )
+                            {
+                                connection = (SerialPortConnection) i.next();
+                                if (connection.getSocket().getID() == id)
                                 {
-                                    connection = (SerialPortConnection) i.next();
-                                    if (connection.getSocket().getID() == id)
-                                    {
-                                        foundSocket = true;
+                                    foundSocket = true;
 
-                                        SerialPortSocketProtocol.decodeSocketData(
-                                            message, messageLength, (RemoteSerialPortStream)connection.getStream());
-                                        break;
-                                    }
+                                    SerialPortSocketProtocol.decodeSocketData(
+                                        message, messageLength, (RemoteSerialPortStream)connection.getStream());
+                                    break;
                                 }
+                            }
 
-                                if (!foundSocket)
-                                {
-                                    edu.uci.ece.zen.utils.ZenProperties.logger.log(
-                                        edu.uci.ece.zen.utils.Logger.WARN,
-                                        getClass(), "run",
-                                        "Received socket data from remote host, but the socket ID (" + id + ") does not match any existing socket connection.");
-                                }
-
-                                break;
-
-                            default:
-                                // System.out.println("SerialPortListener: run: unknown message! message="+Integer.toHexString(SerialPortSocketProtocol.getMessageType(message)));
-                                // for (int i = 0; i < messageLength; i++)
-                                // {
-                                //     System.out.print(message[i] + " ");
-                                // }
-                                // System.out.println();
+                            if (!foundSocket)
+                            {
                                 edu.uci.ece.zen.utils.ZenProperties.logger.log(
                                     edu.uci.ece.zen.utils.Logger.WARN,
                                     getClass(), "run",
-                                    "Received socket data from remote host, but message type is unknown.");
-                        }
+                                    "Received socket data from remote host, but the socket ID (" + id + ") does not match any existing socket connection.");
+                            }
+
+                            break;
+
+                        default:
+                            // System.out.println("SerialPortListener: run: unknown message! message="+Integer.toHexString(SerialPortSocketProtocol.getMessageType(message)));
+                            // for (int i = 0; i < messageLength; i++)
+                            // {
+                            //     System.out.print(message[i] + " ");
+                            // }
+                            // System.out.println();
+                            edu.uci.ece.zen.utils.ZenProperties.logger.log(
+                                edu.uci.ece.zen.utils.Logger.WARN,
+                                getClass(), "run",
+                                "Received socket data from remote host, but message type is unknown.");
                     }
                 }
                 catch (UnknownHostException e)
