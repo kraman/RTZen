@@ -212,7 +212,7 @@ function startClient(){
                 $EXEC_CMD
                 
         elif [ $1 -eq 3 ]; then
-                EXEC_CMD="$JAC_START perf.jitter.Client $2 $3"
+                EXEC_CMD="$JAC_START perf.jitter.Client_jni $2 $3"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD
@@ -270,7 +270,7 @@ if [ $OPERATION == "both" -o $OPERATION == "client" ]; then
 		fi
 
 		# rename the file
-		mv timeRecords.txt timeRecords.$TESTTYPE.$SERVERTYPE.$CLIENTTYPE.$CURSIZE.txt
+		mv timeRecords.txt timeRecords.raw.$TESTTYPE.$SERVERTYPE.$CLIENTTYPE.$CURSIZE.txt
 	
 	done
 else 

@@ -59,7 +59,7 @@ class DataProc{
 	    for(int num=1; num<=orbNum; num++){
 		    for (int j=0; j<messageSizes.length; j++){
 			    if(localOrRemote.equals("local")|localOrRemote.equals("both")){
-				    String filename = "timeRecords."+testType+"."+num+"."+num+"."+messageSizes[j]+".txt";
+				    String filename = "timeRecords.raw."+testType+"."+num+"."+num+"."+messageSizes[j]+".txt";
 				    BufferedReader br = new BufferedReader(new FileReader(filename));
 				    System.out.println("The file being processed is "+filename);
 				    String s;
@@ -102,7 +102,7 @@ class DataProc{
 				    System.out.println("Finish processing "+filename);
 			    }
 			    if(localOrRemote.equals("remote")|localOrRemote.equals("both")){
-				    String filename = "timeRecords."+testType+"."+(num*10)+"."+num+"."+messageSizes[j]+".txt";
+				    String filename = "timeRecords.raw."+testType+"."+(num*10)+"."+num+"."+messageSizes[j]+".txt";
 				    BufferedReader br = new BufferedReader(new FileReader(filename));
 				    System.out.println("The file being processed is "+filename);
 				    String s;
