@@ -37,6 +37,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
         drawn++;
 	    CDRInputStream cdr = (CDRInputStream) cdrInputStreamCache.dequeue();
             if ( cdr == null ){
+                ZenProperties.logger.log(Logger.WARN, CDRInputStream.class, "instance", "Creating new instance.");
                 cdr = (CDRInputStream) ImmortalMemory.instance().newInstance(CDRInputStream.class);
                 cdr.inUse = true;
                 return cdr;

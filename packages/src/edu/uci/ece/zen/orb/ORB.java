@@ -705,6 +705,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         Object ret = q.dequeue();
         if( ret == null ){
         try {
+            ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", "Creating new instance.");
             ret = ImmortalMemory.instance().newInstance(cls);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
