@@ -41,6 +41,7 @@ public class AcceptorRegistry {
         TaggedProfile[] tpList = (TaggedProfile[]) clientArea.newArray(
                 org.omg.IOP.TaggedProfile.class, list.size());
         byte[] tempOKey = objKey.getTrimData(clientArea);
+	System.out.println( "okey fstr len: " + objKey.length() + " barray len: " + tempOKey.length );
         ARRunnable ar = new ARRunnable();
 
         for (int i = 0; i < list.size(); ++i) {

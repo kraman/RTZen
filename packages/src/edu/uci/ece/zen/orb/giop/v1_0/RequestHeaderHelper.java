@@ -99,9 +99,11 @@ public class RequestHeaderHelper {
 
         new_one.operation = FString.instance(new_one.operation);
         int op_length = istream.read_ulong() - 1;
+	System.out.println( "Op len: " + op_length );
         //new_one.operation.append(op_length);
         new_one.operation.read(istream, op_length);
         istream.read_octet();
+	System.out.println( "==> " + new_one.operation );
 
         //new_one.operation = istream.read_string();
 
@@ -148,6 +150,7 @@ public class RequestHeaderHelper {
         // 0,value.object_key1.length);
 
         //ostream.write_string(value.operation1);
+	if (ZenProperties.dbg) ZenProperties.logger.log( "Op len: " + value.operation.length() );
         if (ZenProperties.dbg) ZenProperties.logger.log("operation: " + value.operation.toString());
         ostream.write_ulong(value.operation.length() + 1);
         value.operation.write(ostream);

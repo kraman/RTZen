@@ -59,7 +59,7 @@ final public class IdHintStrategy {
 
         // copy the Object Id
         ok_out.append(objectId.getData(), 0, objectId.length());
-	//System.out.println( "POA index: " + poaIndex + " POA gen: " + poaGenCount + " Servant index: " + servIndex + " Servant Gen count: " + servGenCount + " oid: " + objectId.toString() );
+	System.out.println( "POA index: " + poaIndex + " POA gen: " + poaGenCount + " Servant index: " + servIndex + " Servant Gen count: " + servGenCount + " oid: " + objectId.length() + " final len: " + ok_out.length() );
         // Logger.debug("Okey Created: Transient Hint Strategy = "
         // + new String(temp));
         // Logger.debug("Start = " + start);
