@@ -18,6 +18,7 @@ import org.omg.RTCORBA.ThreadpoolPolicy;
 
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.ORBImpl;
+import edu.uci.ece.zen.orb.PriorityMappingImpl;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.poa.mechanism.ActivationStrategy;
 import edu.uci.ece.zen.poa.mechanism.DefaultServantStrategy;
@@ -112,7 +113,7 @@ public class POAImpl {
     // but we have to ask the ORB in order to set this variable properly.
     private PriorityModel priorityModel = PriorityModel.SERVER_DECLARED;
     // TODO Just for now we are using RTJava priorities.
-    private int serverPriority = PriorityScheduler.instance().getNormPriority();
+    private int serverPriority = PriorityMappingImpl.toCORBA((short)PriorityScheduler.instance().getNormPriority());
 
     // --- POA Cached Objects ---
     Queue poaHashMapQueue;
@@ -215,11 +216,11 @@ if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------PO
 
             if (this.policyList[i] instanceof ThreadpoolPolicy && !threadoolPolicyChecked)
             {
-                this.threadPoolId =
-                    ((org.omg.RTCORBA.ThreadpoolPolicy) this.policyList[i]).threadpool();
+                this.threadPoolId = ((org.omg.RTCORBA.ThreadpoolPolicy) this.policyList[i]).threadpool();
                 // TODO Validate the threadPollID here.
                 //      Set the serverPriority value properly according to the lanes' priorities
                 //      (e.g. to the lanes' lowest priority value )
+                // KLUDGE: need to get the lowest priority of the threadpool for the server declated priority
                 threadoolPolicyChecked = true;
             }
 
@@ -394,8 +395,16 @@ if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------PO
             //if(req.getPriority() != (short)serverPriority)
                 //if (ZenBuildProperties.dbgPOA) 
                     //ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", "server pr != msg pr");
-            //kludge, server pr for now
-            short pr = req.getPriority();//orb.getRTCurrent().the_priority();//req.getPriority();//(short)serverPriority;//
+
+            short pr = 0;
+            if( this.priorityModel == PriorityModel.SERVER_DECLARED ){
+                pr = (short) this.serverPriority;
+                ZenProperties.logger.log( "POAImpl using server declared" );
+            }else{
+                pr = req.getPriority();//orb.getRTCurrent().the_priority();//req.getPriority();//(short)serverPriority;//
+                ZenProperties.logger.log( "POAImpl using client propogated" );
+            }
+
             if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:4  request pr: " + pr + " def. server pr: " + serverPriority);
 
             tpr.init(self, req, pr);

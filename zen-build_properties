@@ -31,7 +31,7 @@ jRate_install = /home/jay/jRate/
 jRate_classpath = /home/jay/jRate-gcc/share/java/libgcj-3.3.3.jar:/home/jay/jRate/classes/
 OVM_install = /home/kraman/OpenVM/OpenVM_bin/
 JamaicaVM_install = /usr/local/jamaica-2.4-10
-Mackinac_install = /opt/mackinac-beta-1
+Mackinac_install = /opt/mackinac-beta-2
 
 
 #Set up the tag if you need to compile the naming service
