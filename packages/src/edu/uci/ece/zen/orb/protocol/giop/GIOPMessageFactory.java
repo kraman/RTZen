@@ -25,6 +25,7 @@ import edu.uci.ece.zen.orb.protocol.*;
  *
  * @author Krishna Raman
  * @author Bruce Miller
+ * @author Mark Panahi 
  * @author Yue Zhang
  * @version $Revision: 1.8 $ $Date: 2004/08/01 09:25:19 $
  */
@@ -443,14 +444,16 @@ public final class GIOPMessageFactory extends MessageFactory{
                 rh.init(req.getRequestId(),org.omg.GIOP.ReplyStatusType_1_0._NO_EXCEPTION);
 
                 // add Reply service context here, should probably be factored out
-                //using these global variables still a hack for now
-                if (edu.uci.ece.zen.orb.transport.iiop.Acceptor.priorityModel == org.omg.RTCORBA.PriorityModel._CLIENT_PROPAGATED
-                        && edu.uci.ece.zen.orb.transport.iiop.Acceptor.serverPriority >= 0) {
-                    ZenProperties.logger.log("Sending CLIENT PROPAGATED service context");
+
+                if (req.isClientPropagated()) {
+
                     rh.service_context.append(1); //list size
                     rh.service_context.append(org.omg.IOP.RTCorbaPriority.value);
                     rh.service_context.append(4); //length of data
-                    rh.service_context.append((int) orb.getRTCurrent().the_priority());
+                    rh.service_context.append((int) req.getPriority());
+                    
+                    if(ZenBuildProperties.dbgInvocations)
+                        ZenProperties.logger.log("Sending CLIENT PROPAGATED service context back to client with priority " + req.getPriority());
                 } else {
                     rh.service_context.append(0); //empty list
                 }

@@ -161,6 +161,37 @@ public abstract class Acceptor {
         return tc;
     }
 
+    public static PolicyValue marshalPriorityModelValue(
+            org.omg.RTCORBA.PriorityModelPolicy pol, ORB orb, CDROutputStream outRet,
+            short priority) {
+        ZenProperties.logger.log("createPriorityModelValue()");
+        PolicyValue pv = new PolicyValue();
+        pv.ptype = pol.priority_model().value();
+
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        out.write_boolean(false); //BIGENDIAN
+
+        out.write_long(pol.priority_model().value());
+        //out.write_short(pol.server_priority());
+        //override to the acceptor's priority
+        out.write_short((short)priority);
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("createPriorityModelValue() -- Priority: " + priority);
+
+        pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
+        pv.ptype = PRIORITY_MODEL_POLICY_TYPE.value;
+
+        out.getBuffer().getReadBuffer().readByteArray(pv.pvalue, 0 ,
+                (int)out.getBuffer().getLimit());
+
+        out.free();
+
+        PolicyValueHelper.write(outRet, pv);
+
+        return pv;
+    }
+
+    /*
     //trust me, this is just a temporary hack
     public static boolean enableComponents = false;
     public static short serverPriority = -1; //initial value, not a valid priority
@@ -200,36 +231,6 @@ public abstract class Acceptor {
         return tc;
     }
 
-    public static PolicyValue marshalPriorityModelValue(
-            org.omg.RTCORBA.PriorityModelPolicy pol, ORB orb, CDROutputStream outRet,
-            short priority) {
-        ZenProperties.logger.log("createPriorityModelValue()");
-        PolicyValue pv = new PolicyValue();
-        pv.ptype = priorityModel;
-
-        CDROutputStream out = CDROutputStream.instance();
-        out.init(orb);
-        out.write_boolean(false); //BIGENDIAN
-
-        out.write_long(pol.priority_model().value());
-        //out.write_short(pol.server_priority());
-        //override to the acceptor's priority
-        out.write_short((short)priority);
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("createPriorityModelValue() -- Priority: " + priority);
-
-        pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
-        pv.ptype = PRIORITY_MODEL_POLICY_TYPE.value;
-
-        out.getBuffer().getReadBuffer().readByteArray(pv.pvalue, 0 ,
-                (int)out.getBuffer().getLimit());
-
-        out.free();
-
-        PolicyValueHelper.write(outRet, pv);
-
-        return pv;
-    }
-
     private PolicyValue createPriorityModelValue() {
         ZenProperties.logger.log("createPriorityModelValue()");
         PolicyValue pv = new PolicyValue();
@@ -252,7 +253,7 @@ public abstract class Acceptor {
 
         return pv;
     }
-
+*/
     private PolicyValue createServerProtocolPolicyValue() {
         /*
          * ServerProtocolPolicy spp = ((RTORBImpl)(orb.getRTORB())).spp;

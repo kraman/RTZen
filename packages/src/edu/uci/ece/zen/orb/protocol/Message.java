@@ -8,6 +8,7 @@ import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.PriorityMappingImpl;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import org.omg.RTCORBA.PriorityModel;
 
 /**
  * Parent of all Message types. Put functionality to be common to all types
@@ -16,6 +17,7 @@ import edu.uci.ece.zen.utils.ZenProperties;
  * type.
  *
  * @author Bruce Miller
+ * @author Mark Panahi
  */
 
 public abstract class Message {
@@ -25,6 +27,7 @@ public abstract class Message {
     private static final short defaultPriority = 
         PriorityMappingImpl.toCORBA( (short) javax.realtime.PriorityScheduler.instance().getNormPriority() );
     protected short priority;
+    protected boolean clientPropagated;
         
 
     protected Message() { }
@@ -33,12 +36,15 @@ public abstract class Message {
         this.istream = CDRInputStream.instance();
         this.istream.init(orb, stream);
         priority = defaultPriority;
+        clientPropagated = false;
+        ZenProperties.logger.log( "Setting default norm priority in Message.init()" );
     }
 
     public  void init(ORB orb, ReadBuffer stream) {
         this.istream = CDRInputStream.instance();
         this.istream.init(orb, stream);
         priority = defaultPriority;
+        clientPropagated = false;
         ZenProperties.logger.log( "Setting default norm priority in Message.init()" );
     }
     
@@ -49,6 +55,14 @@ public abstract class Message {
     public void setPriority(short p){
         priority = p;
     }
+    
+    public boolean isClientPropagated(){
+        return clientPropagated;
+    }
+
+    public void setClientPropagated(boolean cp){
+        clientPropagated = cp;
+    }    
     
     public abstract int getRequestId();
     public abstract void marshal(CDROutputStream out);
