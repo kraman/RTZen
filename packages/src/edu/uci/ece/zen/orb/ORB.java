@@ -174,17 +174,17 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
          * NOTE: Unsupported in RTZen because jRate does not support Applets /**
          * Initalizes the ORB and returns a reference to the orb. This method can be
          * called multiple times and must return the same orb reference. This is a
-         * special method added to support Java Applets. 
-         * @param app The applet object to load arguments from. 
+         * special method added to support Java Applets.
+         * @param app The applet object to load arguments from.
          * @param props The properties to be used during ORB initialization.
-         */ 
-         
-         // public static org.omg.CORBA.ORB  init(java.applet.Applet app, java.util.Properties props) 
+         */
+
+         // public static org.omg.CORBA.ORB  init(java.applet.Applet app, java.util.Properties props)
         // {
          //     ZenProperties.loadProperties(props); return ORB.init((String[])null,props); }
-         
+
     }
-    
+
 
 
     public ScopedMemory orbImplRegion;
@@ -592,10 +592,16 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     ///////////////////////////////////////////////////////////////////////////
 
     public ScopedMemory getWaiterRegion(int key) {
+        if(ZenProperties.devDbg) {
+            ZenProperties.logger.log(getClass()+ " getWaiterRegion() with key: " + key);
+        }
         return waiterRegistry.getWaiter(key);
     }
 
     public void registerWaiter(int key) {
+        if(ZenProperties.devDbg) {
+            ZenProperties.logger.log(getClass()+ " registerWaiter() with key: " + key);
+        }
         try {
             waiterRegistry.registerWaiter(key, (ScopedMemory) RealtimeThread
                     .getCurrentMemoryArea());
@@ -605,6 +611,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public void releaseWaiter(int key) {
+        if(ZenProperties.devDbg) {
+            ZenProperties.logger.log(getClass()+ " releaseWaiter() with key: " + key);
+        }
         try {
             waiterRegistry.remove(key);
         } catch (Exception e) {
@@ -676,7 +685,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                     getClass(), "create_threadpool",
                     "Could not create threadpool", e);
             System.err.println("Caught Exception");
-            e.printStackTrace();           
+            e.printStackTrace();
             System.exit(-1);
         }
     }
@@ -688,15 +697,15 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             return null;
         }
 
-	Object ret = q.dequeue();
-	if( ret == null ){
-		try {
-		    ret = ImmortalMemory.instance().newInstance(cls);
-		} catch (Exception e) {
-		    ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
-		}
-	}
-	return ret;
+        Object ret = q.dequeue();
+        if( ret == null ){
+        try {
+            ret = ImmortalMemory.instance().newInstance(cls);
+        } catch (Exception e) {
+            ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
+        }
+    }
+    return ret;
     }
 
 

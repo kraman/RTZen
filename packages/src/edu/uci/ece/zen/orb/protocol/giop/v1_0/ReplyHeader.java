@@ -5,25 +5,20 @@ import javax.realtime.ImmortalMemory;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.Queue;
+import edu.uci.ece.zen.orb.ORB;
 
 /**
  * Struct definition : ReplyHeader_1_0
- * 
+ *
  * @author OpenORB Compiler
  */
 public final class ReplyHeader implements org.omg.CORBA.portable.IDLEntity {
 
-    private static ReplyHeader rh;
+    private static Queue queue = Queue.fromImmortal();
 
     public static ReplyHeader instance() {
-
-        try {
-            if (rh == null) rh = (ReplyHeader) ImmortalMemory.instance()
-                    .newInstance(ReplyHeader.class);
-        } catch (Exception e) {
-            ZenProperties.logger.log(Logger.WARN, ReplyHeader.class, "instance", e);
-        }
-
+        ReplyHeader rh = (ReplyHeader)ORB.getQueuedInstance(ReplyHeader.class,queue);
         return rh;
     }
 
@@ -50,7 +45,7 @@ public final class ReplyHeader implements org.omg.CORBA.portable.IDLEntity {
 
     /**
      * Constructor with fields initialization
-     * 
+     *
      * @param service_context
      *            service_context struct member
      * @param request_id
@@ -62,6 +57,10 @@ public final class ReplyHeader implements org.omg.CORBA.portable.IDLEntity {
         this.service_context = service_context;
         this.request_id = request_id;
         this.reply_status = reply_status;
+    }
+
+    public void free(){
+        queue.enqueue(this);
     }
 
 }

@@ -138,6 +138,9 @@ public abstract class Transport implements Runnable {
      */
     public synchronized final void send(WriteBuffer msg) {
         ZenProperties.logger.log("Transport send 1");
+        //if(ZenProperties.devDbg) {
+        //    ZenProperties.logger.log("Transport sending: " + toString() + " " + msg.toString());
+        //}
         try {
             java.io.OutputStream out = getOutputStream();
             msg.dumpBuffer(out);

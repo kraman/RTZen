@@ -6,6 +6,7 @@ import edu.uci.ece.zen.orb.CDRInputStream;
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.ReadBuffer;
+import edu.uci.ece.zen.utils.ZenProperties;
 
 /**
  * Parent of all Message types. Put functionality to be common to all types
@@ -55,19 +56,18 @@ public abstract class Message {
     }
 
     public ScopedMemory getTransport() {
-	//Thread.dumpStack();
         return transport;
     }
 
     public final void free(){
         if(istream != null) istream.free();
-	transport = null;
+        transport = null;
         istream = null;
-	scope = null;
+        scope = null;
         internalFree();
         //messageBody.free();
     }
-    
+
     public abstract void internalFree();
 
     private Class protocolFactory;

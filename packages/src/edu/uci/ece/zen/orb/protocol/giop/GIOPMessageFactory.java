@@ -471,6 +471,7 @@ public final class GIOPMessageFactory extends MessageFactory{
                 }
 
                 edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeaderHelper.write(out, rh);
+                rh.free();
                 break;
             /*
              * case 11: org.omg.GIOP.ReplyHeader_1_1Helper.write( out , new

@@ -35,7 +35,7 @@ public class MSGRunnable implements Runnable {
             ORB orb) {
         this.rm = rm;
         this.servant = servant;
-        this.reply = reply;
+        //this.reply = reply;
         this.orb = orb;
     }
 
@@ -108,16 +108,24 @@ public class MSGRunnable implements Runnable {
                     ._invoke(op,
                             (org.omg.CORBA.portable.InputStream) rm
                                     .getCDRInputStream(), rh);
+
         }
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(326);
 
         if (rm.getResponseExpected() == 1) {
             reply.updateLength();
             WriteBuffer wb = reply.getBuffer();
+
+            /*
+            if(ZenProperties.devDbg) {
+                ZenProperties.logger.log("wbdbg__Servant2: " + servant.toString() + " id: " + rm.getRequestId() + " reply: " + reply.toString());
+                ZenProperties.logger.log("wbdbg__Servant2: " + servant.toString() + " id: " + rm.getRequestId() + " wb: " + wb.toString());
+            }*/
             SendRunnable sr = new SendRunnable();
             ExecuteInRunnable eir = new ExecuteInRunnable();
             sr.init(wb);
             eir.init(sr, rm.getTransport());
+
             try {
                 orb.orbImplRegion.executeInArea(eir);
             } catch (Exception e) {
@@ -125,7 +133,7 @@ public class MSGRunnable implements Runnable {
             }
         }
         reply.free();
-	rm.free();
+        rm.free();
         //((Transport)( rm.getTransport() ).getPortal()).send(wb);
     }
 }

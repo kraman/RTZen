@@ -13,6 +13,7 @@ import edu.uci.ece.zen.utils.Queue;
 
 /**
  * @author Bruce Miller
+ * @author Mark Panahi
  */
 public class RequestMessage extends
         edu.uci.ece.zen.orb.protocol.type.RequestMessage {
@@ -55,25 +56,7 @@ public class RequestMessage extends
         RequestMessage rm = (RequestMessage)ORB.getQueuedInstance(RequestMessage.class,queue);
         //rm.inUse = true;
         return rm;
-/*
-        try {
-            if (rm == null) rm = (RequestMessage) ImmortalMemory.instance()
-                    .newInstance(RequestMessage.class);
-            return rm;
-        } catch (Exception e) {
-            ZenProperties.logger.log(Logger.WARN, RequestMessage.class, "getMessage", e);
-        }
-        return null;
-*/
     }
-/*
-    public RequestMessage(ORB orb, ReadBuffer stream) {
-        super(orb, stream);
-        header = RequestHeaderHelper.read(istream);
-        messageBody = stream;
-    }
-*/
-
 
     public int getRequestId() {
         return header.request_id;

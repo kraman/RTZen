@@ -106,6 +106,10 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
         return ostream;
     }
 
+    public String toString(){
+        return sock.toString();
+    }
+
     //hook method to weave in TCPProtocolProperties
     private void setSockProps(java.net.Socket sock, ORB orb) {
         //org.omg.RTCORBA.TCPProtocolProperties tcpPP =
