@@ -75,7 +75,7 @@ public class WriteBuffer {
 
     private Vector buffers;
 
-    private boolean isLittleEndian;
+    private boolean isLittleEndian = false;
 
     long position;
 

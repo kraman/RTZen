@@ -334,9 +334,13 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 byte[] data = profile.profile_data;
                 if (ZenProperties.dbg) ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL prof data len:" + data.length);
                 CDRInputStream in = CDRInputStream.fromOctetSeq(data, orb);
+  
+                //for(int i = 0 ; i < in.getBuffer().getLimit()/4; ++i)
+                //    if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + in.read_ulong());
+                
                 FString object_key = in.getBuffer().readFString(false);
-                if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + object_key.length());
-                if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + in.getBuffer().getLimit()); 
+                //if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + object_key.length());
+               // if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + object_key.decode()); 
                 long connectionKey = -TAG_SERIAL.value;
                 ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 2");
