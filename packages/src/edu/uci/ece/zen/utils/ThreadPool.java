@@ -311,7 +311,7 @@ class ThreadSleepRunnable implements Runnable {
             }
         } catch (InterruptedException e) {
             ZenProperties.logger.log(Logger.INFO,
-                    "edu.uci.ece.zen.utils.ThreadSleepRunnable", "run()",
+                    getClass(), "run",
                     "Recieved an Interrupt exception. Shutting down.");
             //Ignore. Expected while shutting down.
         } catch (Exception e1) {

@@ -38,32 +38,28 @@ public class ORBImpl {
 
     public ORBImpl(String args[], Properties props,
             edu.uci.ece.zen.orb.ORB orbFacade) {
-        if (ZenProperties.devDbg) System.out
-                .println("======================In orb impl region===================================");
+        ZenProperties.logger.log("======================In orb impl region===================================");
         properties = new ZenProperties();
         properties.addPropertiesFromArgs(args);
         properties.addProperties(props);
         this.orbFacade = orbFacade;
-        if (ZenProperties.devDbg) System.out
-                .println("======================Setting portal variable==============================");
+        ZenProperties.logger.log("======================Setting portal variable==============================");
         orbFacade.orbImplRegion.setPortal(this);
         orbImplRunnable = new ORBImplRunnable(orbFacade.orbImplRegion);
-        if (ZenProperties.devDbg) System.out
-                .println("======================Creating nhrt sleeper thread=========================");
-        if (ZenProperties.devDbg) System.out.println(orbFacade.orbImplRegion);
-        if (ZenProperties.devDbg) System.out.println(MemoryArea
-                .getMemoryArea(orbImplRunnable));
-        if (ZenProperties.devDbg) System.out.println(NoHeapRealtimeThread
-                .getCurrentMemoryArea());
+        ZenProperties.logger.log("======================Creating nhrt sleeper thread=========================");
+        ZenProperties.logger.log(orbFacade.orbImplRegion.toString());
+        ZenProperties.logger.log(MemoryArea
+                .getMemoryArea(orbImplRunnable).toString());
+        ZenProperties.logger.log(NoHeapRealtimeThread
+                .getCurrentMemoryArea().toString());
         //NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,
         // null,null,(ScopedMemory)orbFacade.orbImplRegion,null,(java.lang.Runnable
         // )orbImplRunnable );
-        if (ZenProperties.devDbg) System.out.println(MemoryArea
-                .getMemoryArea(new Integer(42)));
+        ZenProperties.logger.log(MemoryArea
+                .getMemoryArea(new Integer(42)).toString());
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread(null, null, null,
                 orbFacade.orbImplRegion, null, orbImplRunnable);
-        if (ZenProperties.devDbg) System.out
-                .println("======================starting nhrt in orb impl region=====================");
+        ZenProperties.logger.log("======================starting nhrt in orb impl region=====================");
 
         nhrt.start();
         try {
@@ -177,13 +173,13 @@ class ORBImplRunnable implements Runnable {
     }
 
     public void run() {
-        if (ZenProperties.devDbg) System.out.println("getting portal for: "
+        ZenProperties.logger.log("getting portal for: "
                 + sm);
-        if (ZenProperties.devDbg) System.out.println("inner thread: "
+        ZenProperties.logger.log("inner thread: "
                 + Thread.currentThread().toString());
 
         ORBImpl orbImpl = (ORBImpl) sm.getPortal();
-        if (ZenProperties.devDbg) System.out.println("orb impl is " + orbImpl);
+        ZenProperties.logger.log("orb impl is " + orbImpl);
         synchronized (orbImpl) {
             try {
                 while (active) {
@@ -191,7 +187,7 @@ class ORBImplRunnable implements Runnable {
                 }
             } catch (InterruptedException ie) {
                 ZenProperties.logger.log(Logger.INFO,
-                        "edu.uci.ece.zen.orb.ORBImplRunnable", "run()",
+                        getClass(), "run()",
                         "ORB is shutting down.");
             }
             active = false;

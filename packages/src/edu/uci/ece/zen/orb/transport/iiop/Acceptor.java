@@ -28,8 +28,8 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
 
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
-                    "edu.uci.ece.zen.orb.transport.iiop.Acceptor", "<cinit>",
-                    "Error binding to post. " + ex.toString());
+                    getClass(), "<cinit>",
+                    "Error binding to post.", ex);
         }
     }
 
@@ -39,8 +39,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
             registerTransport(t);
         } catch (java.io.IOException ioex) {
             ZenProperties.logger.log(Logger.WARN,
-                    "edu.uci.ece.zen.orb.transport.iiop.Acceptor", "accept",
-                    "IOException occured " + ioex.toString());
+                    getClass(), "accept", ioex);
         }
     }
 
@@ -58,21 +57,19 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         switch (iiopMinorVersion) {
             case 0:
                 if (ZenProperties.devDbg) {
-                    System.out.println("yuez in Acceptor 2.1");
-                    System.out.println("yuez in Acceptor version " + version);
-                    System.out
-                            .println("yuez in Acceptor, the current memoery is :"
+                    ZenProperties.logger.log("yuez in Acceptor 2.1");
+                    ZenProperties.logger.log("yuez in Acceptor version " + version);
+                    ZenProperties.logger.log("yuez in Acceptor, the current memoery is :"
                                     + javax.realtime.RealtimeThread
                                             .getCurrentMemoryArea());
-                    System.out
-                            .println("yuez in Acceptor, the memory of ssock is "
+                    ZenProperties.logger.log("yuez in Acceptor, the memory of ssock is "
                                     + javax.realtime.MemoryArea
                                             .getMemoryArea(ssock));
-                    System.out.println("yuez in Acceptor getHostAddress"
+                    ZenProperties.logger.log("yuez in Acceptor getHostAddress"
                             + ssock.getInetAddress().getHostAddress());
-                    System.out.println("yuez in Acceptor getLocalPort()"
+                    ZenProperties.logger.log("yuez in Acceptor getLocalPort()"
                             + (short) ssock.getLocalPort());
-                    System.out.println("yuez in Acceptor objKey" + objKey);
+                    ZenProperties.logger.log("yuez in Acceptor objKey" + objKey);
                 }
                 ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock
                         .getInetAddress().getHostAddress(), (short) ssock

@@ -65,8 +65,7 @@ public abstract class Acceptor {
     public synchronized TaggedProfile getProfile(byte iiopMajorVersion,
             byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion) {
         try {
-            if (ZenProperties.devDbg) System.out
-                    .println("Acceptor client region: " + clientRegion);
+            ZenProperties.logger.log("Acceptor client region: " + clientRegion);
             edu.uci.ece.zen.utils.Logger.printThreadStack();
             if (prunnable == null) prunnable = new ProfileRunnable();
             prunnable.init(iiopMajorVersion, iiopMinorVersion, objKey, this);
@@ -82,8 +81,7 @@ public abstract class Acceptor {
             byte iiopMinorVersion, byte[] objKey);
 
     public void finalize() {
-        if (ZenProperties.devDbg) System.out
-                .println("Acceptor region has been GC'd");
+        ZenProperties.logger.log("Acceptor region has been GC'd");
     }
 }
 

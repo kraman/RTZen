@@ -191,10 +191,9 @@ public class POA extends org.omg.CORBA.LocalObject implements
             poaPath.init((Integer.parseInt(ZenProperties.getGlobalProperty(
                     "doc.zen.poa.MaxPOAPathLen", "255"))));
         } catch (Exception e2) {
-            ZenProperties.logger.log(Logger.FATAL, "edu.uci.ece.zen.orb.POA",
+            ZenProperties.logger.log(Logger.FATAL, getClass(),
                     "<init>",
-                    "Could not initialize POA facade due to exception: "
-                            + e2.toString());
+                    "Could not initialize POA facade", e2);
             System.exit(-1);
         }
     }
@@ -222,7 +221,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
         if (transport.objectTable[0] == null) {
             transport.objectTable[0] = new POARunnable(
                     POARunnable.HANDLE_REQUEST);
-            System.out.println("new poa runnable");
+            ZenProperties.logger.log("new poa runnable");
         }
 
         POARunnable r = (POARunnable) transport.objectTable[0];
@@ -235,7 +234,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
 
         if (transport.objectTable[1] == null) {
             transport.objectTable[1] = new ExecuteInRunnable();
-            System.out.println("new EI  runnable");
+            ZenProperties.logger.log("new EI  runnable");
 
         }
 
@@ -270,8 +269,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
         POARunnable r = new POARunnable(POARunnable.SERVANT_TO_REFERENCE);
         r.addParam(p_servant);
         r.addParam(RealtimeThread.getCurrentMemoryArea());
-        if (ZenProperties.devDbg) System.out
-                .println("POA.servant_to_reference cur mem area: "
+        ZenProperties.logger.log("POA.servant_to_reference cur mem area: "
                         + RealtimeThread.getCurrentMemoryArea());
         ExecuteInRunnable eir1 = new ExecuteInRunnable();
         eir1.init(r, poaMemoryArea);
@@ -290,8 +288,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
             case POARunnable.WrongPolicyException:
                 throw new WrongPolicy();
         }
-        if (ZenProperties.devDbg) System.out
-                .println("POA.servant_to_reference " + r.retVal);
+        ZenProperties.logger.log("POA.servant_to_reference " + r.retVal);
         return (org.omg.CORBA.Object) r.retVal;
     }
 

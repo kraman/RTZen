@@ -181,8 +181,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
             }
 
             if (exceptionValue.value == POARunnable.ForwardRequestException) {
-                if (ZenProperties.devDbg) System.out
-                        .println("There is a forward request exception");
+                ZenProperties.logger.log("There is a forward request exception");
                 // Ask the ORB to handle the ForwardRequest Exception
                 //((edu.uci.ece.zen.poa.POA)
                 // poa).getORB().handleForwardRequest(e);

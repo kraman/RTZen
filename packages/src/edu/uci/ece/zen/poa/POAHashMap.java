@@ -90,8 +90,8 @@ public class POAHashMap {
             wait();
         } catch (InterruptedException ex) {
             ZenProperties.logger.log(Logger.WARN,
-                    "edu.uci.ece.zen.poa.POAHashMap", "waitForDestruction",
-                    "WaitForDestruction for ObjectKey: Interrupted");
+                    getClass(), "waitForDestruction",
+                    "WaitForDestruction for ObjectKey: Interrupted", ex);
         }
     }
 

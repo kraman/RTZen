@@ -26,12 +26,10 @@ public class PolicyUtils {
             if (policyList[i] instanceof edu.uci.ece.zen.poa.policy.ServantRetentionPolicy) {
                 if (((edu.uci.ece.zen.poa.policy.ServantRetentionPolicy) policyList[i])
                         .int_value() == org.omg.PortableServer.ServantRetentionPolicyValue._RETAIN) {
-                    if (ZenProperties.devDbg) System.out
-                            .println("Util found Retain policy");
+                    ZenProperties.logger.log("Util found Retain policy");
                     return true;
                 } else {
-                    if (ZenProperties.devDbg) System.out
-                            .println("Util found Non-Retain policy");
+                    ZenProperties.logger.log("Util found Non-Retain policy");
                     return false;
                 }
             }

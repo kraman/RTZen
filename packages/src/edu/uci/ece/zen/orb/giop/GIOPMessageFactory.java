@@ -14,6 +14,7 @@ import edu.uci.ece.zen.orb.transport.Transport;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 /**
  * This class is a factory for creating GIOP messages for marshalling or
@@ -46,12 +47,12 @@ public final class GIOPMessageFactory {
             // into the variable "buffer"
             buffer.setEndian(mainMsgHdr.isLittleEndian);
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
-            if (ZenProperties.devDbg) System.out
-                    .println("In GIOPMessageFactory, the message size is "
+            ZenProperties.logger.log
+                            ("In GIOPMessageFactory, the message size is "
                             + mainMsgHdr.messageSize);
 
-            if (ZenProperties.devDbg) System.err
-                    .println("Inside GIOPMessageFactory and mainMsgHdr: "
+            ZenProperties.logger.log
+                            ("Inside GIOPMessageFactory and mainMsgHdr: "
                             + mainMsgHdr.toString() + " and giopMajorVersion: "
                             + mainMsgHdr.giopMajorVersion
                             + " and minorversion: "
@@ -169,11 +170,11 @@ public final class GIOPMessageFactory {
                     throw new RuntimeException(""); //throw GIOP error here
             }
         } while (false);
-        if (ZenProperties.devDbg) System.out.println("GMF parse stream 1");
+        ZenProperties.logger.log("GMF parse stream 1");
         ret
                 .setTransport((javax.realtime.ScopedMemory) javax.realtime.MemoryArea
                         .getMemoryArea(trans));
-        if (ZenProperties.devDbg) System.out.println("GMF parse stream 2");
+        ZenProperties.logger.log("GMF parse stream 2");
         return ret;
     }
 
@@ -263,16 +264,15 @@ public final class GIOPMessageFactory {
     public static void parseStreamForHeader(java.io.InputStream in,
             GIOPHeaderInfo headerInfo, Transport trans)
             throws java.io.IOException {
-        if (ZenProperties.devDbg) System.out.println("parseStreamForHeader");
+        ZenProperties.logger.log("parseStreamForHeader");
         //byte[] header = new byte[12];
         byte[] header = trans.getGIOPHeader();
         int read = 0;
         while (read < 12) {
             int tmp = in.read(header, 0, 12);
-            if (ZenProperties.devDbg) System.out.println(tmp);
+            ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
-                System.out
-                        .println("RTZen doesnt support closing connection yet :-P ... shutting down");
+                ZenProperties.logger.log(Logger.FATAL, GIOPMessageFactory.class, "parseStreamForHeader(InputStream, GIOPHeaderInfo, Transport)", "RTZen doesnt support closing connection yet :-P ... shutting down");
                 System.exit(0);
             }
             read += tmp;
@@ -395,8 +395,7 @@ public final class GIOPMessageFactory {
              * org.omg.IOP.ServiceContext[0] )); break;
              */
             default:
-                if (ZenProperties.devDbg) System.out
-                        .println("giop version not supported");
+                ZenProperties.logger.log(Logger.WARN, GIOPMessageFactory.class, "constructReplyMessage", "giop version not supported");
         }
         return out;
     }
@@ -438,8 +437,7 @@ public final class GIOPMessageFactory {
              * org.omg.IOP.ServiceContext[0] )); break;
              */
             default:
-                if (ZenProperties.devDbg) System.out
-                        .println("giop version not supported");
+                ZenProperties.logger.log(Logger.WARN, GIOPMessageFactory.class, "constructExceptionMessage", "giop version not supported");
         }
         return out;
     }

@@ -66,7 +66,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     static {
         try {
             try {
-                System.out.println("local address"
+                ZenProperties.logger.log("local address"
                         + java.net.InetAddress.getLocalHost().getHostAddress());
                 //sockAddr = new
                 // java.net.InetSocketAddress(java.net.InetAddress.getLocalHost().getHostAddress(),0);
@@ -118,8 +118,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         if (props == null) props = new Properties();
 
         //Find the ORBId
-        if (ZenProperties.devDbg) System.out
-                .println("======================Locating OBR ID from ZenProperties====================");
+        ZenProperties.logger.log("======================Locating OBR ID from ZenProperties====================");
         String orbId = ZenProperties.getORBId(args, props);
         if (orbId == null) {
             orbId = "edu.uci.ece.zen.orb.ORB." + nextOrbId();
@@ -130,8 +129,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         if (orbId.equals("")) {
             return edu.uci.ece.zen.orb.ORB.orbSingleton;
         } else {
-            if (ZenProperties.devDbg) System.out
-                    .println("======================Trying to locate the orb with that orbid==============");
+            ZenProperties.logger.log("======================Trying to locate the orb with that orbid==============");
 
             FString fOrbId = new FString(orbId.length());
             fOrbId.append(orbId);
@@ -140,14 +138,12 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                     .get(fOrbId);
             if (retVal == null) {
                 //TODO: According to Alex, the use of scopes here has to be dealt with from Scoped Types perspective
-                if (ZenProperties.devDbg) System.out
-                        .println("======================None found...new orb will mbe made====================");
+                ZenProperties.logger.log("======================None found...new orb will mbe made====================");
                 if (unusedFacades.isEmpty()) { throw new RuntimeException(
                         "ORB number limit reached. Cannot create more ORB's. Please increase the number of ORB's in the zen.properties file."); }
                 ScopedMemory mem = getScopedRegion();
                 retVal = (edu.uci.ece.zen.orb.ORB) unusedFacades.dequeue();
-                if (ZenProperties.devDbg) System.out
-                        .println("======================Calling internal init now=============================");
+                ZenProperties.logger.log("======================Calling internal init now=============================");
                 retVal.internalInit(mem, orbId, args, props);
             }
             return retVal;
@@ -213,10 +209,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         try {
             orbId.init(25);
         } catch (Exception e2) {
-            ZenProperties.logger.log(Logger.FATAL, "edu.uci.ece.zen.orb.ORB",
+            ZenProperties.logger.log(Logger.FATAL, getClass(),
                     "<init>",
-                    "Could not initialize ORB facade due to exception: "
-                            + e2.toString());
+                    "Could not initialize ORB facade", e2);
             System.exit(-1);
         }
     }
@@ -254,11 +249,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             Properties props) {
         this.orbId.reset();
         this.orbId.append(orbId);
-        if (ZenProperties.devDbg) System.out
-                .println("======================Assigning the parent memory area======================");
+        ZenProperties.logger.log("======================Assigning the parent memory area======================");
         this.parentMemoryArea = RealtimeThread.getCurrentMemoryArea();
-        if (ZenProperties.devDbg) System.out
-                .println("======================Filing ORBInitRunnable with values====================");
+        ZenProperties.logger.log("======================Filing ORBInitRunnable with values====================");
         ORBInitRunnable orbInitRunnable = new ORBInitRunnable();
         orbInitRunnable.init(args, props, this);
         orbImplRegion = mem;
@@ -375,8 +368,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     public org.omg.CORBA.Object resolve_initial_references(String object_name)
             throws org.omg.CORBA.ORBPackage.InvalidName {
-        if (ZenProperties.devDbg) System.out
-                .println("======================Getting " + object_name
+        ZenProperties.logger.log("======================Getting " + object_name
                         + "=============================");
         if (object_name.equals("RTORB")) {
             return getRTORB();
@@ -554,7 +546,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     public static ScopedMemory getScopedRegion() {
         ScopedMemory mem = null;
         if (unusedMemoryAreas.isEmpty()) {
-            ZenProperties.logger.log(Logger.SEVERE, "edu.uci.ece.zen.orb.ORB",
+            ZenProperties.logger.log(Logger.SEVERE, ORB.class,
                     "getScopedRegion()", "Out of memory areas");
             return null;
         } else {
@@ -583,8 +575,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
             parentMemoryArea.executeInArea(r);
         } catch (Exception e) {
-            ZenProperties.logger.log(Logger.FATAL, "edu.uci.ece.zen.orb.ORB",
-                    "", e.toString());
+            ZenProperties.logger.log(Logger.FATAL, getClass(), "executeInOBRRegion", e);
             System.exit(-1);
         }
     }
@@ -604,9 +595,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             parentMemoryArea.executeInArea(r1);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL,
-                    "edu.uci.ece.zen.orb.RTORBImpl", "create_threadpool",
-                    "Could not create threadpool due to exception: "
-                            + e.toString());
+                    getClass(), "create_threadpool",
+                    "Could not create threadpool", e);
             System.exit(-1);
         }
     }

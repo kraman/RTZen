@@ -67,36 +67,36 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         this.responseExpected = responseExpected;
         out = CDROutputStream.instance();
 
-        if (ZenProperties.devDbg) System.out
-                .println("1ClientRequest: cur ORBImpl mem (cons, remaining)= "
+        ZenProperties.logger.log
+                        ("1ClientRequest: cur ORBImpl mem (cons, remaining)= "
                         + orb.orbImplRegion.memoryConsumed() + " "
                         + orb.orbImplRegion.memoryRemaining());
-        if (ZenProperties.devDbg) System.out
-                .println("1ClientRequest: cur Client mem (cons, remaining)= "
+        ZenProperties.logger.log
+                        ("1ClientRequest: cur Client mem (cons, remaining)= "
                         + orb.parentMemoryArea.memoryConsumed() + " "
                         + orb.parentMemoryArea.memoryRemaining());
 
-        if (ZenProperties.devDbg) System.out.println("ClientRequest 1");
+        ZenProperties.logger.log("ClientRequest 1");
         out.init(orb);
-        if (ZenProperties.devDbg) System.out.println("ClientRequest 2");
+        ZenProperties.logger.log("ClientRequest 2");
         this.giopMajor = giopMajor;
         this.giopMinor = giopMinor;
-        if (ZenProperties.devDbg) System.out.println("ClientRequest 3");
+        ZenProperties.logger.log("ClientRequest 3");
         LaneInfo ln = del.getLane();
-        if (ZenProperties.devDbg) System.out.println("ClientRequest 5");
+        ZenProperties.logger.log("ClientRequest 5");
         transportScope = ln.transpScope;
-        if (ZenProperties.devDbg) System.out.println("ClientRequest 6");
+        ZenProperties.logger.log("ClientRequest 6");
         objectKey = ln.getObjectKey();
-        if (ZenProperties.devDbg) System.out.println("ClientRequest 7");
+        ZenProperties.logger.log("ClientRequest 7");
 
         //TODO:Assemble and write message header and policies here
 
-        if (ZenProperties.devDbg) System.out
-                .println("2ClientRequest: cur ORBImpl mem (cons, remaining)= "
+        ZenProperties.logger.log
+                        ("2ClientRequest: cur ORBImpl mem (cons, remaining)= "
                         + orb.orbImplRegion.memoryConsumed() + " "
                         + orb.orbImplRegion.memoryRemaining());
-        if (ZenProperties.devDbg) System.out
-                .println("2ClientRequest: cur Client mem (cons, remaining)= "
+        ZenProperties.logger.log
+                        ("2ClientRequest: cur Client mem (cons, remaining)= "
                         + orb.parentMemoryArea.memoryConsumed() + " "
                         + orb.parentMemoryArea.memoryRemaining());
 
@@ -106,8 +106,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         if (del.priorityModel == PriorityModel._CLIENT_PROPAGATED
                 && del.serverPriority >= 0) {
 
-            if (ZenProperties.devDbg) System.out
-                    .println("Sending CLIENT PROPAGATED service context");
+            ZenProperties.logger.log("Sending CLIENT PROPAGATED service context");
 
             contexts.append(1); //list size
 
@@ -160,16 +159,16 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         }
 
         messageId = WaitingStrategy.newMessageId();
-        if (ZenProperties.devDbg) System.out.println("ClientRequest 8");
+        ZenProperties.logger.log("ClientRequest 8");
         edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructMessage(this,
                 messageId, out);
-        if (ZenProperties.devDbg) System.out.println("ClientRequest 9");
-        if (ZenProperties.devDbg) System.out
-                .println("3ClientRequest: cur ORBImpl mem (cons, remaining)= "
+        ZenProperties.logger.log("ClientRequest 9");
+        ZenProperties.logger.log
+                        ("3ClientRequest: cur ORBImpl mem (cons, remaining)= "
                         + orb.orbImplRegion.memoryConsumed() + " "
                         + orb.orbImplRegion.memoryRemaining());
-        if (ZenProperties.devDbg) System.out
-                .println("3ClientRequest: cur Client mem (cons, remaining)= "
+        ZenProperties.logger.log
+                        ("3ClientRequest: cur Client mem (cons, remaining)= "
                         + orb.parentMemoryArea.memoryConsumed() + " "
                         + orb.parentMemoryArea.memoryRemaining());
         //edu.uci.ece.zen.utils.Logger.printMemStats(311);
@@ -185,7 +184,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     public CDRInputStream invoke() {
         //out.printWriteBuffer(); This will printout every byte in the
         // OutputStream
-        if (ZenProperties.devDbg) System.out.println("ClientRequest invoke 1");
+        ZenProperties.logger.log("ClientRequest invoke 1");
         out.updateLength();
         MessageComposerRunnable mcr = MessageComposerRunnable.instance();
         mcr.init(this);
@@ -196,7 +195,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
 
         erOrbMem.init(erMsgMem, orb.orbImplRegion);
         erMsgMem.init(mcr, messageScope);
-        if (ZenProperties.devDbg) System.out.println("ClientRequest invoke 2");
+        ZenProperties.logger.log("ClientRequest invoke 2");
         try {
             if (orb.parentMemoryArea == RealtimeThread.getCurrentMemoryArea()) 
                 erOrbMem.run();
@@ -204,12 +203,11 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
                 orb.parentMemoryArea.executeInArea(erOrbMem);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.SEVERE,
-                    "edu.uci.ece.zen.orb.ClientRequest", "invoke()",
-                    "Could not invoke remote object due to exception: "
-                            + e.toString());
+                    getClass(), "invoke()",
+                    "Could not invoke remote object", e);
         }
         //edu.uci.ece.zen.utils.Logger.printMemStats(310);
-        if (ZenProperties.devDbg) System.out.println("ClientRequest invoke 3");
+        ZenProperties.logger.log("ClientRequest invoke 3");
         ORB.freeScopedRegion(messageScope);
         orb.freeEIR( erOrbMem );
         orb.freeEIR( erMsgMem );
@@ -424,13 +422,12 @@ class MessageComposerRunnable implements Runnable {
         eir.init(smr, clr.transportScope);
         success = true;
         try {
-            if (ZenProperties.devDbg) System.out.println("MCR run 1");
+            ZenProperties.logger.log("MCR run 1");
             clr.orb.orbImplRegion.executeInArea(eir);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.SEVERE,
-                    "edu.uci.ece.zen.orb.MessageComposerRunnable", "run",
-                    "Could not sent message on transport due to exception: "
-                            + e.toString());
+                    getClass(), "run",
+                    "Could not sent message on transport", e);
             clr.releaseWaiter();
             waitingStrategy = null;
             success = false;

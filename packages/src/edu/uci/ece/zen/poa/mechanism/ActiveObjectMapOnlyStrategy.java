@@ -142,9 +142,9 @@ public final class ActiveObjectMapOnlyStrategy extends
         POAImpl pimpl = (POAImpl) ((ScopedMemory) poa.poaMemoryArea)
                 .getPortal();
         // Logger.debug("logged debug 0");
-        if (ZenProperties.devDbg) System.out.println(pimpl);
-        if (ZenProperties.devDbg) System.out.println(pimpl.poaCurrent);
-        if (ZenProperties.devDbg) System.out.println(pimpl.poaCurrent.get());
+        ZenProperties.logger.log(pimpl + "");
+        ZenProperties.logger.log(pimpl.poaCurrent + "");
+        ZenProperties.logger.log(pimpl.poaCurrent.get() + "");
 
         try {
             if (pimpl.poaCurrent.get() == null) pimpl.poaCurrent

@@ -60,8 +60,7 @@ public class RTORBImpl extends org.omg.CORBA.LocalObject implements RTORB {
             int dynamic_threads, short default_priority,
             boolean allow_request_buffering, int max_buffered_requests,
             int max_request_buffer_size) {
-        if (ZenProperties.devDbg) System.out
-                .println("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_ CREATING THREADPOOL +_+_+_+_+_+_+_+_+_+_+_+_+_");
+        ZenProperties.logger.log("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_ CREATING THREADPOOL +_+_+_+_+_+_+_+_+_+_+_+_+_");
         orb.setUpORBChildRegion(acceptorRunnable);
         tpr.init(this, orb, stacksize, static_threads, dynamic_threads,
                 default_priority, allow_request_buffering,

@@ -289,9 +289,8 @@ public class FString {
             return ret;
         } catch (Exception e2) {
             ZenProperties.logger.log(Logger.SEVERE,
-                    "edu.uci.ece.zen.utils.FString", "getTrimdata",
-                    "Could not initialize String due to exception: "
-                            + e2.toString());
+                    getClass(), "getTrimdata",
+                    "Could not initialize String", e2);
         }
         return null;
     }

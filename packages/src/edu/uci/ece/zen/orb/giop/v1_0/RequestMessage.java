@@ -26,7 +26,7 @@ public class RequestMessage extends
 
     public void init(ClientRequest clr, int messageId) {
         //super();
-        if (ZenProperties.devDbg) System.out.println("RequestMessage1");
+        ZenProperties.logger.log("RequestMessage1");
         header = RequestHeader.instance();
 
         header.init(clr.contexts, messageId, clr.responseExpected,

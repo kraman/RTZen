@@ -20,13 +20,13 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             sock = sock;
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
-            if (ZenProperties.devDbg) System.out.println("Transport ready: "
+            ZenProperties.logger.log("Transport ready: "
                     + istream + " " + ostream);
             setSockProps(sock, orb);
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
-                    "edu.uci.ece.zen.orb.transport.iiop.Transport", "<cinit>",
-                    "Error connecting to remote location. " + ex.toString());
+                    getClass(), "<cinit>",
+                    "Error connecting to remote location.", ex);
         }
     }
 
@@ -35,25 +35,24 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             edu.uci.ece.zen.orb.ORBImpl orbImpl, String host, int port) {
         super(orb, orbImpl);
         try {
-            if (ZenProperties.devDbg) System.out.println("Connecting to "
+            ZenProperties.logger.log("Connecting to "
                     + host + ":" + port);
-            if (ZenProperties.devDbg) System.out
-                    .println("Current transport thread is of type "
+            ZenProperties.logger.log("Current transport thread is of type "
                             + javax.realtime.RealtimeThread
                                     .currentRealtimeThread());
 
             sock = new java.net.Socket(host, port);
-            if (ZenProperties.devDbg) System.out.println("Connected");
+            ZenProperties.logger.log("Connected");
             //setSockProps(sock, orb);
             //             System.err.println( "sock = " + sock );
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
-            if (ZenProperties.devDbg) System.out.println("Transport ready: "
+            ZenProperties.logger.log("Transport ready: "
                     + istream + " " + ostream);
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
-                    "edu.uci.ece.zen.orb.transport.iiop.Transport", "<cinit>",
-                    "Error connecting to remote location. " + ex.toString());
+                    getClass(), "<cinit>",
+                    "Error connecting to remote location.", ex);
         }
     }
 
@@ -74,8 +73,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
 
         try {
             if (pm.recv_buffer_size > 0) {
-                if (ZenProperties.devDbg) System.out
-                        .println("Setting socket props.");
+                ZenProperties.logger.log("Setting socket props.");
                 sock.setReceiveBufferSize(pm.recv_buffer_size);
                 sock.setSendBufferSize(pm.send_buffer_size);
                 sock.setTcpNoDelay(pm.no_delay);

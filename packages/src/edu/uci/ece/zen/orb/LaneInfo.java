@@ -13,9 +13,8 @@ class LaneInfo {
             objectKey.init(1024);
         } catch (Exception e2) {
             ZenProperties.logger.log(Logger.SEVERE,
-                    "edu.uci.ece.zen.orb.LaneInfo", "<init>",
-                    "Could not initialize Lane due to exception: "
-                            + e2.toString());
+                    getClass(), "<init>",
+                    "Could not initialize Lane", e2);
         }
     }
 
