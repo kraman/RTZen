@@ -7,7 +7,7 @@ import edu.uci.ece.zen.orb.*;
 public class RequestMessage extends edu.uci.ece.zen.orb.giop.v1_0.RequestMessage {
     private RequestHeader_1_1 header;
 
-    private static final byte reserved[] = { 0x00, 0x00, 0x00 };
+    protected static final byte reserved[] = { 0x00, 0x00, 0x00 };
 
     ///////////////////////////////////////////////////////////////////////////
     ////////////////////////////// Message Read ///////////////////////////////
