@@ -18,7 +18,7 @@ public class Client implements Runnable
     public static void main(String[] args)
     {
         System.out.println( "=====================Creating RT Thread in client==========================" );
-        RealtimeThread rt = new RealtimeThread(null,null,null,new LTMemory(3000,30000),null,new Client());
+        RealtimeThread rt = new RealtimeThread(null,null,null,new LTMemory(3000,300000),null,new Client());
         System.out.println( "=====================Starting RT Thread in client==========================" );
         rt.start();
     }
@@ -34,7 +34,9 @@ public class Client implements Runnable
             File iorfile = new File( "/home/kraman/RTZen/packages/demo/hello/ior.txt" );
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
             ior = br.readLine();
+            System.out.println( "===========================IOR read========================================" );
             org.omg.CORBA.Object object = orb.string_to_object(ior);
+            System.out.println( "===================Trying to establish connection==========================" );
             HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
             long start = System.currentTimeMillis();
             for( int i=0;i<10000;i++ ){

@@ -55,7 +55,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             unusedMemoryAreas = (Queue) imm.newInstance( Queue.class );
             scopeMemorySize = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.scopedMemorySize" , "1048576" ));
             for( int i=0;i<20;i++ )
-                unusedMemoryAreas.enqueue( new LTMemory( 0 , scopeMemorySize ) );
+                unusedMemoryAreas.enqueue( new LTMemory( 100 , scopeMemorySize ) );
 
             //Set up connection registry
             maxSupportedConnections = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.maxConnectionsPerORB" , "100" ));
