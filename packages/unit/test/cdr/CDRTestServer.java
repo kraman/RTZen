@@ -32,7 +32,7 @@ public class CDRTestServer extends RealtimeThread{
 			rootPOA.the_POAManager().activate();
 
 			DataTypesImpl impl = new DataTypesImpl();
-			omg.org.CORBA.Object obj = rootPOA.servant_to_reference( impl );
+			org.omg.CORBA.Object obj = rootPOA.servant_to_reference( impl );
 
 
 			String ior = orb.object_to_string( obj );

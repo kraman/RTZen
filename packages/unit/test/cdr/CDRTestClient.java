@@ -30,9 +30,9 @@ public class CDRTestClient extends RealtimeThread
 			ORB orb = new ORB.init((String[]) null, null);
 
 			BufferedReader br = new BufferedReader (new FileReader( "ior.txt" ));
-			String ior = br.readline();
+			String ior = br.readLine();
 
-			omg.org.CORBA.Object obj = orb.string_to_object( ior );
+			org.omg.CORBA.Object obj = orb.string_to_object( ior );
 			stub = DataTypesHelper.unchecked_narrow( obj );
 
 			testShort();
