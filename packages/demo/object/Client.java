@@ -46,7 +46,7 @@ public class Client extends RealtimeThread
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
             ior = br.readLine();
             System.out.println( "===========================IOR1 read========================================" );
-            org.omg.CORBA.Object object1 = orb.string_to_object(ior);
+            final org.omg.CORBA.Object object1 = orb.string_to_object(ior);
             System.out.println( "===================Connect to TestObject Server1" );
             final TestObject server1 = TestObjectHelper.unchecked_narrow(object1);
             String name1 = server1.getName(); //name1 should be "Mary"
@@ -57,7 +57,7 @@ public class Client extends RealtimeThread
             br = new BufferedReader( new FileReader(iorfile) );
             ior = br.readLine();
             System.out.println( "===========================IOR2 read========================================" );
-            org.omg.CORBA.Object object2 = orb.string_to_object(ior);
+            final org.omg.CORBA.Object object2 = orb.string_to_object(ior);
             System.out.println( "===================Connect to TestObject Server2");
             final TestObject server2 = TestObjectHelper.unchecked_narrow(object2);
             String name2 = server2.getName(); //name2 should be "Roby"
