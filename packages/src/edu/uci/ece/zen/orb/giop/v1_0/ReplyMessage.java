@@ -12,7 +12,7 @@ import edu.uci.ece.zen.utils.Queue;
 
 /**
  * Reply messages as described in section 15.4.3 of the CORBA v3.0 Spec.
- *
+ * 
  * @author bmiller
  */
 
@@ -20,7 +20,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
     private ReplyHeader header;
 
     private static ReplyMessage rm;
-
+    
     private static  Queue queue = Queue.fromImmortal();
 
     public ReplyMessage() {
@@ -79,7 +79,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
     public int getGiopVersion() {
         return 10;
     }
-
+ 
     public void release(){
         drawn--;
         queue.enqueue(this);

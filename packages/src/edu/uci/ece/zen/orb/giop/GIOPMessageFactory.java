@@ -47,6 +47,7 @@ public final class GIOPMessageFactory {
             // Read the GIOP message (including any request/reply/etc headers)
             // into the variable "buffer"
             buffer.setEndian(mainMsgHdr.isLittleEndian);
+            System.out.println("GIOPMessageFactory: parseStream: got header, reading messageSize of " + mainMsgHdr.messageSize);
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
             if (ZenProperties.dbg) ZenProperties.logger.log
                             ("In GIOPMessageFactory, the message size is "
@@ -77,14 +78,9 @@ public final class GIOPMessageFactory {
                                     ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._LocateRequest:
-                                    //ret = edu.uci.ece.zen.orb.giop.v1_0.LocateRequestMessage
-                                    //        .getMessage();
-                                    //ret.init(orb, buffer);
-
-                                    //this is provisional until we get it working right
-                                    //just return OBJECT_HERE for now
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.
-                                            LocateRequestMessage(orb, buffer);
+                                    ret = edu.uci.ece.zen.orb.giop.v1_0.LocateRequestMessage
+                                            .getMessage();
+                                    ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._LocateReply:
                                     ret = edu.uci.ece.zen.orb.giop.v1_0.LocateReplyMessage
@@ -404,37 +400,6 @@ public final class GIOPMessageFactory {
              */
             default:
                 ZenProperties.logger.log(Logger.WARN, GIOPMessageFactory.class, "constructReplyMessage", "giop version not supported");
-        }
-        return out;
-    }
-    /**.
-     */
-
-    public static CDROutputStream constructLocateReplyMessage(ORB orb,
-            edu.uci.ece.zen.orb.giop.type.LocateRequestMessage req)
-    {
-        CDROutputStream out = CDROutputStream.instance();
-        out.init(orb);
-
-//        out.write_octet_array(magic, 0, 4);
-        //giop version
-        out.write_octet((byte) 1);
-        out.write_octet((byte) 0);
-        //endian
-        out.write_boolean(false);
-        //message type
-        out.write_octet((byte) org.omg.GIOP.MsgType_1_0._LocateReply);
-        out.setLocationMemento();
-        out.write_long(0);
-
-        switch (req.getGiopVersion()) {
-            case 10:
-                out.write_ulong(req.getRequestId());
-                out.write_ulong(org.omg.GIOP.LocateStatusType_1_0._OBJECT_HERE);
-                out.updateLength();
-                break;
-            default:
-                ZenProperties.logger.log(Logger.WARN, GIOPMessageFactory.class, "constructLocateReplyMessage", "giop version not supported");
         }
         return out;
     }

@@ -117,7 +117,7 @@ class RemoteSerialPortStream implements SerialPortStream
 
     void addToInputStream(int b) throws InterruptedException, IOException
     {
-        System.out.println("RemoteSerialPortStream: addToInputStream: trying to write to byte");
+//        System.out.println("RemoteSerialPortStream: addToInputStream: trying to write to byte");
 
         inputEmpty.acquire();
 
@@ -127,7 +127,7 @@ class RemoteSerialPortStream implements SerialPortStream
 
         byte[] ch = new byte[1];
         ch[0] = (byte) b;
-        System.out.println("RemoteSerialPortStream: addToInputStream: done writing to input byte " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
+//        System.out.println("RemoteSerialPortStream: addToInputStream: done writing to input byte " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
     }
 
     class IS extends InputStream
@@ -157,12 +157,41 @@ class RemoteSerialPortStream implements SerialPortStream
             }
         }
 
-public int read(byte[] b, int off, int len) throws IOException
-{
-int bytesRead = super.read(b, off, len);
-System.out.println("RemoteSerialPortStream: InputStream.read(byte[]): read " + bytesRead + " bytes");
-return bytesRead;
-}
+   public int read(byte b[], int off, int len) throws IOException {
+       System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): trying to read " + len + " bytes into buffer");
+	if (b == null) {
+	    throw new NullPointerException();
+	} else if ((off < 0) || (off > b.length) || (len < 0) ||
+		   ((off + len) > b.length) || ((off + len) < 0)) {
+	    throw new IndexOutOfBoundsException();
+	} else if (len == 0) {
+	    return 0;
+	}
+
+	int c = read();
+	if (c == -1) {
+System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): c == -1, returning");
+	    return -1;
+	}
+	b[off] = (byte)c;
+
+	int i = 1;
+	try {
+	    for (; i < len ; i++) {
+		c = read();
+		if (c == -1) {
+		    break;
+		}
+		if (b != null) {
+		    b[off + i] = (byte)c;
+		}
+	    }
+	} catch (IOException ee) {
+System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): IOException!!!!");
+	}
+System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): returning " + i + " bytes");
+	return i;
+    }
 
         public int available() throws IOException
         {

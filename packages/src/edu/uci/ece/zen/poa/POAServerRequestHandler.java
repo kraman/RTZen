@@ -124,122 +124,58 @@ public class POAServerRequestHandler extends
      */
     public LocateReplyMessage handleLocateRequest(LocateRequestMessage request) {
         /*
-        // Logger.debug("locateRequest:request id=" + request.getRequestId());
-        LocateReplyMessage reply = null;
-        ObjectKey okey = request.getObjectKey();
-        String fior;
-        edu.uci.ece.zen.orb.CDROutputStream cdrtemp = new edu.uci.ece.zen.orb.CDROutputStream();
-        int index = okey.poaIndex();
-        int genCount = okey.poaIndexGenCount();
-        int POAcount;
-
-        try {
-            POAcount = this.demuxTable.getGenCount(index);
-        } catch (Exception e) {
-            POAcount = 0;
-            try {
-                String isIMR = System.getProperty("IMR");
-
-                if (isIMR.equals("TRUE")) {
-                    fior = imrCall(okey);
-                    if (fior.equals("ERROR")) {
-                        reply = GIOPMessageFactory.createLocateReplyMessage(orb,
-                                request.getRequestId(),
-                                org.omg.GIOP.LocateStatusType_1_0._UNKNOWN_OBJECT,
-                                cdrtemp);
-                    } else {
-                        reply = GIOPMessageFactory.createLocateReplyMessage(orb,
-                                request.getRequestId(),
-                                org.omg.GIOP.LocateStatusType_1_0._OBJECT_FORWARD,
-                                cdrtemp);
-                    }
-
-                    try {
-                        reply.marshallHeader();
-                    } catch (java.lang.Exception unkn) {
-                        unkn.printStackTrace();
-                    }
-                    if (!fior.equals("ERROR")) {
-                        cdrtemp.write_string(fior);
-                    }
-                    return reply;
-                }
-
-            } catch (RuntimeException ee) {
-                // Logger.debug("NOT hosting IMR");
-                return reply;
-
-            }
-        }
-        POA poa = null;
-
-        if (this.demuxTable.getGenCount(index) == genCount) {
-
-            // Logger.debug("locateRequest:poa found in the ActiveDemux table");
-            poa = this.demuxTable.mapEntry(index).poa;
-        } else if (okey.isPersistent()) {
-            // Logger.debug("locateRequest:POA not found in Active Demux map");
-            String poaName = okey.getPOAPathName();
-
-            try {
-                poa = this.find_POA(poaName);
-
-            } catch (Exception e) {
-                // Logger.debug("locateRequest:UNKNOWN OBJECT");
-                reply = GIOPMessageFactory.createLocateReplyMessage(orb,
-                        request.getRequestId(),
-                        org.omg.GIOP.LocateStatusType_1_0._UNKNOWN_OBJECT,
-                        cdrtemp);
-
-                try {
-                    reply.marshallHeader();
-                } catch (java.lang.Exception unkn) {
-                    unkn.printStackTrace();
-                }
-                return reply;
-            }
-        } else {
-            // Logger.debug("locateRequest:UNKNOWN OBJECT");
-            reply = GIOPMessageFactory.createLocateReplyMessage(orb,
-                    request.getRequestId(),
-                    org.omg.GIOP.LocateStatusType_1_0._UNKNOWN_OBJECT,
-                    cdrtemp);
-
-            try {
-                reply.marshallHeader();
-            } catch (java.lang.Exception unkn) {
-                unkn.printStackTrace();
-            }
-            return reply;
-        }
-
-        try {
-            org.omg.PortableServer.Servant servant = poa.id_to_servant(okey.getId());
-        } catch (Exception e) {
-            // Logger.debug("locateRequest:UNKNOWN OBJECT");
-            reply = GIOPMessageFactory.createLocateReplyMessage(orb,
-                    request.getRequestId(),
-                    org.omg.GIOP.LocateStatusType_1_0._UNKNOWN_OBJECT,
-                    cdrtemp);
-            try {
-                reply.marshallHeader();
-            } catch (java.lang.Exception unkn) {
-                unkn.printStackTrace();
-            }
-            return reply;
-        }
-
-        // Success. return OBJECT_HERE
-        // Logger.debug("locateRequest:OBJECT HERE");
-        reply = GIOPMessageFactory.createLocateReplyMessage(orb,
-                request.getRequestId(),
-                org.omg.GIOP.LocateStatusType_1_0._OBJECT_HERE, cdrtemp);
-        try {
-            reply.marshallHeader();
-        } catch (java.lang.Exception unkn) {
-            unkn.printStackTrace();
-        }
-        return reply;
+         * // Logger.debug("locateRequest:request id=" +
+         * request.getRequestId()); LocateReplyMessage reply = null; ObjectKey
+         * okey = request.getObjectKey(); String fior;
+         * edu.uci.ece.zen.orb.CDROutputStream cdrtemp = new
+         * edu.uci.ece.zen.orb.CDROutputStream(); int index = okey.poaIndex();
+         * int genCount = okey.poaIndexGenCount(); int POAcount; try { POAcount =
+         * this.demuxTable.getGenCount(index); } catch (Exception e) { POAcount =
+         * 0; try { String isIMR = System.getProperty("IMR"); if
+         * (isIMR.equals("TRUE")) { fior = imrCall(okey); if
+         * (fior.equals("ERROR")) { reply =
+         * GIOPMessageFactory.createLocateReplyMessage(orb,
+         * request.getRequestId(),
+         * org.omg.GIOP.LocateStatusType_1_0._UNKNOWN_OBJECT, cdrtemp); } else {
+         * reply = GIOPMessageFactory.createLocateReplyMessage(orb,
+         * request.getRequestId(),
+         * org.omg.GIOP.LocateStatusType_1_0._OBJECT_FORWARD, cdrtemp); } try {
+         * reply.marshallHeader(); } catch (java.lang.Exception unkn) {
+         * unkn.printStackTrace(); } if (!fior.equals("ERROR")) {
+         * cdrtemp.write_string(fior); } return reply; } } catch
+         * (RuntimeException ee) { // Logger.debug("NOT hosting IMR"); return
+         * reply; } } POA poa = null; if (this.demuxTable.getGenCount(index) ==
+         * genCount) { // Logger.debug("locateRequest:poa found in the
+         * ActiveDemux table"); poa = this.demuxTable.mapEntry(index).poa; }
+         * else if (okey.isPersistent()) { // Logger.debug("locateRequest:POA
+         * not found in Active Demux map"); String poaName =
+         * okey.getPOAPathName(); try { poa = this.find_POA(poaName); } catch
+         * (Exception e) { // Logger.debug("locateRequest:UNKNOWN OBJECT");
+         * reply = GIOPMessageFactory.createLocateReplyMessage(orb,
+         * request.getRequestId(),
+         * org.omg.GIOP.LocateStatusType_1_0._UNKNOWN_OBJECT, cdrtemp); try {
+         * reply.marshallHeader(); } catch (java.lang.Exception unkn) {
+         * unkn.printStackTrace(); } return reply; } } else { //
+         * Logger.debug("locateRequest:UNKNOWN OBJECT"); reply =
+         * GIOPMessageFactory.createLocateReplyMessage(orb,
+         * request.getRequestId(),
+         * org.omg.GIOP.LocateStatusType_1_0._UNKNOWN_OBJECT, cdrtemp); try {
+         * reply.marshallHeader(); } catch (java.lang.Exception unkn) {
+         * unkn.printStackTrace(); } return reply; } try {
+         * org.omg.PortableServer.Servant servant =
+         * poa.id_to_servant(okey.getId()); } catch (Exception e) { //
+         * Logger.debug("locateRequest:UNKNOWN OBJECT"); reply =
+         * GIOPMessageFactory.createLocateReplyMessage(orb,
+         * request.getRequestId(),
+         * org.omg.GIOP.LocateStatusType_1_0._UNKNOWN_OBJECT, cdrtemp); try {
+         * reply.marshallHeader(); } catch (java.lang.Exception unkn) {
+         * unkn.printStackTrace(); } return reply; } // Success. return
+         * OBJECT_HERE // Logger.debug("locateRequest:OBJECT HERE"); reply =
+         * GIOPMessageFactory.createLocateReplyMessage(orb,
+         * request.getRequestId(),
+         * org.omg.GIOP.LocateStatusType_1_0._OBJECT_HERE, cdrtemp); try {
+         * reply.marshallHeader(); } catch (java.lang.Exception unkn) {
+         * unkn.printStackTrace(); } return reply;
          */
         return null;
     }

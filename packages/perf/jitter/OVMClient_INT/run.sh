@@ -1,2 +1,2 @@
 cp ../OVMServer_INT/ior.txt .
-./ovm img perf.jitter.Client
+./ovm img perf.jitter.OVMClient

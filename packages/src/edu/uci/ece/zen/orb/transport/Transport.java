@@ -6,7 +6,6 @@ import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
 
 import edu.uci.ece.zen.orb.CDRInputStream;
-import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.WriteBuffer;
@@ -43,7 +42,7 @@ public abstract class Transport implements Runnable {
         this.orbImpl = orbImpl;
         waitObj = new Integer(0);
         objectTable = new Object[3];
-        objectTable[2] = new byte[12];
+        objectTable[2] = new byte[8];
         if (ZenProperties.dbg) ZenProperties.logger.log("Transport being created "
                 + RealtimeThread.getCurrentMemoryArea());
     }
@@ -232,25 +231,15 @@ class GIOPMessageRunnable implements Runnable {
                 edu.uci.ece.zen.utils.Logger.printMemStats(3);
                 edu.uci.ece.zen.utils.Logger.printMemStats(orb);
             }
-            ZenProperties.logger.log("Inside GMR run");
-            if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread.getCurrentMemoryArea().toString());
+
+            if (ZenProperties.dbg) ZenProperties.logger.log("Inside Transport and mem area: "
+                            + RealtimeThread.getCurrentMemoryArea());
             message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream(orb, trans);
             if (message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage) {
-                ZenProperties.logger.log("Inside GMR run: RequestMessage");
                 trans.orbImpl.getServerRequestHandler().handleRequest(
                         (edu.uci.ece.zen.orb.giop.type.RequestMessage) message);
-            
-            }else if (message instanceof edu.uci.ece.zen.orb.giop.type.LocateRequestMessage) {
-                //this is provisional until we get it working right
-                //just return OBJECT_HERE for now
-                CDROutputStream out = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.
-                         constructLocateReplyMessage(orb, 
-                         (edu.uci.ece.zen.orb.giop.type.LocateRequestMessage)message);
-                trans.send(out.getBuffer());
-                out.free();
-                
-            }else if (message instanceof edu.uci.ece.zen.orb.giop.type.ReplyMessage) {
-                ZenProperties.logger.log("Inside GMR run: ReplyMessage");                
+            }
+            if (message instanceof edu.uci.ece.zen.orb.giop.type.ReplyMessage) {
                 ScopedMemory waiterRegion = orb.getWaiterRegion(message
                         .getRequestId());
                 wsnr.init(message, waiterRegion);
@@ -265,19 +254,10 @@ class GIOPMessageRunnable implements Runnable {
                                     "run",
                                     "Could not process reply message", e);
                 }
-            }else{
-                    ZenProperties.logger.log(Logger.SEVERE, getClass(),
-                                    "run", "Message type not supported.");                
             }
-            
-            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(2223);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(2223);
         } catch (java.io.IOException ioex) {
             //TODO: do something here
-            if(ZenProperties.devDbg)
-                System.out.println("Exception");
-
-            ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", ioex);
-            
         }
 
     }

@@ -19,20 +19,10 @@
     </target>
 
     <target name="compile.jrate" if="compiler_jRate">
-        <demo.compile.jrate main="perf.jitter.Client" out="${zen.srcdir}/${package.dir}/client">
+        <demo.compile.jrate main="perf.jitter.Client" out="client">
             <fileset dir="${zen.srcdir}/${package.dir}">
                 <include name="Client.java"/>
-                <include name="NativeTimeStamp.java"/>
-            </fileset>
-            <fileset dir="${zen.gendir}/${package.dir}">
-                <include name="*.java"/>
-            </fileset>
-         </demo.compile.jrate>
-         <demo.compile.jrate main="perf.jitter.Server" out="${zen.srcdir}/${package.dir}/server">
-            <fileset dir="${zen.srcdir}/${package.dir}">
-                <include name="Server.java"/>
-                <include name="NativeTimeStamp.java"/>
-                <include name="HelloWorldImpl.java"/>
+                <exclude name="Server.java"/>
             </fileset>
             <fileset dir="${zen.gendir}/${package.dir}">
                 <include name="*.java"/>

@@ -42,6 +42,10 @@ public class Client extends RealtimeThread
 
             for (int i = 1; i <= 1; i++)
             {
+                for (int j = 0; j < noFlyZone.length; j++)
+                {
+                    System.out.println("Sending no fly zone: alt=" + noFlyZone[j].altitude + " lat=" + noFlyZone[j].latitude + " lon=" + noFlyZone[j].longitude);
+                }
                 server.sendWayPt((short)i, noFlyZone);
             }
 

@@ -10,7 +10,8 @@
 #      export JRATE_SUITE_HOME=/home/angelo/Devel
 #
 
-export JRATE_SUITE_HOME=/home/jay/
+setenv JRATE_SUITE_HOME /home/jay/RTZen
+setenv ZEN_HOME /project/workarea02/mpanahi/RTZen
 
 
 #######################################################################
@@ -24,14 +25,14 @@ export JRATE_SUITE_HOME=/home/jay/
 #
 # jRate Settings
 #
-export JRATE_HOME=$JRATE_SUITE_HOME/jRate
-export JRATE_GCC_HOME=$JRATE_SUITE_HOME/jRate-gcc
-export JRATE_GCC_SRC_HOME=$JRATE_SUITE_HOME/GNU/jRateGCC
+setenv JRATE_HOME $JRATE_SUITE_HOME/jRate
+setenv JRATE_GCC_HOME $JRATE_SUITE_HOME/jRate-gcc
+setenv JRATE_GCC_SRC_HOME $JRATE_SUITE_HOME/GNU/jRateGCC
 
-export LD_LIBRARY_PATH=$JRATE_HOME/lib:$LD_LIBRARY_PATH
+setenv LD_LIBRARY_PATH $ZEN_HOME/lib:$JRATE_HOME/lib:$LD_LIBRARY_PATH
 
-export PATH=$JRATE_GCC_HOME/bin:$PATH
-export PATH=$JRATE_GCC_HOME/bin:$PATH
-export LD_LIBRARY_PATH=$JRATE_GCC_HOME/lib:$LD_LIBRARY_PATH
+#setenv PATH $JRATE_GCC_HOME/bin:$PATH
+#setenv PATH $JRATE_GCC_HOME/bin:$PATH
+setenv LD_LIBRARY_PATH $JRATE_GCC_HOME/lib:$LD_LIBRARY_PATH
 
-export MANPATH=$JRATE_GCC_HOME/man:$MANPATH
+#setenv MANPATH $JRATE_GCC_HOME/man:$MANPATH

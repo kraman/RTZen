@@ -108,6 +108,7 @@ class SerialPortSocketProtocol
     {
         for (int i = 2; i < messageLength; i++)
         {
+//            System.out.println("SerialPortSocketProtocol: decodeSocketData: adding byte to serial port stream: " + Integer.toHexString(buffer[i]));
             stream.addToInputStream(buffer[i]);
         }
     }

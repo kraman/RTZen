@@ -5,7 +5,7 @@ import java.io.*;
 import org.omg.CORBA.ORB;
 import javax.realtime.*;
 import org.omg.PortableServer.*;
-//import perf.TimeStamp.*;
+import perf.TimeStamp.*;
 
 /**
  * This class implements a simple jitter time measurement 
@@ -18,7 +18,7 @@ import org.omg.PortableServer.*;
 public class Client extends RealtimeThread
 {
 	public static final int warmUpIterations =   1000;
-	public static final int iterations       = 10000;
+	public static final int iterations       = 1000;
 
 	public static int seqSize = 4;
 	public static int testType =1;
@@ -61,11 +61,8 @@ public class Client extends RealtimeThread
 	
 
 				// allocate the time stamper (to load the native lib)
-                                System.out.println( "===================Trying to initialize the NativeTimeStamp================" );
 				NativeTimeStamp rtts = new NativeTimeStamp();
 				NativeTimeStamp.Init(1, 20.0);
-                                System.out.println( "===================NativeTimeStamp gets initialized================" );
-
 			
         
 		
