@@ -33,16 +33,23 @@ public abstract class Logger{
     protected void setLevel( int level ){
         //this.level=level;
     }
+
+    static boolean flag = true;
     public static void printMemStats(){
         MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
-	    System.out.println(ma+","+ma.memoryConsumed()+","+ma.memoryRemaining());            
-
+	    long mem = ma.memoryConsumed();
+        //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());            
+        System.out.println(ma.memoryConsumed());            
+        long diff = ma.memoryConsumed() - mem;
+        if(flag){
+            System.out.println("dbg size: " + diff);
+            flag = false;
+        }
     }  
     public static void printMemStats(edu.uci.ece.zen.orb.ORB orb){
-        MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
-	    System.out.println(ma+","+ma.memoryConsumed()+","+ma.memoryRemaining());            
-	    System.out.println("orb,"+orb.orbImplRegion.memoryConsumed()+","+orb.orbImplRegion.memoryRemaining());            
-	    System.out.println("client,"+orb.parentMemoryArea.memoryConsumed()+","+orb.parentMemoryArea.memoryRemaining());            
+	    printMemStats();
+        //System.out.println("orb,"+orb.orbImplRegion.memoryConsumed()+","+orb.orbImplRegion.memoryRemaining());            
+	    //System.out.println("client,"+orb.parentMemoryArea.memoryConsumed()+","+orb.parentMemoryArea.memoryRemaining());            
 
     }
     
