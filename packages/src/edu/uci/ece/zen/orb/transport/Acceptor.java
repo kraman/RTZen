@@ -45,7 +45,7 @@ public abstract class Acceptor {
 
     protected RealtimeThread acceptorLogicThread;
 
-    protected int priority;
+    protected short priority;
 
     public  int threadPoolId;
 
@@ -81,7 +81,7 @@ public abstract class Acceptor {
 
     protected final void registerTransport(Transport t) {
         ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(t);
-        RealtimeThread transportThread = new NoHeapRealtimeThread( new PriorityParameters(this.priority) , null, null, RealtimeThread.getCurrentMemoryArea(), null, t);
+        RealtimeThread transportThread = new NoHeapRealtimeThread( new PriorityParameters(PriorityMappingImpl.toNative(this.priority)) , null, null, RealtimeThread.getCurrentMemoryArea(), null, t);
         transportThread.start();
     }
 
@@ -146,7 +146,7 @@ public abstract class Acceptor {
 
         //org.omg.CORBA.PolicyListHelper.write(out, policies);
 
-        CDROutputStream out = poa.getClientExposedPolicies((short)priority);
+        CDROutputStream out = poa.getClientExposedPolicies(priority);
 
         if(out == null)
             return null;
@@ -279,16 +279,18 @@ class AcceptorLogic implements Runnable {
     public void run() {
         AcceptRunnable runnable = new AcceptRunnable(acc);
         ExecuteInRunnable eir = new ExecuteInRunnable();
+        ScopedMemory transportMem = null;
         while (acc.isActive) {
             try {
-                ScopedMemory transportMem = ORB.getScopedRegion();
+                transportMem = ORB.getScopedRegion();
                 eir.init(runnable, transportMem);
                 acc.orb.orbImplRegion.executeInArea(eir);
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
-            }
+                if( transportMem != null )
+                    ORB.freeScopedRegion( transportMem );
+            } 
         }
-
         //notify the exit of this thread
         synchronized (this) {
             this.notifyAll();
