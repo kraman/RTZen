@@ -82,7 +82,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     /*
     NOTE: Unsupported in RTZen because jRate does not support Applets
-    
+
     /**
      * Initalizes the ORB and returns a reference to the orb. This method can
      * be called multiple times and must return the same orb reference. This is
@@ -103,6 +103,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private ORBImplRunnable orbImplRunnable;
     private ORBStrToObjRunnable strToObjRunnable;
     private ConnectionRegistry connectionRegistry;
+    private AcceptorRegistry acceptorRegistry;
     private WaiterRegistry waiterRegistry;
     private String orbId;
 
@@ -112,6 +113,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         strToObjRunnable = new ORBStrToObjRunnable();
         connectionRegistry = new ConnectionRegistry();//KLUDGE:ORB.maxSupportedConnections );
         connectionRegistry.init( 100 );
+        acceptorRegistry = new AcceptorRegistry();
         waiterRegistry = new WaiterRegistry();
         waiterRegistry.init( 100 );
     }
@@ -245,6 +247,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         return null;
     }
 
+    public AcceptorRegistry getAcceptorRegistry(){
+        return acceptorRegistry;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     ////////////////// DON'T CARE ABOUT THESE /////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
@@ -314,7 +320,7 @@ class ORBInitRunnable implements Runnable{
             curMem.setPortal( new ORBImpl( args , props , orbFacade ) );
         }else{
             ((ORBImpl)curMem.getPortal()).setProperties( args , props );
-        } 
+        }
     }
 }
 
@@ -363,17 +369,17 @@ class ORBImplRunnable implements Runnable{
     public boolean isActive(){
         return this.active;
     }
-    
+
     public void run(){
         ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
         synchronized( orbImpl ){
             try{
                 orbImpl.wait();
             }catch( InterruptedException ie ){
-                ZenProperties.logger.log( 
-                        Logger.INFO , 
-                        "edu.uci.ece.zen.orb.ORBImplRunnable" , 
-                        "run()" , 
+                ZenProperties.logger.log(
+                        Logger.INFO ,
+                        "edu.uci.ece.zen.orb.ORBImplRunnable" ,
+                        "run()" ,
                         "ORB is shutting down.");
             }
             active=false;

@@ -1,10 +1,11 @@
 package edu.uci.ece.zen.orb.transport.iiop;
 
 import edu.uci.ece.zen.utils.*;
+import org.omg.IOP.TaggedProfile;
 
 public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
     private java.net.ServerSocket ssock;
-    
+
     public Acceptor( edu.uci.ece.zen.orb.ORB orb ){
         super( orb );
         try{
@@ -17,7 +18,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
                 "Error binding to post. " + ex.toString() );
         }
     }
-    
+
     protected void accept(){
         try{
             Transport t = new Transport( orb , ssock.accept() );
@@ -30,11 +31,15 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
                 "IOException occured " + ioex.toString() );
         }
     }
-    
+
     protected void internalShutdown(){
     }
-    
+
     public org.omg.CORBA.portable.IDLEntity getProfile( byte iiopMajorVersion , byte iiopMinorVersion ){
+        return null;
+    }
+
+    protected TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion){
         return null;
     }
 }
