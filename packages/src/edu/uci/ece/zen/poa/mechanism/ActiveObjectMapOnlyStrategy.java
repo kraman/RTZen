@@ -104,7 +104,6 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
      */
 
     public void handleRequest( edu.uci.ece.zen.orb.giop.type.RequestMessage request, POA poa, SynchronizedInt requests , IntHolder exceptionValue ) {
-        System.out.println( RealtimeThread.getCurrentMemoryArea().memoryConsumed() );
         exceptionValue.value = POARunnable.NoException;
         FString okey = request.getObjectKey();
 
@@ -204,8 +203,6 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
             e.printStackTrace();
         }*/
         //return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
-        System.out.println( RealtimeThread.getCurrentMemoryArea().memoryConsumed() );
-        System.out.println();
     }
 
     private Queue msgrQueue;
