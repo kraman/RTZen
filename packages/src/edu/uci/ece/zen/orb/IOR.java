@@ -110,7 +110,7 @@ public class IOR {
         ZenProperties.logger.log("makeCORBAObject 3");
 
         ORBImpl orbImpl = (ORBImpl) orb.orbImplRegion.getPortal();
-        delegate.init(ior, objectImpl, orb, orbImpl);
+        delegate.init(ior, objectImpl, orb, orbImpl, true);
         ZenProperties.logger.log("makeCORBAObject 4");
         return objectImpl;
     }

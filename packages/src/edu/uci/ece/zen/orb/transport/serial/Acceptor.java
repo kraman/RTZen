@@ -18,6 +18,9 @@ import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.FString;
+import org.omg.IOP.TAG_SERIAL;
+import javax.realtime.RealtimeThread;
+import javax.realtime.ScopedMemory;
 
 public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
     private NativeSerialPort sock = NativeSerialPort.instance();
@@ -33,6 +36,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
             sock.lock.acquire();
             Transport t = new Transport(orb, orbImpl, sock);
             registerTransport(t);
+	    orb.getConnectionRegistry().putConnection((long)-TAG_SERIAL.value,(ScopedMemory) RealtimeThread.getCurrentMemoryArea());
         } catch (Exception ioex) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "accept", ioex);
         }

@@ -21,8 +21,8 @@ public class Client extends RealtimeThread
     static ORB orb;
     public static void main(String[] args) throws Exception
     {
-        if(args.length > 0)
-            runNum = Integer.parseInt(args[0]);
+        //if(args.length > 0)
+        //    runNum = Integer.parseInt(args[0]);
         System.out.println( "=====================Creating RT Thread in client==========================" );
         RealtimeThread rt = (Client) ImmortalMemory.instance().newInstance( Client.class );
         System.out.println( "=====================Starting RT Thread in client==========================" );

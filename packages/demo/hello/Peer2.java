@@ -19,7 +19,7 @@ public class Peer2
 
     public static void main(String[] args) throws Exception
     {
-        Client.orb = ORB.init((String[])null, null);
+        Client.orb = ORB.init(args, null);
         Server.zen = Client.orb;
         Server.iorfile = "Peer2ior.txt";
         Server.main(args);

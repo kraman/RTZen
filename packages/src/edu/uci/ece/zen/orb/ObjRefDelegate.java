@@ -83,8 +83,11 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     private int numLanes;
 
-    protected void init(org.omg.IOP.IOR ior, ObjectImpl obj, ORB orb,
-            ORBImpl orbImpl) {
+    protected void init(org.omg.IOP.IOR ior, ObjectImpl obj, ORB orb, ORBImpl orbImpl) {
+        init( ior, obj, orb, orbImpl, false );
+    }
+
+    protected void init(org.omg.IOP.IOR ior, ObjectImpl obj, ORB orb, ORBImpl orbImpl , boolean isCollocated ) {
         released = false;
         referenceCount = 1;
         this.orb = orb;
@@ -101,7 +104,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         //process all the tagged profiles
         for (int i = 0; i < ior.profiles.length; i++) { //go through each
             // tagged profile
-            processTaggedProfile(ior.profiles[i], obj, orbImpl);
+            processTaggedProfile(ior.profiles[i], obj, orbImpl, isCollocated);
         }
         ZenProperties.logger.log("ObjRefDel init 2");
         numLanes = 0;
@@ -135,8 +138,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         return null;
     }
 
-    private void processTaggedProfile(TaggedProfile profile, ObjectImpl obj,
-            ORBImpl orbImpl) {
+    private void processTaggedProfile(TaggedProfile profile, ObjectImpl obj, ORBImpl orbImpl, boolean isCollocated) {
         int tag = profile.tag;
         if (ZenProperties.dbg) ZenProperties.logger.log("processTaggedProfile " + tag);
         ZenProperties.logger.log("ObjRefDel processTaggedProfile 1");
@@ -148,7 +150,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             {
                 boolean startSerialTransportAcceptor = ZenProperties.getGlobalProperty("serial.client.only" , "" ).equals("1");
                 
-                if( startSerialTransportAcceptor ){      
+                if( startSerialTransportAcceptor && !isCollocated ){      
                     ZenProperties.logger.log("+++++++++++++++++++++++++++++++++++++++++++++Skipping IIOP");
                     return;
                 }
@@ -332,6 +334,13 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 break;
             case TAG_SERIAL.value: //process serial
                 System.out.println( "Serial transport profile found" );
+ 
+                if( isCollocated ){      
+                    ZenProperties.logger.log("+++++++++++++++++++++++++++++++++++++++++++++Collocated object, Skipping Serial");
+                    return;
+                }
+
+
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 1");            
                 byte[] data = profile.profile_data;
                 if (ZenProperties.dbg) ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL prof data len:" + data.length);
@@ -350,17 +359,17 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                     try{ 
                         transportScope = edu.uci.ece.zen.orb.transport.serial.Connector
                             .instance().connect(null, (short)0, orb, orbImpl);
-                    }catch(Exception e){
+			orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
+		    }catch(Exception e){
                         e.printStackTrace();   
                     }
                 }
 
                 if (transportScope != null) {
-                    orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
-                    addLaneData(RealtimeThread.MIN_PRIORITY,
-                            99/* RealtimeThread.MAX_PRIORITY */,
-                            transportScope, object_key);
-                    System.out.println( "Serial connection succesful" );
+		    System.out.println( "Serial connection succesful" );
+			addLaneData(RealtimeThread.MIN_PRIORITY,
+					99/* RealtimeThread.MAX_PRIORITY */,
+					transportScope, object_key);
                 }else{
                     System.out.println( "Serial connection unsuccesful" );
                 }
