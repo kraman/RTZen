@@ -33,16 +33,21 @@ class NativeSerialPort
 
     byte[] tmpBuffer;
     public Mutex lock;
+    public InputStream istream = new SerialPortInputStream();
+    public OutputStream ostream = new SerialPortOutputStream();
     private NativeSerialPort(){
         tmpBuffer = new byte[4];
     }
 
     public synchronized NativeSerialPort accept(){
         try{
+            System.err.println( "Serial port: accept called() " );
             lock.acquire();
+            System.err.println( "Serial port: accept called(); lock acquired" );
             while( true ){
                 getMessage( tmpBuffer );
                 if( tmpBuffer[0] == 0 && tmpBuffer[1] == 1 && tmpBuffer[2] == 7 && tmpBuffer[3] == 7 ){
+                    System.err.println( "Serial port: accept called(); lock acquired; magic recieved" );
                     return this;
                 }else{
                     System.out.println( "Synchronization lost. port reset" );
@@ -54,8 +59,8 @@ class NativeSerialPort
         return null;
     }
 
-    public InputStream getInputStream(){ return null; }
-    public OutputStream getOutputStream(){ return null; }
+    public InputStream getInputStream(){ return istream; }
+    public OutputStream getOutputStream(){ return ostream; }
 
     public native int getMessage(byte[] buffer) throws IOException;
     public native void setMessage(byte[] buffer, int messageLength) throws IOException;

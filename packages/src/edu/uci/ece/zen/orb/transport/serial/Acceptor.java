@@ -23,10 +23,12 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
 
     public Acceptor(edu.uci.ece.zen.orb.ORB orb, edu.uci.ece.zen.orb.ORBImpl orbImpl) {
         super(orb, orbImpl);
+        System.err.println( "Serial transport Acceptor created" );
     }
 
     protected void accept() {
         //try {
+            System.err.println( "Serial transport: accept() " );
             Transport t = new Transport(orb, orbImpl, sock.accept());
             registerTransport(t);
         //} catch (java.io.IOException ioex) {
@@ -38,6 +40,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
     }
 
     protected TaggedProfile getInternalProfile(byte iiopMajorVersion, byte iiopMinorVersion, byte[] objKey) {
+        System.err.println( "Serial transport: getInternalProfile() " );
         Version version = new Version(iiopMajorVersion, iiopMinorVersion);
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);

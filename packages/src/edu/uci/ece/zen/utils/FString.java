@@ -191,6 +191,13 @@ public class FString {
         currentSize += length;
     }
 
+    public FString copy() {
+        FString temp = instance();
+        temp.append(this);
+        return temp;
+    }
+
+
     /**
      * Append data from the string.
      *
@@ -340,8 +347,10 @@ public class FString {
     public String toString() {
         StringBuffer sb = new StringBuffer(currentSize);
 
-        for(int i = 0; i < currentSize; ++i)
+        for(int i = 0; i < currentSize; ++i){
             sb.append((char)data[i]);
+            //sb.append( " " );
+        }
 
         return sb.toString();
 

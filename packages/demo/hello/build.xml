@@ -38,7 +38,9 @@
     </target>
 
     <target name="server">
-        <demo.run classname="demo.hello.Server"/>
+        <java classname="demo.hello.Server" fork="yes">
+             <arg line="-ORBListenEndpoints"/>
+        </java>
     </target>
     
     <target name="client">

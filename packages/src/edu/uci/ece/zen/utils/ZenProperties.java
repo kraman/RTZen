@@ -240,6 +240,7 @@ public final class ZenProperties {
                     }
                     props.setProperty("org.omg.CORBA.ORBServerId", value + "");
                 } else if (arg.startsWith("-ORBListenEndpoints")) {
+                    props.setProperty("edu.uci.ece.zen.orb.transport.serial","1");
                     /*
                      * if( arg.length() > 19 ){ value =
                      * arg.substring(19).trim(); }else{ value =
