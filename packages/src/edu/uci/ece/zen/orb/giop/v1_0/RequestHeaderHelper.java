@@ -141,6 +141,7 @@ public class RequestHeaderHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, RequestHeader value)
     {
+        System.out.println("writing request header");
         //edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
         value.service_context.write(ostream);
         //System.out.println("len: " + value.service_context.length());
