@@ -111,9 +111,10 @@ public class RequestHeaderHelper
         new_one.object_key.read(istream, object_key_length);
 
         new_one.operation =  RequestHeader.instance(new_one.operation);
-        int op_length = istream.read_ulong();
+        int op_length = istream.read_ulong() - 1;
         new_one.operation.append(op_length);
         new_one.operation.read(istream, op_length);
+        istream.read_octet();
 
         //new_one.operation = istream.read_string();
 
