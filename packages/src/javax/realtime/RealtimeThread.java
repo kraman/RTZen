@@ -5,6 +5,9 @@ public class RealtimeThread extends Thread{
         super( r );
     }
 
+    public RealtimeThread(){
+    }
+
     private static java.util.Hashtable memHash = new java.util.Hashtable();
     public static void setCurrentMemoryArea( MemoryArea currentMem ){
         if( currentMem == null )
