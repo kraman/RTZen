@@ -10,6 +10,7 @@ import javax.realtime.ImmortalMemory;
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.CDRInputStream;
 import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.orb.PriorityMappingImpl;
 import edu.uci.ece.zen.poa.POA;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.orb.transport.iiop.AcceptorRunnable;
@@ -41,10 +42,11 @@ public class ThreadPool {
     int threadPoolId;
 
     public ThreadPool(int stackSize, int staticThreads, int dynamicThreads,
-            short defaultPriority, boolean allowRequestBuffering,
+            short defaultPr, boolean allowRequestBuffering,
             int maxBufferedRequests, int requestBufferSize, ORB orb,
             AcceptorRunnable acceptorRunnable , int threadPoolId ) {
         //stackSize; //KLUDGE: ignored
+        short defaultPriority = PriorityMappingImpl.toNative(defaultPr);
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
         this.requestBufferSize = requestBufferSize;
@@ -77,7 +79,7 @@ public class ThreadPool {
         int length = in.read_ulong();
         this.lanes = new Lane[length];
         for (int i = 0; i < length; i++){
-            short lane_priority = in.read_short();
+            short lane_priority = PriorityMappingImpl.toNative(in.read_short());
             int static_threads = in.read_ulong();
             int dynamic_threads = in.read_ulong();
             if (ZenBuildProperties.dbgTP) ZenProperties.logger.log(
@@ -114,10 +116,12 @@ public class ThreadPool {
 
         this.lanes = new Lane[lanes.length];
         for (int i = 0; i < lanes.length; i++){
-            acceptorRunnable.init( orb , lanes[i].lane_priority , threadPoolId );
+            short lane_priority = PriorityMappingImpl.toNative(lanes[i].lane_priority );
+            acceptorRunnable.init( orb , lane_priority, threadPoolId );
             orb.setUpORBChildRegion( acceptorRunnable );
             this.lanes[i] = new Lane(stackSize, lanes[i].static_threads,
-                    lanes[i].dynamic_threads, lanes[i].lane_priority, this,
+                    lanes[i].dynamic_threads, 
+                    lane_priority, this,
                     allowBorrowing, allowRequestBuffering, maxBufferedRequests,
                     acceptorRunnable.acceptorArea);
             orb.setUpORBChildRegion(acceptorRunnable);
@@ -138,7 +142,10 @@ public class ThreadPool {
     private int statCount = 0;
 
     // TODO this method should indicate if we have an error.
-    public void execute(RequestMessage task, short minPriority, short maxPriority) {
+    public void execute(RequestMessage task, short minPr, short maxPr) {
+        short minPriority = PriorityMappingImpl.toNative(minPr);
+        short maxPriority = PriorityMappingImpl.toNative(maxPr);
+        
         statCount++;
         if (statCount % ZenBuildProperties.MEM_STAT_COUNT == 0) {
             edu.uci.ece.zen.utils.Logger.printMemStats(ZenBuildProperties.dbgTransportScopeId);
@@ -149,7 +156,10 @@ public class ThreadPool {
         int i = 0;
         for (; i < lanes.length; i++) {
             short lanePriority = lanes[i].getPriority();
-            if (ZenBuildProperties.dbgTP) ZenProperties.logger.log("TP min pr: " + minPriority + ", TP max pr: " + maxPriority + ", lane pr: " + lanePriority);
+            if (ZenBuildProperties.dbgTP) ZenProperties.logger.log(
+                        "TP min (native) pr: " + minPriority + 
+                        ", TP max (native) pr: " + maxPriority + 
+                        ", lane (native) pr: " + lanePriority);
             if ( lanePriority >= minPriority && lanePriority <= maxPriority) {
                 laneFound = true;
                 break;
@@ -337,7 +347,7 @@ class Lane implements Comparable{
 
         for (numThreads = 0; numThreads < maxStaticThreads; numThreads++) {
             newThread();
-}
+        }
     }
 
     public void setLaneId(int id) {

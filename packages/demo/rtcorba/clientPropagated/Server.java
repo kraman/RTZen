@@ -63,13 +63,13 @@ public class Server extends RealtimeThread
             System.out.println("Max prio " + PriorityScheduler.instance().getMaxPriority() + ", " + RealtimeThread.MAX_PRIORITY);
             System.out.println("Min prio " + PriorityScheduler.instance().getMinPriority() + ", " + RealtimeThread.MIN_PRIORITY);
             System.out.println("Norm prio " + PriorityScheduler.instance().getNormPriority() + ", " + RealtimeThread.NORM_PRIORITY);
-            int minPrio = PriorityScheduler.instance().getMinPriority();
+            int minPrio = 0;
             //for standard CORBA, this would be reenabled
             poa_policy_list[0] = rtorb.create_priority_model_policy (org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,(short)minPrio);
 
             ThreadpoolLane[] lanes = new ThreadpoolLane[3];
             for(int i = 0; i < lanes.length; ++i)
-                lanes[i] = new ThreadpoolLane((short)(i+minPrio), 1, 1);
+                lanes[i] = new ThreadpoolLane((short)((i+minPrio)*1000), 1, 1);
             int threadPoolId = rtorb.create_threadpool_with_lanes(100, lanes, false, false, 10, 10);            
 
             poa_policy_list[1] = rtorb.create_threadpool_policy(threadPoolId);

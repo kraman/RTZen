@@ -86,7 +86,7 @@ public class Client extends RealtimeThread
 
             if (!pmap.to_CORBA (native_priority, desired_priority))
                 System.out.println("[client] Cannot convert native priority " + native_priority + " to corba priority");
-            int minPrio = PriorityScheduler.instance().getMinPriority();
+            int minPrio = 0;
             for( int i=0;i<3;i++ ){
 
                 //rtcur.the_priority(desired_priority.value);
@@ -99,7 +99,7 @@ public class Client extends RealtimeThread
                 server.test_method((short)minPrio);
 
                 //desired_priority.value++;
-                minPrio++;
+                minPrio += 1000;
             }
             
             System.exit(0);
