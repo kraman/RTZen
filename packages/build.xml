@@ -76,7 +76,9 @@
             <include name="src/edu/uci/ece/zen/utils/Logger.java"/>
     </patternset>
 
-    <target name="all" depends="idl, compile, lib, jRate, naming_service, compile_perf"/>
+    <!--target name="all" depends="idl, compile, lib, jRate, naming_service, compile_perf"/-->
+    <target name="all" depends="idl, compile, lib, jRate, naming_service"/>
+    
 
     <target name="idl">
         <!-- Compile the idldepend Ant task -->
