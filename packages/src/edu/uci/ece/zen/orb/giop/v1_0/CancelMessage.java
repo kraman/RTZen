@@ -10,7 +10,7 @@ import edu.uci.ece.zen.utils.*;
  * @author Bruce Miller
  */
 
-public class CancelMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage {
+public class CancelMessage extends edu.uci.ece.zen.orb.giop.parent.CancelMessage {
     private org.omg.GIOP.CancelRequestHeader header;
 
     public CancelMessage(ORB orb, ReadBuffer stream) {
@@ -20,9 +20,6 @@ public class CancelMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage {
         messageBody = null;
     }
 
-    public boolean isRequest() { return false; }
-    public boolean isReply() { return false; }
-    public boolean isCancelRequest() { return true; }
     public int getRequestId() { return header.request_id; }
 
     public void marshal (edu.uci.ece.zen.orb.CDROutputStream out) {
