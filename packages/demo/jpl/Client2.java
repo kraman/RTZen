@@ -10,6 +10,8 @@ import javax.realtime.RealtimeThread;
 import org.omg.CORBA.ORB;
 
 import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.NativeTimeStamp;
+
 /**
  * This class implements a simple Client for the Hello World CORBA
  * demo
@@ -21,7 +23,7 @@ public class Client2 extends RealtimeThread
 {
     private static final int A_SECOND = 1000;
     private static final int INITIAL_SLEEP = A_SECOND;
-    private static final int REQUEST_SLEEP = 10;
+    private static final int REQUEST_SLEEP = 100;
     public static final int RUN_NUM = 50000;
     public static final int ARRAY_SIZE = 10;
 
@@ -82,28 +84,39 @@ public class Client2 extends RealtimeThread
             System.out.println("==============Trying to establish connection==============");
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
 
+            System.out.println( "===================Trying to initialize the NativeTimeStamp================" );
+            NativeTimeStamp rtts = new NativeTimeStamp();
+            NativeTimeStamp.Init(1, 20.0);
+            System.out.println( "===================NativeTimeStamp gets initialized================" );
+
+
             sleep(INITIAL_SLEEP);
 
             System.out.println("==============Performance benchmark==============");
             long start = System.currentTimeMillis();
             for (int i = 0; i < RUN_NUM; i++)
             {
-                {
-                    System.out.print("# ");
-                    System.out.println(server.getMessage(id, array1));
-                    sleep(REQUEST_SLEEP);
-                }
-
-
+                //System.out.print("# ");
+                //System.out.println(server.getMessage(id, array1));
+                server.getMessage(id, array1)
+                
+                NativeTimeStamp.RecordTime(21);
+                 
                 sleep(REQUEST_SLEEP);
+
+                /*
+
                 if (i != 0 && i % 500 == 0)
                 {
                     Logger.write(i);
                     Logger.writeln();
                 }
+                */
             }
             long end = System.currentTimeMillis();
             System.err.println((double) RUN_NUM / ((end - start) / 1000.0));
+
+            NativeTimeStamp.OutputLogRecords();
 
             System.exit(0);
         }
