@@ -13,34 +13,6 @@ import edu.uci.ece.zen.orb.ORB;
  * @author OpenORB Compiler
  */
 public final class ServiceContext implements org.omg.CORBA.portable.IDLEntity {
-    /*
-     * private static final int CAP = 128; //private static ServiceContext sc;
-     * private static ServiceContext [] scList; public static int length = 0;
-     * public static ServiceContext [] arrayInstance(){ try{ if(scList == null)
-     * scList = (ServiceContext []) ImmortalMemory.instance().newArray(
-     * ServiceContext.class, CAP ); }catch(Exception e){ e.printStackTrace(); }
-     * return scList; } public static ServiceContext instance(int pos){ if(pos >=
-     * length) if(ZenProperties.dbg) System.out.println(
-     * "ServiceContext.instance: array out of bounds"); try{ if(scList[pos] ==
-     * null) scList[pos] = (ServiceContext)
-     * ImmortalMemory.instance().newInstance( ServiceContext.class );
-     * }catch(Exception e){ e.printStackTrace(); } return scList[pos]; }
-     */
-    //private static FString sc1;
-
-    //private static Queue queue = Queue.fromImmortal();
-/*
-    public static FString instance1() {
-        FString sc = (FString)ORB.getQueuedInstance(FString.class,queue);
-        return sc;
-    }
-*/
-
-    public static FString instance(FString fs) {
-        fs = FString.instance(fs);
-        return fs;
-    }
-
     /**
      * Struct member context_id
      */

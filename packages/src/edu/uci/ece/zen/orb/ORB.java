@@ -44,7 +44,7 @@ import edu.uci.ece.zen.utils.ZenBuildProperties;
 import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
-import java.net.URL;
+import java.net.*;
 
 //import edu.uci.ece.zen.utils.ThreadLocal;
 
@@ -64,16 +64,25 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     private static long scopeMemorySize;
     private static ORB orbSingleton;
     private static int maxSupportedConnections;
-    public static java.net.InetAddress sockAddr;
+    public static String [] endpoints;
     private static RTCurrentRunnable rtrun;
     
     static {
         try {
             try {
-                if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("local address" + java.net.InetAddress.getLocalHost().getHostAddress());
+                InetAddress addrList[] = InetAddress.getAllByName( InetAddress.getLocalHost().getHostName() );
+                endpoints = new String[ addrList.length ];
+                for( int i=0;i<addrList.length;i++ )
+                    endpoints[i] = addrList[i].getHostAddress();
+                
+                //endpoints = new String [] {java.net.InetAddress.getLocalHost().getHostAddress(), "127.0.0.1"};
+                if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("local address" + endpoints[0]);
                 //sockAddr = new
                 // java.net.InetSocketAddress(java.net.InetAddress.getLocalHost().getHostAddress(),0);
-                sockAddr = java.net.InetAddress.getLocalHost();
+                //sockAddr = java.net.InetAddress.getLocalHost();
+                //java.net.InetAddress [] arr = java.net.InetAddress.getAllByName( sockAddr.getHostName() );
+                //for(int i = 0; i<arr.length; ++i)
+                //    System.out.println("ADDR: " + arr[i].toString());
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, ORB.class, "static <init>", e);
             }
@@ -96,11 +105,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
             //Set up storage for memoryAreas
             unusedMemoryAreas = (Queue) imm.newInstance(Queue.class);
-            scopeMemorySize = Integer.parseInt(ZenProperties.getGlobalProperty(
-                    "doc.zen.orb.scopedMemorySize", "2097951"));    //Change by Alex...TODO: unknown reason
+            scopeMemorySize = Integer.parseInt(ZenProperties.getGlobalProperty("doc.zen.orb.scopedMemorySize", "2097951"));
 
-            int numMemAreas = Integer.parseInt(ZenProperties
-                .getGlobalProperty( "memarea.amount" , "40" ));
+            int numMemAreas = Integer.parseInt(ZenProperties.getGlobalProperty( "memarea.amount" , "40" ));
 
             for (int i = 0; i < numMemAreas; i++)
                 unusedMemoryAreas.enqueue(new LTMemory(100, scopeMemorySize));
@@ -140,7 +147,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         } else {
             ZenProperties.logger.log("======================Trying to locate the orb with that orbid==============");
 
-            FString fOrbId = new FString(orbId.length());
+            FString fOrbId = FString.instance();
             fOrbId.append(orbId);
 
             edu.uci.ece.zen.orb.ORB retVal = (edu.uci.ece.zen.orb.ORB) orbTable
@@ -203,16 +210,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         //policyManager = new PolicyManagerImpl(this);
         threadpoolList = new ScopedMemory[10];//KLUDGE: need to set up property
         // for max TPs
-        orbId = new FString();
+        orbId = FString.instance();
         orbRunningLock = new Integer(0);
-        try {
-            orbId.init(25);
-        } catch (Exception e2) {
-            ZenProperties.logger.log(Logger.FATAL, getClass(),
-                    "<init>",
-                    "Could not initialize ORB facade", e2);
-            System.exit(-1);
-        }
     }
 
     public ExecuteInRunnable getEIR() {
@@ -233,7 +232,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("FreeEIR(): EIR from  " + MemoryArea.getMemoryArea(r));
         if(MemoryArea.getMemoryArea(r) != ImmortalMemory.instance()){
             if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("FreeEIR(): EIR not from immortal, but " + MemoryArea.getMemoryArea(r));
-            Thread.dumpStack();
+            if (ZenBuildProperties.dbgThreadStack) Thread.dumpStack();
         }
         executeInRunnableCache.enqueue(r);
     }
@@ -474,6 +473,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public RTCurrent getRTCurrent() {
+        ZenProperties.logger.log("Getting RTCurrent.....");
         /*
         RTCurrentRunnable rtrun = RTCurrentRunnable.instance(parentMemoryArea);
         rtrun.init(orbImplRegion);

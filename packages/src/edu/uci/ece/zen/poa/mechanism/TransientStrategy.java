@@ -25,8 +25,12 @@ public final class TransientStrategy extends LifespanStrategy {
         timeStamp[nextFreeByte++] = (byte) ((value >>> 8) & 0xFF);
         timeStamp[nextFreeByte++] = (byte) (value & 0xFF);
 
-        this.ftimeStamp = new FString(8);
+        this.ftimeStamp = FString.instance();
         ftimeStamp.append(timeStamp);
+    }
+
+    public void finalize(){
+        FString.free( ftimeStamp );
     }
 
     /**

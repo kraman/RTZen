@@ -13,14 +13,13 @@ import edu.uci.ece.zen.utils.Logger;
  */
 public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity{
 
-    public static RequestHeader instance(RequestHeader rh) {
+    public static RequestHeader instance() {
         try {
-            if (rh == null)
-                rh = (RequestHeader) ImmortalMemory.instance().newInstance(RequestHeader.class);
+            return (RequestHeader) ImmortalMemory.instance().newInstance(RequestHeader.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, RequestHeader.class, "instance", e);
         }
-        return rh;
+        return null;
     }
 
     /**
@@ -68,6 +67,17 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity{
      * Default constructor
      */
     public RequestHeader() {
+        this.object_key = FString.instance();
+        this.operation = FString.instance();
+        this.requesting_principal = FString.instance();
+        this.service_context = FString.instance();
+    }
+
+    public void finalize(){
+        FString.free( this.object_key );
+        FString.free( this.operation );
+        FString.free( this.requesting_principal );
+        FString.free( this.service_context );
     }
 
     /**
@@ -86,25 +96,23 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity{
      * @param requesting_principal
      *            requesting_principal struct member
      */
-    public void init(FString service_context, int request_id,
-            boolean response_expected, FString object_key, String operation,
-            byte[] requesting_principal) {
-        this.service_context = service_context;
+    public void init(int request_id, boolean response_expected, FString object_key, String operation, byte[] requesting_principal) {
         this.request_id = request_id;
         this.response_expected = response_expected;
-
-        this.object_key = FString.instance(this.object_key);
+        
+        this.service_context.reset();
+        this.object_key.reset();
+        this.operation.reset();
+        this.requesting_principal.reset();
+        
         this.object_key.append(object_key);
-        //this.object_key1 = object_key;
-
-        this.operation = FString.instance(this.operation);
         this.operation.append(operation);
-
-        //this.operation1 = operation;
-
-        //this.requesting_principal1 = requesting_principal;
-        this.requesting_principal = FString.instance(this.requesting_principal);
         this.requesting_principal.append(requesting_principal);
+    }
+
+    public void init( FString contexts , int request_id, boolean response_expected, FString object_key, String operation, byte[] requesting_principal) {
+        init( request_id , response_expected , object_key , operation , requesting_principal );
+        this.service_context.append( contexts );
     }
 
     public void reset(){

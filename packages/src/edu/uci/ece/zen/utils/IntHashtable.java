@@ -32,14 +32,9 @@ public class IntHashtable {
     public void init(int limit) {
         count = 0;
         try{
-            keylist = (int[]) ImmortalMemory.instance().newArray(
-                    int.class, limit);
-                    
-            valuelist = (int[]) ImmortalMemory.instance().newArray(
-            int.class, limit);
-            
-            collision = (boolean[]) ImmortalMemory.instance().newArray(
-            boolean.class, limit);
+            keylist = (int[]) ImmortalMemory.instance().newArray( int.class, limit);
+            valuelist = (int[]) ImmortalMemory.instance().newArray( int.class, limit);
+            collision = (boolean[]) ImmortalMemory.instance().newArray( boolean.class, limit);
         }catch(Exception e){
             e.printStackTrace();//TODO
         }

@@ -123,7 +123,6 @@ public class POAImpl {
 
     public POAImpl() {
         poaHashMapQueue = new Queue();
-        poaFStringQueue = new Queue();
         poaIntHolderQueue = new Queue();
     }
 
@@ -140,21 +139,13 @@ public class POAImpl {
     }
 
     public FString getFString() {
-        FString ret = (FString) poaFStringQueue.dequeue();
-        if (ret == null) {
-            try {
-                ret = new FString();
-                ret.init(256);
-            } catch (Exception e) {
-                ZenProperties.logger.log(Logger.WARN, getClass(), "getFString", e);
-            }
-        }
+        FString ret = FString.instance();
         ret.reset();
         return ret;
     }
 
     public void retFString(FString str) {
-        poaFStringQueue.enqueue(str);
+        FString.free( str );
     }
 
     public IntHolder getIntHolder() {

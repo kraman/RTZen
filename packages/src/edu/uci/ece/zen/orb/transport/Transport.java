@@ -24,6 +24,7 @@ public abstract class Transport implements Runnable {
     protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
     private MessageProcessor messageProcessor;
     public Object objectTable[]; //used to store misc
+    public boolean success = true;
 
     // objects with
     // 1instance

@@ -18,6 +18,8 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     static {
         try {
             cdrCache = (Queue) ImmortalMemory.instance().newInstance( Queue.class );
+            int preAlloc = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.cdr.preAllocate" , "5" ) );
+            CDROutputStream.preAllocate( preAlloc );
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, CDROutputStream.class, "static <init>", e);
             System.exit(-1);
@@ -26,6 +28,17 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     public String toString(){
         return getBuffer().toString();
+    }
+
+    private static void preAllocate( int num ){
+        try{
+            for( int i=0;i<num;i++ ){
+                ZenProperties.logger.log(Logger.INFO, CDROutputStream.class, "preAllocate", "Creating new instance.");
+                cdrCache.enqueue( ImmortalMemory.instance().newInstance(CDROutputStream.class) );
+            }
+        }catch( Exception e ){
+            ZenProperties.logger.log(Logger.WARN, CDROutputStream.class, "preAllocate", "Unable to pre-allocate.");
+        }
     }
 
     public static CDROutputStream instance() {
@@ -507,10 +520,18 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     public void setLocationMemento() {
         buffer.setLocationMemento();
     }
+    
+    public void setProfileLengthMemento() {
+        buffer.setProfileLengthMemento();
+    }    
 
     public void updateLength() {
         buffer.writeLongAtLocationMemento((int) buffer.getPosition() - 12);
     }
+    
+    public void updateProfileLength(int val) {
+        buffer.writeLongAtProfileLengthMemento(val);
+    }    
 
     /**
      * Writes an any object from the the CDROutputStream. This processes

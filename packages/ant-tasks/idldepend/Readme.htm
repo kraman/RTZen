@@ -18,7 +18,7 @@
 		<font color="#4444ff"><a href="http://grasia.fdi.ucm.es/~luismi/idldepend">Luismi Pena Home page</a></font>
 		<hr size="1" color="#7777FF" width="80%">
 		<a href="mailto:java_lmp@yahoo.co.uk?subject=webpage"><font size="-1">java_lmp@yahoo.co.uk</font></a><br><br>
-		<font size="-1"><b><i><font color="#4444ff">Last Updated:<br> 6th October 2004</font></i></b></font>
+		<font size="-1"><b><i><font color="#4444ff">Last Updated:<br> 10th March 2005</font></i></b></font>
 		<hr size="1" color="#7777FF" width="80%">
 			</center>
 		</td>
@@ -32,7 +32,7 @@
 		<hr size="2" color="#663366" width="600">
 		 <ul type="disc">
 					<li><a href="#Description">Description</a></li>
-					<li><a href="#Version">Version and CORBA compliance</a> (<b>new version</b> 0.63 the 6th October 2004)</li>
+					<li><a href="#Version">Version and CORBA compliance</a> (<b>new version</b> 0.71 the 10th March 2005)</li>
 					<li><a href="#LicenseAndDownload">License and download</a></li>
 					<li><a href="#Attributes">Attributes</a></li>
 					<li><a href="#NestedElements">Nested elements</a></li>
@@ -78,7 +78,7 @@
 		<hr size="1" color="#333399">
 		<table border="0"><tr><td width="5"></td><td>
 		<a name="Version"><h2><font color="#333399">Version and CORBA compliance</font></h2></a>
-		<p>Current version, since the 6th October2004 is <b><i>0.63</i></b>. It is written using Ant 1.6, and I do not check usually whether it would compile or work under previous Ant versions (note that it was initially developed using Ant 1.4).</p>
+		<p>Current version, since the 10th March 2005 is <b><i>0.71</i></b>. It is written using Ant 1.6, and I do not check usually whether it would compile or work under previous Ant versions (note that it was initially developed using Ant 1.4).</p>
       <p>Idldepend is compliant with the IDL to Java mapping defined for CORBA 2.4. Support for the mapping 1.2 -CORBA 3.0 compliant- is
       under work (note as well that the current IDL to Java mapping is only CORBA 2.4 compliant!).<br>In particular, the following keywords
       are not supported:
@@ -140,11 +140,13 @@
 		own any changes.</p>
 		<p>Following are the downloadable files:
 		<ul type="square">
-      <li>Version 0.63. Latest version, (06/10/04):
+      <li>Version 0.71. Latest version, (10/03/05). 
 		<ul type="disc">
-				<li>Source code (.zip format, 138.888 bytes), to be built using ant: <a href="idldepend-0-6-3.zip">idldepend-0-6-3.zip</a></li>
-				<li>Binary code (.jar file, 220.379 bytes): <a href="idldepend-0-6-3.jar">idldepend-0-6-3.jar</a></li>
+				<li>Source code (.zip format, 140.008 bytes), to be built using ant: <a href="idldepend-0-7-1.zip">idldepend-0-7-1.zip</a></li>
+				<li>Binary code (.jar file, 221.366 bytes): <a href="idldepend-0-7-1.jar">idldepend-0-7-1.jar</a></li>
 		</ul>
+      </li><li>Version 0.70 (19/10/04). <a href="idldepend-0-7-0.zip">idldepend-0-7-0.zip</a> and <a href="idldepend-0-7-0.jar">idldepend-0-7-0.jar</a>
+      </li><li>Version 0.63 (06/10/04). <a href="idldepend-0-6-3.zip">idldepend-0-6-3.zip</a> and <a href="idldepend-0-6-3.jar">idldepend-0-6-3.jar</a>
       </li><li>Version 0.62 (01/10/04). <a href="idldepend-0-6-2.zip">idldepend-0-6-2.zip</a> and <a href="idldepend-0-6-2.jar">idldepend-0-6-2.jar</a>
       </li><li>Version 0.61 (29/06/04). <a href="idldepend-0-6-1.zip">idldepend-0-6-1.zip</a> and <a href="idldepend-0-6-1.jar">idldepend-0-6-1.jar</a>
       </li><li>Version 0.60 (30/05/04). <a href="idldepend-0-6-0.zip">idldepend-0-6-0.zip</a> and <a href="idldepend-0-6-0.jar">idldepend-0-6-0.jar</a>
@@ -187,11 +189,14 @@
 				</tr>
 				<tr>
 						<td><b>compiler</b></td>
-						<td><i>jdk / orbacus / jacorb / openorb / orbix / ibm</i>.<br>Specifies the compiler to use, which must be available on the
-				         <i>classpath (jdk/jacorb/openorb/ibm) </i>or in the <i>path (orbacus/orbix2k)</i>
-   					   <ul>Please note that, from version 0.51:<li>jacorb<b>2</b> is deprecated, and jacorb should be used instead.</li><li>
-					   Also from this version, the compilers for jacorb and openorb must be available from the classpath, not
-					   anymore from the path.</li></ul>
+						<td><i>jdk / orbacus / jacorb / jacorb2 / openorb / orbix / ibm</i>.<br>Specifies the compiler to use, which must be available
+				         on the <i>classpath (jdk/jacorb/jacorb2/openorb/ibm) </i>or in the <i>path (orbacus/orbix2k)</i>
+   					   <ul><li><i>jacorb2</i> (reintroduced in version 0.70) is equivalent to <i>jacorb</i>, but it is required to handle different behaviours in the way they handle
+					   <i>packages</i>. See below the section on <a href="#UsingPackageAndTranslate"> <i>package</i> and <i>translate</i></a> for further
+					   information</li>
+					   <li>Please note that, from version 0.51 the compilers for jacorb and openorb must be available from the classpath, not
+					   anymore from the path.</li>
+					   </ul>
                   </td>
 						<td><div align="center">no</div></td>
 						<td><i><div align="center">jdk</div></i></td>
@@ -260,7 +265,9 @@
 				</tr>
 				<tr>
 						<td><b>force</b></td>
-						<td><i>boolean</i>: if set, it does not perform any check, launching the compiler directly.</td>
+						<td><i>boolean</i>: if set, it does not perform any check, launching the compiler directly. <p>That is, no
+							dependencies are verified, the idl files are not parsed, and this task is only used to invoke
+							the compiler.</td>
 						<td><div align="center">no</div></td>
 						<td><div align="center"><i>false</i></div></td>
 				</tr>
@@ -535,7 +542,8 @@
 						<i>--prefix-package</i>: it has priority over <i>--package</i></li>
 				</ul></li>
 							<li><i>jacorb</i><ul compact type="square">
-						 <li>equivalent to modifier <i>-p</i></li>
+						 <li>In version 1.x, it is equivalent to modifier <i>-p</i></li>
+						 <li>In version 2.x, it is equivalent to modifier <i>-i2jpackage :prefix</i>. To handle the difference with version 1.x, the <i>compiler</i> attribute must be set as <i>jacorb2</i> instead of <i>jacorb</i></li>
 				       <li>it only supports the <i>prefix</i> modifier.</li>
 						 <li>it's applied after any <i>translate</i> modification</li>
 				</ul></li>
@@ -808,7 +816,7 @@
 		</td></tr></table>
 		<p></p>
 		<table border="0"><tr><td width="20"></td><td>
-			<a name="Jacorb"><h3><font color="#333399">Jacorb  (as to 1.4.1 and 2.0 beta 3)</font></h3></a>
+			<a name="Jacorb"><h3><font color="#333399">Jacorb  (as to 1.4.1 and 2.2)</font></h3></a>
 			<table border="1" width="95%" align="center" bordercolor="#333399">
 			<tr style="font: oblique	bold; color: #333399">
 				<td width="250">compiler argument</td>
@@ -852,7 +860,11 @@
 		    </tr>
 			<tr>
 				<td>-p pack</td>
-				<td>package prefix=pack</td>
+				<td>package prefix=pack (<b>version 1.x</b>)</td>
+		    </tr>
+			<tr>
+				<td>-i2jpackage :package</td>
+				<td>package prefix=package (<b>version 2.x</b>, compiler set to </i>jacorb2<i>)</td>
 		    </tr>
 			<tr>
 				<td>-i2jpackage x:a.b.c</td>
@@ -1123,6 +1135,31 @@
 	<a name="History"><h2><font color="#333399">History changes</font></h2></a>
 	<p>
 	<table border="1" width="95%" align="center" bordercolor="#333399">
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.71</br>10th March 2005</b>
+		</td></tr>		
+		<tr><td>
+		 Nested IDL types generated java types in the incorrect scope. <br>
+		 IDL definitions nested under a global module scope -the general case-, were correctly handled, but defining, for example, a struct nested into another struct produced incorrect dependencies.<br>
+		 Thanks to <b><i>Duane Griffin</i></b> for providing the patch that solves this problem.
+		</td></tr>		
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.70</br>19th October 2004</b>
+		</td></tr>		
+		<tr><td>
+		Bug corrected: the usage of the attribute <b>force</b> was broken, producing null pointer exceptions.
+		</td></tr>		
+		<tr><td>
+		Bug corrected: Using the <i>jdk</i> compiler, the setting of <b><i>package</i></b> prefixes for top level types (i.e., not defined inside modules),
+		produced incorrect dependencies.
+		</td></tr>		
+		<tr><td>
+		Reintroduced the compiler value <b>jacorb2</b>. It was deprecated since version 0.51, and it is now reintroduced to handle the different handling
+		of command line arguments between the Jacorb versions 1.x and 2.x.<br>
+		In version 1.x, the idl compiler accepted the argument <code>-p package</code>, translated by <i>idldepend</i> into a <i>package</i> directive. The
+		version 2.x removed this argument, still reaching the same goal through the argument <code>-i2jpackage :package</code>. To be useful for both versions,
+		<i>idldpend</i> requires therefore the new compiler value.
+		</td></tr>		
 		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
 		<b></br>Version 0.63</br>6th October 2004</b>
 		</td></tr>		

@@ -18,6 +18,8 @@ import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.poa.POA;
+import edu.uci.ece.zen.orb.ORB;
+import java.net.InetAddress;
 
 import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
 
@@ -31,7 +33,6 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         super(orb, orbImpl, threadPoolId);
         try {
             ssock = new java.net.ServerSocket(0, 0, null);
-
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
                     getClass(), "<cinit>",
@@ -52,48 +53,74 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
     protected void internalShutdown() {
     }
 
-    protected TaggedProfile getInternalProfile(byte iiopMajorVersion,
+    protected TaggedProfile [] getInternalProfiles(byte iiopMajorVersion,
             byte iiopMinorVersion, byte[] objKey, POA poa) {
         Version version = new Version(iiopMajorVersion, iiopMinorVersion);
-        CDROutputStream out = CDROutputStream.instance();
-        out.init(orb);
-        out.write_boolean(false); //BIGENDIAN
-        edu.uci.ece.zen.utils.Logger.printThreadStack();
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Acceptor version " + version);
-        switch (iiopMinorVersion) {
-            case 0:
-                if (ZenBuildProperties.dbgIOR) {
-                    ZenProperties.logger.log("Acceptor, the current memoery is :" + javax.realtime.RealtimeThread .getCurrentMemoryArea());
-                    ZenProperties.logger.log("Acceptor, the memory of ssock is " + javax.realtime.MemoryArea .getMemoryArea(ssock));
-                    ZenProperties.logger.log("Acceptor getHostAddress" + ssock.getInetAddress().getHostAddress());
-                    ZenProperties.logger.log("Acceptor getLocalPort()" + (short) ssock.getLocalPort());
-                    ZenProperties.logger.log("Acceptor objKey" + objKey);
-                }
-                ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock.getInetAddress().getHostAddress(), (short) ssock.getLocalPort(), objKey);
-                ProfileBody_1_0Helper.write(out, pb10);
-                break;
-            case 1:
-            case 2:
-                //org.omg.IOP.TaggedComponent[] components = new
-                // org.omg.IOP.TaggedComponent[0];
-                //TODO: insert rt policy info and other tagged components
-                ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock.getInetAddress().getHostAddress(), (short) ssock.getLocalPort(), objKey, getComponents(poa));
-                ProfileBody_1_1Helper.write(out, pb11);
-                break;
+        
+        //try this to test the connection error
+        //String [] endpoints = new String [] {"128.195.174.86",ssock.getInetAddress().getHostAddress(),"127.0.0.1"};
+        //String [] endpoints = new String [] {ssock.getInetAddress().getHostAddress(),"127.0.0.1"};
+        //String [] endpoints = new String [] {ORB.sockAddr,"127.0.0.1"};
+        String [] endpoints = ORB.endpoints;
+        
+        TaggedProfile [] tparr = new TaggedProfile[endpoints.length];
+        
+        for(int i = 0; i < endpoints.length; ++i){        
+            CDROutputStream out = CDROutputStream.instance();
+            out.init(orb);
+            out.write_boolean(false); //BIGENDIAN
+            edu.uci.ece.zen.utils.Logger.printThreadStack();
+            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Acceptor version " + version);
+            if (ZenBuildProperties.dbgIOR) {
+                ZenProperties.logger.log("Acceptor, the current memory is :" + javax.realtime.RealtimeThread .getCurrentMemoryArea());
+                ZenProperties.logger.log("Acceptor, the memory of ssock is " + javax.realtime.MemoryArea .getMemoryArea(ssock));
+                ZenProperties.logger.log("Acceptor getHostAddress" + ssock.getInetAddress().getHostAddress());
+                ZenProperties.logger.log("Acceptor getLocalPort()" + (short) ssock.getLocalPort());
+                ZenProperties.logger.log("Acceptor objKey" + objKey);
+            }
+    /*
+            InetAddress [] inetAddr = null;
+            
+            try{
+                //inetAddr = InetAddress.getAllByName( ssock.getInetAddress().getHostName() );
+                inetAddr = InetAddress.getAllByName( "localhost" );
+                for(int i = 0; i < inetAddr.length; ++i)
+                    System.out.println(inetAddr.toString());
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            */
+
+            switch (iiopMinorVersion) {
+                case 0:
+                    ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, endpoints[i] /*ssock.getInetAddress().getHostAddress()*/, (short) ssock.getLocalPort(), objKey);
+                    ProfileBody_1_0Helper.write(out, pb10);
+                    break;
+                case 1:
+                case 2:
+                    //org.omg.IOP.TaggedComponent[] components = new
+                    // org.omg.IOP.TaggedComponent[0];
+                    //TODO: insert rt policy info and other tagged components
+                    ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, endpoints[i] /*ssock.getInetAddress().getHostAddress()*/, (short) ssock.getLocalPort(), objKey, getComponents(poa));
+                    ProfileBody_1_1Helper.write(out, pb11);
+                    break;
+            }
+    
+            WriteBuffer outb = out.getBuffer();
+            ReadBuffer outrb = outb.getReadBuffer();
+    
+            TaggedProfile tp = new TaggedProfile();
+            tp.tag = TAG_INTERNET_IOP.value;
+            tp.profile_data = new byte[(int) outrb.getLimit()];
+            outrb.readByteArray(tp.profile_data, 0, (int) outrb.getLimit());
+    
+            out.free();
+            outrb.free();
+            tparr[i] = tp;
         }
+        
 
-        WriteBuffer outb = out.getBuffer();
-        ReadBuffer outrb = outb.getReadBuffer();
-
-        TaggedProfile tp = new TaggedProfile();
-        tp.tag = TAG_INTERNET_IOP.value;
-        tp.profile_data = new byte[(int) outrb.getLimit()];
-        outrb.readByteArray(tp.profile_data, 0, (int) outrb.getLimit());
-
-        out.free();
-        outrb.free();
-
-        return tp;
+        return tparr;
     }
 
 }

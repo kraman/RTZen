@@ -28,6 +28,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("IIOP Transport ready: " + istream + " " + ostream);
             //setSockProps(sock, orb);
         } catch (Exception ex) {
+            success = false;
             ZenProperties.logger.log(Logger.WARN,
                     getClass(), "<init>",
                     "Error connecting to remote location.", ex);
@@ -52,11 +53,13 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
                 ostream = sock.getOutputStream();
                 if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Transport ready: " + istream + " " + ostream);
             } catch (java.net.UnknownHostException ex) {
+                success = false;
                 ZenProperties.logger.log(Logger.WARN,
                         getClass(), "<init>",
                         "Error connecting to remote location.", ex);
 
             } catch (java.io.IOException ex) {
+                success = false;
                 ZenProperties.logger.log(Logger.WARN,
                         getClass(), "<init>",
                         "Error connecting to remote location.", ex);

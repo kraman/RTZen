@@ -142,6 +142,7 @@ public class IOR {
             ior.profiles[i] = (TaggedProfile)clientArea.newInstance(org.omg.IOP.TaggedProfile.class);
             ior.profiles[i].tag = in.read_ulong();
             int size = in.read_ulong();
+            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 4.5, size: " + size);
             ior.profiles[i].profile_data = (byte[]) clientArea.newArray(
                 byte.class, size);
             in.read_octet_array(ior.profiles[i].profile_data, 0, ior.profiles[i].profile_data.length);
@@ -198,58 +199,4 @@ public class IOR {
     }
 }
 
-class IORRunnable implements Runnable {
 
-    FString objKey;
-    MemoryArea clientArea; 
-    POA poa;
-    org.omg.IOP.IOR ior;
-    CDROutputStream out;
-
-    private static IORRunnable instance;
-
-    public static IORRunnable instance(){
-        if(instance == null){
-            try{
-                instance = (IORRunnable) (ImmortalMemory.instance().newInstance(IORRunnable.class));
-            }catch(Exception e){
-                e.printStackTrace();//TODO better error handling
-            }
-        }
-        return instance;
-    }
-    /*
-    public static IORRunnable instance(IORRunnable inst){
-        if(inst == null){
-            try{
-                inst = (IORRunnable) (RealtimeThread.getCurrentMemoryArea().newInstance(IORRunnable.class));
-            }catch(Exception e){
-                e.printStackTrace();//TODO better error handling
-            }
-        }
-
-        return inst;
-    }    
-*/
-    public IORRunnable() {
-    }
-
-    public void init(FString objKey, MemoryArea clientArea, 
-            POA poa, CDROutputStream out) {
-
-         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 2");
-        this.clientArea = clientArea;
-         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 3");
-        this.poa = poa;
-         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 4");
-        this.ior = ior;
-        this.objKey = objKey;
-        this.out = out;
-    }
-
-    public void run() {
-        ThreadPool tp = (ThreadPool)((ScopedMemory) RealtimeThread
-                .getCurrentMemoryArea()).getPortal();
-        tp.getProfiles(objKey, clientArea, poa, out);
-    }
-}

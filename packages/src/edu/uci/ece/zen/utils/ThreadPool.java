@@ -10,6 +10,8 @@ import javax.realtime.ImmortalMemory;
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.CDRInputStream;
 import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.orb.GetProfilesRunnable1;
+import edu.uci.ece.zen.orb.GetProfilesRunnable2;
 import edu.uci.ece.zen.orb.PriorityMappingImpl;
 import edu.uci.ece.zen.poa.POA;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
@@ -56,6 +58,11 @@ public class ThreadPool {
         this.lanes = new Lane[1];
         acceptorRunnable.init( orb , defaultPriority , threadPoolId );
         orb.setUpORBChildRegion( acceptorRunnable );
+        
+        if (ZenBuildProperties.dbgTP) ZenProperties.logger.log(
+                " Default Lane created with priority: " + defaultPriority + 
+                " static_threads: " + staticThreads + 
+                " dynamic_threads: " + dynamicThreads);              
         this.lanes[0] = new Lane(stackSize, staticThreads, dynamicThreads,
                 defaultPriority, this, allowBorrowing, allowRequestBuffering,
                 maxBufferedRequests, acceptorRunnable.acceptorArea);
@@ -170,8 +177,7 @@ public class ThreadPool {
             lanes[i].execute(task);
         }
         else {
-            ZenProperties.logger.log(Logger.WARN, getClass(), "execute(...)",
-                                     "No lane matched the request priority. Will execute at lowest priority lane.");
+            ZenProperties.logger.log(Logger.INFO, getClass(), "execute(...)", "No lane matched the request priority. Will execute at lowest priority lane.");
             lanes[0].execute(task);
         }
     }
@@ -195,9 +201,11 @@ public class ThreadPool {
                 POA poa, CDROutputStream out)
             {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("-----TP.getProfiles0");
-
+        
         GetProfilesRunnable1 gpr1 = GetProfilesRunnable1.instance();//new GetProfilesRunnable1(); //TODO -- static? per TP?
-        out.write_ulong(lanes.length);
+        //out.write_ulong(lanes.length);
+        out.setProfileLengthMemento();
+        //System.out.println("prof: " + out.toString());
         try{
             for(int i = 0; i < lanes.length; ++i){
                 ScopedMemory accArea = lanes[i].getAcceptorArea();
@@ -207,6 +215,9 @@ public class ThreadPool {
         }catch(Exception e){
             e.printStackTrace();//TODO better exception handling
         }
+        //System.out.println("prof: " + out.toString());
+        
+        //System.out.println("prof: " + out.toString());
         //if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("-----TP.getProfiles2:  " + out.toString());
     }
     
@@ -217,87 +228,6 @@ public class ThreadPool {
         return out;
     }
 }
-
-class GetProfilesRunnable1 implements Runnable{
-    
-    ScopedMemory accArea; 
-    FString objKey;
-    MemoryArea clientArea; 
-    POA poa;
-    int i;
-    CDROutputStream out;
-    
-    private static GetProfilesRunnable1 instance;
-
-    public static GetProfilesRunnable1 instance(){
-        if(instance == null){
-            try{
-                instance = (GetProfilesRunnable1) (ImmortalMemory.instance().newInstance(GetProfilesRunnable1.class));
-            }catch(Exception e){
-                e.printStackTrace();//TODO better error handling
-            }
-        }
-        return instance;
-    }    
-
-    public GetProfilesRunnable1() {
-    }
-
-    public void init(int i, ScopedMemory accArea, FString objKey, MemoryArea clientArea, 
-            POA poa, CDROutputStream out) {
-         this.i = i; this.accArea = accArea; this.clientArea = clientArea;
-         this.poa = poa; this.objKey = objKey; this.out = out;
-    }
-
-    public void run() {
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable1 6");
-        GetProfilesRunnable2 gpr2 = GetProfilesRunnable2.instance();//new GetProfilesRunnable2();//TODO -- static? per TP?
-        gpr2.init(i, objKey, clientArea, poa, out); 
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable1 7");
-        accArea.enter(gpr2);
-    }    
-}
-
-class GetProfilesRunnable2 implements Runnable{
-    
-    FString objKey;
-    MemoryArea clientArea; 
-    POA poa;
-    int i;
-    CDROutputStream out;
-
-    private static GetProfilesRunnable2 instance;
-
-    public static GetProfilesRunnable2 instance(){
-        if(instance == null){
-            try{
-                instance = (GetProfilesRunnable2) (ImmortalMemory.instance().newInstance(GetProfilesRunnable2.class));
-            }catch(Exception e){
-                e.printStackTrace();//TODO better error handling
-            }
-        }
-        return instance;
-    }        
-    
-    public GetProfilesRunnable2() {
-    }   
-
-    public void init(int i, FString objKey, MemoryArea clientArea, 
-            POA poa, CDROutputStream out) {
-         this.clientArea = clientArea; this.poa = poa; 
-         this.objKey = objKey; this.out = out;
-    }
-
-    public void run() {
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 6");
-        Acceptor acc = (Acceptor)((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 7");
-        TaggedProfileHelper.write(out, acc.getProfile((byte) 1, ZenProperties.iiopMinor, 
-                objKey.getTrimData(clientArea), clientArea, poa));
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 8");
-    }    
-}
-
 
 class Lane implements Comparable{
     int stackSize; //ignored. No such provision in RTSJ 2.0

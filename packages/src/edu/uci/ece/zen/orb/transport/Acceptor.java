@@ -25,6 +25,7 @@ import org.omg.Messaging.PolicyValue;
 import org.omg.Messaging.PolicyValueHelper;
 
 import edu.uci.ece.zen.orb.CDROutputStream;
+import edu.uci.ece.zen.orb.PriorityMappingImpl;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
@@ -44,7 +45,7 @@ public abstract class Acceptor {
 
     protected RealtimeThread acceptorLogicThread;
 
-    protected int priority;
+    protected short priority;
 
     public  int threadPoolId;
 
@@ -56,11 +57,11 @@ public abstract class Acceptor {
         this.threadPoolId = threadPoolId;
     }
 
-    public final void startAccepting( int priority ) {
+    public final void startAccepting( short priority ) {
         this.priority = priority;
         acceptorLogic = new AcceptorLogic(this);
         isActive = true;
-        acceptorLogicThread = new NoHeapRealtimeThread( new PriorityParameters(priority) , null, null,
+        acceptorLogicThread = new NoHeapRealtimeThread( new PriorityParameters(PriorityMappingImpl.toNative(priority)) , null, null,
                 RealtimeThread.getCurrentMemoryArea(), null, acceptorLogic);
         acceptorLogicThread.start();
     }
@@ -80,7 +81,7 @@ public abstract class Acceptor {
 
     protected final void registerTransport(Transport t) {
         ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(t);
-        RealtimeThread transportThread = new NoHeapRealtimeThread( new PriorityParameters(this.priority) , null, null, RealtimeThread.getCurrentMemoryArea(), null, t);
+        RealtimeThread transportThread = new NoHeapRealtimeThread( new PriorityParameters(PriorityMappingImpl.toNative(this.priority)) , null, null, RealtimeThread.getCurrentMemoryArea(), null, t);
         transportThread.start();
     }
 
@@ -90,7 +91,7 @@ public abstract class Acceptor {
 
     private ProfileRunnable prunnable;
 
-    public synchronized TaggedProfile getProfile(byte iiopMajorVersion,
+    public synchronized TaggedProfile [] getProfiles(byte iiopMajorVersion,
             byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion, POA poa) {
         //if( this.threadPoolId == threadPoolId )
         {
@@ -108,7 +109,7 @@ public abstract class Acceptor {
         return null;
     }
 
-    protected abstract TaggedProfile getInternalProfile(byte iiopMajorVersion,
+    protected abstract TaggedProfile [] getInternalProfiles(byte iiopMajorVersion,
             byte iiopMinorVersion, byte[] objKey, POA poa);
 
     public void finalize() {
@@ -144,12 +145,12 @@ public abstract class Acceptor {
         //holder._write(out);
 
         //org.omg.CORBA.PolicyListHelper.write(out, policies);
-        
-        CDROutputStream out = poa.getClientExposedPolicies();
-        
+
+        CDROutputStream out = poa.getClientExposedPolicies(priority);
+
         if(out == null)
             return null;
-        
+
         TaggedComponent tc = new TaggedComponent();
         tc.tag = org.omg.IOP.TAG_POLICIES.value;
         tc.component_data = new byte[(int) out.getBuffer().getLimit()];
@@ -200,7 +201,8 @@ public abstract class Acceptor {
     }
 
     public static PolicyValue marshalPriorityModelValue(
-            org.omg.RTCORBA.PriorityModelPolicy pol, ORB orb, CDROutputStream outRet) {
+            org.omg.RTCORBA.PriorityModelPolicy pol, ORB orb, CDROutputStream outRet,
+            short priority) {
         ZenProperties.logger.log("createPriorityModelValue()");
         PolicyValue pv = new PolicyValue();
         pv.ptype = priorityModel;
@@ -210,7 +212,10 @@ public abstract class Acceptor {
         out.write_boolean(false); //BIGENDIAN
 
         out.write_long(pol.priority_model().value());
-        out.write_short(pol.server_priority());
+        //out.write_short(pol.server_priority());
+        //override to the acceptor's priority
+        out.write_short((short)priority);
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("createPriorityModelValue() -- Priority: " + priority);
 
         pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
         pv.ptype = PRIORITY_MODEL_POLICY_TYPE.value;
@@ -219,12 +224,12 @@ public abstract class Acceptor {
                 (int)out.getBuffer().getLimit());
 
         out.free();
-        
+
         PolicyValueHelper.write(outRet, pv);
 
         return pv;
     }
-    
+
     private PolicyValue createPriorityModelValue() {
         ZenProperties.logger.log("createPriorityModelValue()");
         PolicyValue pv = new PolicyValue();
@@ -274,16 +279,18 @@ class AcceptorLogic implements Runnable {
     public void run() {
         AcceptRunnable runnable = new AcceptRunnable(acc);
         ExecuteInRunnable eir = new ExecuteInRunnable();
+        ScopedMemory transportMem = null;
         while (acc.isActive) {
             try {
-                ScopedMemory transportMem = ORB.getScopedRegion();
+                transportMem = ORB.getScopedRegion();
                 eir.init(runnable, transportMem);
                 acc.orb.orbImplRegion.executeInArea(eir);
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
-            }
+                if( transportMem != null )
+                    ORB.freeScopedRegion( transportMem );
+            } 
         }
-
         //notify the exit of this thread
         synchronized (this) {
             this.notifyAll();
@@ -301,7 +308,7 @@ class ProfileRunnable implements Runnable {
 
     private Acceptor acc;
 
-    private TaggedProfile retVal;
+    private TaggedProfile [] retVal;
 
     private POA poa;
 
@@ -316,12 +323,12 @@ class ProfileRunnable implements Runnable {
         this.poa = poa;
     }
 
-    public TaggedProfile getRetVal() {
+    public TaggedProfile [] getRetVal() {
         return retVal;
     }
 
     public void run() {
-        retVal = acc.getInternalProfile(major, minor, objKey, poa);
+        retVal = acc.getInternalProfiles(major, minor, objKey, poa);
     }
 }
 

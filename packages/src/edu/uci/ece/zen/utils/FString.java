@@ -17,14 +17,32 @@ public class FString {
 
     private static Queue queue = Queue.fromImmortal();
     private boolean free = false;
+    private static int preAllocSize = 1024;
+
+    static{
+        preAllocSize = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.FString.size" , "1024" ) );
+        int preAlloc = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.fstring.preAllocate" , "5" ) );
+        FString.preAllocate( preAlloc );
+    }
+    
+    private static void preAllocate( int num ){
+        try{
+            for( int i=0;i<num;i++ ){
+                ZenProperties.logger.log(Logger.INFO, FString.class, "preAllocate", "Creating new instance.");
+                queue.enqueue( fromImmortal() );
+            }
+        }catch( Exception e ){
+            ZenProperties.logger.log(Logger.WARN, FString.class, "preAllocate", "Unable to pre-allocate");
+        }
+    }
 
     public static FString instance(){
-        FString ret = null;
-        if(!queue.isEmpty()){
-            ret = (FString)queue.dequeue();
+        FString ret = (FString)queue.dequeue();
+        if( ret != null ){
             ret.reset();
         }
-        else ret = fromImmortal();
+        else 
+            ret = fromImmortal();
         ret.free = false;
         return ret;
     }
@@ -49,15 +67,14 @@ public class FString {
         try {
             fs = (FString) ImmortalMemory.instance().newInstance(FString.class);
             ZenProperties.logger.log(Logger.WARN, FString.class, "fromImmortal" , "new FString created");
-            fs.init(1024);
+            fs.init( preAllocSize );
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, FString.class, "fromImmortal", e);
         }
         return fs;
     }
 
-    /** I have no idea. */
-    public static FString instance(FString fs) {
+    private static FString instance(FString fs) {
         if (fs == null) {
             fs = fromImmortal();
         } else {
@@ -81,7 +98,7 @@ public class FString {
      * @param maxSize
      *            The maximum size of string data.
      */
-    public FString(int maxSize) {
+    private FString(int maxSize) {
         this.maxSize = maxSize;
         this.currentSize = 0;
         this.data = new byte[maxSize];
@@ -104,7 +121,7 @@ public class FString {
      *            The maximum size of data that will be stored in the FString
      * @see #FString()
      */
-    public void init(int maxSize) throws InstantiationException,
+    private void init(int maxSize) throws InstantiationException,
             IllegalAccessException, InaccessibleAreaException {
         this.maxSize = maxSize;
         this.currentSize = 0;

@@ -11,17 +11,17 @@
 
 zen.optimization = on
 zen.debug = on
-build.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
+#build.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
 javac.target=1.1
 
 ####################################
 ##### Compiler/runtime Options #####
 ####################################
 
-zen.build.runtime = timesys_ri
+#zen.build.runtime = timesys_ri
 #zen.build.runtime = jRate
 #zen.build.runtime = OVM
-#zen.build.runtime = jvm
+zen.build.runtime = jvm
 #zen.build.runtime = JamaicaVM
 #zen.build.runtime = Mackinac
 
