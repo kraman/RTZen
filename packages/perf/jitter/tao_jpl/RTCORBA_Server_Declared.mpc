@@ -11,14 +11,26 @@ idlflags += -GA
   }
 }
 
-project(*Client): rt_client {
+project(*Client1): rt_client {
 idlflags += -GA
   Source_Files {
     testC.cpp
     Client_ORBInitializer.cpp
     interceptors.cpp
     //../check_supported_priorities.cpp
-    client.cpp
+    client1.cpp
+  }
+}
+
+
+project(*Client2): rt_client {
+idlflags += -GA
+  Source_Files {
+    testC.cpp
+    Client_ORBInitializer.cpp
+    interceptors.cpp
+    //../check_supported_priorities.cpp
+    client2.cpp
   }
 }
 
