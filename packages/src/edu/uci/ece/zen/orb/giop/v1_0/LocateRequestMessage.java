@@ -9,7 +9,7 @@ import edu.uci.ece.zen.orb.*;
   * 
  * @author bmiller
 */
-public class LocateRequestMessage extends edu.uci.ece.zen.orb.giop.parent.LocateRequestMessage {
+public class LocateRequestMessage extends edu.uci.ece.zen.orb.giop.type.LocateRequestMessage {
     protected LocateRequestHeader_1_0 header;
 
 /**

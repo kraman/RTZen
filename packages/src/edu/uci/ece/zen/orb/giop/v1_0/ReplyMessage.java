@@ -9,7 +9,7 @@ import edu.uci.ece.zen.orb.*;
  * @author bmiller
  */
 
-public class ReplyMessage extends edu.uci.ece.zen.orb.giop.parent.ReplyMessage {
+public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
     private ReplyHeader_1_0 header;
     
     public ReplyMessage( ORB orb , ReadBuffer stream ){

@@ -4,7 +4,7 @@ import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.orb.*;
 
-public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessage {
+public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage {
     private RequestHeader_1_0 header;
     
     public RequestMessage( ClientRequest clr , int messageId ){

@@ -9,7 +9,7 @@ import edu.uci.ece.zen.utils.ReadBuffer;
  * @author bmiller
  */
 // Is similar to v1_0 reply message.
-public class ReplyMessage extends edu.uci.ece.zen.orb.giop.parent.ReplyMessage { 
+public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage { 
     // v1_1 uses the same reply header type as v1_0.
     private ReplyHeader_1_0 header;
 

@@ -10,7 +10,7 @@ import edu.uci.ece.zen.orb.*;
  * 
  * @author bmiller
 */
-public class LocateRequestMessage extends edu.uci.ece.zen.orb.giop.parent.LocateRequestMessage {
+public class LocateRequestMessage extends edu.uci.ece.zen.orb.giop.type.LocateRequestMessage {
     private LocateRequestHeader_1_2 header;
 
     public LocateRequestMessage(ORB orb, ReadBuffer stream) {

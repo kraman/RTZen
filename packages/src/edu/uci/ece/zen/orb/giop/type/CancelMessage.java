@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.parent;
+package edu.uci.ece.zen.orb.giop.type;
 
 import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.orb.giop.GIOPMessage;

@@ -9,7 +9,7 @@ import edu.uci.ece.zen.orb.*;
  *
  * @author bmiller
  */
-public class LocateReplyMessage extends edu.uci.ece.zen.orb.giop.parent.LocateReplyMessage {
+public class LocateReplyMessage extends edu.uci.ece.zen.orb.giop.type.LocateReplyMessage {
     private org.omg.GIOP.LocateReplyHeader_1_0 header; // v1.1 also uses the v1.0 header structure
 
 	public LocateReplyMessage(ORB orb, ReadBuffer stream) {

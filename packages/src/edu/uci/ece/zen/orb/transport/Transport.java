@@ -190,12 +190,12 @@ class GIOPMessageRunnable implements Runnable{
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
             //message.setScope( requestScope );
             //((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( message );
-            if( message.isRequest() ){
+            if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
                 //ThreadPoolProcessor tpProc = new ThreadPoolProcessor();
                 //POADispatchRunnable pdispatcher = new POADispatchRunnable( message , tpProc , orb );
                 //ImmortalMemory.instance().executeInArea( pdispatcher );
             }
-            if( message.isReply() ){
+            if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
                 ScopedMemory waiterRegion = orb.getWaiterRegion( message.getRequestId() );
                 WaitingStratergyNotifyRunnable wsnr = new WaitingStratergyNotifyRunnable( message , waiterRegion );
                 ExecuteInRunnable eir = new ExecuteInRunnable();

@@ -9,7 +9,7 @@ import edu.uci.ece.zen.orb.*;
  * 
  * @author bmiller
  */
-public class LocateReplyMessage extends edu.uci.ece.zen.orb.giop.parent.LocateReplyMessage {
+public class LocateReplyMessage extends edu.uci.ece.zen.orb.giop.type.LocateReplyMessage {
     private LocateReplyHeader_1_2 header;
 
 	/** Constructor
