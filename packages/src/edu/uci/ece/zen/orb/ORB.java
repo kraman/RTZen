@@ -574,7 +574,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
      * @param request_id numerical identifier of Request or LocateRequest to cancel
      */
     // LEFT FOR KRISHNA TO IMPLEMENT
-    public void cancelRequest(int request_id) {}
+    public void cancelRequest(int request_id) {
+        throw new org.omg.CORBA.NO_IMPLEMENT("ORB.cancelRequest(int) not implemented");   
+    }
 
 
 }
