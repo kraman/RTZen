@@ -48,8 +48,37 @@ public class Server extends RealtimeThread
             org.omg.CORBA.Object obj1 = rootPOA.servant_to_reference(impl1);
             org.omg.CORBA.Object obj2 = rootPOA.servant_to_reference(impl2);
             org.omg.CORBA.Object obj3 = rootPOA.servant_to_reference(impl3);
-
             
+/* this stuff was for testing read and write buffer capacities
+            final edu.uci.ece.zen.orb.CDROutputStream out = 
+                edu.uci.ece.zen.orb.CDROutputStream.create((edu.uci.ece.zen.orb.ORB)zen);
+            ScopedMemory sm1 = new LTMemory(1024*1024, 1024*1024 );  
+    
+            ScopedMemory sm2 = new LTMemory(1024*1024, 1024*1024 );
+    
+            final byte [] barr = new byte [] {1,2,3,1,2,3,1,2,3,1,2,3};
+            final edu.uci.ece.zen.utils.ReadBuffer readBuf = edu.uci.ece.zen.utils.ReadBuffer.instance();
+            readBuf.init();
+        
+            Runnable r1 = new Runnable() {
+                public void run() {
+                    for(long i = 0; i < 1000; ++i){
+                        readBuf.writeByteArray(barr, 0, barr.length);
+                        out.write_long((int)i);    
+                    }
+                     
+                }
+            };
+            
+            for(int k = 0; k < 1000; ++k){
+                sm1.enter(r1);
+                sm2.enter(r1);
+                
+            }
+
+            //System.out.println("WORKS");
+*/            
+
             //System.out.println( "=================== Servant registered, getting IOR ========================" );
             String ior1 = zen.object_to_string(obj1);
             String ior2 = zen.object_to_string(obj2);

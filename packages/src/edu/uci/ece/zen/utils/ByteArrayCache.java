@@ -5,7 +5,7 @@ import javax.realtime.ImmortalMemory;
 /**
  * This class holds a cache of byte arrays. It is responsible for the reuse of
  * byte buffers.
- * 
+ *
  * @author Krishna Raman
  */
 public class ByteArrayCache {
@@ -29,14 +29,14 @@ public class ByteArrayCache {
     /**
      * Returns an instance of the ByteArrayCache. It creates a new one from
      * ImmortalMemory if necessary.
-     * 
+     *
      * @return An instance of the ByteArrayCache.
      */
     public static ByteArrayCache instance() {
         if (_instance == null) try {
             _instance = (ByteArrayCache) ImmortalMemory.instance().newInstance(
                     ByteArrayCache.class);
-            System.out.println( "ByteArrayCache creatd" );
+            ZenProperties.logger.log(Logger.INFO, ByteArrayCache.class, "instance", "ByteArrayCache created");
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, ByteArrayCache.class, "instance", e);
             System.exit(-1);
@@ -62,7 +62,7 @@ public class ByteArrayCache {
     /**
      * Gets a byte from the ByteArrayCache. A new byte array is created from
      * immortal memory if needed
-     * 
+     *
      * @return A byte arra
      */
     public byte[] getByteArray() {
@@ -90,7 +90,7 @@ public class ByteArrayCache {
 
     /**
      * Returns a byte array to the ByteArrayCache.
-     * 
+     *
      * @param buf
      *            The byte buffer to return to the cache.
      */

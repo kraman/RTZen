@@ -1,6 +1,8 @@
 package demo.doom;
 
 import java.util.*;
+import javax.realtime.RealtimeThread;
+import java.lang.reflect.Array;
 
 class PlayerTableImpl extends PlayerTablePOA
 {
@@ -10,7 +12,8 @@ class PlayerTableImpl extends PlayerTablePOA
 	
 	public PlayerTableImpl()
 	{
-		players = new Vector(MAX_PLAYERS);
+	    // Allocated at the construction time, which means in the servant's scope
+        players = new Vector(MAX_PLAYERS);
 	}
 
 	public boolean playerExists(String name)
@@ -35,23 +38,43 @@ class PlayerTableImpl extends PlayerTablePOA
 	{
 		return (Player) players.get(index);
 	}
+    
+	public boolean addPlayer(String _name, int _xpos, int _ypos)
+	{  
+	    // Copy name to the servant's scope
+        String name = (String) MAUtils.buildInMA(
+                DoomServer.scope,
+                String.class,
+                new Class[] {(_name.getBytes()).getClass()},
+                new Object[] {_name.getBytes()});
 
-	public boolean addPlayer(String name, int xpos, int ypos)
-	{
-		if (players.size() == MAX_PLAYERS)
-			return false;
-		
-		if ( playerExists(name) )
-			return false;
-		
-		players.add( new Player(name, xpos, ypos) );
+        for (int i=0; i < RealtimeThread.getMemoryAreaStackDepth(); i++)
+            System.out.println("MAstack[" + i + "] = " + RealtimeThread.getOuterMemoryArea(i));
+        System.out.println("getInitialMemoryAreaIndex = " + RealtimeThread.getInitialMemoryAreaIndex());
+        System.out.println("PlayerTableImpl.addPlayer()");
+        System.out.println("Current MA = " + RealtimeThread.getCurrentMemoryArea());
 
-		return true;
-	}
+        if (players.size() == MAX_PLAYERS)
+            return false;
+
+        if ( playerExists(name) )
+            return false;
+        Util.pln("Build in MA (Player), name = " + name);
+        // Allocate player in servant's scope
+        Player player = (Player) MAUtils.buildInMA(
+                DoomServer.scope,
+                Player.class,
+                new Class[] {String.class, Integer.TYPE, Integer.TYPE},
+                new Object[] {name, new Integer(_xpos), new Integer(_ypos)});
+        
+        // Add player
+        players.add( player );
+        return true;
+    }
 
 	public boolean deletePlayer(String name)
 	{
-		if ( playerExists(name) )
+		if ( !playerExists(name) )
 			return false;
 
 		for (Iterator i = players.iterator(); i.hasNext(); )
@@ -76,7 +99,7 @@ class PlayerTableImpl extends PlayerTablePOA
 	}
 
 	public boolean setXYpos(String name, int xpos, int ypos)
-	{
+	{ 
 		Player player = getPlayer(name);
 		
 		if (player == null)

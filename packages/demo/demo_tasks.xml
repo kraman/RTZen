@@ -1,4 +1,4 @@
-<project>
+<project name="Pre-defined Demo Tasks">
 
     <fail
         message="You need to import init.xml before importing this file."

@@ -18,7 +18,6 @@ function printUsage() {
 	echo "    clientType  1  simulated RT Zen client"
 	echo "                2  TimeSys RTZen client"
 	echo "                3  TAO Client             "
-	echo "                30 RTZen servant remote  "
 
 	exit -1;
 
@@ -34,7 +33,7 @@ STOPFNAME=$PROGNAME.stopToken
 
 
 # startup types 
-TESTSIZES="4 32 128 512 2048 8096"
+TESTSIZES="4 32 128 512 2048 8192"
 SERVERTYPE=1
 CLIENTTYPE=1
 TESTTYPE=1
@@ -197,6 +196,11 @@ function startClient(){
 		$EXEC_CMD
 	elif [ $1 -eq 3 ]; then
 		EXEC_CMD="tao/client -l $3"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD
+	elif [ $1 -eq 9 ]; then
+		EXEC_CMD="$TJVM_START perf.jitter.Client 1 $3"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
 		$EXEC_CMD

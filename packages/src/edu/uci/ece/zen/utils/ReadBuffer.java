@@ -16,8 +16,19 @@ public class ReadBuffer {
 
     private static int LONGLONG = 8;
     private static int numFree = 0; //just to debug the number of free buffers
+    
+    private static Object [] vectorArgTypes;
+    private static java.lang.reflect.Constructor vectorConstructor;
+    private static int maxCap = 10;
+    
     static {
         try {
+            vectorConstructor = Vector.class
+                    .getConstructor(new Class [] {int.class});
+            vectorArgTypes = new Object[1];
+            maxCap = Integer.parseInt(ZenProperties
+                .getGlobalProperty( "readbuffer.size" , "10" ));
+            vectorArgTypes[0] = new Integer(maxCap);               
             bufferCache = (Queue) ImmortalMemory.instance().newInstance(
                     Queue.class);
         } catch (Exception e) {
@@ -25,16 +36,23 @@ public class ReadBuffer {
             System.exit(-1);
         }
     }
-
+    static int idgen = -1000000;
+    int id;
+    boolean inUse = false;
     public static ReadBuffer instance() {
         try {
             //Thread.dumpStack();
                 numFree--;
-            if (bufferCache.isEmpty()) return (ReadBuffer) ImmortalMemory
-                    .instance().newInstance(ReadBuffer.class);
-            else {
+            if (bufferCache.isEmpty()) {
+                ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
+                rb.id = idgen++;
+                
+                rb.inUse = true;
+                return rb;
+            }else {
                 //Thread.dumpStack();
                 ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
+                ret.inUse = true;
                 ret.init();
                 return ret;
             }
@@ -64,7 +82,7 @@ public class ReadBuffer {
     public ReadBuffer() {
         try {
             buffers = (Vector) ImmortalMemory.instance().newInstance(
-                    Vector.class);
+                    vectorConstructor, vectorArgTypes);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, getClass(), "<init>", e);
             System.exit(-1);
@@ -111,7 +129,10 @@ public class ReadBuffer {
     }
 
     public void appendFromStream(java.io.InputStream stream, int numBytes) {
+     
+        
         try {
+              
             ensureCapacity(numBytes);
             while (numBytes > 0) {
                 //System.err.println( "Still need to read " + numBytes + "
@@ -162,8 +183,21 @@ public class ReadBuffer {
     }
 
     public void free() {
+        if(!inUse){
+            ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, 
+                "free",
+                "Buffer already freed.");   
+                //System.exit(-1);
+                //still deciding what to do here  
+            return;
+        }
                 //Thread.dumpStack();
-
+                /*
+        System.out.write('f');
+        System.out.write('\n'); 
+        System.out.flush();           
+        edu.uci.ece.zen.utils.Logger.writeln(id);*/
+        
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(635);
         ByteArrayCache cache = ByteArrayCache.instance();
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(636);
@@ -190,6 +224,7 @@ public class ReadBuffer {
         if(ZenProperties.memDbg1) System.out.write('r');
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(numFree);
        // edu.uci.ece.zen.utils.Logger.writeln(bufferCache.size());
+       inUse = false;
     }
 
     public void freeWithoutBufferRelease() {
@@ -210,10 +245,18 @@ public class ReadBuffer {
     private void ensureCapacity(int size) {
         if (size <= 0) return;
         while (limit + size > capacity) {
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(711);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(711);
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(712);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(712);
             capacity += byteArray.length;
+            if(buffers.size()+1 >= maxCap){
+                ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class, 
+                    "ensureCapacity",
+                    "Reached maximum buffer capacity. Try adjusting " + 
+                    "readbuffer.size property. Current value is: " + maxCap);   
+                    //System.exit(-1);
+                    //still deciding what to do here
+            }
             buffers.addElement(byteArray);
             ba++;
        }

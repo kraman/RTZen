@@ -1,27 +1,35 @@
 <project name="RTZen Doom Demo" default="compile">
 
-	<!--property name="package.dir" value="demo/doom"/-->
+	<property name="package.dir" value="demo/doom"/>
 	<property name="idl.src" value="doom.idl"/>
 
-	<!--import file="../../../init.xml"/-->
-	<!--import file="../demo_tasks.xml"/-->
+	<import file="../../../init.xml"/>
+	<import file="../demo_tasks.xml"/>
 	
-	
-	
+	<!--
 	<property file="zen-build-bootstrap.properties"/>
 	<property file="zen-build.properties"/>
 	<import file="${zen.srcdir}/property_processor.xml"/>
 	    
-	<property name="package.dir" value="${zen.srcdir}/demo/object"/>
+	<property name="package.dir" value="${zen.srcdir}/demo/doom"/>
         <property name="idl.src" value="object.idl"/>
-
+-->
 	<target name="compile">
+    <!--
 		<copy todir="${package.dir}/images">
 			<fileset dir="${package.dir}/images"/>
-		</copy>
-    	<idlc file="${package.dir}/${idl.src}"/>
-		<demo.javac/>
+		</copy>-->
+    	<idlc file="${zen.srcdir}/${package.dir}/${idl.src}"/>
+		<demo.compile/>
 	</target>
+    
+	<target name="compile_only">
+    <!--
+		<copy todir="${package.dir}/images">
+			<fileset dir="${package.dir}/images"/>
+		</copy>-->
+		<demo.compile/>
+	</target>    
 
     <target name="server">
         <demo.java classname="demo.doom.DoomServer"/>
@@ -32,7 +40,7 @@
     </target> 
 
     <target name="clean">
-		<demo.delete/>
+		<demo.clean/>
     </target>
 
 </project>

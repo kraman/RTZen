@@ -1,50 +1,32 @@
-<project name="Zen ORB Perf Demo" default="all" basedir="../../..">
-    <property file="zen-build-bootstrap.properties"/>
-    <property file="zen-build.properties"/>
-    <import file="${zen.srcdir}/property_processor.xml"/>
-    
-    <property name="package.dir" value="${zen.srcdir}/perf/jitter"/>
+<project name="Zen ORB Perf Demo" default="compile" basedir="../../..">
+
+    <property name="package.dir" value="perf/jitter"/>
     <property name="idl.src" value="jitter.idl"/>
 
-    <target name="all" depends="openorb , compile, jRate"/>
-	<property name="CORBA.dir" value="${package.dir}/tao"/>
+	<import file="../../../init.xml"/>
+	<import file="../../demo/demo_tasks.xml"/>
 
-    <target name="openorb">
-       <antcall target="idl">
-           <param name="idl.flags" value="-all -d"/>
-           <param name="gendir" value="${zen.gendir}"/>
-           <param name="classpath" value="${openorb.class.path}"/>
-           <param name="idl.dir" value="${package.dir}"/>
-       </antcall>
+    <property name="CORBA.dir" value="${zen.srcdir}/${package.dir}/tao"/>
+    <target name="compile">
+		<idlc file="${zen.srcdir}/${package.dir}/${idl.src}"/>
+		<demo.compile/>
+        <jar
+            jarfile="${zen.libdir}/perf_world.jar"
+            basedir="${zen.classdir}"
+            includes="${package.dir}/**"/>
+        <antcall target="compile.jrate"/>
     </target>
 
-    <target name="idl">
-      <java classpath="${classpath}"
-            dir="${zen.gendir}"
-            classname="${idl2java.compiler}"
-            fork="yes">
-            <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
-      </java>
-   </target>
-
-   <target name="compile">
-      <javac srcdir="${zen.srcdir}:${zen.gendir}"
-             destdir="${zen.classdir}"
-             classpath="${classpath}"
-             debug="${zen.debug}"
-             optimize="${zen.optimization}"
-             includes="perf/jitter/**.java"
-             target="1.1"
-             bootclasspath="${zen.rtbootclasspath}"
-             includeJavaRuntime="yes"
-             >
-      </javac>
-
-      <jar 
-        jarfile="${zen.libdir}/perf_world.jar" 
-        basedir="${zen.classdir}" 
-        includes="perf/jitter/**"
-        />
+    <target name="compile.jrate" if="compiler_jRate">
+        <demo.compile.jrate main="perf.jitter.Client" out="client">
+            <fileset dir="${zen.srcdir}/${package.dir}">
+                <include name="Client.java"/>
+                <exclude name="Server.java"/>
+            </fileset>
+            <fileset dir="${zen.gendir}/${package.dir}">
+                <include name="*.java"/>
+            </fileset>
+         </demo.compile.jrate>
     </target>
 
     <target name="jRate" if="compiler_jRate">
