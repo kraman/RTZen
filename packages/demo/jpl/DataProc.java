@@ -41,6 +41,10 @@ class DataProc{
                             System.exit(-1);
                 }
             }
+            System.out.println("v1's size is "+v1.size());
+            System.out.println("v2's size is "+v2.size());
+
+            
             for(int i = 0; i < v2.size();i++){
                 if(i%2==1){
                     double d1 = ((Double)v2.elementAt(i)).doubleValue();
@@ -51,8 +55,8 @@ class DataProc{
 
             for(int i = 0; i < v1.size();i++){
                 if(i%2==1){
-                    double d1 = ((Double)v2.elementAt(i)).doubleValue();
-                    double d2 = ((Double)v2.elementAt(i-1)).doubleValue();
+                    double d1 = ((Double)v1.elementAt(i)).doubleValue();
+                    double d2 = ((Double)v1.elementAt(i-1)).doubleValue();
                     v1Proc.addElement(new Double(d1-d2));
                     if(v1Proc.size()==v2Proc.size()){
                         break;
