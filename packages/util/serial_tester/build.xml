@@ -11,11 +11,15 @@
     </target>
 
     <target name="read">
-        <java classname="SimpleRead" classpath="." fork="true"/>
+        <java classname="SimpleRead" classpath="${java.class.path}:." fork="true">
+            <arg line="${port}"/>
+        </java>
     </target>
 
     <target name="write">
-        <java classname="SimpleWrite" classpath="." fork="true"/>
+        <java classname="SimpleWrite" classpath="${java.class.path}:." fork="true">
+            <arg line="${port}"/>
+        </java>
     </target>
 
 </project>
