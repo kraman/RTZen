@@ -230,7 +230,7 @@ public class CDRTestClient extends RealtimeThread
 
 		unit.test.cdr.DataTypes.str[] strseqretVal = stub.echoStructSeq( strseqinVal, strseqoutVal);
 
-		if(strseqretVal.length ! = 2){
+		if(strseqretVal.length != 2){
 			System.out.println("return value length wrong in echoStructSeq");
 			System.out.println("The expected lenght is 2 and the actual lenght is "+strseqretVal.length);
 		}
@@ -498,5 +498,5 @@ public class CDRTestClient extends RealtimeThread
     } */
 
 
-}
+
 

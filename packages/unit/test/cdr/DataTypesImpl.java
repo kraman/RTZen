@@ -104,7 +104,7 @@ public class DataTypesImpl extends DataTypesPOA
 
 	public unit.test.cdr.DataTypesPackage.str[] echoStructSeq(unit.test.cdr.DataTypesPackage.str[] strseqinVal, unit.test.cdr.DataTypesPackage.strSeqHolder strseqoutVal){
 
-		if(strseqinVal.length ! = 2){
+		if(strseqinVal.length != 2){
 			System.out.println("in value length wrong in echoStructSeq");
 			System.out.println("The expected lenght is 2 and the actual lenght is "+strseqinVal.length);
 		}
