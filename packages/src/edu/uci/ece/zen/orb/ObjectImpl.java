@@ -16,7 +16,7 @@ public class ObjectImpl extends org.omg.CORBA.portable.ObjectImpl {
         this.ior = ior;
         ids[0] = ior.type_id;
         if (ZenProperties.dbg){
-            System.out.println("The type id is "+ids[0]);
+            System.out.println("It's in ObjectImpl.init() and the type id is "+ids[0]);
         }
     }
 
