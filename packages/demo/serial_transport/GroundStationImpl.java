@@ -1,6 +1,6 @@
 public class GroundStationImpl extends GroundStationPOA
 {
-    public void sendWayPoint(short id, WayPoint[] noFlyZone)
+    public void sendWayPt(short id, WayPoint[] noFlyZone)
     {
         System.out.println("GroundStation: no-fly-zone data received, id=" + id);
 

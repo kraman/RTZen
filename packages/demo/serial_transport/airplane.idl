@@ -9,5 +9,5 @@ typedef WayPoint NoFlyZone[4];
 
 interface GroundStation
 {
-    oneway void sendWayPoint(in short id, in NoFlyZone noFlyZone);
+    oneway void sendWayPt(in short id, in NoFlyZone noFlyZone);
 };

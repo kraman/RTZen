@@ -26,6 +26,7 @@ import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.FString;
 
 public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
+    public static java.util.Hashtable object_key_table = new java.util.Hashtable();
     private static Queue objRefDelegateCache;
     static {
         try {
@@ -58,7 +59,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             for(int i = 0; i < self.priorityLanes.length; ++i)
                 if(self.priorityLanes[i].objectKey != null)
                     FString.free(self.priorityLanes[i].objectKey);
-       
+
             //System.out.println("RELEASEEEEEEEEEEEEEEEEEEEEEEEEE");
         }
         self.released = true;
@@ -165,78 +166,80 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                         ORB.freeScopedRegion(profScope);
 */
                         /////////////////////////
-                
+
                         //edu.uci.ece.zen.utils.Logger.printMemStats(400);
                         //edu.uci.ece.zen.utils.Logger.printMemStatsImm(500);
                         in.read_octet();
                         in.read_octet();
-                
+
                         FString host = in.getBuffer().readFString(true);
                         short port = in.read_ushort();
-                
+
                         FString object_key = in.getBuffer().readFString(false);
+                        object_key_table.put(new Integer(object_key.hashCode()), object_key);
+                        System.out.println("ObjRefDelegate: processTaggedProfile: adding object key to table, hashCode=" + object_key.hashCode() + ", decode=" + object_key.decode());
                         //edu.uci.ece.zen.utils.Logger.printMemStats(402);
                         //edu.uci.ece.zen.utils.Logger.printMemStatsImm(502);
-                
+
                         ///////////////////
                         //org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read(in);
-                        
+
                         long connectionKey = ConnectionRegistry.ip2long(host, port);
                         ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
-                
+
                         if (transportScope == null) {
                             transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector
                                     .instance().connect(host, port, orb, orbImpl);
                             orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
                         } else {
                             FString.free(host);
-                        }        
+                        }
 
                         addLaneData(RealtimeThread.MIN_PRIORITY,
                                 99/* RealtimeThread.MAX_PRIORITY */,
                                 transportScope, object_key);
                     }
                         break;
-                    
+
                     case 1:
                     case 2: {
-                    
+
                         in.read_octet();
                         in.read_octet();
-                    
+
                         FString host = in.getBuffer().readFString(true);
                         short port = in.read_ushort();
-                
+
                         FString object_key = in.getBuffer().readFString(false);
                         //edu.uci.ece.zen.utils.Logger.printMemStats(402);
                         //edu.uci.ece.zen.utils.Logger.printMemStatsImm(502);
-                
+
                         ///////////////////
                         //org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read(in);
-                        
+
                         long connectionKey = ConnectionRegistry.ip2long(host, port);
                         ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
-                
+
                         if (transportScope == null) {
                             transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector
                                     .instance().connect(host, port, orb, orbImpl);
                             orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
                         } else {
                             FString.free(host);
-                        }    
-                    
+                        }
+
                         int numComp = in.read_ulong();
 
                         if (ZenProperties.dbg) ZenProperties.logger.log("number of components: " + numComp);
 
                         for (int i = 0; i < numComp; ++i) {
                             //TaggedComponent tc = profilebody.components[i];
-                       
+
                             int ctag = in.read_ulong();
                             if (ZenProperties.dbg) ZenProperties.logger.log("found tag: " + ctag);
-                            
+
                             if (ctag == org.omg.IOP.TAG_POLICIES.value) {
-                                
+
                                 int numPol = in.read_ulong();
 
                                 //CDRInputStream in1 = CDRInputStream
@@ -249,7 +252,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                 if (ZenProperties.dbg) ZenProperties.logger.log("number of policies: " + numPol);
 
                                 for (int j = 0; j < numPol; ++j) {
-                                    
+
                                     int polType = in.read_ulong();
 
                                     if (ZenProperties.dbg) ZenProperties.logger.log("found policy value: " + polType);
@@ -304,8 +307,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                         // lanes
                         addLaneData(RealtimeThread.MIN_PRIORITY,
                                 99,
-//                                 RealtimeThread.MAX_PRIORITY 
-                                
+//                                 RealtimeThread.MAX_PRIORITY
+
                                 transportScope, object_key);
                     }
                         break;

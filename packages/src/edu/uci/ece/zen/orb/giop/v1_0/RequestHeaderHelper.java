@@ -92,11 +92,16 @@ public class RequestHeaderHelper {
         //System.out.println("RequestHeader read -- response_expected: " +
         // new_one.response_expected);
 
-        new_one.object_key = FString.instance(new_one.object_key);
-        int object_key_length = istream.read_ulong();
+//        new_one.object_key = FString.instance(new_one.object_key);
+//        int object_key_length = istream.read_ulong();
+        int hashCode = istream.read_ulong();
+        System.out.println("RequestHeaderHelper: read: read object key hashCode=" + hashCode);
+        new_one.object_key = (FString) edu.uci.ece.zen.orb.ObjRefDelegate.object_key_table.get(new Integer(hashCode));
+        System.out.println("RequestHeaderHelper: read: searched object key table and got " + new_one.object_key.decode());
+
         //new_one.object_key.append(object_key_length);
         //System.out.println("RequestHeader read -- ok len: " + object_key_length);
-        new_one.object_key.read(istream, object_key_length);
+//        new_one.object_key.read(istream, object_key_length);
 
         new_one.operation = FString.instance(new_one.operation);
         int op_length = istream.read_ulong() - 1;
@@ -140,8 +145,10 @@ public class RequestHeaderHelper {
         ostream.write_boolean(value.response_expected);
 
         //System.out.println("RequestHeader write -- ok len: " + value.object_key.length());
-        ostream.write_ulong(value.object_key.length());
-        value.object_key.write(ostream);
+//        ostream.write_ulong(value.object_key.length());
+//        value.object_key.write(ostream);
+        System.out.println("RequestHeaderHelper: write: object key is " + value.object_key.decode() + ", writing hashCode (" + value.object_key.hashCode() + ") instead");
+        ostream.write_ulong(value.object_key.hashCode());
         //ostream.write_octet_array(value.object_key1,
         // 0,value.object_key1.length);
 

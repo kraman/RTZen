@@ -339,18 +339,18 @@ public class FString {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer(currentSize);
-        
+
         for(int i = 0; i < currentSize; ++i)
             sb.append((char)data[i]);
-        
+
         return sb.toString();
-        
+
         /*
         NOTE: The code below would be simpler but it somehow leaks into immortal
         on Timesys RI even when allocated in scoped memory
-        
+
         String s = new String(getTrimData());
-        
+
         return s;
 */
     }
@@ -437,7 +437,22 @@ public class FString {
         return false;
     }
 
-    /**
+    public int hashCode()
+    {
+        int hash = 0;
+        for (int i = 0; i < currentSize; i++)
+        {
+            hash <<= 1;
+            if (hash < 0)
+            {
+                hash |= 1;
+            }
+            hash ^= data[i];
+        }
+        return hash;
+    }
+
+   /**
      * Convert an array of bytes into a string, using the inverse algorithm as
      * in stringToCDRByteArray
      */
