@@ -4,6 +4,9 @@ import edu.uci.ece.zen.utils.*;
 
 public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
     private java.net.Socket sock;
+    private java.io.InputStream istream;
+    private java.io.OutputStream ostream;
+
 
     public Transport( edu.uci.ece.zen.orb.ORB orb , java.net.Socket sock ){
         super( orb );
@@ -15,6 +18,9 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
         try{
             System.out.println( "Connecting to " + host + ":"+port );
             sock = new java.net.Socket( java.net.InetAddress.getByName( host ) , port );
+            System.out.println( "sock = " + sock );
+            istream = sock.getInputStream();
+            ostream = sock.getOutputStream();
         }catch( Exception ex ){
             ZenProperties.logger.log(
                 Logger.WARN,
@@ -24,27 +30,9 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
         }
     }
     public java.io.InputStream getInputStream(){
-        try{
-            return sock.getInputStream();
-        }catch( java.io.IOException ioex ){
-            ZenProperties.logger.log(
-                Logger.WARN,
-                "edu.uci.ece.zen.orb.transport.iiop.Transport",
-                "getInputStream",
-                "Error getting stream. " + ioex.toString() );
-            return null;
-        }
+        return istream;
     }
     public java.io.OutputStream getOutputStream(){
-        try{
-            return sock.getOutputStream();
-        }catch( java.io.IOException ioex ){
-            ZenProperties.logger.log(
-                Logger.WARN,
-                "edu.uci.ece.zen.orb.transport.iiop.Transport",
-                "getInputStream",
-                "Error getting stream. " + ioex.toString() );
-            return null;
-        }
+        return ostream;
     }
 }

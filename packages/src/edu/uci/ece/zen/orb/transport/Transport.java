@@ -212,27 +212,41 @@ class GIOPMessageRunnable implements Runnable{
      */
     public void run(){
         try{
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 1" );
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 2" );
             if( ZenProperties.dbg )
                 System.err.println( "Got a new message....." );
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 3" );
             message.setScope( requestScope );
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 4" );
             requestScope.setPortal( message );
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 5" );
             if( message.isRequest() ){
                 //ThreadPoolProcessor tpProc = new ThreadPoolProcessor();
                 //POADispatchRunnable pdispatcher = new POADispatchRunnable( message , tpProc , orb );
                 //ImmortalMemory.instance().executeInArea( pdispatcher );
             }
             if( message.isReply() ){
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 6" );
                 if( ZenProperties.dbg )
                     System.err.println( "Message received w/ id: " + message.getRequestId() );
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 7" );
                 ScopedMemory waiterRegion = orb.getWaiterRegion( message.getRequestId() );
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 8" );
                 if( ZenProperties.dbg )
                     System.err.println( "Waiter region determined to be: " + waiterRegion );
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 9" );
                 WaitingStratergyNotifyRunnable wsnr = new WaitingStratergyNotifyRunnable( message , waiterRegion );
-                ExecuteInRunnable eir = ExecuteInRunnable.instance();
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 10" );
+                ExecuteInRunnable eir = new ExecuteInRunnable();
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 11" );
                 eir.init( wsnr , waiterRegion );
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 12" );
                 try{
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 13" );
                     orb.orbImplRegion.executeInArea( eir );
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 14" );
                 }catch( Exception e ){
                     ZenProperties.logger.log(
                         Logger.SEVERE,
@@ -241,8 +255,8 @@ class GIOPMessageRunnable implements Runnable{
                         "Could not process reply message due to exception: " + e.toString()
                         );
                 }
-                eir.free();
             }
+            System.out.println( Thread.currentThread() + " GIOPMessageRunnable.run() 14" );
         }catch( java.io.IOException ioex ){
             //TODO: do something here    
         }

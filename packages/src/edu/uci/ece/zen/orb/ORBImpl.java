@@ -8,6 +8,7 @@ public class ORBImpl{
     ZenProperties properties;
     edu.uci.ece.zen.orb.ORB orbFacade;
     ORBImplRunnable orbImplRunnable;
+    public Hashtable cachedObjects;
     
     public ORBImpl( String args[] , Properties props, edu.uci.ece.zen.orb.ORB orbFacade ){
         properties = new ZenProperties();
@@ -17,6 +18,15 @@ public class ORBImpl{
         orbImplRunnable = new ORBImplRunnable();
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( orbImplRunnable );
         nhrt.start();
+
+        cachedObjects = new Hashtable();
+        cachedObjects.init(5);
+        try{
+            cachedObjects.put( "ExecuteInRunnable" , new Queue() );
+            cachedObjects.put( "ConnectorRunnable" , new Queue() );
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
     }
 
     protected void handleInvocation(){
@@ -32,7 +42,7 @@ public class ORBImpl{
         System.out.println( Thread.currentThread() + "OrbImpl.string_to_object 1" );
         ObjRefDelegate delegate = ObjRefDelegate.instance();
         System.out.println( Thread.currentThread() + "OrbImpl.string_to_object 2" );
-        delegate.init( ior , (edu.uci.ece.zen.orb.ObjectImpl) objImpl , orbFacade );
+        delegate.init( ior , (edu.uci.ece.zen.orb.ObjectImpl) objImpl , orbFacade , this );
         System.out.println( Thread.currentThread() + "OrbImpl.string_to_object 3" );
         objImpl._set_delegate( delegate );
         System.out.println( Thread.currentThread() + "OrbImpl.string_to_object 4" );
@@ -50,6 +60,10 @@ class ORBImplRunnable implements Runnable{
         return this.active;
     }
 
+    public void setActive( boolean val ){
+        this.active = val;
+    }
+
     public void run(){
         System.out.println( Thread.currentThread() + "OrbImplRunnable.run 1" );
         ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
@@ -57,7 +71,11 @@ class ORBImplRunnable implements Runnable{
         synchronized( orbImpl ){
             try{
         System.out.println( Thread.currentThread() + "OrbImplRunnable.run 3" );
-                orbImpl.wait();
+                while( active ){
+        System.out.println( Thread.currentThread() + "OrbImplRunnable.run 3-1" );
+                    orbImpl.wait(1000);
+        System.out.println( Thread.currentThread() + "OrbImplRunnable.run 3-2" );
+                }
         System.out.println( Thread.currentThread() + "OrbImplRunnable.run 4" );
             }catch( InterruptedException ie ){
                 ZenProperties.logger.log(

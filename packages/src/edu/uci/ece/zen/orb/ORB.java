@@ -118,6 +118,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private ConnectionRegistry connectionRegistry;
     private AcceptorRegistry acceptorRegistry;
     private WaiterRegistry waiterRegistry;
+    private Queue executeInRunnableCache;
     private String orbId;
     private RTORB rtorb;
 
@@ -130,7 +131,24 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         acceptorRegistry = new AcceptorRegistry();
         waiterRegistry = new WaiterRegistry();
         waiterRegistry.init( 100 );
+        executeInRunnableCache = new Queue();
         rtorb = new RTORBImpl();
+    }
+
+    private ExecuteInRunnable getEIR(){
+        ExecuteInRunnable ret = (ExecuteInRunnable) executeInRunnableCache.dequeue();
+        if( ret == null ){
+            try{
+                ret = (ExecuteInRunnable) ImmortalMemory.instance().newInstance( ExecuteInRunnable.class );
+            }catch( Exception e ){
+                e.printStackTrace();
+            }
+        }
+        return ret;
+    }
+
+    private void freeEIR( ExecuteInRunnable r ){
+        executeInRunnableCache.enqueue( r );
     }
 
     private void internalInit( ScopedMemory mem , String orbId , String[] args , Properties props ){
@@ -139,7 +157,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         orbInitRunnable.init( args , props , this );
         orbImplRegion = mem;
 
-        ExecuteInRunnable r = ExecuteInRunnable.instance();
+        ExecuteInRunnable r = getEIR();
+
         r.init( orbInitRunnable , mem);
         try{
             parentMemoryArea.executeInArea( r );
@@ -152,7 +171,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
             System.exit(-1);
         }
-        r.free();
+        freeEIR( r );
     }
 
     private void isNotDestroyed(){
@@ -171,7 +190,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     public void set_parameters(String args[], java.util.Properties props) {
         orbInitRunnable.init( args , props , this );
 
-        ExecuteInRunnable r = ExecuteInRunnable.instance();
+        ExecuteInRunnable r = getEIR();
         r.init( orbInitRunnable , this.orbImplRegion );
         try{
             parentMemoryArea.executeInArea( r );
@@ -184,14 +203,14 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
             System.exit(-1);
         }
-        r.free();
+        freeEIR( r );
     }
 
     //For Multithreaded ORB's
     public void run(){
         isActive();
 
-        ExecuteInRunnable r = ExecuteInRunnable.instance();
+        ExecuteInRunnable r = getEIR();
         r.init( orbImplRunnable , this.orbImplRegion );
         try{
             parentMemoryArea.executeInArea( r );
@@ -204,7 +223,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
             System.exit(-1);
         }
-        r.free();
+        freeEIR( r );
     }
 
     public void shutdown(boolean wait_for_completion) {
@@ -300,7 +319,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         strToObjRunnable.init( ior , objImpl );
         System.out.println ( "orb.string_to_object 4" );
 
-        ExecuteInRunnable r = ExecuteInRunnable.instance();
+        ExecuteInRunnable r = getEIR();
         System.out.println ( "orb.string_to_object 5" );
         r.init( strToObjRunnable , this.orbImplRegion );
         System.out.println ( "orb.string_to_object 6" );
@@ -316,7 +335,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 );
         }
         System.out.println ( "orb.string_to_object 8" );
-        r.free();
+        freeEIR( r );
         System.out.println ( "orb.string_to_object 9" );
 
         return objImpl;

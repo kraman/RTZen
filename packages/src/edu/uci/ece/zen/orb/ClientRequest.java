@@ -62,8 +62,8 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         System.out.println( Thread.currentThread() + "ORBImpl memory: " + orb.orbImplRegion );
         System.out.println( Thread.currentThread() + "message memory: " + messageScope );
 
-        ExecuteInRunnable erOrbMem = ExecuteInRunnable.instance();
-        ExecuteInRunnable erMsgMem = ExecuteInRunnable.instance();
+        ExecuteInRunnable erOrbMem = new ExecuteInRunnable();
+        ExecuteInRunnable erMsgMem = new ExecuteInRunnable();
 
         erOrbMem.init( erMsgMem , orb.orbImplRegion );
         erMsgMem.init( mcr, messageScope );
@@ -81,8 +81,6 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
                 "Could not invoke remote object due to exception: " + e.toString()
                 );
         }
-        erOrbMem.free();
-        erMsgMem.free();
 
         orb.freeScopedRegion( messageScope );
         if( mcr.success )
@@ -173,8 +171,8 @@ class MessageComposerRunnable implements Runnable{
         if( ZenProperties.dbg )
             System.err.println( "Waiter registered" );
 
-        ExecuteInRunnable eir = ExecuteInRunnable.instance();
-        SendMessageRunnable smr = SendMessageRunnable.instance();
+        ExecuteInRunnable eir = new ExecuteInRunnable();
+        SendMessageRunnable smr = new SendMessageRunnable();
         smr.init( clr.out.getBuffer() );
         eir.init( smr , clr.transportScope );
         success = true;
@@ -191,9 +189,7 @@ class MessageComposerRunnable implements Runnable{
             waitingStrategy = null;
             success = false;
         }finally{
-            eir.free();
             clr.out.free();
-            smr.free();
             if( ZenProperties.dbg )
                 System.err.println( "Message sent" );
         }

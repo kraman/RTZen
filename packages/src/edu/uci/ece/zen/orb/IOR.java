@@ -88,7 +88,7 @@ public class IOR
      * @param ior This object's IOR.
      * @return The CORBA object.
      */
-    public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID, byte [] objKey, int objKeyLength)
+    public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID, byte [] objKey, int objKeyLength, ORBImpl orbImpl )
     {
 
         org.omg.IOP.IOR ior = new org.omg.IOP.IOR();
@@ -99,7 +99,7 @@ public class IOR
         ObjRefDelegate delegate = ObjRefDelegate.instance();
         objectImpl._set_delegate(delegate);
 
-        delegate.init(ior, objectImpl, orb);
+        delegate.init( ior, objectImpl, orb , orbImpl );
 
         return objectImpl;
     }

@@ -63,16 +63,8 @@ all:
 
 compile:
      [echo] Compiling OMG and Zen sources with the AspectJ compiler
-     [iajc] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/giop/v1_1/RequestMessage.java:18 The constructor RequestMessage() is undefined
-     [iajc] super();
-     [iajc] ^^^^^^^
-     [iajc] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/giop/v1_2/RequestMessage.java:15 The constructor RequestMessage() is undefined
-     [iajc] super();
-     [iajc] ^^^^^^^
-     [iajc] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/giop/v1_2/RequestMessage.java:29 The field reserved is not visible
-     [iajc] this.reserved,
-     [iajc] ^^^^^^^^^^^^^
-
-     [iajc] 3 errors
 
 
+
+lib:
+    [javac] Compiling 1217 source files to /home/kraman/RTZen/lib

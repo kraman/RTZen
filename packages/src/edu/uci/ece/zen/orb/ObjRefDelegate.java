@@ -45,7 +45,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     private LaneInfo priorityLanes[];
     private int numLanes;
 
-    protected void init( org.omg.IOP.IOR ior , ObjectImpl obj , ORB orb ){
+    protected void init( org.omg.IOP.IOR ior , ObjectImpl obj , ORB orb , ORBImpl orbImpl ){
         System.out.println( Thread.currentThread() + "ObjRefDelegate.init 1" );
         referenceCount=1;
         System.out.println( Thread.currentThread() + "ObjRefDelegate.init 2" );
@@ -71,7 +71,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         //process all the tagged profiles
         for( int i=0;i<ior.profiles.length;i++ ){   //go through each tagged profile
         System.out.println( Thread.currentThread() + "ObjRefDelegate.init 11" );
-            processTaggedProfile( ior.profiles[i] , obj );
+            processTaggedProfile( ior.profiles[i] , obj , orbImpl );
         System.out.println( Thread.currentThread() + "ObjRefDelegate.init 12" );
         }
         System.out.println( Thread.currentThread() + "ObjRefDelegate.init 13" );
@@ -95,7 +95,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         return null;
     }
 
-    private void processTaggedProfile( TaggedProfile profile , ObjectImpl obj ){
+    private void processTaggedProfile( TaggedProfile profile , ObjectImpl obj , ORBImpl orbImpl ){
         System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 01" );
         int tag = profile.tag;
         System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 02" );
@@ -131,7 +131,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 14" );
                                 if( transportScope == null ){
         System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 15" );
-                                    transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector.instance().connect( profilebody.host , profilebody.port , orb );
+                                    transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector.instance().connect( profilebody.host , profilebody.port , orb , orbImpl );
         System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 16" );
                                     orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
         System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 17" );
@@ -154,7 +154,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 23" );
                                     edu.uci.ece.zen.orb.transport.Connector connector = edu.uci.ece.zen.orb.transport.iiop.Connector.instance();
         System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 23-1" );
-                                    transportScope = connector.connect( profilebody.host , profilebody.port , orb );
+                                    transportScope = connector.connect( profilebody.host , profilebody.port , orb , orbImpl );
         System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 24" );
                                     orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
         System.out.println( Thread.currentThread() + "ObjRefDelegate.processTaggedProfile 25" );

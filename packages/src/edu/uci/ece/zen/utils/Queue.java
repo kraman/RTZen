@@ -3,16 +3,16 @@ package edu.uci.ece.zen.utils;
 import javax.realtime.*;
 
 public class Queue{
-    private static QueueNode freeListHead;
-    private static QueueNode freeListTail;
+    private QueueNode freeListHead;
+    private QueueNode freeListTail;
     private final static Integer syncObject = new Integer(0);
 
-    private static QueueNode getNode(){
+    private QueueNode getNode(){
         QueueNode ret = null;
         synchronized( syncObject ){
             if( freeListHead == null )
                 try{
-                    ret = (QueueNode) ImmortalMemory.instance().newInstance( QueueNode.class );
+                    ret = (QueueNode) MemoryArea.getMemoryArea( this ).newInstance( QueueNode.class );
                 }catch( Exception e ){
                     e.printStackTrace();
                     System.exit(-1);
@@ -26,7 +26,7 @@ public class Queue{
         return ret;
     }
 
-    private static void freeNode( QueueNode node ){
+    private void freeNode( QueueNode node ){
         node.value = null;
         node.next = null;
         synchronized( syncObject ){
@@ -44,7 +44,7 @@ public class Queue{
     private final Integer sObject = new Integer(0);
 
     public void enqueue( Object data ){
-        QueueNode node = Queue.getNode();
+        QueueNode node = getNode();
         node.value=data;
         synchronized( sObject ){
             if( allocListHead == null ){
@@ -82,7 +82,7 @@ public class Queue{
             }
         }
         Object obj = ret.value;
-        Queue.freeNode( ret );
+        freeNode( ret );
         return obj;
     }
 }

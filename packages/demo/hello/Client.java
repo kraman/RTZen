@@ -17,8 +17,8 @@ public class Client implements Runnable
 {
     public static void main(String[] args)
     {
-        RealtimeThread rtThread = new RealtimeThread( (Runnable)new Client() );
-        rtThread.start();
+        RealtimeThread rt = new RealtimeThread(new Client());
+        rt.start();
     }
 
     public void run()
@@ -53,6 +53,7 @@ public class Client implements Runnable
             System.out.println( Thread.currentThread() + " Client.run 13" );
             server.getMessage();
             System.out.println( Thread.currentThread() + " Client.run 14" );
+            System.exit(0);
 		}
 		catch (Exception e)
 		{
