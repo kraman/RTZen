@@ -83,7 +83,7 @@ public class RequestHeaderHelper {
     public static RequestHeader read(org.omg.CORBA.portable.InputStream istream, RequestHeader new_one) {
         ZenProperties.logger.log( "Read RequestHeader_1_0" );
 
-        new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper
+        new_one.service_context = edu.uci.ece.zen.orb.protocol.IOP.ServiceContextListHelper
                 .read(istream, FString.instance(new_one.service_context));
 
         new_one.request_id = istream.read_ulong();

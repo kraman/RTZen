@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop;
+package edu.uci.ece.zen.orb.protocol;
 
 import org.omg.CORBA.portable.InvokeHandler;
 import org.omg.PortableServer.Servant;

@@ -20,7 +20,7 @@ public class ReplyHeaderHelper {
     public static ReplyHeader read(org.omg.CORBA.portable.InputStream istream) {
         ReplyHeader new_one = ReplyHeader.instance();
 
-        new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper
+        new_one.service_context = edu.uci.ece.zen.orb.protocol.IOP.ServiceContextListHelper
                 .read(istream, FString.instance(new_one.service_context));
 
         new_one.request_id = istream.read_ulong();

@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop;
+package edu.uci.ece.zen.orb.protocol;
 
 import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
