@@ -43,6 +43,9 @@ the RTZen perf/jitter direcory for generating the graphs.
 To run a local measurement test for JacORB on SUN jdk:
  ./run_tests both 7 7
 
+To run a local measurement test for RTZen on jRate:
+ ./run_tests both 8 8
+
 The remote test execution is currently setup to run on node0.rtzen.pces.emulab.net and node1.rtzen.pces.emulab.net. It is required that ssh is installed. 
 Furthermore you need to be able to login from node1 to node0 via ssh WITHOUT
 entering a password (see "man ssh" for details). Plus you have to make
@@ -68,7 +71,7 @@ to generate the graphs(You may need to change the script to generate the result 
 The following scripts are available
 
 gen_tput.m  generates graphs with for latency/throughput local/remote 
-            comparing each implementation
+            comparing each implementation. This file is only valid to be used with octave, not matlab.
 get_summary.m  gives the raw statistical data for all tests. output into text 
 	           file
 
