@@ -95,7 +95,7 @@
             failonerror = "true"
             fork = "true"
             debug="${zen.debug}"
-            bootclasspath="${zen.classpath};${java.home}/lib/rt.jar"
+            bootclasspath="${zen.classpath};${java.home}/lib/rt.jar;${zen.rtbootclasspath}"
             includeJavaRuntime="yes"
             memoryMaximumSize="256m"
             >
@@ -103,6 +103,8 @@
             <include name="ant-tasks/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java" if="compiler_jRate"/>
             <include name="src/javax/**" if="compiler_jdk"/>
             <!--<classpath>
+            
+            bootclasspath="${zen.classpath};${java.home}/lib/rt.jar"
                 <pathelement location="${zen.classpath}"/>
             </classpath>-->
         </javac>
