@@ -74,11 +74,7 @@ public class Client extends RealtimeThread
             final HandleObject server3 = HandleObjectHelper.unchecked_narrow(object3);
             br.close();
 
-            
-             
             System.out.println("======Begin the warmUp loop to test on passing org.omg.CORBA.Object as the parameter======");
-
-
 
             // Create a scope for running requests in, so that we don't waste the scope we are in.
             final int maxIter = 100;
@@ -87,6 +83,7 @@ public class Client extends RealtimeThread
                 public void run() {
                     org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(object2); //objoutVal will be changed to object1 after the echoObject call
                     int run = runNum < maxIter ? runNum : maxIter;
+
                     for (int i = 0; i<run; i++){
 
                         //System.out.println("Begin to test on passing org.omg.CORBA.Object as the parameter...");

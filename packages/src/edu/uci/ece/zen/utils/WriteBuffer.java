@@ -17,9 +17,19 @@ public class WriteBuffer {
     private static int LONG = 4;
 
     private static int LONGLONG = 8;
+    
+    private static Object [] vectorArgTypes;
+    private static java.lang.reflect.Constructor vectorConstructor;
+    private static int maxCap = 10;
 
     static {
         try {
+            vectorConstructor = Vector.class
+                    .getConstructor(new Class [] {int.class});
+            vectorArgTypes = new Object[1];
+            maxCap = Integer.parseInt(ZenProperties
+                .getGlobalProperty( "writebuffer.size" , "10" ));
+            vectorArgTypes[0] = new Integer(maxCap);               
             bufferCache = (Queue) ImmortalMemory.instance().newInstance(
                     Queue.class);
         } catch (Exception e) {
@@ -73,7 +83,7 @@ public class WriteBuffer {
     public WriteBuffer() {
         try {
             buffers = (Vector) ImmortalMemory.instance().newInstance(
-                    Vector.class);
+                    vectorConstructor, vectorArgTypes);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, getClass(), "<init>", e);
             System.exit(-1);
@@ -113,9 +123,6 @@ public class WriteBuffer {
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(ba);
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(buffers.size());
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(bs);
- 
-
-
 
         buffers.removeAllElements();
         init();
@@ -139,10 +146,17 @@ public class WriteBuffer {
 //         edu.uci.ece.zen.utils.Logger.write(capacity);
 
            //Thread.dumpStack();
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(511);
+           edu.uci.ece.zen.utils.Logger.printMemStatsImm(511);
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(512);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(512);
             capacity += byteArray.length;
+            if(buffers.size()+1 >= maxCap){
+                ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, 
+                    "ensureCapacity",
+                    "Reached maximum buffer capacity. Try adjusting " + 
+                    "writebuffer.size property. Current value is: " + maxCap); 
+                    //still deciding what to do here
+            }
             buffers.addElement(byteArray);
             ba++;
         }

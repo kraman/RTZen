@@ -16,8 +16,19 @@ public class ReadBuffer {
 
     private static int LONGLONG = 8;
     private static int numFree = 0; //just to debug the number of free buffers
+    
+    private static Object [] vectorArgTypes;
+    private static java.lang.reflect.Constructor vectorConstructor;
+    private static int maxCap = 10;
+    
     static {
         try {
+            vectorConstructor = Vector.class
+                    .getConstructor(new Class [] {int.class});
+            vectorArgTypes = new Object[1];
+            maxCap = Integer.parseInt(ZenProperties
+                .getGlobalProperty( "readbuffer.size" , "10" ));
+            vectorArgTypes[0] = new Integer(maxCap);               
             bufferCache = (Queue) ImmortalMemory.instance().newInstance(
                     Queue.class);
         } catch (Exception e) {
@@ -64,7 +75,7 @@ public class ReadBuffer {
     public ReadBuffer() {
         try {
             buffers = (Vector) ImmortalMemory.instance().newInstance(
-                    Vector.class);
+                    vectorConstructor, vectorArgTypes);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, getClass(), "<init>", e);
             System.exit(-1);
@@ -210,10 +221,18 @@ public class ReadBuffer {
     private void ensureCapacity(int size) {
         if (size <= 0) return;
         while (limit + size > capacity) {
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(711);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(711);
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(712);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(712);
             capacity += byteArray.length;
+            if(buffers.size()+1 >= maxCap){
+                ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class, 
+                    "ensureCapacity",
+                    "Reached maximum buffer capacity. Try adjusting " + 
+                    "readbuffer.size property. Current value is: " + maxCap);   
+                    //System.exit(-1);
+                    //still deciding what to do here
+            }
             buffers.addElement(byteArray);
             ba++;
        }
