@@ -152,7 +152,8 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
      *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */
-    public CDRInputStream invoke(){
+    public CDRInputStream invoke(){        
+        //out.printWriteBuffer(); This will printout every byte in the OutputStream
         if(ZenProperties.devDbg) System.out.println( "ClientRequest invoke 1" );
         out.updateLength();
         MessageComposerRunnable mcr = MessageComposerRunnable.instance();

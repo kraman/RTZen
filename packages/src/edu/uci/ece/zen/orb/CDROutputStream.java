@@ -54,6 +54,9 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     public WriteBuffer getBuffer(){
         return buffer;
     }
+    public void printWriteBuffer(){
+	    buffer.printBuffer();
+    }
 
     /** Writes an octet to the output stream.
      * @param value octet to write

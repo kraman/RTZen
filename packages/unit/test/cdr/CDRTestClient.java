@@ -42,16 +42,17 @@ public class CDRTestClient extends RealtimeThread
 
 			org.omg.CORBA.Object obj = orb.string_to_object( ior );
 			stub = DataTypesHelper.unchecked_narrow( obj );
-                       
+
 			testShort();
-			//testDouble();
+			testDouble();
+
 			testBoolean();
 			testString();
 			testOctet();
 			testOctetSeq();
 			testStructSeq();
 			testonewayShort();
-			//testObject();
+			//testObject();*/
 			testLongLong();
 			//testShort();
 
@@ -327,7 +328,6 @@ public class CDRTestClient extends RealtimeThread
 
 	public void testonewayShort(){
 
-		System.out.println("This is in testonewayShort()");
 
 		short shinVal = 100;
 

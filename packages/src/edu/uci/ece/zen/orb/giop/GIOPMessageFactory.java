@@ -15,7 +15,8 @@ import edu.uci.ece.zen.orb.giop.type.*;
  *
  * @author Krishna Raman
  * @author Bruce Miller
- * @version $Revision: 1.7 $ $Date: 2004/02/25 08:15:19 $
+ * @author Yue Zhang
+ * @version $Revision: 1.8 $ $Date: 2004/08/01 09:25:19 $
  */
 public final class GIOPMessageFactory
 {
@@ -35,6 +36,7 @@ public final class GIOPMessageFactory
             // Read the GIOP message (including any request/reply/etc headers) into the variable "buffer"
             buffer.setEndian( mainMsgHdr.isLittleEndian );
             buffer.appendFromStream( in , mainMsgHdr.messageSize );
+            if(ZenProperties.devDbg) System.out.println("In GIOPMessageFactory, the message size is "+mainMsgHdr.messageSize);
 
             if(ZenProperties.devDbg) System.err.println("Inside GIOPMessageFactory and mainMsgHdr: " + mainMsgHdr.toString() + " and giopMajorVersion: " + mainMsgHdr.giopMajorVersion + " and minorversion: " + mainMsgHdr.giopMinorVersion + " and messageType: " + mainMsgHdr.messageType);
             switch( mainMsgHdr.giopMajorVersion ){                   //GIOP major version (byte 4)

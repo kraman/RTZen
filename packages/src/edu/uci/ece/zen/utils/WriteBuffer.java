@@ -41,6 +41,8 @@ public class WriteBuffer{
     long position;
     long limit;
     long capacity;
+    
+   
 
     public WriteBuffer(){
         try{
@@ -49,6 +51,19 @@ public class WriteBuffer{
             e.printStackTrace();
             System.exit(-1);
         }
+    }
+    
+    public void printBuffer(){
+             
+	    System.out.println("Here is in the printBuffer of WriteBuffer...");
+	    int i,j;
+	    for(i=0; i<buffers.size();i++){
+                    byte[] buffer = (byte[]) buffers.elementAt(i);
+		    for(j=0; j<buffer.length; j++){
+			    System.out.println(buffer[j]);
+	            }
+	    }
+           
     }
 
     public void init(){
@@ -213,13 +228,9 @@ public class WriteBuffer{
 
     public void writeShort( short v ){
         pad(WriteBuffer.SHORT);
-         System.out.println("In writeShort(), After pad, the position, limit and capacity are "+position+" "+limit+" "+capacity);
 
         byte b1 = (byte) ((v >>> 8) & 0xFF); 
         byte b2 = (byte) (v & 0xFF);
-        System.out.println("In writeShort,b1, b2");
-         System.out.println(b1);
-        System.out.println(b2);
 
         if( isLittleEndian ){
             writeByte( b2 );
@@ -251,14 +262,9 @@ public class WriteBuffer{
     }
     
     public void writeLongLong( long v ){
-        System.out.println("This is in writeLongLong");
-        System.out.println("The input LongLong value is "+v);
       //  System.out.println("If translated to double, it's "+Double.longBitsToDouble(v));
-        System.out.println("Before pad, the position, limit and capacity are "+position+" "+limit+" "+capacity);
 
         pad(WriteBuffer.LONGLONG);
-      System.out.println("After pad, the position, limit and capacity are "+position+" "+limit+" "+capacity);
-       System.out.println("Here begin the print of highest write byptes from lowest to highest");
         byte b1 = (byte) ((v >>> 56) & 0xFF);
         System.out.println(b1);
         byte b2 = (byte) ((v >>> 48) & 0xFF);
@@ -268,14 +274,6 @@ public class WriteBuffer{
         byte b6 = (byte) ((v >>> 16) & 0xFF);
 	byte b7 = (byte) ((v >>> 8) & 0xFF);
 	byte b8 = (byte) (v & 0xFF);
-	System.out.println(b1);
-	System.out.println(b2);
-	System.out.println(b3);
-	System.out.println(b4);
-	System.out.println(b5);
-	System.out.println(b6);
-	System.out.println(b7);
-	System.out.println(b8);
 
 	if( isLittleEndian ){
 		writeByte( b8 );

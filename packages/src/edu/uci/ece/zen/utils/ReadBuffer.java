@@ -228,14 +228,10 @@ public class ReadBuffer{
 
     public short readShort(){
         pad(ReadBuffer.SHORT);
- System.out.println("In readShort, After pad, the position is "+position);
 
         checkReadPositionLimit(ReadBuffer.SHORT);
         byte b1 = readByte();
 	byte b2 = readByte();
-	System.out.println("In readShort,b1, b2");
-	System.out.println(b1);
-	System.out.println(b2);
 
 
         short ret=0;
@@ -285,9 +281,7 @@ public class ReadBuffer{
     }
 
     public long readLongLong(){
-	    System.out.println("It's in readLongLong, before pad, the postion is "+position);
 	    pad(ReadBuffer.LONGLONG);
-	    System.out.println("It's in readLongLong, after pad, the postion is "+position);
 	    checkReadPositionLimit(ReadBuffer.LONGLONG);
 	    byte b1 = readByte();
 	    byte b2 = readByte();
@@ -297,19 +291,10 @@ public class ReadBuffer{
 	byte b6 = readByte();
 	byte b7 = readByte();
 	byte b8 = readByte();
-        System.out.println("Here begin to print out the bytes read from InputStream...");
-        System.out.println(b1);
- System.out.println(b2);
- System.out.println(b3);
- System.out.println(b4);
- System.out.println(b5);
- System.out.println(b6);
- System.out.println(b7);
- System.out.println(b8);
 
 	long ret=0;
 	if( isLittleEndian ){
-		//    ret |= ((short)(b8 & 0xFF)) << 56;
+		//    ret |= ((short)(b8 & 0xFF)) << 56;  
 		//    ret |= ((short)(b7 & 0xFF)) << 48;
 		//    ret |= ((short)(b6 & 0xFF)) << 40;
 		//    ret |= ((short)(b5 & 0xFF)) << 32;
@@ -317,6 +302,7 @@ public class ReadBuffer{
 		//    ret |= ((short)(b3 & 0xFF)) << 16;
 		//    ret |= ((short)(b2 & 0xFF)) << 8;
 		//    ret |= ((short)(b1 & 0xFF)) << 0;
+                //Change back to the way in Zen 
 		ret += ((long)(b8 & 0xFF)) << 56;
 		ret += ((long)(b7 & 0xFF)) << 48;
 		ret += ((long)(b6 & 0xFF)) << 40;
