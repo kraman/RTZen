@@ -42,7 +42,7 @@ public abstract class Transport implements Runnable {
         this.orbImpl = orbImpl;
         waitObj = new Integer(0);
         objectTable = new Object[3];
-        objectTable[2] = new byte[12];
+        objectTable[2] = new byte[8];
         if (ZenProperties.dbg) ZenProperties.logger.log("Transport being created "
                 + RealtimeThread.getCurrentMemoryArea());
     }

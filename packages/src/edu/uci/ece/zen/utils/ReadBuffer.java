@@ -16,11 +16,11 @@ public class ReadBuffer {
 
     private static int LONGLONG = 8;
     private static int numFree = 0; //just to debug the number of free buffers
-    
+
     private static Object [] vectorArgTypes;
     private static java.lang.reflect.Constructor vectorConstructor;
     private static int maxCap = 10;
-    
+
     static {
         try {
             vectorConstructor = Vector.class
@@ -28,7 +28,7 @@ public class ReadBuffer {
             vectorArgTypes = new Object[1];
             maxCap = Integer.parseInt(ZenProperties
                 .getGlobalProperty( "readbuffer.size" , "10" ));
-            vectorArgTypes[0] = new Integer(maxCap);               
+            vectorArgTypes[0] = new Integer(maxCap);
             bufferCache = (Queue) ImmortalMemory.instance().newInstance(
                     Queue.class);
         } catch (Exception e) {
@@ -46,7 +46,7 @@ public class ReadBuffer {
             if (bufferCache.isEmpty()) {
                 ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
                 rb.id = idgen++;
-                
+
                 rb.inUse = true;
                 return rb;
             }else {
@@ -129,10 +129,10 @@ public class ReadBuffer {
     }
 
     public void appendFromStream(java.io.InputStream stream, int numBytes) {
-     
-        
+
+
         try {
-              
+
             ensureCapacity(numBytes);
             while (numBytes > 0) {
                 //System.err.println( "Still need to read " + numBytes + "
@@ -184,20 +184,20 @@ public class ReadBuffer {
 
     public void free() {
         if(!inUse){
-            ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, 
+            ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
                 "free",
-                "Buffer already freed.");   
+                "Buffer already freed.");
                 //System.exit(-1);
-                //still deciding what to do here  
+                //still deciding what to do here
             return;
         }
                 //Thread.dumpStack();
                 /*
         System.out.write('f');
-        System.out.write('\n'); 
-        System.out.flush();           
+        System.out.write('\n');
+        System.out.flush();
         edu.uci.ece.zen.utils.Logger.writeln(id);*/
-        
+
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(635);
         ByteArrayCache cache = ByteArrayCache.instance();
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(636);
@@ -250,10 +250,10 @@ public class ReadBuffer {
             edu.uci.ece.zen.utils.Logger.printMemStatsImm(712);
             capacity += byteArray.length;
             if(buffers.size()+1 >= maxCap){
-                ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class, 
+                ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class,
                     "ensureCapacity",
-                    "Reached maximum buffer capacity. Try adjusting " + 
-                    "readbuffer.size property. Current value is: " + maxCap);   
+                    "Reached maximum buffer capacity. Try adjusting " +
+                    "readbuffer.size property. Current value is: " + maxCap);
                     //System.exit(-1);
                     //still deciding what to do here
             }
@@ -280,7 +280,7 @@ public class ReadBuffer {
     }
 
     private void pad(int boundry) {
-        int extraBytesUsed = (int) ((position + 12) % boundry); // The CDR
+        int extraBytesUsed = (int) ((position + 8) % boundry); // The CDR
         // alignment
         // should count
         // from the

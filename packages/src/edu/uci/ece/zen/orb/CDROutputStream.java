@@ -66,7 +66,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 */
     /**
      * Writes an octet to the output stream.
-     * 
+     *
      * @param value
      *            octet to write
      */
@@ -76,7 +76,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes an octet array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of octets to write.
      * @param offset
@@ -90,7 +90,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a boolean to the output stream.
-     * 
+     *
      * @param value
      *            boolean to write
      */
@@ -100,7 +100,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a boolean array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of boolean to write.
      * @param offset
@@ -116,7 +116,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a character to the output stream.
-     * 
+     *
      * @param c
      *            Character to write
      */
@@ -126,7 +126,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a char array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of char to write.
      * @param offset
@@ -142,7 +142,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a string to the output stream.
-     * 
+     *
      * @param s
      *            srting to write
      */
@@ -158,7 +158,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Creates a CDRInputSTream from the data written to this CDROutputStream.
-     * 
+     *
      * @return A concrete CDRInputStream
      */
     public org.omg.CORBA.portable.InputStream create_input_stream() {
@@ -167,7 +167,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a short to the output stream.
-     * 
+     *
      * @param value
      *            short to write
      */
@@ -177,7 +177,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a short array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of short to write.
      * @param offset
@@ -193,7 +193,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a long to the output stream.
-     * 
+     *
      * @param value
      *            long to write
      */
@@ -203,7 +203,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a long array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of long to write.
      * @param offset
@@ -219,7 +219,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a wide character to the output stream.
-     * 
+     *
      * @param c
      *            wide character to write
      */
@@ -231,7 +231,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a wide character array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of wide character to write.
      * @param offset
@@ -256,7 +256,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a wide string to the output stream.
-     * 
+     *
      * @param s
      *            wide string to write
      */
@@ -275,7 +275,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a float to the output stream.
-     * 
+     *
      * @param value
      *            float to write
      */
@@ -285,7 +285,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a float array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of float to write.
      * @param offset
@@ -303,7 +303,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a double to the output stream.
-     * 
+     *
      * @param value
      *            double to write
      */
@@ -313,7 +313,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a double array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of double to write.
      * @param offset
@@ -331,7 +331,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a long long to the output stream.
-     * 
+     *
      * @param value
      *            long long to write
      */
@@ -341,7 +341,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a long long array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of long long to write.
      * @param offset
@@ -357,7 +357,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes an unsigned long to the output stream.
-     * 
+     *
      * @param value
      *            unsigned long to write
      */
@@ -367,7 +367,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes an unsigned long array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of unsigned long long to write.
      * @param offset
@@ -381,7 +381,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes an unsigned long long to the output stream.
-     * 
+     *
      * @param value
      *            unsigned long long to write
      */
@@ -391,7 +391,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes an unsigned long long array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of unsigned long long to write.
      * @param offset
@@ -405,7 +405,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes an unsigned short to the output stream.
-     * 
+     *
      * @param value
      *            unsigned short to write
      */
@@ -415,7 +415,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes an unsigned short array to the CDR stream.
-     * 
+     *
      * @param value
      *            Array of unsigned short to write.
      * @param offset
@@ -429,7 +429,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes an object to the output stream.
-     * 
+     *
      * @param value
      *            object to write
      */
@@ -444,7 +444,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Marshalls another CDROutputStream to this stream.
-     * 
+     *
      * @param cdr
      *            CDROutputSTream
      */
@@ -465,7 +465,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a Principle object to stream. (Not implemented)
-     * 
+     *
      * @param pr
      *            Principle to write.
      * @deprecated
@@ -478,14 +478,14 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     }
 
     public void updateLength() {
-        buffer.writeLongAtLocationMemento((int) buffer.getPosition() - 12);
+        buffer.writeLongAtLocationMemento((int) buffer.getPosition() - 8);
     }
 
     /**
      * Writes an any object from the the CDROutputStream. This processes
      * consists of writing a TypeCode representing an Any, then the Any's stored
      * value.
-     * 
+     *
      * @return Any object just read from CDRInputStream.
      */
     public final void write_any(org.omg.CORBA.Any any) {
@@ -509,7 +509,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     /**
      * Finish marshaling the CDROutputStream <code>cdr</code> into this
      * stream.
-     * 
+     *
      * @param cdr
      *            The CDROutputStream to be marshaled into this stream.
      */
@@ -522,7 +522,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
 
     /**
      * Writes a TypeCode to this CDROutputStream.
-     * 
+     *
      * @param value
      *            TypeCode to write to this CDROutputStream.
      */
@@ -679,7 +679,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     /**
      * Return the index of the member_label that the discriminator selects in a
      * union's typecode.
-     * 
+     *
      * @param tc
      *            TypeCode whose member labels are going to be searched for
      *            equality with the value in sthe string discriminatorValue.
@@ -752,7 +752,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
      * given by the TypeCode <code>tc</code>; an InputStream holds data but
      * does not necessarily store the type of the data inside it, hence the need
      * for the <code>tc</code> parameter.
-     * 
+     *
      * @param tc
      *            TypeCode to interpret object on inputstream as
      * @param in
@@ -821,7 +821,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     /**
      * Returns a <bold>copy <bold>of the contents of the buffer. Similar to
      * <code>CDROutputStream.getBuffer()</code>.
-     * 
+     *
      * @return Copy of the contents of the buffer, as a byte array.
      */
     /*

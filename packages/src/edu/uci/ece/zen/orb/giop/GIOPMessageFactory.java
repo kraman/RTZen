@@ -20,16 +20,16 @@ import javax.realtime.*;
 /**
  * This class is a factory for creating GIOP messages for marshalling or
  * demarshalling messages.
- * 
+ *
  * @author Krishna Raman
  * @author Bruce Miller
  * @author Yue Zhang
  * @version $Revision: 1.8 $ $Date: 2004/08/01 09:25:19 $
  */
 public final class GIOPMessageFactory {
-    private static final byte magic[] = {
-            0x47, 0x49, 0x4f, 0x50
-    }; // GIOP
+//    private static final byte magic[] = {
+//            0x47, 0x49, 0x4f, 0x50
+//    }; // GIOP
 
     public static GIOPMessage parseStream(ORB orb, Transport trans)
             throws java.io.IOException {
@@ -182,7 +182,7 @@ public final class GIOPMessageFactory {
     /**
      * Collects all fragments following the initial one in a request or a reply
      * in GIOP v1_1.
-     * 
+     *
      * @param trans
      *            Transport (e.g. iiop) where the inputstream should be found.
      * @param headerInfo
@@ -216,7 +216,7 @@ public final class GIOPMessageFactory {
     /**
      * Collects all fragments following the initial one in a request or a reply
      * in GIOP v1_2.
-     * 
+     *
      * @param trans
      *            Transport (e.g. iiop) where the inputstream should be found.
      * @param headerInfo
@@ -256,7 +256,7 @@ public final class GIOPMessageFactory {
 
     /**
      * Read the GIOP Message header from the Transport's stream.
-     * 
+     *
      * @param trans
      *            Transport stream
      * @param headerInfo
@@ -269,8 +269,8 @@ public final class GIOPMessageFactory {
         //byte[] header = new byte[12];
         byte[] header = trans.getGIOPHeader();
         int read = 0;
-        while (read < 12) {
-            int tmp = in.read(header, 0, 12);
+        while (read < 8) {
+            int tmp = in.read(header, 0, 8);
             if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
                 ZenProperties.logger.log(Logger.FATAL, GIOPMessageFactory.class, "parseStreamForHeader(InputStream, GIOPHeaderInfo, Transport)", "RTZen doesnt support closing connection yet :-P ... shutting down");
@@ -283,23 +283,24 @@ public final class GIOPMessageFactory {
         //System.err.println( "----GIOP Message Header ----" );
         //System.err.write( header , 0 , 12 );
         //System.err.println( "\n---- ----" );
-
+/*
         if (header[0] != magic[0] || header[1] != magic[1]
                 || header[2] != magic[2] || header[3] != magic[3]) { throw new RuntimeException(
                 ""); //THROW GIOP Error here
         }
-        headerInfo.giopMajorVersion = header[4];
-        headerInfo.giopMinorVersion = header[5];
-        headerInfo.isLittleEndian = (header[6] & 0x01) == 1; //Endian byte
+        */
+        headerInfo.giopMajorVersion = header[0];
+        headerInfo.giopMinorVersion = header[1];
+        headerInfo.isLittleEndian = (header[2] & 0x01) == 1; //Endian byte
         // (byte 6)
 
         headerInfo.nextMessageIsFragment = false;
         if (headerInfo.giopMajorVersion == 1
                 && headerInfo.giopMinorVersion == 1) {
-            headerInfo.nextMessageIsFragment = ((header[6] & 0x02) == 1);
+            headerInfo.nextMessageIsFragment = ((header[2] & 0x02) == 1);
         }
 
-        headerInfo.messageType = header[7]; //Message type (byte 7)
+        headerInfo.messageType = header[3]; //Message type (byte 7)
 
         headerInfo.messageSize = 0;
         if (headerInfo.isLittleEndian) {
@@ -307,25 +308,25 @@ public final class GIOPMessageFactory {
             //System.out.println( "" + ((int)header[11]) + " " +
             // ((int)header[10]) + " " + ((int)header[9]) + " " +
             // ((int)header[8]) );
-            headerInfo.messageSize |= header[11] & 0xFF;
+            headerInfo.messageSize |= header[7] & 0xFF;
             headerInfo.messageSize <<= 8;
-            headerInfo.messageSize |= header[10] & 0xFF;
+            headerInfo.messageSize |= header[6] & 0xFF;
             headerInfo.messageSize <<= 8;
-            headerInfo.messageSize |= header[9] & 0xFF;
+            headerInfo.messageSize |= header[5] & 0xFF;
             headerInfo.messageSize <<= 8;
-            headerInfo.messageSize |= header[8] & 0xFF;
+            headerInfo.messageSize |= header[4] & 0xFF;
         } else {
             //System.out.println( "Big endian msg" );
             //System.out.println( "" + ((int)header[8]) + " " +
             // ((int)header[9]) + " " + ((int)header[10]) + " " +
             // ((int)header[11]) );
-            headerInfo.messageSize |= header[8] & 0xFF;
+            headerInfo.messageSize |= header[4] & 0xFF;
             headerInfo.messageSize <<= 8;
-            headerInfo.messageSize |= header[9] & 0xFF;
+            headerInfo.messageSize |= header[5] & 0xFF;
             headerInfo.messageSize <<= 8;
-            headerInfo.messageSize |= header[10] & 0xFF;
+            headerInfo.messageSize |= header[6] & 0xFF;
             headerInfo.messageSize <<= 8;
-            headerInfo.messageSize |= header[11] & 0xFF;
+            headerInfo.messageSize |= header[7] & 0xFF;
         }
         //System.out.println( "Message size " + headerInfo.messageSize );
     }
@@ -340,7 +341,7 @@ public final class GIOPMessageFactory {
     public static void constructMessage(ClientRequest req, int messageId,
             CDROutputStream out) {
         //edu.uci.ece.zen.utils.Logger.printMemStats(304);
-        out.write_octet_array(magic, 0, 4);
+//        out.write_octet_array(magic, 0, 4);
         //giop version
         out.write_octet((byte) 1);
         out.write_octet((byte) 0);
@@ -365,7 +366,7 @@ public final class GIOPMessageFactory {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
 
-        out.write_octet_array(magic, 0, 4);
+//        out.write_octet_array(magic, 0, 4);
         //giop version
         out.write_octet((byte) 1);
         out.write_octet((byte) 0);
@@ -407,7 +408,7 @@ public final class GIOPMessageFactory {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
 
-        out.write_octet_array(magic, 0, 4);
+//        out.write_octet_array(magic, 0, 4);
         //giop version
         out.write_octet((byte) 1);
         out.write_octet((byte) 0);
@@ -448,7 +449,7 @@ public final class GIOPMessageFactory {
      * Read a CORBA long (Java int) from the input stream, using
      * headerInfo.isLittleEndian to decide if it should be treated as little
      * endian or big endian.
-     * 
+     *
      * @param in
      *            InputStream to read four bytes from
      * @param headerInfo
