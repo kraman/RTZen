@@ -106,14 +106,14 @@ public class WriteBuffer {
     }
 */
     public void init() {
-	System.out.println( "WriteBuffer.init()" );
+	//System.out.println( "WriteBuffer.init()" );
         position = limit = capacity = 0;
         buffers.removeAllElements();
         enableAllignment = true;
     }
 
     public void free() {
-	System.out.println( "WriteBuffer.free()" );
+	//System.out.println( "WriteBuffer.free()" );
         if(!inUse){
 	Thread.dumpStack();
             ZenProperties.logger.log(Logger.WARN, WriteBuffer.class, "free", "Buffer already freed.");

@@ -184,7 +184,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
             mcr.release();
             throw new org.omg.CORBA.TRANSIENT();
         }
-        return null;
+        return reply;
     }
 
     public void registerWaiter() {

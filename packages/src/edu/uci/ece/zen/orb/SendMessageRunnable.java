@@ -40,9 +40,9 @@ public class SendMessageRunnable implements Runnable {
         edu.uci.ece.zen.orb.transport.Transport trans = (edu.uci.ece.zen.orb.transport.Transport) ((ScopedMemory) RealtimeThread
                 .getCurrentMemoryArea()).getPortal();
         if (trans != null && msg != null){
-	    System.out.println( "sending message" );
+	    //System.out.println( "sending message" );
             trans.send(msg);
-	    System.out.println( "msg sent" );
+	    //System.out.println( "msg sent" );
         }else
             ZenProperties.logger.log(Logger.SEVERE, "---------------------------------------Transport null or write buffer null");
     }
