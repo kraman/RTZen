@@ -128,15 +128,15 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private AcceptorRegistry acceptorRegistry;
     private WaiterRegistry waiterRegistry;
     private Queue executeInRunnableCache;
-    private RTORB rtorb;
-    private PolicyManager policyManager;
+    public RTORB rtorb;
+    public PolicyManager policyManager;
     public MemoryArea [] threadpoolList;
 
     private byte orbId[];
     private int orbIdLen;
 
     public ORB(){
-        orbImplRunnable = new ORBImplRunnable();
+        orbImplRunnable = new ORBImplRunnable(orbImplRegion);
         strToObjRunnable = new ORBStrToObjRunnable();
         connectionRegistry = new ConnectionRegistry();//KLUDGE:ORB.maxSupportedConnections );
         connectionRegistry.init( 100 );
@@ -145,7 +145,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         waiterRegistry.init( 100 );
         executeInRunnableCache = new Queue();
         rtorb = new RTORBImpl(this);
-        policyManager = new PolicyManagerImpl();
+        policyManager = new PolicyManagerImpl(this);
         threadpoolList = new MemoryArea[10];//KLUDGE: need to set up property for max TPs
         orbId = new byte[25];
         orbIdLen=0;
@@ -202,9 +202,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     private void isActive(){
         isNotDestroyed();
-        if( !orbImplRunnable.isActive() ){
-            throw new org.omg.CORBA.BAD_INV_ORDER("ORB has been shutdown", 4, CompletionStatus.COMPLETED_NO);
-        }
+        //if( !orbImplRunnable.isActive() ){
+        //    throw new org.omg.CORBA.BAD_INV_ORDER("ORB has been shutdown", 4, CompletionStatus.COMPLETED_NO);
+        //}
     }
 
     public void set_parameters(String args[], java.util.Properties props) {
@@ -313,6 +313,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             return rtorb;
         else if(object_name.equals("ORBPolicyManager"))
             return policyManager;
+
         //else if(object_name.equals("RTCurrent"))
             //return policyManager;
 

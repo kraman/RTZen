@@ -18,6 +18,15 @@ public class TCPProtocolPropertiesImpl
     boolean dont_route;
     boolean no_delay;
 
+
+    public TCPProtocolPropertiesImpl(){
+        send_buffer_size = 0;;
+        recv_buffer_size = 0;
+        keep_alive = false;
+        dont_route = false;
+        no_delay = false;
+    }
+
     /**
      * Read accessor for send_buffer_size attribute
      * @return the attribute value

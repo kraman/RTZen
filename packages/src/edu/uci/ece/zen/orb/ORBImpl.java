@@ -10,7 +10,8 @@ public class ORBImpl{
     ORBImplRunnable orbImplRunnable;
     public Hashtable cachedObjects;
     public ServerRequestHandler serverRequestHandler;
-    
+
+
     public ORBImpl( String args[] , Properties props, edu.uci.ece.zen.orb.ORB orbFacade ){
         System.out.println( "======================In orb impl region===================================" );
         properties = new ZenProperties();
@@ -19,7 +20,7 @@ public class ORBImpl{
         this.orbFacade = orbFacade;
         System.out.println( "======================Setting portal variable==============================" );
         orbFacade.orbImplRegion.setPortal( this );
-        orbImplRunnable = new ORBImplRunnable();
+        orbImplRunnable = new ORBImplRunnable(orbFacade.orbImplRegion);
         System.out.println( "======================Creating nhrt sleeper thread=========================" );
         System.out.println( orbFacade.orbImplRegion );
         System.out.println( MemoryArea.getMemoryArea( orbImplRunnable ) );
@@ -27,8 +28,8 @@ public class ORBImpl{
         System.out.println( MemoryArea.getMemoryArea( new Integer(42)) );
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,null,null,orbFacade.orbImplRegion,null,orbImplRunnable );
         System.out.println( "======================starting nhrt in orb impl region=====================" );
-        nhrt.start();
 
+        nhrt.start();
         cachedObjects = new Hashtable();
         cachedObjects.init(5);
         try{
@@ -65,9 +66,11 @@ public class ORBImpl{
 
 class ORBImplRunnable implements Runnable{
     private boolean active;
+    private ScopedMemory sm;
 
-    public ORBImplRunnable(){
+    public ORBImplRunnable(ScopedMemory sm){
         active = true;
+        this.sm = sm;
     }
 
     public boolean isActive(){
@@ -79,7 +82,10 @@ class ORBImplRunnable implements Runnable{
     }
 
     public void run(){
-        ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
+        //System.out.println("getting portal for: " + RealtimeThread.getCurrentMemoryArea().getClass().getName());
+        //System.out.println("inner thread: " + Thread.currentThread().toString());
+        //ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
+        ORBImpl orbImpl = (ORBImpl) sm.getPortal();
         synchronized( orbImpl ){
             try{
                 while( active ){

@@ -20,6 +20,8 @@ public class RTORBImpl
     public RTORBImpl(ORB orb){
         this.orb = orb;
         tpr = new ThreadPoolRunnable();
+
+
     }
 
     /**
@@ -53,12 +55,14 @@ public class RTORBImpl
     }
 
     private int setUpThreadPool(){
-        ExecuteInRunnable r = orb.getEIR();
+        ExecuteInRunnable r1 = new ExecuteInRunnable();
+        ExecuteInRunnable r2 = new ExecuteInRunnable();
         ScopedMemory sm = orb.getScopedRegion();
 
-        r.init(tpr, sm);
+        r1.init( r2 , orb.orbImplRegion );
+        r2.init( tpr, sm );
         try{
-            orb.orbImplRegion.executeInArea( r );
+            orb.parentMemoryArea.executeInArea( r1 );
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.FATAL,
@@ -68,7 +72,6 @@ public class RTORBImpl
                 );
             System.exit(-1);
         }
-        orb.freeEIR( r );
 
         //KLUDGE: need to set up property for max TPs
         int tmpID = tpID;
@@ -115,22 +118,25 @@ public class RTORBImpl
     public org.omg.RTCORBA.ServerProtocolPolicy create_server_protocol_policy(org.omg.RTCORBA.Protocol[] protocols){
         spp.protocols(protocols);
         return spp;
+        //throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     /**
      * Operation create_client_protocol_policy
      */
     public org.omg.RTCORBA.ClientProtocolPolicy create_client_protocol_policy(org.omg.RTCORBA.Protocol[] protocols){
-        //return new ClientProtocolPolicyImpl(protocols);
+        ClientProtocolPolicyImpl cpp = new ClientProtocolPolicyImpl();
         cpp.protocols(protocols);
         return cpp;
+        //throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     /**
      * Operation create_private_connection_policy
      */
     public org.omg.RTCORBA.PrivateConnectionPolicy create_private_connection_policy(){
-        return pcp;
+        //return pcp;
+        throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     /**
@@ -139,23 +145,35 @@ public class RTORBImpl
     public org.omg.RTCORBA.TCPProtocolProperties create_tcp_protocol_properties(int send_buffer_size, int recv_buffer_size,
                                                                     boolean keep_alive, boolean dont_route, boolean no_delay){
         //throw new org.omg.CORBA.NO_IMPLEMENT();
+
+        TCPProtocolProperties tcpPP = new TCPProtocolPropertiesImpl();
         tcpPP.send_buffer_size(send_buffer_size);
         tcpPP.recv_buffer_size(recv_buffer_size);
         tcpPP.keep_alive(keep_alive);
         tcpPP.dont_route(dont_route);
         tcpPP.no_delay(no_delay);
         return tcpPP;
-
     }
 
-    //these are static for now, should eventually be per-ORB
 
-    public static ServerProtocolPolicyImpl spp = new ServerProtocolPolicyImpl();
-    static ClientProtocolPolicyImpl cpp = new ClientProtocolPolicyImpl();
-    static PrivateConnectionPolicy pcp = new PrivateConnectionPolicyImpl();
-    public static TCPProtocolProperties tcpPP = new TCPProtocolPropertiesImpl();
+
+    public ServerProtocolPolicyImpl spp;
+    //ClientProtocolPolicyImpl cpp;
+    //PrivateConnectionPolicy pcp;
+    //public TCPProtocolProperties tcpPP;
 
     int tpID = 0;
+
+    class RTORBInitRunnable implements Runnable{
+
+        public void run(){
+
+            //spp = new ServerProtocolPolicyImpl();
+            //cpp = new ClientProtocolPolicyImpl();
+            //pcp = new PrivateConnectionPolicyImpl();
+        }
+    }
+
 
 
     class ThreadPoolRunnable implements Runnable{

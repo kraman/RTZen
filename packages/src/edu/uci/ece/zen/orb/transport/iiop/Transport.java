@@ -2,6 +2,7 @@ package edu.uci.ece.zen.orb.transport.iiop;
 
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.orb.*;
+import edu.uci.ece.zen.orb.policies.*;
 
 public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
     private java.net.Socket sock;
@@ -40,17 +41,23 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
 
     //hook method to weave in TCPProtocolProperties
     private void setSockProps(java.net.Socket sock, ORB orb){
-        org.omg.RTCORBA.TCPProtocolProperties tcpPP = ((RTORBImpl)(orb.getRTORB())).tcpPP;
+        //org.omg.RTCORBA.TCPProtocolProperties tcpPP = ((RTORBImpl)(orb.getRTORB())).tcpPP;
+
+        PolicyManagerImpl pm = (PolicyManagerImpl)(orb.getPolicyManager());
 
         try{
-            sock.setReceiveBufferSize(tcpPP.recv_buffer_size());
-            sock.setSendBufferSize(tcpPP.send_buffer_size());
-            sock.setTcpNoDelay(tcpPP.no_delay());
-            sock.setKeepAlive(tcpPP.keep_alive());
-            //don't know how to set dont_route
+            if(pm.recv_buffer_size > 0){
+                System.out.println("Setting socket props.");
+                sock.setReceiveBufferSize(pm.recv_buffer_size);
+                sock.setSendBufferSize(pm.send_buffer_size);
+                sock.setTcpNoDelay(pm.no_delay);
+                sock.setKeepAlive(pm.keep_alive);
+                //don't know how to set dont_route
+            }
         }catch(java.net.SocketException se){
             se.printStackTrace();
         }
+
 
     }
 
