@@ -88,7 +88,11 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             return edu.uci.ece.zen.orb.ORB.orbSingleton;
         }else{
             System.out.println( "======================Trying to locate the orb with that orbid==============" );
-            edu.uci.ece.zen.orb.ORB retVal = (edu.uci.ece.zen.orb.ORB) orbTable.get( orbId );
+
+            FString fOrbId = new FString( orbId.length() );
+            fOrbId.append( orbId );
+
+            edu.uci.ece.zen.orb.ORB retVal = (edu.uci.ece.zen.orb.ORB) orbTable.get( fOrbId );
             if( retVal == null ){
                 System.out.println( "======================None found...new orb will mbe made====================" );
                 if( unusedFacades.isEmpty() ){

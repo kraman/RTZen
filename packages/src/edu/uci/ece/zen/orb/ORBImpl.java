@@ -10,13 +10,14 @@ public class ORBImpl{
     ZenProperties properties;
     edu.uci.ece.zen.orb.ORB orbFacade;
     ORBImplRunnable orbImplRunnable;
-    public Hashtable cachedObjects;
     public ServerRequestHandler serverRequestHandler;
     public ThreadLocal rtCurrent;
     public ThreadLocal policyCurrent;
     public PolicyManagerImpl policyManager;
     public RTORBImpl rtorb;
 
+    public Queue eirCache;
+    public Queue crCache;   //ConnectorRunnable cache
 
     public ORBImpl( String args[] , Properties props, edu.uci.ece.zen.orb.ORB orbFacade ){
         System.out.println( "======================In orb impl region===================================" );
@@ -37,9 +38,6 @@ public class ORBImpl{
         System.out.println( "======================starting nhrt in orb impl region=====================" );
 
         nhrt.start();
-        cachedObjects = new Hashtable();
-        cachedObjects.init(5);
-
         try{
             rtCurrent = (ThreadLocal)(orbFacade.parentMemoryArea.newInstance( ThreadLocal.class ));
             //rtCurrent = new ThreadLocal();
@@ -48,12 +46,12 @@ public class ORBImpl{
             policyManager.init(orbFacade);
             rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance( RTORBImpl.class ));
             rtorb.init(orbFacade);
-
-            cachedObjects.put( "ExecuteInRunnable" , new Queue() );
-            cachedObjects.put( "ConnectorRunnable" , new Queue() );
         }catch( Exception e ){
             e.printStackTrace();
         }
+
+        eirCache = new Queue();
+        crCache = new Queue();
     }
 
     public PolicyCurrent getPolicyCurrent(){

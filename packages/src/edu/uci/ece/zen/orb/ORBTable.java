@@ -73,23 +73,16 @@ public class ORBTable {
             e.printStackTrace();
         }
     }
-    public static synchronized ORB find(String name) {
+
+    public static synchronized ORB find(FString name) {
         return (ORB) orbTable.get(name);		
     }
 
-    public static void hash(String orbId, ORB orb) {
-        try{
-            orbTable.put(orbId, orb);
-        }catch( HashtableOverflowException htoe ){
-            ZenProperties.logger.log( 
-                    edu.uci.ece.zen.utils.Logger.FATAL , 
-                    "edu.uci.ece.zen.orb.ORBTable" , 
-                    "hash("+orbId+","+orb.toString()+");" , 
-                    "Trying to add more orbs to the orb table than # of slots available." );
-        }
+    public static void hash(FString orbId, ORB orb) {
+        orbTable.put(orbId, orb);
     }
 
-    public static void remove(ORB orb) {
-        orbTable.remove(orb.id());
+    public static void remove( FString orb ) {
+        orbTable.remove(orb);
     }
 }

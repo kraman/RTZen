@@ -27,13 +27,12 @@ public abstract class ServantRetentionStrategy {
      */
     public static ServantRetentionStrategy init( org.omg.CORBA.Policy[] policy, IdUniquenessStrategy uniquenessStrategy, org.omg.CORBA.IntHolder ih ) {
         if (PolicyUtils.useRetainPolicy(policy)) {
-//            RetainStrategy retain = new RetainStrategy();
-//            retain.initialize(uniquenessStrategy , ih );
-//            return retain;
+            RetainStrategy retain = new RetainStrategy();
+            retain.initialize(uniquenessStrategy , ih );
+            return retain;
         } else {
-//            return new NonRetainStrategy();
+            return new NonRetainStrategy();
         }
-        return null;
     }
 
     /**

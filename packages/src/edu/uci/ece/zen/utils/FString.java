@@ -44,6 +44,20 @@ public class FString{
         data[currentSize++] = (byte) c;
     }
 
+    public void append( long value ){
+        data[currentSize++] = (byte) ((value >>> 56) & 0xFF);
+        data[currentSize++] = (byte) ((value >>> 48) & 0xFF);
+        data[currentSize++] = (byte) ((value >>> 40) & 0xFF);
+        data[currentSize++] = (byte) ((value >>> 32) & 0xFF);
+        data[currentSize++] = (byte) ((value >>> 24) & 0xFF);
+        data[currentSize++] = (byte) ((value >>> 16) & 0xFF);
+        data[currentSize++] = (byte) ((value >>> 8) & 0xFF);
+        data[currentSize++] = (byte) (value & 0xFF);
+    }
+
+    public void append( FString str ){
+        append( str.getData() , 0 , str.length() );
+    }
 
     public byte[] getData(){
         return this.data;
@@ -84,5 +98,18 @@ public class FString{
 
     public void reset(){
         currentSize = 0;
+    }
+
+    public boolean equals( Object obj ){
+        if( obj instanceof FString ){
+            FString fobj = (FString) obj;
+            if( fobj.length() != length() )
+                return false;
+            boolean retVal = true;
+            for( int i=0;i<length()&&retVal;i++ )
+                retVal = retVal && getData()[i] == fobj.getData()[i];
+            return retVal;
+        }
+        return false;
     }
 }

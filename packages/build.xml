@@ -65,7 +65,7 @@
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TracerAspect.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TypeCodeAspect.java"/>
-            <include name="src/edu/uci/ece/zen/poa/**"/>
+            <exclude name="src/edu/uci/ece/zen/poa/**"/>
 
         <!--*** classes that jRate cant compile ***-->
             <exclude name="src/edu/oswego/cs/dl/util/concurrent/VetoableChangeMulticaster.java"/>
@@ -112,12 +112,12 @@
     <target name="compile">
         <echo message="Compiling OMG and Zen sources"/>
       
-        <javac  
+        <iajc  
             destdir="${zen.classdir}"          
             srcdir="${zen.srcdir}"
             failonerror = "true"
             fork = "true"
-            
+            maxmem="${build.maxmem}"
             >
               
             
@@ -130,7 +130,7 @@
             <classpath>
                 <pathelement location="${zen.classpath}"/> 
             </classpath>
-        </javac>
+        </iajc>
     </target>
 
     <target name="zenlib" if="zen.lib">

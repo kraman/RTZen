@@ -1,21 +1,19 @@
 package edu.uci.ece.zen.orb;
 
 import javax.realtime.*;
+import edu.uci.ece.zen.utils.*;
 
 /**
  * Based on edu.uci.ece.zen.utils.Hashtable but the keytable is different
  */
-public class ConnectionRegistry extends edu.uci.ece.zen.utils.Hashtable
+public class ConnectionRegistry extends edu.uci.ece.zen.utils.ActiveDemuxTable
 {
-    public ConnectionRegistry(){
-    }
-
-    public void putConnection( long key , ScopedMemory mem ) throws edu.uci.ece.zen.utils.HashtableOverflowException{
-        super.put( key , mem );
+    public void putConnection( long key , ScopedMemory mem ){
+        super.bind( key , mem );
     }
 
     public ScopedMemory getConnection( long key ){
-        return (ScopedMemory) super.get( key );
+        return (ScopedMemory) super.mapEntry( super.find( key ) );
     }
 
     public static long ip2long( String ip , short port ){

@@ -99,7 +99,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
      * @param requests edu.uci.ece.zen.poa.SynchronizedInt
      * @return int
      */
-    public int handleRequest( edu.uci.ece.zen.orb.giop.type.RequestMessage request, POA poa, SynchronizedInt requests , IntHolder exceptionValue ) {
+    public void handleRequest( edu.uci.ece.zen.orb.giop.type.RequestMessage request, POA poa, SynchronizedInt requests , IntHolder exceptionValue ) {
         exceptionValue.value = POARunnable.NoException;
         FString okey = new FString(255);
         request.getObjectKey( okey );

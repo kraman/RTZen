@@ -4,7 +4,6 @@
 package edu.uci.ece.zen.poa.mechanism;
 
 
-public abstract class ServantManagerStrategy extends
-            RequestProcessingStrategy {
+public abstract class ServantManagerStrategy extends RequestProcessingStrategy {
     private static final int name = RequestProcessingStrategy.SERVANT_MANAGER;
 }

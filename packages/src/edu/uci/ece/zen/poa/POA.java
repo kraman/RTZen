@@ -23,7 +23,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private SynchronizedInt numberOfCurrentRequests;
     public  int poaState;
     private int poaDemuxIndex;
-    private int processingState = POA.ACTIVE;
+    public int processingState = POA.ACTIVE;
     private AdapterActivator adapterActivator;
     
     protected FString poaName;

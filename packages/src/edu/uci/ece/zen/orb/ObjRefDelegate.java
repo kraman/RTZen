@@ -105,108 +105,99 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                     in.init( orb , rb );
                     in.setEndian( in.read_boolean() );*/
                     byte iiopMinor = data[2];
-                    try{
                     System.out.println("iiop minor " + iiopMinor);
-                        switch( iiopMinor ){
-                            case 0:{
-                                org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read( in );
-                                long connectionKey = ConnectionRegistry.ip2long( profilebody.host , profilebody.port );
-                                ScopedMemory transportScope = orb.getConnectionRegistry().getConnection( connectionKey );
-                                if( transportScope == null ){
-                                    transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector.instance().
-                                            connect( profilebody.host , profilebody.port , orb , orbImpl );
-                                    orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
-                                }
+                    switch( iiopMinor ){
+                        case 0:{
+                                   org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read( in );
+                                   long connectionKey = ConnectionRegistry.ip2long( profilebody.host , profilebody.port );
+                                   ScopedMemory transportScope = orb.getConnectionRegistry().getConnection( connectionKey );
+                                   if( transportScope == null ){
+                                       transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector.instance().
+                                           connect( profilebody.host , profilebody.port , orb , orbImpl );
+                                       orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
+                                   }
 
-                                addLaneData( RealtimeThread.MIN_PRIORITY , 99/*RealtimeThread.MAX_PRIORITY*/ , transportScope , profilebody.object_key );
-                            }break;
-                            case 1:
-                            case 2:{
-                                org.omg.IIOP.ProfileBody_1_1 profilebody = org.omg.IIOP.ProfileBody_1_1Helper.read( in );
-                                long connectionKey = ConnectionRegistry.ip2long( profilebody.host , profilebody.port );
-                                ScopedMemory transportScope = orb.getConnectionRegistry().getConnection( connectionKey );
-                                if( transportScope == null ){
-                                    //System.out.println(": " );
-                                    edu.uci.ece.zen.orb.transport.Connector connector = edu.uci.ece.zen.orb.transport.iiop.Connector.instance();
-                                    transportScope = connector.connect( profilebody.host , profilebody.port , orb , orbImpl );
-                                    orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
-                                }
+                                   addLaneData( RealtimeThread.MIN_PRIORITY , 99/*RealtimeThread.MAX_PRIORITY*/ , transportScope , profilebody.object_key );
+                               }break;
+                        case 1:
+                        case 2:{
+                                   org.omg.IIOP.ProfileBody_1_1 profilebody = org.omg.IIOP.ProfileBody_1_1Helper.read( in );
+                                   long connectionKey = ConnectionRegistry.ip2long( profilebody.host , profilebody.port );
+                                   ScopedMemory transportScope = orb.getConnectionRegistry().getConnection( connectionKey );
+                                   if( transportScope == null ){
+                                       //System.out.println(": " );
+                                       edu.uci.ece.zen.orb.transport.Connector connector = edu.uci.ece.zen.orb.transport.iiop.Connector.instance();
+                                       transportScope = connector.connect( profilebody.host , profilebody.port , orb , orbImpl );
+                                       orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
+                                   }
 
-                                System.out.println("number of components: " + profilebody.components.length);
+                                   System.out.println("number of components: " + profilebody.components.length);
 
-                                for(int i = 0; i <  profilebody.components.length; ++i){
-                                    TaggedComponent tc = profilebody.components[i];
-                                    System.out.println("found tag: " + tc.tag);
+                                   for(int i = 0; i <  profilebody.components.length; ++i){
+                                       TaggedComponent tc = profilebody.components[i];
+                                       System.out.println("found tag: " + tc.tag);
 
-                                    if(tc.tag == org.omg.IOP.TAG_POLICIES.value){
+                                       if(tc.tag == org.omg.IOP.TAG_POLICIES.value){
 
-                                        CDRInputStream in1 = CDRInputStream.fromOctetSeq(tc.component_data, orb);
+                                           CDRInputStream in1 = CDRInputStream.fromOctetSeq(tc.component_data, orb);
 
-                                        PolicyValue[] pvarr = PolicyValueSeqHelper.read(in1);
-                                        in1.free();
+                                           PolicyValue[] pvarr = PolicyValueSeqHelper.read(in1);
+                                           in1.free();
 
-                                        System.out.println("number of policies: " + pvarr.length);
+                                           System.out.println("number of policies: " + pvarr.length);
 
-                                        for(int j = 0; j < pvarr.length; ++j){
+                                           for(int j = 0; j < pvarr.length; ++j){
 
-                                            System.out.println("found policy value: " + pvarr[j].ptype);
+                                               System.out.println("found policy value: " + pvarr[j].ptype);
 
-                                            CDRInputStream in2 = CDRInputStream.fromOctetSeq(pvarr[j].pvalue, orb);
-                                            //PriorityModelPolicyHelper.extract(in2.read_any());
+                                               CDRInputStream in2 = CDRInputStream.fromOctetSeq(pvarr[j].pvalue, orb);
+                                               //PriorityModelPolicyHelper.extract(in2.read_any());
 
-                                            switch(pvarr[j].ptype){
+                                               switch(pvarr[j].ptype){
 
-                                                case PRIORITY_MODEL_POLICY_TYPE.value:
+                                                   case PRIORITY_MODEL_POLICY_TYPE.value:
 
 
-                                                    System.out.println("\tPRIORITY_MODEL_POLICY_TYPE");
-                                                    priorityModel = in2.read_long();
-                                                    serverPriority = in2.read_short();
-                                                    System.out.println("\tpriority model: " + priorityModel);
-                                                    System.out.println("\tpriority: " + serverPriority);
-                                                break;
+                                                       System.out.println("\tPRIORITY_MODEL_POLICY_TYPE");
+                                                       priorityModel = in2.read_long();
+                                                       serverPriority = in2.read_short();
+                                                       System.out.println("\tpriority model: " + priorityModel);
+                                                       System.out.println("\tpriority: " + serverPriority);
+                                                       break;
 
-                                                case THREADPOOL_POLICY_TYPE.value:
-                                                    System.out.println("\tTHREADPOOL_POLICY_TYPE");
-                                                break;
+                                                   case THREADPOOL_POLICY_TYPE.value:
+                                                       System.out.println("\tTHREADPOOL_POLICY_TYPE");
+                                                       break;
 
-                                                case SERVER_PROTOCOL_POLICY_TYPE.value:
-                                                    System.out.println("\tSERVER_PROTOCOL_POLICY_TYPE");
-                                                break;
+                                                   case SERVER_PROTOCOL_POLICY_TYPE.value:
+                                                       System.out.println("\tSERVER_PROTOCOL_POLICY_TYPE");
+                                                       break;
 
-                                                case CLIENT_PROTOCOL_POLICY_TYPE.value:
-                                                    System.out.println("\tCLIENT_PROTOCOL_POLICY_TYPE");
-                                                break;
+                                                   case CLIENT_PROTOCOL_POLICY_TYPE.value:
+                                                       System.out.println("\tCLIENT_PROTOCOL_POLICY_TYPE");
+                                                       break;
 
-                                                case PRIVATE_CONNECTION_POLICY_TYPE.value:
-                                                    System.out.println("\tPRIVATE_CONNECTION_POLICY_TYPE");
-                                                break;
+                                                   case PRIVATE_CONNECTION_POLICY_TYPE.value:
+                                                       System.out.println("\tPRIVATE_CONNECTION_POLICY_TYPE");
+                                                       break;
 
-                                                case PRIORITY_BANDED_CONNECTION_POLICY_TYPE.value:
-                                                    System.out.println("\tPRIORITY_BANDED_CONNECTION_POLICY_TYPE");
-                                                break;
+                                                   case PRIORITY_BANDED_CONNECTION_POLICY_TYPE.value:
+                                                       System.out.println("\tPRIORITY_BANDED_CONNECTION_POLICY_TYPE");
+                                                       break;
 
-                                            }
+                                               }
 
-                                            in2.free();
+                                               in2.free();
 
-                                        }
+                                           }
 
-                                    }
+                                       }
 
-                                }
+                                   }
 
-                                //TODO: process priority policies here and add the appropriate lanes
-                                addLaneData( RealtimeThread.MIN_PRIORITY , 99/*RealtimeThread.MAX_PRIORITY*/ , transportScope , profilebody.object_key );
-                            }break;
-                        }
-                    }catch( HashtableOverflowException hoe ){
-                        ZenProperties.logger.log(
-                            Logger.WARN,
-                            "edu.uci.ece.zen.orb.ObjRefDelegate",
-                            "processTaggedProfile",
-                            "Cant make any more connections. Hashtable is full"
-                        );
+                                   //TODO: process priority policies here and add the appropriate lanes
+                                   addLaneData( RealtimeThread.MIN_PRIORITY , 99/*RealtimeThread.MAX_PRIORITY*/ , transportScope , profilebody.object_key );
+                               }break;
                     }
                 }
                 break;

@@ -13,24 +13,8 @@ import org.omg.CORBA.IntHolder;
  * the Vector class) of AOMStructures. To facilitate the various x_to_y
  * methods in the POA, two hash tables map ObjectIDs, Servants into a HashTable.
  * Here are some of the design/implementation notes
- *
- * 1) ObjectIds (represented as a byte-array) are not used directly for 
- * hashing because the equalsTo method on arrays compares the references
- * and not the contents.  Hence we wrap the byte-array into an ObjectID
- * that implements the equals-to method the right way.  THe equalTo and 
- * the hash code method are the one that is used by the HasTable class 
- * in Java for accessing hashed entries.  See testHash for details.
- * 2) The above is because ObjectIds coming n from remote clients will not
- * have the same hash-code even though the contents are the same.
- *
- * @author Arvind S. Krishna
- * @version 1.0
- * @see DualMap
- * @see SingleMap
  */
-
 public interface ActiveObjectMap {
-    
     /**
      * <code> add </code> to add the association between the ObjectId and the
      * Servant.

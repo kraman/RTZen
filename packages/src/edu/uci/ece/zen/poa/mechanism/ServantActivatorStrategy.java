@@ -14,9 +14,7 @@ import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.utils.*;
 import org.omg.CORBA.IntHolder;
 
-
-public class ServantActivatorStrategy extends
-            ServantManagerStrategy {
+public class ServantActivatorStrategy extends ServantManagerStrategy {
 
     private static final int name = RequestProcessingStrategy.SERVANT_ACTIVATOR;
 
@@ -38,7 +36,7 @@ public class ServantActivatorStrategy extends
     * @throws org.omg.PortableServer.POAPackage.InvalidPolicy
     */
     public void init( ServantRetentionStrategy retain, ThreadPolicyStrategy threadStrategy, org.omg.CORBA.IntHolder ih,
-            IdUniquenessStrategy uniqunessStrategy , PoaImpl pimpl , IntHolder exceptionValue ){
+            IdUniquenessStrategy uniqunessStrategy , POAImpl pimpl , IntHolder exceptionValue ){
         if(!( retain instanceof RetainStrategy )){
             exceptionValue.value = POARunnable.InvalidPolicyException;
             return;
@@ -151,7 +149,7 @@ public class ServantActivatorStrategy extends
             // --- INCARNATE ---
             exceptionValue.value = POARunnable.NoException;
             
-            invokeHandler = this.incarnate( ok, poa , exceptionValue );
+            invokeHandler = this.incarnate( ok , oid , poa , pimpl , exceptionValue );
             if( exceptionValue.value == POARunnable.NoException ){            
                 // Add the association in the AOM
                 map = pimpl.getPOAHashMap();
@@ -237,11 +235,8 @@ public class ServantActivatorStrategy extends
     * @param name strategy type
     * @return boolean
     */
-    public boolean validate(int name) throws
-                org.omg.PortableServer.POAPackage.WrongPolicy {
-        return (RequestProcessingStrategy.SERVANT_ACTIVATOR == name)
-                ? true
-                : false;
+    public boolean validate( int name , IntHolder exceptionValue ){
+        return (RequestProcessingStrategy.SERVANT_ACTIVATOR == name);
     }
 
     /**
@@ -255,27 +250,21 @@ public class ServantActivatorStrategy extends
      * different orb/poa.
      */
 
-    protected InvokeHandler incarnate( FString ok, org.omg.PortableServer.POA poa , IntHolder exceptionValue ){
+    protected InvokeHandler incarnate( FString ok, FString oid , org.omg.PortableServer.POA poa , POAImpl pimpl , IntHolder exceptionValue ){
         InvokeHandler invokeHandler = null;
-
         synchronized (mutex) {
-            try {
-                invokeHandler = (InvokeHandler)
-                        this.manager.incarnate(ok.getId(), poa);
-                if (this.uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID)
-                        && this.retain.servantPresent((org.omg.PortableServer.Servant) invokeHandler)) {
-                    throw new org.omg.CORBA.OBJ_ADAPTER();
-                }
+            invokeHandler = (InvokeHandler) this.manager.incarnate( oid , poa);
 
-                ObjectID oid = new ObjectID(ok.getId());
-                POAHashMap map = new POAHashMap(oid,
-                        (org.omg.PortableServer.Servant)
-                        invokeHandler);
+            if (this.uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID) && this.retain.servantPresent((org.omg.PortableServer.Servant) invokeHandler)) {
+                exceptionValue.value = POARunnable.ObjAdapterException;
+                return null;
+            }
 
-                // Add the Reference to the AOM
-                this.retain.add(oid, map);
-            } catch (Exception ex) {}
-            
+            POAHashMap map = pimpl.getHashMap();
+            map.init( oid , (org.omg.PortableServer.Servant) invokeHandler );
+
+            // Add the Reference to the AOM
+            this.retain.add( oid, map );
             return invokeHandler;
         }
     }

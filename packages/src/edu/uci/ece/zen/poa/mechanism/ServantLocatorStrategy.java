@@ -4,15 +4,10 @@
 
 package edu.uci.ece.zen.poa.mechanism;
 
-
 // --- OMG Specific Imports ---
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.portable.InvokeHandler;
-
 import edu.uci.ece.zen.orb.ResponseHandler;
-import edu.uci.ece.zen.orb.ServerReply;
-import edu.uci.ece.zen.orb.ServerRequest;
-
 
 public class ServantLocatorStrategy extends ServantManagerStrategy {
     
@@ -157,11 +152,8 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
     * @param name 
     * @return boolean
     */
-    public boolean validate(int name) throws
-                org.omg.PortableServer.POAPackage.WrongPolicy {
-        return (RequestProcessingStrategy.SERVANT_LOCATOR == name)
-                ? true
-                : false;
+    public boolean validate( int name , IntHolder exceptionHolder )
+        return (RequestProcessingStrategy.SERVANT_LOCATOR == name);
     }
 
     protected org.omg.PortableServer.ServantLocator manager;

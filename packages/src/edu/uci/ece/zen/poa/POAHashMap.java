@@ -1,27 +1,21 @@
-/* --------------------------------------------------------------------------*
- * $Id: POAHashMap.java,v 1.7 2003/08/05 23:40:02 nshankar Exp $
- *--------------------------------------------------------------------------*/
-
-
 package edu.uci.ece.zen.poa;
 
 import edu.uci.ece.zen.utils.*;
 
-public class POAHashMap {
-    private int requests = 0;
+public class POAHashMap extends ObjectMap{
 
+    private int requests = 0;
     // --Making this volatile does not need to be synchronized
     private volatile boolean active = true;
-    private org.omg.PortableServer.Servant servant;
 
-    // have the object Id too, done for fast demuxing requests
-    private FString objId;
+    private FString key;
+    private org.omg.PortableServer.Servant value;
 
     public POAHashMap(){}
-    
     public void init(FString oid, org.omg.PortableServer.Servant servant) {
-        this.servant = servant;
-        this.objId = oid;
+        super.init( oid , servant );
+        this.value = servant;
+        this.key = oid;
     }
 
     /**
@@ -53,7 +47,6 @@ public class POAHashMap {
      * Check if this entry is active
      * @return boolean true if active, false if not active
      */
-
     public boolean isActive() {
         return this.active;
     }
@@ -77,7 +70,6 @@ public class POAHashMap {
     public void deactivate() {
         this.active = false;
     }
-
 
     /**
      * Synchronization point for threads waiting for this servant to be 
@@ -109,12 +101,10 @@ public class POAHashMap {
         return this.servant;
     }
 
-
     /**
      * Return ObjectID associated with this entry
      * @return ObjectID
      */
-
     public FString objectID() {
         return this.objId;
     }

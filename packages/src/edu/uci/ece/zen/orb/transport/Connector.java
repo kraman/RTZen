@@ -10,17 +10,13 @@ public abstract class Connector{
 
     public final ScopedMemory connect( String host , short port , edu.uci.ece.zen.orb.ORB orb , ORBImpl orbImpl ){
 
-        Hashtable orbImplCache = orbImpl.cachedObjects;
-        Queue eirCache = (Queue)orbImplCache.get( "ExecuteInRunnable" );
-        Queue crCache = (Queue)orbImplCache.get( "ConnectorRunnable" );
-
-        ExecuteInRunnable eir = (ExecuteInRunnable) eirCache.dequeue();
+        ExecuteInRunnable eir = (ExecuteInRunnable) orbImpl.eirCache.dequeue();
         if( eir == null )
             eir = new ExecuteInRunnable();
-        ExecuteInRunnable eir2 = (ExecuteInRunnable) eirCache.dequeue();
+        ExecuteInRunnable eir2 = (ExecuteInRunnable) orbImpl.eirCache.dequeue();
         if( eir2 == null )
             eir2 = new ExecuteInRunnable();
-        ConnectorRunnable connRunnable = (ConnectorRunnable) crCache.dequeue();
+        ConnectorRunnable connRunnable = (ConnectorRunnable) orbImpl.crCache.dequeue();
         if( connRunnable == null )
             connRunnable = new ConnectorRunnable();
         
@@ -33,9 +29,9 @@ public abstract class Connector{
         }catch( Exception e ){
             e.printStackTrace();
         }
-        eirCache.enqueue( eir );
-        eirCache.enqueue( eir2 );
-        crCache.enqueue( connRunnable );
+        orbImpl.eirCache.enqueue( eir );
+        orbImpl.eirCache.enqueue( eir2 );
+        orbImpl.crCache.enqueue( connRunnable );
         return transportMem;
     }
 
