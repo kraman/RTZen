@@ -247,11 +247,12 @@ public class POAImpl{
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 8" );
 
             edu.uci.ece.zen.utils.Logger.printThreadStack();
-                                 
-            System.out.println("tp region is " + tpRegion);
-            System.out.println("requestScope  is " + requestScope);
-            System.out.println("req allocated in " + MemoryArea.getMemoryArea(req));
-            
+			
+            if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
+				System.out.println("tp region is " + tpRegion);
+				System.out.println("requestScope  is " + requestScope);
+				System.out.println("req allocated in " + MemoryArea.getMemoryArea(req));
+            }
             ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 9.5" );
             TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );

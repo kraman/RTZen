@@ -136,9 +136,12 @@ public final class GIOPMessageFactory
                     throw new RuntimeException(""); //throw GIOP error here
             }   
         }while( false );
-        System.out.println("In parseStream");
-        System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
-        ret.setTransport( trans );
+		
+		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
+			System.out.println("In parseStream");
+			System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
+		}
+		ret.setTransport( trans );
         return ret;
     }
 

@@ -35,16 +35,16 @@ public abstract class Logger{
     }
     
     public static void printThreadStack(){
-
-        System.out.println("Current thread is " + RealtimeThread.currentRealtimeThread());
-        System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());            
+		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
+			System.out.println("Current thread is " + RealtimeThread.currentRealtimeThread());
+			System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());            
             
-        int curInd = RealtimeThread.getMemoryAreaStackDepth()-1;
-        System.out.println("cur mem stack pos: " + curInd);
-
-        for(int i = curInd; i >= 0; --i)
-            System.out.println("mem area at pos " + i + " is " + RealtimeThread.getOuterMemoryArea(i));
- 
+			int curInd = RealtimeThread.getMemoryAreaStackDepth()-1;
+			System.out.println("cur mem stack pos: " + curInd);
+			
+			for(int i = curInd; i >= 0; --i)
+				System.out.println("mem area at pos " + i + " is " + RealtimeThread.getOuterMemoryArea(i));
+		}
     }
 
 }

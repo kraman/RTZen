@@ -38,8 +38,10 @@ public abstract class Transport implements Runnable{
         RealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,messageProcessor );
         
         messageProcessorThr.setDaemon( true );
-        System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea());
-        System.out.println(javax.realtime.MemoryArea.getMemoryArea(messageProcessorThr) );
+		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
+			System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea());
+			System.out.println(javax.realtime.MemoryArea.getMemoryArea(messageProcessorThr) );
+		}
         messageProcessorThr.start();
         
         try{
@@ -107,7 +109,9 @@ class MessageProcessor implements Runnable{
 
     public void run(){
         isActive = true;
-        System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
+		if(ZenProperties.devDbg) {
+			System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
+		}
         GIOPMessageRunnable gmr = new GIOPMessageRunnable( orb , trans );
          
         ExecuteInRunnable eir = new ExecuteInRunnable();
@@ -208,7 +212,9 @@ class GIOPMessageRunnable implements Runnable{
      */
     public void run(){
         try{
-            System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
+			if(ZenProperties.devDbg) {
+				System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
+			}
             edu.uci.ece.zen.utils.Logger.printThreadStack();
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
             if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
