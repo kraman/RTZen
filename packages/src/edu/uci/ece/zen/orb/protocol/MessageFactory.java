@@ -61,8 +61,8 @@ public abstract class MessageFactory {
      * @param protocolFactory The Message factory to retrieve instance of
      */
     public static MessageFactory getFactoryInstance( Class cls ){
-        System.out.println( "getFactoryInstance( " + cls + ");" );
-        System.out.println( "getFactoryInstance: " +  protocolFactoryMap.get( cls ) );
+        //System.out.println( "getFactoryInstance( " + cls + ");" );
+        //System.out.println( "getFactoryInstance: " +  protocolFactoryMap.get( cls ) );
         return (MessageFactory) protocolFactoryMap.get( cls );
     }
     
