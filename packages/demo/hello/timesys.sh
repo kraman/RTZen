@@ -1,1 +1,1 @@
-tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=/project/workarea02/mpanahi/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.hello.Client
+tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=$HOME/RTZen/classes/ -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar demo.hello.Client
