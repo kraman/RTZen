@@ -11,6 +11,7 @@
 #
 
 setenv JRATE_SUITE_HOME /home/jay/RTZen
+setenv ZEN_HOME /project/workarea02/mpanahi/RTZen
 
 
 #######################################################################
@@ -28,7 +29,7 @@ setenv JRATE_HOME $JRATE_SUITE_HOME/jRate
 setenv JRATE_GCC_HOME $JRATE_SUITE_HOME/jRate-gcc
 setenv JRATE_GCC_SRC_HOME $JRATE_SUITE_HOME/GNU/jRateGCC
 
-setenv LD_LIBRARY_PATH `pwd`/../lib:$JRATE_HOME/lib:$LD_LIBRARY_PATH
+setenv LD_LIBRARY_PATH $ZEN_HOME/lib:$JRATE_HOME/lib:$LD_LIBRARY_PATH
 
 #setenv PATH $JRATE_GCC_HOME/bin:$PATH
 #setenv PATH $JRATE_GCC_HOME/bin:$PATH
