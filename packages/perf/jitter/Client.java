@@ -61,8 +61,11 @@ public class Client extends RealtimeThread
 	
 
 				// allocate the time stamper (to load the native lib)
+                                System.out.println( "===================Trying to initialize the NativeTimeStamp================" );
 				NativeTimeStamp rtts = new NativeTimeStamp();
 				NativeTimeStamp.Init(1, 20.0);
+                                System.out.println( "===================NativeTimeStamp gets initialized================" );
+
 			
         
 		
