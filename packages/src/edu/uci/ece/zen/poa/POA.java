@@ -38,7 +38,9 @@ import edu.uci.ece.zen.utils.ZenProperties;
 /**
  * See section 11.3.9 in the CORBA Sepecification.
  * 
- * @author juancol, hojjat
+ * @author Juan Colmenares
+ * @author Hojjar Jafarpour
+ * @author Krishna Raman
  */
 public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortableServer.POA 
 {
@@ -131,7 +133,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
     private static void release(edu.uci.ece.zen.poa.POA poa) {
         unusedFacades.enqueue(poa);
     }
-
+    
     public void free() {
         POA.release(this);
     }
@@ -343,7 +345,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
             	(edu.uci.ece.zen.orb.transport.Transport) sreq.getTransport().getPortal();
         if (transport.objectTable[0] == null) {
             transport.objectTable[0] = new POARunnable(POARunnable.HANDLE_REQUEST);
-            ZenProperties.logger.log("new poa runnable");
+            if (ZenProperties.dbg) ZenProperties.logger.log("new poa runnable");
         }
 
         POARunnable r = (POARunnable) transport.objectTable[0];
@@ -363,7 +365,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
         try {
             orb.orbImplRegion.executeInArea(eir1);
         } catch (Exception e) {
-            ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", e);
+            if (ZenProperties.dbg) 
+                ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", e);
         }
         
         
@@ -385,12 +388,14 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
     public org.omg.CORBA.Object servant_to_reference(final org.omg.PortableServer.Servant p_servant)
             throws ServantNotActive, WrongPolicy {
         
-        POARunnable r = new POARunnable(POARunnable.SERVANT_TO_REFERENCE); //XXX This is a memory
-                                                                           // leak;
+        POARunnable r = 
+            new POARunnable(POARunnable.SERVANT_TO_REFERENCE); //XXX This is a memory leak;
         r.addParam(p_servant);
         r.addParam(RealtimeThread.getCurrentMemoryArea());
      
-        if (ZenProperties.dbg) ZenProperties.logger.log("POA.servant_to_reference cur mem area: " + RealtimeThread.getCurrentMemoryArea());
+        if (ZenProperties.dbg) 
+            ZenProperties.logger.log("POA.servant_to_reference cur mem area: " + 
+                    RealtimeThread.getCurrentMemoryArea());
         ExecuteInRunnable eir1 = new ExecuteInRunnable(); //XXX This is a memory leak;
         eir1.init(r, this.poaMemoryArea);
         ExecuteInRunnable eir2 = new ExecuteInRunnable(); //XXX This is a memory leak;
@@ -486,28 +491,29 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
     }
 
     public byte[] activate_object(org.omg.PortableServer.Servant p_servant)
-            throws ServantAlreadyActive, WrongPolicy {
-        
-        POARunnable r = new POARunnable(POARunnable.ACTIVATE_OBJECT); // XXX Memeory leak.
-        r.addParam( p_servant );
-        r.addParam(RealtimeThread.getCurrentMemoryArea() ); 
-        
-        ExecuteInRunnable eir1 = new ExecuteInRunnable(); //orb.getEIR(); // XXX Memeory leak.
+            throws ServantAlreadyActive, WrongPolicy 
+    {
+        POARunnable r = new POARunnable(POARunnable.ACTIVATE_OBJECT); // XXX Memory leak.
+        r.addParam(p_servant);
+        r.addParam(RealtimeThread.getCurrentMemoryArea());
+
+        ExecuteInRunnable eir1 = new ExecuteInRunnable(); // XXX Memory leak.
         eir1.init(r, poaMemoryArea);
-        
-        ExecuteInRunnable eir2 = new ExecuteInRunnable(); //orb.getEIR(); // XXX Memeory leak.
+
+        ExecuteInRunnable eir2 = new ExecuteInRunnable(); // XXX Memory leak.
         eir2.init(eir1, orb.orbImplRegion); 
         
-        try{ 
-            orb.parentMemoryArea.executeInArea(eir2); 
-         }
+        try
+        {
+            orb.parentMemoryArea.executeInArea(eir2);
+        }
         catch(Exception e)
         { 
             ZenProperties.logger.log(Logger.WARN, getClass(), "activate_object", e);
-        } 
-         
-        switch( r.exception )
-        { 
+        }
+
+        switch(r.exception)
+        {
             case POARunnable.NoException: //no exception 
                 break; 
              case POARunnable.SERVANT_ALREADY_ACTIVE: 
@@ -517,7 +523,6 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
          }
         
         return (byte[])r.retVal;
-
     }
 
     public void activate_object_with_id(final byte[] id,
