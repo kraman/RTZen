@@ -64,16 +64,17 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     private static long scopeMemorySize;
     private static ORB orbSingleton;
     private static int maxSupportedConnections;
-    public static java.net.InetAddress sockAddr;
+    public static String [] endpoints;
     private static RTCurrentRunnable rtrun;
     
     static {
         try {
             try {
-                if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("local address" + java.net.InetAddress.getLocalHost().getHostAddress());
+                endpoints = new String [] {java.net.InetAddress.getLocalHost().getHostAddress(), "127.0.0.1"};
+                if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("local address" + endpoints[0]);
                 //sockAddr = new
                 // java.net.InetSocketAddress(java.net.InetAddress.getLocalHost().getHostAddress(),0);
-                sockAddr = java.net.InetAddress.getLocalHost();
+                //sockAddr = java.net.InetAddress.getLocalHost();
                 //java.net.InetAddress [] arr = java.net.InetAddress.getAllByName( sockAddr.getHostName() );
                 //for(int i = 0; i<arr.length; ++i)
                 //    System.out.println("ADDR: " + arr[i].toString());

@@ -18,6 +18,7 @@ import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.poa.POA;
+import edu.uci.ece.zen.orb.ORB;
 import java.net.InetAddress;
 
 import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
@@ -32,6 +33,8 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         super(orb, orbImpl, threadPoolId);
         try {
             ssock = new java.net.ServerSocket(0, 0, null);
+            //ssock = new java.net.ServerSocket();
+            //ssock.bind(new java.net.InetSocketAddress("127.0.0.1",0));
 
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
@@ -57,9 +60,11 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
             byte iiopMinorVersion, byte[] objKey, POA poa) {
         Version version = new Version(iiopMajorVersion, iiopMinorVersion);
         
-        //Krishna, try this to create the connection error
+        //try this to test the connection error
         //String [] endpoints = new String [] {"128.195.174.86",ssock.getInetAddress().getHostAddress(),"127.0.0.1"};
-        String [] endpoints = new String [] {ssock.getInetAddress().getHostAddress(),"127.0.0.1"};
+        //String [] endpoints = new String [] {ssock.getInetAddress().getHostAddress(),"127.0.0.1"};
+        //String [] endpoints = new String [] {ORB.sockAddr,"127.0.0.1"};
+        String [] endpoints = ORB.endpoints;
         
         TaggedProfile [] tparr = new TaggedProfile[endpoints.length];
         
