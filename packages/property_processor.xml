@@ -32,4 +32,11 @@
         <equals arg1="${zen.build.runtime}" arg2="jvm"/>
     </condition>
 
+    <!-- JamaicaVM properties -->
+    <condition property="zen.rtbootclasspath" value="${JamaicaVM_install}/classes/jamaica-classes.jar"> <!--may need to change later, don't know exactly-->
+        <equals arg1="${zen.build.runtime}" arg2="JamaicaVM"/>
+    </condition>
+    <condition property="compiler_JamaicaVM">
+        <equals arg1="${zen.build.runtime}" arg2="JamaicaVM"/>
+    </condition>
 </project>
