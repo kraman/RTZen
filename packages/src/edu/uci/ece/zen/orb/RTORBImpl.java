@@ -16,7 +16,6 @@ public class RTORBImpl
         implements RTORB
 {
     private ORB orb;
-    private ORBImpl orbImpl;
     private ThreadPoolRunnable tpr;
     private AcceptorRunnable acceptorRunnable;
 
@@ -55,28 +54,34 @@ public class RTORBImpl
      */
     public int create_threadpool(int stacksize, int static_threads, int dynamic_threads, short default_priority, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
         System.out.println("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_ CREATING THREADPOOL +_+_+_+_+_+_+_+_+_+_+_+_+_");
-        setUpAcceptor();
+        setUpRunnable(acceptorRunnable);
         tpr.init(this, orb, stacksize, static_threads, dynamic_threads, default_priority, allow_request_buffering, max_buffered_requests, max_request_buffer_size);
-        return setUpThreadPool();
+        setUpRunnable(tpr);
+        return nextID();
     }
 
     /**
      * Operation create_threadpool_with_lanes
      */
     public int create_threadpool_with_lanes(int stacksize, org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allow_borrowing, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
-        setUpAcceptor();
+        setUpRunnable(acceptorRunnable);
         tpr.init(this, orb, stacksize, lanes, allow_borrowing, allow_request_buffering, max_buffered_requests, max_request_buffer_size );
-        return setUpThreadPool();
+        setUpRunnable(tpr);
+        return nextID();
     }
 
-    private void setUpAcceptor(){
+    /**
+     * This is used to set up a child region of the ORB region
+     *
+    */
+    private void setUpRunnable(Runnable runnable){
 
         ExecuteInRunnable r1 = new ExecuteInRunnable();
         ExecuteInRunnable r2 = new ExecuteInRunnable();
         ScopedMemory sm = orb.getScopedRegion();
 
         r1.init( r2 , orb.orbImplRegion );
-        r2.init( acceptorRunnable, sm );
+        r2.init( runnable, sm );
         try{
             orb.parentMemoryArea.executeInArea( r1 );
         }catch( Exception e ){
@@ -89,8 +94,8 @@ public class RTORBImpl
             System.exit(-1);
         }
     }
-
-    private int setUpThreadPool(){
+/*
+    private void setUpThreadPool(){
         ExecuteInRunnable r1 = new ExecuteInRunnable();
         ExecuteInRunnable r2 = new ExecuteInRunnable();
         ScopedMemory sm = orb.getScopedRegion();
@@ -108,7 +113,9 @@ public class RTORBImpl
                 );
             System.exit(-1);
         }
-
+    }
+*/
+    private int nextID(){
         //KLUDGE: need to set up property for max TPs
         int tmpID = tpID;
         tpID++;
