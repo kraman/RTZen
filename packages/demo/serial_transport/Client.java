@@ -34,7 +34,7 @@ public class Client extends RealtimeThread
 
             WayPoint waypoint = new WayPoint();
 
-            server.SendWayPoint((short)1, waypoint);
+            server.sendWayPoint((short)1, waypoint);
 
             System.exit(0);
         }

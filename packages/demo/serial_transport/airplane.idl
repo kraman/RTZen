@@ -11,7 +11,7 @@ module demo
 
 		interface Airplane
 		{
-            oneway void SendWayPoint(in short id, in WayPoint waypoint);
+            oneway void sendWayPoint(in short id, in WayPoint waypoint);
         };
 	};
 };
