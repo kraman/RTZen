@@ -1,5 +1,11 @@
 package demo.rtcorba.threadpool;
 
+import org.omg.PortableServer.*;
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.*;
+import javax.realtime.*;
+import org.omg.RTCORBA.*;
+import org.omg.Messaging.*;
 
 /**
  * This class implements the simple Hello World server.
@@ -10,6 +16,16 @@ package demo.rtcorba.threadpool;
 public class TestImpl extends testPOA
 
 {
+    ORB orb;
+    POA poa;
+    long nap_time;
+
+    public TestImpl(ORB orb, POA poa, long nap_time){
+        this.orb = orb;
+        this.poa = poa;
+        this.nap_time = nap_time;
+    }
+
     /**
      * Gets a message from the Hello World Server.
      */
@@ -21,5 +37,9 @@ public class TestImpl extends testPOA
     }
 
     public void shutdown (){}
+
+    public POA _default_POA() {
+        return poa;
+    }
 }
 
