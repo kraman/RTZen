@@ -26,6 +26,8 @@ import org.omg.CORBA.WrongTransaction;
 import org.omg.Messaging.REBIND_POLICY_TYPE;
 import org.omg.Messaging.SYNC_SCOPE_POLICY_TYPE;
 import org.omg.RTCORBA.RTORB;
+import org.omg.CosNaming.*;
+import org.omg.CosNaming.NamingContextPackage.*;
 
 import edu.uci.ece.zen.orb.policies.PolicyManagerImpl;
 import edu.uci.ece.zen.orb.policies.RebindPolicyImpl;
@@ -184,6 +186,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     public Object orbRunningLock;
 
     public RTORBImpl rtorb;
+
+    public NamingContextExt cachedNamingReference;
 
     private TPRunnable tpr;
 
@@ -390,8 +394,13 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             }
             return rootPOA;
 
+        }else if(object_name.equals("NameService")){
+            return getNaming();
         }
-        //org.omg.CORBA.Object ret = Resolver.resolve( this , object_name );
+
+
+    
+    //org.omg.CORBA.Object ret = Resolver.resolve( this , object_name );
         //if( ret == null )
         throw new org.omg.CORBA.ORBPackage.InvalidName(object_name
                 + " resolver not implemented");
@@ -435,6 +444,16 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
          * executeInORBRegion(runnable); return runnable.val;
          */
         return rtorb;
+    }
+
+<<<<<<< .mine
+    public NamingContextExt getNaming(){
+        if (cachedNamingReference == null) {
+            cachedNamingReference = NamingContextExtHelper.narrow(string_to_object(ZenProperties.getGlobalProperty("naming.ior_file.for_reading","")));
+        }
+
+        return cachedNamingReference;  // must return same refrence for each call
+
     }
 
     class RTCurrentRunnable implements Runnable {
