@@ -11,6 +11,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private static Queue unusedFacades;
     private static Queue unusedPOARunnables;
     private static ImmortalMemory imm;
+
     private ORB orb;
     private POA parent;
     private ScopedMemory poaMemoryArea;
@@ -21,6 +22,12 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private int poaState;
     private int processingState = POA.ACTIVE;
     private AdapterActivator adapterActivator;
+    
+    private byte[] poaName;
+    private int poaNameLen;
+
+    private byte[] poaPath;
+    private int poaPathLen;
 
     /* Mutexes POA and varable specific to the create and destroy ops */
     private Object createDestroyPOAMutex;
@@ -28,6 +35,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private boolean etherealize;
 
     /* Constants for the POA Class */
+    private final String rootPoaString = "RootPOA";
     private static final int CREATING = 0;
     private static final int CREATION_COMPLETE = 1;
     private static final int DESTRUCTION_IN_PROGRESS = 3;
@@ -38,15 +46,6 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private static final int ACTIVE = 6;
     private static final int DISCARDING = 7;
     private static final int INACTIVE = 8;
-
-    private static AdapterAlreadyExists adapterAlreadyExistsException;
-    private static AdapterNonExistent adapterNonExistExeption;
-    private static OBJ_ADAPTER obj_adapterException_1;
-    private static BAD_INV_ORDER badInvOrderException_17;
-    private static BAD_INV_ORDER badInvOrderException_3;
-    private static OBJECT_NOT_EXIST objNotExistException;
-    private static TRANSIENT parentDiscardTransientException;
-    private static 
 
     static{
         try{
@@ -73,44 +72,60 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         queue.enqueue( poa );
     }
 
-    private static POARunnable getPOARunnable(){
-        Object poaRunnable = unusedPOARunnables.dequeue();
-        if( poaRunnable == null )
-            return (POARunnable) ImmortalMemory.instance().newInstance( POARunnable.class );
-        return (POARunnable) poaRunnable;
-    }
-
-    private static void returnPOARunnable( POARunnable r ){
-        unusedPOARunnables.enqueue( r );
-    }
-
     public void free(){
         POA.release( this );
     }
 
-    private final String rootPoaString = "RootPOA";
     public void initAsRootPOA( final edu.uci.ece.zen.orb.ORB orb ){
-        this.init( orb , rootPoaString , rootPoaString , null , null , null , null , null );
+        this.init( orb , rootPoaString , null , null , null , null , null );
     }
 
-    public void init( final edu.uci.ece.zen.orb.ORB orb , String poaName , String poaPath , org.omg.CORBA.Policy[] policies ,
-            org.omg.PortableServer.POA parent, org.omg.PortableServer.POAManager manager ){
+    public void init( final edu.uci.ece.zen.orb.ORB orb , String poaName , org.omg.CORBA.Policy[] policies , org.omg.PortableServer.POA parent, org.omg.PortableServer.POAManager manager ){
         poaState = POA.CREATING;
         this.orb = orb;
         this.poaMemoryArea = ORB.getScopedRegion();
+
+        byte[] poaNameBytes = poaName.getBytes();
+        System.arraycopy( poaNameBytes , 0 , this.poaName , 0 , poaName.length() );
+        poaNameLen = poaName.length();
+
+        byte[] poaPathBytes;
+        if( parent == null )
+            poaPathBytes = new byte[0];
+        else
+            poaPathBytes = parent.poaPath;
+        System.arraycopy( poaPathBytes , 0 , this.poaPath , 0 , poaPathBytes.length );
+        poaPathLen = poaPathLen.length;
+        System.arraycopy( poaNameBytes , 0 , this.poaName , poaPathLen , poaName.length() );
+        poaPathLen += poaNameLen;
+        poaPath[poaPathLen]='/';
+        poaPathLen++;
+
         if( manager == null )
             manager = POAManager.instance();
         this.poaManager = manager;
         poaManager.register( this );
         serverRequestHandler = orb.getServerRequestHandler();
-        serverRequestHandler.addPOA( poaPath , this );
+        serverRequestHandler.addPOA( poaPath , poaPathLen , this );
         theChildren.empty();
         numberOfCurrentRequests.reset();
         
-        POARunnable r = POA.getPOARunnable();
-        r.init( POARunnable.INIT , orb , this , poaName , poaPath , policies , parent , manager);
-        poaMemoryArea.enter( r );
-        returnPOARunnable( r );
+        POARunnable r = new POARunnable(POARunnable.INIT);
+        r.addParam( orb );
+        r.addParam( this );
+        r.addParam( policies );
+        r.addParam( parent );
+        r.addParam( manager );
+        ExecuteInRunnable eir1 = new ExecuteInRunnable();
+        eir1.init( poaMemoryArea , r );
+        ExecuteInRunnable eir2 = new ExecuteInRunnable();
+        eir2.init( orb.orbImplRegion , eir1 );
+        try{
+            orb.parentMemoryArea.executeInArea( eir2 );
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
+
         poaState = POA.CREATION_COMPLETE;
     }
     
@@ -118,6 +133,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         theChildren = new Hashtable( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.maxNumPOAs" , "1" ) ) );
         numberOfCurrentRequests = new SynchronizedInt();
         createDestroyPOAMutex = new Integer(0);
+        poaName = new byte[( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.MaxPOANameLen" , "32" ) ) )];
+        poaPath = new byte[( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.MaxPOAPathLen" , "255" ) ) )];
     }
 
     public void handleRequest(final ServerRequest req) {
