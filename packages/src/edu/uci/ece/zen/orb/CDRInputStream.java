@@ -1,6 +1,5 @@
 package edu.uci.ece.zen.orb;
 
-//import edu.uci.ece.zen.utils.Logger;
 import org.omg.CORBA.TCKind;
 import edu.uci.ece.zen.utils.*;
 import javax.realtime.*;
@@ -591,30 +590,24 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
             default:
                 ZenProperties.logger.log(
                     Logger.WARN,
-                    "edu.uci.ece.zen.orb.CDRInputStream",
+                    getClass(),
                     "read_value()",
-                    "Unwritten method in CDRInputStream for Valuetype");
-                try {
-                    throw new org.omg.CORBA.NO_IMPLEMENT();
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                    "Unwritten method in CDRInputStream for Valuetype",
+					new org.omg.CORBA.NO_IMPLEMENT());
             }
 
         } // end of: try
 
         // Thrown by code for _tk_array, _tk_sequence, _tk_struct
         catch (org.omg.CORBA.TypeCodePackage.BadKind b) {
-            System.err.println("CDRInputStream#read_value threw BadKind exception for kind " + kind);
-            b.printStackTrace();
+			ZenProperties.logger.log(Logger.SEVERE, getClass(), "read_value()",
+				"BadKind: " + kind, b);
         }
 
         // Thrown by code for handling _tk_struct
         catch (org.omg.CORBA.TypeCodePackage.Bounds b) {
-            System.err.println("CDRInputStream#read_value threw Bounds exception for kind " + kind);
-            b.printStackTrace();
+			ZenProperties.logger.log(Logger.SEVERE, getClass(), "read_value()",
+				"Bounds exception for " + kind, b);
         }
 
     }
@@ -938,7 +931,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
         default:
             ZenProperties.logger.log(
                 Logger.WARN,
-                "edu.uci.ece.zen.orb.CDRInputStream",
+                getClass(),
                 "read_TypeCode()",
                 "Unwritten method in CDRInputStream for TypeCode");
             return null;
