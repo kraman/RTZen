@@ -60,13 +60,12 @@ public class Server extends RealtimeThread
             // and register Test object with it.
             org.omg.CORBA.Policy [] poa_policy_list = new org.omg.CORBA.Policy[2];
 
-            System.out.println("Max prio " + PriorityScheduler.instance().getMaxPriority());
-            System.out.println("Min prio " + PriorityScheduler.instance().getMinPriority());
-            System.out.println("Norm prio " + PriorityScheduler.instance().getNormPriority());
+            System.out.println("Max prio " + PriorityScheduler.instance().getMaxPriority() + ", " + RealtimeThread.MAX_PRIORITY);
+            System.out.println("Min prio " + PriorityScheduler.instance().getMinPriority() + ", " + RealtimeThread.MIN_PRIORITY);
+            System.out.println("Norm prio " + PriorityScheduler.instance().getNormPriority() + ", " + RealtimeThread.NORM_PRIORITY);
             int minPrio = PriorityScheduler.instance().getMinPriority();
             //for standard CORBA, this would be reenabled
             poa_policy_list[0] = rtorb.create_priority_model_policy (org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,(short)minPrio);
-
 
             ThreadpoolLane[] lanes = new ThreadpoolLane[3];
             for(int i = 0; i < lanes.length; ++i)
@@ -75,11 +74,7 @@ public class Server extends RealtimeThread
 
             poa_policy_list[1] = rtorb.create_threadpool_policy(threadPoolId);
             
-            
-            //POA childPOA = rootPOA.create_POA ("Child_POA",poaManager,poa_policy_list);
-            // pass null for manager for now, I think it's the same manager as root poa
             POA childPOA = rootPOA.create_POA ("Child_POA",poaManager,poa_policy_list);
-
 
             TestImpl impl = new TestImpl(orb);
 

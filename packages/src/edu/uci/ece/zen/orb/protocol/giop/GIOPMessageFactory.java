@@ -219,10 +219,9 @@ public final class GIOPMessageFactory extends MessageFactory{
  //       edu.uci.ece.zen.utils.Logger.printMemStats(342);
 
         ZenProperties.logger.log("GMF parse stream 2");
-        if(ZenBuildProperties.dbgInvocations) {
-            System.out.print("parse stream messageId:");
-            System.out.println(ret.getRequestId());
-        }
+        if(ZenBuildProperties.dbgInvocations)
+            ZenProperties.logger.log("parse stream messageId:" + ret.getRequestId());
+
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(339);
         return ret;
     }
@@ -322,9 +321,8 @@ public final class GIOPMessageFactory extends MessageFactory{
         int read = 0;
         ZenProperties.logger.log("parseStreamForHeader: reading");
         if(ZenBuildProperties.dbgInvocations) {
-            System.out.print("parseStreamForHeader: buffer size");
-            System.out.println(header.length);
-            System.out.println("inputstream: " + in);
+            ZenProperties.logger.log("parseStreamForHeader: buffer size" + header.length);
+            ZenProperties.logger.log("inputstream: " + in);
         }
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(3341);
         while (read < header.length) {
@@ -426,10 +424,8 @@ public final class GIOPMessageFactory extends MessageFactory{
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
 
-        if(ZenBuildProperties.dbgInvocations) {
-            System.out.print("construct reply for messageId:");
-            System.out.println(req.getRequestId());
-        }
+        if(ZenBuildProperties.dbgInvocations)
+            ZenProperties.logger.log("construct reply for messageId:" + req.getRequestId());
 
         out.write_octet_array(magic, 0, 4);
         //giop version

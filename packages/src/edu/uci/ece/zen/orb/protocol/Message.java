@@ -21,19 +21,23 @@ public abstract class Message {
     protected CDRInputStream istream;
     protected ScopedMemory scope;
     protected ReadBuffer messageBody;
-    protected short priority = 
+    private static final short defaultPriority = 
         (short) javax.realtime.PriorityScheduler.instance().getNormPriority();
+    protected short priority;
+        
 
     protected Message() { }
 
     public Message(ORB orb, ReadBuffer stream) {
         this.istream = CDRInputStream.instance();
         this.istream.init(orb, stream);
+        priority = defaultPriority;
     }
 
     public  void init(ORB orb, ReadBuffer stream) {
         this.istream = CDRInputStream.instance();
         this.istream.init(orb, stream);
+        priority = defaultPriority;
     }
     
     public short getPriority(){
@@ -74,7 +78,7 @@ public abstract class Message {
         transport = null;
         istream = null;
         scope = null;
-        priority = 0;
+        priority = defaultPriority;
         internalFree();
         //messageBody.free();
     }

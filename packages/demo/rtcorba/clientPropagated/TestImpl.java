@@ -25,7 +25,7 @@ public class TestImpl extends TestPOA
         try{
             //org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(_orb().resolve_initial_references("RTCurrent"));
             org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(orb.resolve_initial_references("RTCurrent"));
-            System.out.println("Priority: " + priority);
+            System.out.println("\n\tPriority: " + priority);
 
             short servant_thread_priority = rtcur.the_priority();
 
@@ -33,7 +33,7 @@ public class TestImpl extends TestPOA
             if (servant_thread_priority != priority)
                 System.out.println( "ERROR: servant thread priority is not equal to method argument.");
 
-            System.out.println("\n\n\tClient priority: " + priority + " Servant thread priority: " + servant_thread_priority);
+            System.out.println("\n\tClient priority: " + priority + " Servant thread priority: " + servant_thread_priority);
             System.out.println();
         }catch(Exception e){
             e.printStackTrace();

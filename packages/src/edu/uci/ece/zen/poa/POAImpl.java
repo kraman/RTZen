@@ -405,7 +405,7 @@ if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------PO
                     //ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", "server pr != msg pr");
             //kludge, server pr for now
             short pr = req.getPriority();//orb.getRTCurrent().the_priority();//req.getPriority();//(short)serverPriority;//
-            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:4 pr:" + pr);
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("handleRequest:4  request pr: " + pr + " def. server pr: " + serverPriority);
 
             tpr.init(self, req, pr);
             eir.init(tpr, tpRegion);

@@ -46,6 +46,7 @@ public class MSGRunnable implements Runnable {
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(322);
             ResponseHandler rh = new ResponseHandler(orb, rm);
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(323);
+            orb.getRTCurrent().the_priority(rm.getPriority());
 
             if (rm.getOperation().equals("_is_a")) {
                 boolean _result = servant._is_a(rm.getCDRInputStream()
