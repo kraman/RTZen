@@ -242,7 +242,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("FreeEIR(): EIR from  " + MemoryArea.getMemoryArea(r));
         if(MemoryArea.getMemoryArea(r) != ImmortalMemory.instance()){
             if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("FreeEIR(): EIR not from immortal, but " + MemoryArea.getMemoryArea(r));
-            Thread.dumpStack();
+            if (ZenBuildProperties.dbgThreadStack) Thread.dumpStack();
         }
         executeInRunnableCache.enqueue(r);
     }
