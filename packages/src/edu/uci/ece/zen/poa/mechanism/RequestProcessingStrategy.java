@@ -1,5 +1,8 @@
 package edu.uci.ece.zen.poa.mechanism;
 
+import edu.uci.ece.zen.orb.ServerRequest;
+import edu.uci.ece.zen.sys.ZenProperties;
+import org.omg.CORBA.IntHolder;
 import edu.uci.ece.zen.poa.*;
 import edu.uci.ece.zen.utils.*;
 
@@ -10,6 +13,8 @@ import edu.uci.ece.zen.utils.*;
  * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna</a>
  * @version 1.0
  */
+
+
 public abstract class RequestProcessingStrategy {
 
     // --- Type constants ---
@@ -29,53 +34,65 @@ public abstract class RequestProcessingStrategy {
      * @exception org.omg.PortableServer.POAPackage.InvalidPolicy
      * If the policies used to create this POA are in conflict.
      */
+
+    
+    public static RequestProcessingStrategy init(
+            org.omg.CORBA.Policy[] policy,
+            ServantRetentionStrategy retentionStrategy,
+            IdUniquenessStrategy uniquenessStrategy,
+            ThreadPolicyStrategy threadStrategy,
+            IntHolder exceptionValue)
+    {
+        exceptionValue.value = RequestProcessingStrategy.NoException;
     public static RequestProcessingStrategy init( org.omg.CORBA.Policy[] policy, ServantRetentionStrategy retentionStrategy,
             IdUniquenessStrategy uniquenessStrategy, ThreadPolicyStrategy threadStrategy , org.omg.CORBA.IntHolder ih ){
 
-        if (PolicyUtils.useServantManagerPolicy(policy)) {
-            try {
-                retentionStrategy.validate( retentionStrategy.RETAIN , ih );
-                if( ih.value != POARunnable.NoException ){ return; }
+        if (PolicyUtils.useServantManagerPolicy(policy)) 
+        {
+            retentionStrategy.validate(retentionStrategy.RETAIN);
+            ServantActivatorStrategy activator = new RequestProcessingStrategy();
+            activator.initialize(retentionStrategy, threadStrategy,
+                    uniquenessStrategy);
 
-                ServantActivatorStrategy activator = Reatin(ServantActivatorStrategy)
-                        POAPolicyFactory.createPolicy(ZenProperties.getProperty(RequestProcessingStrategy.servantActivatorPath));
-
-                activator.initialize(retentionStrategy, threadStrategy,
-                        uniquenessStrategy);
+            if (exceptionValue.value)
                 return activator;    
-            } catch (Exception ex) {
-                try {
-                    retentionStrategy.validate(retentionStrategy.NON_RETAIN);
-                    ServantLocatorStrategy locator = (ServantLocatorStrategy)
-                            POAPolicyFactory.createPolicy(ZenProperties.getProperty(RequestProcessingStrategy.servantLocatorPath));
-
+            else
+            {
+                exceptionValue.value = RequestProcessingStrategy.NoException;
+                boolean validatePolicy = retentionStrategy.validate(retentionStrategy.NON_RETAIN);
+                ServantLocatorStrategy locator = new ServantLocatorStrategy();
+                if (validatePolicy)
                     return locator;
-                } catch (Exception exception) {
-                    throw new org.omg.PortableServer.POAPackage.InvalidPolicy();
+                else
+                {
+                    exceptionValue.value = RequestProcessingStrategy.InvalidPolicyException;
+                    return null;
                 }
-            }
+            } 
         }
+    
 
-        if (Util.useDefaultServantPolicy(policy)) {
 
-            if (uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID)) {
-                throw new org.omg.PortableServer.POAPackage.InvalidPolicy();
+        if (PolicyUtils.useDefaultServantPolicy(policy)) {
+
+            if (uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID, IntHolder exceptionValue)) 
+            {
+                exceptionValue.value = InvalidPolicyException;
+                return null;
             }
 
             try {
                 DefaultServantStrategy servant = (DefaultServantStrategy)
                         POAPolicyFactory.createPolicy(ZenProperties.getProperty(RequestProcessingStrategy.defaultServantPath));
 
-                servant.initialize(retentionStrategy, threadStrategy);
+                servant.initialize(retentionStrategy, ;
                 return servant;
             } catch (Exception ex2) {
                 throw new org.omg.PortableServer.POAPackage.InvalidPolicy();
             }
         }
 
-        ActiveObjectMapOnlyStrategy aom = (ActiveObjectMapOnlyStrategy)
-                POAPolicyFactory.createPolicy(ZenProperties.getProperty
-                (RequestProcessingStrategy.aomPath));
+        ActiveObjectMapOnlyStrategy aom = new ActiveObjectMapOnlyStrategy();
 
         aom.initialize(retentionStrategy, threadStrategy);
         return aom;
@@ -90,8 +107,36 @@ public abstract class RequestProcessingStrategy {
      * wrong handler is passed as an argument. E.g if a Servant is passed
      * when an Active Object Map is expected.
      */
-    public abstract void setInvokeHandler(java.lang.Object invokeHandler , org.omg.CORBA.IntHolder ih );
- 
+
+    
+    public abstract void setInvokeHandler(java.lang.Object invokeHandler, IntHolder ExceptionValue);
+
+    /**
+     * <code> getRequestProcessor </code> returns the handler that would be used
+     * by the POA to service the request and make the upcall on the servant.
+     * @param type specifies the identity of the request processor e.g AOM,
+     * Default Servant, Servant Locator
+     * @exception org.omg.POAPackage.ObjectNotActive is thrown if the specified
+     * handler is not set in the strategy.
+     * @exception org.omg.POAPackage.WrongPolicy is thrown if there is a
+     * mismatch in the type of handler sepcified in the argument and the strategy.
+     * This method is also used for the purpose of validation in the methods of
+     * the POA for which the appropriate exceptions are thrown. 
+     */
+
+    public abstract java.lang.Object getRequestProcessor(int type, IntHolder exceptionValue); 
+    
+    /**
+     * <code> validate </code> is used for the purpose of validation. Checks if
+     * the strategy is of the  same type as specified in the Argument.
+     * @param type specifies the type of the strategy for which the check is
+     * performed.
+     * @exception org.omg.PortableServer.POAPackage.WrongPolicy is thrown in
+     * case the validation fails.
+     */
+
+    public abstract boolean validate(int type, IntHolder exceptionValue); 
+
     /**
      * <code> handleRequest </code> performs the upcall on the servant,
      * based on the type of strategy that is that is used in the POA.
