@@ -48,14 +48,14 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity
     //public byte[] object_key = new byte[1024];
     //public int object_key_length = 0;
     public FString object_key;
-
+    byte [] object_key1;
 
 
     /**
      * Struct member operation
      */
     public FString operation;
-
+    String operation1;
 
 
     /**
@@ -64,7 +64,34 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity
     //public byte[] requesting_principal = new byte[1024];
     //public int requesting_principal_length = 0;
     public FString requesting_principal;
+    byte [] requesting_principal1;
 
+
+    /**
+     * Default constructor
+     */
+    public RequestHeader()
+    { }
+
+    /**
+     * Constructor with fields initialization
+     * @param service_context service_context struct member
+     * @param request_id request_id struct member
+     * @param response_expected response_expected struct member
+     * @param object_key object_key struct member
+     * @param operation operation struct member
+     * @param requesting_principal requesting_principal struct member
+     */
+    public RequestHeader(FString service_context, int request_id, boolean response_expected,
+                                byte [] object_key, String operation, byte [] requesting_principal)
+    {
+        this.service_context = service_context;
+        this.request_id = request_id;
+        this.response_expected = response_expected;
+        this.object_key1 = object_key;
+        this.operation1 = operation;
+        this.requesting_principal1 = requesting_principal;
+    }
 
 
 }

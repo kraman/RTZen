@@ -47,12 +47,14 @@ public class ServiceContextListHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, ServiceContext[] value)
     {
+        /*
         ostream.write_ulong(ServiceContext.length);
         for (int i7=0; i7<ServiceContext.length; i7++)
         {
             ServiceContextHelper.write(ostream,value[i7]);
 
         }
+        */
     }
 
 }

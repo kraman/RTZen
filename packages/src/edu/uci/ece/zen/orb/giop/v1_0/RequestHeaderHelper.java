@@ -138,17 +138,20 @@ public class RequestHeaderHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, RequestHeader value)
     {
-        /*
-        edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
+        //edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
+        value.service_context.write(ostream);
+        System.out.println("len: " + value.service_context.length());
+        //ostream.write_ulong(0);
+
         ostream.write_ulong(value.request_id);
         ostream.write_boolean(value.response_expected);
-        ostream.write_ulong(value.object_key.length);
-        ostream.write_octet_array(value.object_key, 0,value.object_key.length);
-        ostream.write_string(value.operation);
-        //org.omg.CORBA.OctetSeqHelper.write(ostream,value.requesting_principal);
-        ostream.write_ulong(value.requesting_principal_length);
-        ostream.write_octet_array(value.requesting_principal, 0,value.requesting_principal_length);
-        */
+        ostream.write_ulong(value.object_key1.length);
+        ostream.write_octet_array(value.object_key1, 0,value.object_key1.length);
+        ostream.write_string(value.operation1);
+        org.omg.CORBA.OctetSeqHelper.write(ostream,value.requesting_principal1);
+        //ostream.write_ulong(value.requesting_principal_length);
+        //ostream.write_octet_array(value.requesting_principal, 0,value.requesting_principal_length);
+
     }
 
 }

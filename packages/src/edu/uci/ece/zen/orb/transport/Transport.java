@@ -34,16 +34,16 @@ public abstract class Transport implements Runnable{
         if(ZenProperties.devDbg) System.out.println( RealtimeThread.getCurrentMemoryArea() );
         if(ZenProperties.devDbg) System.out.println( MemoryArea.getMemoryArea(messageProcessor) );
         if(ZenProperties.devDbg) System.out.println( MemoryArea.getMemoryArea(this) );
-        
+
         RealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,messageProcessor );
-        
+
         messageProcessorThr.setDaemon( true );
-		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
-			System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea());
-			System.out.println(javax.realtime.MemoryArea.getMemoryArea(messageProcessorThr) );
-		}
+        if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
+            System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea());
+            System.out.println(javax.realtime.MemoryArea.getMemoryArea(messageProcessorThr) );
+        }
         messageProcessorThr.start();
-        
+
         try{
             synchronized( waitObj ){
                 waitObj.wait();
@@ -52,7 +52,7 @@ public abstract class Transport implements Runnable{
             ie.printStackTrace();
         }
     }
-    
+
     /**
      * <p>
      *     ORBImpl region --&gt; <b>Transport scope</b>
@@ -74,6 +74,7 @@ public abstract class Transport implements Runnable{
      * </p>
      */
     public synchronized final void send( WriteBuffer msg ){
+        if(ZenProperties.devDbg) System.out.println( "Transport send 1" );
         try{
             java.io.OutputStream out = getOutputStream();
             msg.dumpBuffer( out );
@@ -88,7 +89,7 @@ public abstract class Transport implements Runnable{
  * <p>
  *      Transport thread:<br/>
  *      <p>
- *          <b>Transport scope</b> --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt; Waiter region 
+ *          <b>Transport scope</b> --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt; Waiter region
  *      </p>
  *      Client Thread:<br/>
  *      <p>
@@ -109,25 +110,25 @@ class MessageProcessor implements Runnable{
 
     public void run(){
         isActive = true;
-		if(ZenProperties.devDbg) {
-			System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
-		}
+        if(ZenProperties.devDbg) {
+            System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea());
+        }
         GIOPMessageRunnable gmr = new GIOPMessageRunnable( orb , trans );
-         
+
         //ExecuteInRunnable eir = new ExecuteInRunnable();
-         
+
 
         while( isActive ){
-		//ScopedMemory messageScope = ORB.getScopedRegion();
+        //ScopedMemory messageScope = ORB.getScopedRegion();
 
 
-		// Check here to see if we allocate the memmory here
+        // Check here to see if we allocate the memmory here
 
 
             //ImmortalMemory messageScope = ORB.getScopedRegion();
             //gmr.setRequestScope( messageScope );
             //eir.init( gmr , messageScope );
-             
+
             try{
                 //messageScope.enter(gmr);
                 //messageScope.enter(gmr);
@@ -171,7 +172,7 @@ class GIOPMessageRunnable implements Runnable{
      * <p>
      *      Transport thread:<br/>
      *      <p>
-     *          <b>Transport scope</b> --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt; Waiter region 
+     *          <b>Transport scope</b> --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt; Waiter region
      *      </p>
      *      Client Thread:<br/>
      *      <p>
@@ -189,7 +190,7 @@ class GIOPMessageRunnable implements Runnable{
      * <p>
      *      Transport thread:<br/>
      *      <p>
-     *          <b>Transport scope</b> --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt; Waiter region 
+     *          <b>Transport scope</b> --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt; Waiter region
      *      </p>
      *      Client Thread:<br/>
      *      <p>
@@ -200,7 +201,7 @@ class GIOPMessageRunnable implements Runnable{
     public void setRequestScope( ScopedMemory requestScope ){
         this.requestScope = requestScope;
     }
-	
+
 
 
 
@@ -209,7 +210,7 @@ class GIOPMessageRunnable implements Runnable{
      * <p>
      *      Transport thread:<br/>
      *      <p>
-     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; <b>Message</b> --ex in--&gt; ORBImpl scope --&gt; Waiter region 
+     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; <b>Message</b> --ex in--&gt; ORBImpl scope --&gt; Waiter region
      *      </p>
      *      Client Thread:<br/>
      *      <p>
@@ -241,7 +242,7 @@ class GIOPMessageRunnable implements Runnable{
                 }
             }
         }catch( java.io.IOException ioex ){
-            //TODO: do something here    
+            //TODO: do something here
         }
     }
 }
@@ -255,14 +256,14 @@ class WaitingStratergyNotifyRunnable implements Runnable{
      * <p>
      *      Transport thread:<br/>
      *      <p>
-     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; <b>Message</b> --ex in--&gt; ORBImpl scope --&gt; Waiter region 
+     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; <b>Message</b> --ex in--&gt; ORBImpl scope --&gt; Waiter region
      *      </p>
      *      Client Thread:<br/>
      *      <p>
      *          Client scope --ex in --&gt; ORB parent scope --&gt; ORBImpl scope --&gt; <b>Message scope/Waiter region</b> --&gt; Transport scope
      *      </p>
      *  </p>
-     */   
+     */
     WaitingStratergyNotifyRunnable( edu.uci.ece.zen.orb.giop.GIOPMessage message , ScopedMemory waiterRegion ){
         this.message = message;
         this.waiterRegion = waiterRegion;
@@ -280,7 +281,7 @@ class WaitingStratergyNotifyRunnable implements Runnable{
      *          Client scope --ex in --&gt; ORB parent scope --&gt; ORBImpl scope --&gt; <b>Message scope/Waiter region</b> --&gt; Transport scope
      *      </p>
      *  </p>
-     */   
+     */
     public void run(){
         edu.uci.ece.zen.orb.WaitingStrategy waitingStrategy = ((edu.uci.ece.zen.orb.WaitingStrategy) waiterRegion.getPortal());
         CDRInputStream inp = message.getCDRInputStream();

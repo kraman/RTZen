@@ -5,7 +5,8 @@ import edu.uci.ece.zen.orb.giop.*;
 import edu.uci.ece.zen.utils.*;
 import org.omg.RTCORBA.*;
 import org.omg.Messaging.*;
-import org.omg.IOP.*;
+//import org.omg.IOP.*;
+import edu.uci.ece.zen.orb.giop.IOP.ServiceContext;
 
 public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
     public String operation;
@@ -16,9 +17,10 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
     public byte giopMinor;
     public ScopedMemory transportScope;
     public byte[] objectKey;
+    //public FString objectKey;
     public ORB orb;
     private int messageId;
-    public ServiceContext[] contexts;
+    public FString contexts;
 
     /**
      * Client upcall:
@@ -33,10 +35,10 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         this.operation = operation;
         this.responseExpected = responseExpected;
         out = CDROutputStream.instance();
-        
+
         if(ZenProperties.devDbg) System.out.println( "1ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
         if(ZenProperties.devDbg) System.out.println( "1ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
-        
+
         if(ZenProperties.devDbg) System.out.println( "ClientRequest 1" );
         out.init( orb );
         if(ZenProperties.devDbg) System.out.println( "ClientRequest 2" );
@@ -55,7 +57,13 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
 
         if(ZenProperties.devDbg) System.out.println( "2ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
         if(ZenProperties.devDbg) System.out.println( "2ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
+
+        contexts = ServiceContext.instance();
+
         if(del.priorityModel == PriorityModel._CLIENT_PROPAGATED && del.serverPriority >= 0){
+            contexts.append(1); //list size
+            //TODO: I'll do this later
+            /*
             contexts = new ServiceContext[1]; //kludge: of course there will be more than just 1
             contexts[0] = new ServiceContext();
             contexts[0].context_id = RTCorbaPriority.value;
@@ -72,8 +80,10 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
 
             if(ZenProperties.devDbg) System.out.println("CLIENT_PROPAGATED policy -- Sending priority: " + priority);
             out1.free();
+            */
         }else{
-             contexts = new ServiceContext[0];
+            contexts.append(0); //empty list
+             //contexts = new ServiceContext[0];
         }
 
         messageId = WaitingStrategy.newMessageId();
@@ -91,6 +101,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
      * </p>
      */
     public CDRInputStream invoke(){
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest invoke 1" );
         out.updateLength();
         MessageComposerRunnable mcr = new MessageComposerRunnable( this );
         ScopedMemory messageScope = orb.getScopedRegion();
@@ -100,7 +111,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
 
         erOrbMem.init( erMsgMem , orb.orbImplRegion );
         erMsgMem.init( mcr, messageScope );
-
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest invoke 2" );
         try{
             if( orb.parentMemoryArea == RealtimeThread.getCurrentMemoryArea() )
                 erOrbMem.run();
@@ -114,7 +125,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
                 "Could not invoke remote object due to exception: " + e.toString()
                 );
         }
-
+        if(ZenProperties.devDbg) System.out.println( "ClientRequest invoke 3" );
         orb.freeScopedRegion( messageScope );
         if( mcr.success )
             return mcr.getReply();
@@ -202,6 +213,7 @@ class MessageComposerRunnable implements Runnable{
         eir.init( smr , clr.transportScope );
         success = true;
         try{
+            if(ZenProperties.devDbg) System.out.println( "MCR run 1" );
             clr.orb.orbImplRegion.executeInArea( eir );
         }catch( Exception e ){
             ZenProperties.logger.log(

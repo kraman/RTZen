@@ -10,13 +10,13 @@ import javax.realtime.ImmortalMemory;
  */
 public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage {
     private RequestHeader header;
-    private RequestHeader_1_0 headerTmp; // This is for mark to fix
     private static RequestMessage rm;
 
     public RequestMessage() {}
     public RequestMessage( ClientRequest clr , int messageId ){
         super();
-        headerTmp = new RequestHeader_1_0 (
+        if(ZenProperties.devDbg) System.out.println( "RequestMessage1" );
+        header = new RequestHeader (
             clr.contexts,
             messageId,
             clr.responseExpected,

@@ -8,6 +8,7 @@ public class FString{
         FString fs = null;
         try{
             fs = (FString) ImmortalMemory.instance().newInstance( FString.class );
+            fs.init(128);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -56,6 +57,10 @@ public class FString{
         currentSize += length;
     }
 
+    public void write( org.omg.CORBA.portable.OutputStream ostream){
+        ostream.write_octet_array(data, 0, currentSize);
+    }
+
     public void append( byte[] data , int offset , int length ){
         if( currentSize + length < maxSize ){
             //KLUDGE: ERROR here
@@ -74,6 +79,13 @@ public class FString{
 
     public void append( char c ){
         data[currentSize++] = (byte) c;
+    }
+
+    public void append( int value ){
+        data[currentSize++] = (byte) ((value >>> 24) & 0xFF);
+        data[currentSize++] = (byte) ((value >>> 16) & 0xFF);
+        data[currentSize++] = (byte) ((value >>> 8) & 0xFF);
+        data[currentSize++] = (byte) (value & 0xFF);
     }
 
     public void append( long value ){

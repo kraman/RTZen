@@ -9,7 +9,7 @@ import edu.uci.ece.zen.utils.*;
 */
 public final class ServiceContext implements org.omg.CORBA.portable.IDLEntity
 {
-
+/*
     private static final int CAP = 128;
     //private static ServiceContext sc;
     private static ServiceContext [] scList;
@@ -40,6 +40,12 @@ public final class ServiceContext implements org.omg.CORBA.portable.IDLEntity
 
         return scList[pos];
     }
+*/
+    private static FString sc;
+
+    public static FString instance(){
+        return FString.instance(sc);
+    }
 
     /**
      * Struct member context_id
@@ -49,7 +55,7 @@ public final class ServiceContext implements org.omg.CORBA.portable.IDLEntity
     /**
      * Struct member context_data
      */
-    public byte[] context_data = new byte[1024];
+    public byte[] context_data;// = new byte[1024];
     public int context_data_length = 0;
 
 
