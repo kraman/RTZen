@@ -102,7 +102,7 @@ public class DataTypesImpl extends DataTypesPOA
 
     }
 
-    publich unit.test.cdr.DataTypesPackage.str[] echoStructSeq(unit.test.cdr.DataTypesPackage.str[] strseqinVal, unit.test.cdr.DataTypesPackage.strSeqHolder strseqoutVal){
+	public unit.test.cdr.DataTypesPackage.str[] echoStructSeq(unit.test.cdr.DataTypesPackage.str[] strseqinVal, unit.test.cdr.DataTypesPackage.strSeqHolder strseqoutVal){
 
 		if(strseqinVal.length ! = 2){
 			System.out.println("in value length wrong in echoStructSeq");
@@ -110,8 +110,8 @@ public class DataTypesImpl extends DataTypesPOA
 		}
 
 		if(strseqinVal[0].a != 100){
-				System.out.println("in value wrong in echoStructSeq");
-				System.out.println("The expected a value at positon 0 is 100 and the actual value is "+strseqinVal[0].a);
+			System.out.println("in value wrong in echoStructSeq");
+			System.out.println("The expected a value at positon 0 is 100 and the actual value is "+strseqinVal[0].a);
 		}
 
 		if(strseqinVal[0].b != true){
@@ -120,13 +120,13 @@ public class DataTypesImpl extends DataTypesPOA
 		}
 
 		if(strseqinVal[1].a != 101){
-						System.out.println("in value wrong in echoStructSeq");
-						System.out.println("The expected a value at positon 1 is 101 and the actual value is "+strseqinVal[1].a);
-				}
+			System.out.println("in value wrong in echoStructSeq");
+			System.out.println("The expected a value at positon 1 is 101 and the actual value is "+strseqinVal[1].a);
+		}
 
-				if(strseqinVal[1].b != true){
-					System.out.println("in value wrong in echoStructSeq");
-					System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqinVal[1].b);
+		if(strseqinVal[1].b != true){
+			System.out.println("in value wrong in echoStructSeq");
+			System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqinVal[1].b);
 		}
 
 		unit.test.cdr.DataTypes.str str1= new unit.test.cdr.DataTypes.str(104,true);

@@ -210,77 +210,77 @@ public class CDRTestClient extends RealtimeThread
 	}
     }
 
-    public void testStructSeq(){
+	public void testStructSeq(){
 
 		unit.test.cdr.DataTypes.str str1= new unit.test.cdr.DataTypes.str(100,true);
 		unit.test.cdr.DataTypes.str str2= new unit.test.cdr.DataTypes.str(101,true);
 
-	    unit.test.cdr.DataTypes.str strseqinVal[] = new unit.test.cdr.DataTypes.str[2];
+		unit.test.cdr.DataTypes.str[] strseqinVal = new unit.test.cdr.DataTypes.str[2];
 		strseqinVal[0] = str1;
 		strseqinVal[1] = str2;
 
-			unit.test.cdr.DataTypes.str str1= new unit.test.cdr.DataTypes.str(102,false);
-				unit.test.cdr.DataTypes.str str2= new unit.test.cdr.DataTypes.str(103,false);
+		unit.test.cdr.DataTypes.str str3= new unit.test.cdr.DataTypes.str(102,false);
+		unit.test.cdr.DataTypes.str str4= new unit.test.cdr.DataTypes.str(103,false);
 
-			    unit.test.cdr.DataTypes.str strseqArr[] = new unit.test.cdr.DataTypes.str[2];
-				strseqArr[0] = str1;
-				strseqArr[1] = str2;
+		unit.test.cdr.DataTypes.str[] strseqArr = new unit.test.cdr.DataTypes.str[2];
+		strseqArr[0] = str3;
+		strseqArr[1] = str4;
 
-				unit.test.cdr.DataTypes.strSeqHolder strseqoutVal=  new unit.test.cdr.DataTypes.strSeqHolder(strseqArr);
+		unit.test.cdr.DataTypes.strSeqHolder strseqoutVal=  new unit.test.cdr.DataTypes.strSeqHolder(strseqArr);
 
-				unit.test.cdr.DataTypes.str strseqretVal[] = echoStructSeq( strseqinVal, strseqoutVal);
+		unit.test.cdr.DataTypes.str[] strseqretVal = stub.echoStructSeq( strseqinVal, strseqoutVal);
 
-				if(strseqretVal.length ! = 2){
-							System.out.println("return value length wrong in echoStructSeq");
-							System.out.println("The expected lenght is 2 and the actual lenght is "+strseqretVal.length);
+		if(strseqretVal.length ! = 2){
+			System.out.println("return value length wrong in echoStructSeq");
+			System.out.println("The expected lenght is 2 and the actual lenght is "+strseqretVal.length);
 		}
 
-          if(strseqretVal[0].a != 100){
-		  				System.out.println("return value wrong in echoStructSeq");
-		  				System.out.println("The expected a value at positon 0 is 100 and the actual value is "+strseqretVal[0].a);
-		  		}
+		if(strseqretVal[0].a != 100){
+			System.out.println("return value wrong in echoStructSeq");
+			System.out.println("The expected a value at positon 0 is 100 and the actual value is "+strseqretVal[0].a);
+		}
 
-		  		if(strseqretVal[0].b != true){
-		  			System.out.println("return value wrong in echoStructSeq");
-		  			System.out.println("The expected b value at positon 0 is true and the actual value is "+strseqretVal[0].b);
-		  		}
+		if(strseqretVal[0].b != true){
+			System.out.println("return value wrong in echoStructSeq");
+			System.out.println("The expected b value at positon 0 is true and the actual value is "+strseqretVal[0].b);
+		}
 
-		  		if(strseqretVal[1].a != 101){
-		  						System.out.println("return value wrong in echoStructSeq");
-		  						System.out.println("The expected a value at positon 1 is 101 and the actual value is "+strseqretVal[1].a);
-		  				}
+		if(strseqretVal[1].a != 101){
+			System.out.println("return value wrong in echoStructSeq");
+			System.out.println("The expected a value at positon 1 is 101 and the actual value is "+strseqretVal[1].a);
+		}
 
-		  				if(strseqretVal[1].b != true){
-		  					System.out.println("return value wrong in echoStructSeq");
-		  					System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqretVal[1].b);
-		  		}
+		if(strseqretVal[1].b != true){
+			System.out.println("return value wrong in echoStructSeq");
+			System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqretVal[1].b);
+		}
 
-		  		if(strseqoutVal.length ! = 2){
-							System.out.println("out value length wrong in echoStructSeq");
-							System.out.println("The expected lenght is 2 and the actual lenght is "+strseqoutVal.length);
+		if(strseqoutVal.value.length ! = 2){
+			System.out.println("out value length wrong in echoStructSeq");
+			System.out.println("The expected lenght is 2 and the actual lenght is "+strseqoutVal.value.length);
 		}
 
 
-		  		      if(strseqoutVal[0].a != 104){
-						  				System.out.println("out value wrong in echoStructSeq");
-						  				System.out.println("The expected a value at positon 0 is 104 and the actual value is "+strseqoutVal[0].a);
-						  		}
+		if(strseqoutVal.value[0].a != 104){
+			System.out.println("out value wrong in echoStructSeq");
+			System.out.println("The expected a value at positon 0 is 104 and the actual value is "+strseqoutVal.value[0].a);
+		}
 
-						  		if(strseqoutVal[0].b != true){
-						  			System.out.println("out value wrong in echoStructSeq");
-						  			System.out.println("The expected b value at positon 0 is true and the actual value is "+strseqoutVal[0].b);
-						  		}
+		if(strseqoutVal.value[0].b != true){
+			System.out.println("out value wrong in echoStructSeq");
+			System.out.println("The expected b value at positon 0 is true and the actual value is "+strseqoutVal.value[0].b);
+		}
 
-						  		if(strseqoutVal[1].a != 105){
-						  						System.out.println("out value wrong in echoStructSeq");
-						  						System.out.println("The expected a value at positon 1 is 105 and the actual value is "+strseqoutVal[1].a);
-						  				}
+		if(strseqoutVal.value[1].a != 105){
+			System.out.println("out value wrong in echoStructSeq");
+			System.out.println("The expected a value at positon 1 is 105 and the actual value is "+strseqoutVal.value[1].a);
+		}
 
-						  				if(strseqoutVal[1].b != true){
-						  					System.out.println("out value wrong in echoStructSeq");
-						  					System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqoutVal[1].b);
-		  		}
-			}
+		if(strseqoutVal.value[1].b != true){
+			System.out.println("out value wrong in echoStructSeq");
+			System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqoutVal.value[1].b);
+		}
+	}
 
 
 
