@@ -40,14 +40,25 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
     protected TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey){
 
         Version version = new Version(iiopMajorVersion, iiopMinorVersion);
-
-        ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey);
-
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN
 
-        ProfileBody_1_0Helper.write(out, pb10);
+        switch(iiopMinorVersion){
+            case 0:
+
+                ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey);
+                ProfileBody_1_0Helper.write(out, pb10);
+
+            break;
+            case 1:
+                org.omg.IOP.TaggedComponent[] components = new org.omg.IOP.TaggedComponent[0];
+                //TODO: insert rt policy info and other tagged components
+                ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey, components);
+                ProfileBody_1_1Helper.write(out, pb11);
+
+            break;
+        }
 
         TaggedProfile tp = new TaggedProfile();
         tp.tag = TAG_INTERNET_IOP.value;
