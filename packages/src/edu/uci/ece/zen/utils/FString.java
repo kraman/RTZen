@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2005 by the University of California, Irvine
  * All Rights Reserved.
- * 
+ *
  * This software is released under the terms of the RTZen license, which
  * you should have received along with this software. If not, you may
  * obtain a copy here: http://zen.ece.uci.edu/rtzen/license.php
@@ -33,7 +33,7 @@ public class FString {
         int preAlloc = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.fstring.preAllocate" , "5" ) );
         FString.preAllocate( preAlloc );
     }
-    
+
     private static void preAllocate( int num ){
         try{
             for( int i=0;i<num;i++ ){
@@ -50,7 +50,7 @@ public class FString {
         if( ret != null ){
             ret.reset();
         }
-        else 
+        else
             ret = fromImmortal();
         ret.free = false;
         return ret;
@@ -514,9 +514,9 @@ public class FString {
      * Convert an array of bytes into a string, using the inverse algorithm as
      * in stringToCDRByteArray
      */
-    public static String byteArrayToString(byte[] b) {
-        int bLen = b.length;
-        int resultLen = 4 + 2 * b.length;
+    public static String byteArrayToString(byte[] b, int length) {
+        int bLen = length;
+        int resultLen = 4 + 2 * length;
         StringBuffer result = new StringBuffer(resultLen);
 
         for (int src = 0; src < bLen; src++) {
@@ -528,6 +528,14 @@ public class FString {
         }
 
         return result.toString();
+    }
+
+   /**
+     * Convert an array of bytes into a string, using the inverse algorithm as
+     * in stringToCDRByteArray
+     */
+    public static String byteArrayToString(byte[] b) {
+        return byteArrayToString(b, b.length);
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2005 by the University of California, Irvine
  * All Rights Reserved.
- * 
+ *
  * This software is released under the terms of the RTZen license, which
  * you should have received along with this software. If not, you may
  * obtain a copy here: http://zen.ece.uci.edu/rtzen/license.php
@@ -34,7 +34,7 @@ import edu.uci.ece.zen.orb.protocol.*;
  *
  * @author Krishna Raman
  * @author Bruce Miller
- * @author Mark Panahi 
+ * @author Mark Panahi
  * @author Yue Zhang
  * @version $Revision: 1.8 $ $Date: 2004/08/01 09:25:19 $
  */
@@ -47,9 +47,9 @@ public final class GIOPMessageFactory extends MessageFactory{
             throws java.io.IOException {
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(330);
         ReadBuffer buffer = ReadBuffer.instance();
-        
+
         buffer.init();
-        
+
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(331);
 
         Object obj = trans.getObject(3);
@@ -88,7 +88,18 @@ public final class GIOPMessageFactory extends MessageFactory{
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
 
 
-            if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log ("In MessageFactory, the message size is " + mainMsgHdr.messageSize);
+            if (ZenBuildProperties.dbgInvocations){
+                ZenProperties.logger.log ("In MessageFactory, the message size is " + mainMsgHdr.messageSize
+                    + " message: " + buffer.toString());
+
+                //Krishna, reenable this for octseq bug
+                //if(buffer.getLimit()>1000){
+                //    byte [] barr = new byte[1076];
+                //    buffer.readByteArray(barr, 0, 1076);
+                //    ZenProperties.logger.log(FString.byteArrayToString(barr));
+                //    System.exit(-1);
+                //}
+            }
 
             if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log
                             ("Inside MessageFactory and mainMsgHdr: "
@@ -460,7 +471,7 @@ public final class GIOPMessageFactory extends MessageFactory{
                     rh.service_context.append(org.omg.IOP.RTCorbaPriority.value);
                     rh.service_context.append(4); //length of data
                     rh.service_context.append((int) req.getPriority());
-                    
+
                     if(ZenBuildProperties.dbgInvocations)
                         ZenProperties.logger.log("Sending CLIENT PROPAGATED service context back to client with priority " + req.getPriority());
                 } else {

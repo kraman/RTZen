@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2005 by the University of California, Irvine
  * All Rights Reserved.
- * 
+ *
  * This software is released under the terms of the RTZen license, which
  * you should have received along with this software. If not, you may
  * obtain a copy here: http://zen.ece.uci.edu/rtzen/license.php
@@ -166,11 +166,10 @@ public class WriteBuffer {
 
     public String toString(){
 
-        byte [] newarr = new byte[(int)position];
-        byte [] buf = (byte[]) buffers.elementAt((int) (position / 1024));
+        byte [] newarr = new byte[(int)limit];
 
-        for(int i = 0; i < position; ++i)
-            newarr[i] = buf[i];
+        for(int i = 0; i < limit; ++i)
+            newarr[i] = ((byte[]) buffers.elementAt((int) (i / 1024)))[i%1024];
 
         return FString.byteArrayToString(newarr) + "\n\nposition: " + position;
     }
@@ -238,6 +237,7 @@ public class WriteBuffer {
     }
 
     public void writeByte(byte v) {
+        //if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Write byte: " + v);
         ensureCapacity(1);
         byte[] buffer = (byte[]) buffers.elementAt((int) (position / 1024));
         buffer[(int) (position % 1024)] = v;
@@ -246,15 +246,20 @@ public class WriteBuffer {
     }
 
     public void writeByteArray(byte[] v, int offset, int length) {
-        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(505);
+        /*
+        if (ZenBuildProperties.dbgIOR){
+
+            ZenProperties.logger.log("Write byte arr: " + FString.byteArrayToString(v, length));
+            for (int i = 0; i < length; i++)
+                System.out.println(i + "=" + v[i] + " ");
+        }*/
+
         ensureCapacity(length);
-        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(506);
         while (length > 0) {
             byte[] buffer = (byte[]) buffers.elementAt((int) (position / 1024));
             int curBufPos = (int) (position % 1024);
             int copyLength = 1024 - curBufPos;
             if (copyLength > length) copyLength = length;
-//        edu.uci.ece.zen.utils.Logger.printMemStatsImm(507);
             System.arraycopy(v, offset, buffer, curBufPos, copyLength);
             offset += copyLength;
             length -= copyLength;

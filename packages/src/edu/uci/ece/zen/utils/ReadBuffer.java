@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2005 by the University of California, Irvine
  * All Rights Reserved.
- * 
+ *
  * This software is released under the terms of the RTZen license, which
  * you should have received along with this software. If not, you may
  * obtain a copy here: http://zen.ece.uci.edu/rtzen/license.php
@@ -55,7 +55,7 @@ public class ReadBuffer {
             ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, "preAllocate", "Unable to pre-allocate");
         }
     }
-    
+
     static int idgen = 0;
     int id;
 
@@ -134,10 +134,9 @@ public class ReadBuffer {
     public String toString(){
 
         byte [] newarr = new byte[(int)limit];
-        byte [] buf = (byte[]) buffers.elementAt((int) (limit / 1024));
 
         for(int i = 0; i < limit; ++i)
-            newarr[i] = ((byte[]) buffers.elementAt((int) (limit / 1024)))[i%1024];
+            newarr[i] = ((byte[]) buffers.elementAt((int) (i / 1024)))[i%1024];
 
         return FString.byteArrayToString(newarr) + "\n\nlimit: " + limit;
     }
@@ -223,7 +222,7 @@ public class ReadBuffer {
     }
 
     public void writeByteArray(byte[] v, int offset, int length) {
-        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("ReadBuffer: writing byte arr of len " + length);
+        //if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("ReadBuffer: writing byte arr of len " + length);
 
         ensureCapacity(length);
         while (length > 0) {
@@ -370,6 +369,7 @@ public class ReadBuffer {
     }
 
     public byte readByte() {
+
         if (ZenBuildProperties.dbgInvocations)
             if(!inUse){
                 ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
@@ -381,10 +381,12 @@ public class ReadBuffer {
         byte[] curBuf = (byte[]) buffers.elementAt((int) (position / 1024));
         byte ret = curBuf[(int) (position % 1024)];
         position++;
+        //if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Read byte : " + ret);
         return ret;
     }
 
     public void readByteArray(byte[] v, int offset, int length) {
+
         if (ZenBuildProperties.dbgInvocations)
             if(!inUse){
                 ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
@@ -402,6 +404,13 @@ public class ReadBuffer {
             length -= bytesLeft;
             position += bytesLeft;
         }
+        /*
+        if (ZenBuildProperties.dbgIOR){
+            ZenProperties.logger.log("Read byte arr: " + FString.byteArrayToString(v, length));
+            for (int i = 0; i < v.length; i++)
+                System.out.println(i + "=" + v[i] + " ");
+
+        }*/
     }
 
     public short readShort() {
