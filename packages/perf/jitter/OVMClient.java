@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
 public class OVMClient extends RealtimeThread
 {
 	public static final int warmUpIterations =   1000;
-	public static final int iterations       = 1000;
+	public static final int iterations       = 10000;
 
 	public static int seqSize = 4; //default value of seqSize, can change by arguments
 
