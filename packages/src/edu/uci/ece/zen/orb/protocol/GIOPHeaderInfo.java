@@ -1,7 +1,6 @@
-package edu.uci.ece.zen.orb.giop;
+package edu.uci.ece.zen.orb.protocol;
 
 import javax.realtime.ImmortalMemory;
-
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 
@@ -10,18 +9,13 @@ import edu.uci.ece.zen.utils.Logger;
  * header.
  * 
  * @author Bruce Miller
+ * @author Krishna Raman
  */
-public class GIOPHeaderInfo {
+public class HeaderInfo {
     public boolean nextMessageIsFragment = false;
-
     public int messageSize = 0;
-
     public boolean isLittleEndian;
-
-    public byte giopMajorVersion;
-
-    public byte giopMinorVersion;
-
+    public byte majorVersion;
+    public byte minorVersion;
     public byte messageType;
-
 }
