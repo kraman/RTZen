@@ -31,6 +31,38 @@ public class DataTypesImpl extends DataTypesPOA
 	        return dretVal;
     }
 
+    public boolean echoBoolean( boolean binVal , org.omg.CORBA.BooleanHolder boutVal)
+	    {
+			 if(binVal != true){
+									System.out.println("in value wrong in echoBoolean()");
+									System.out.println("The expected value is true and the actual value is "+binVal);
+				    }
+
+	        boolean bretVal = binVal;
+	        boutVal.value = false;
+
+	        return bretVal;
+	    }
+
+	    public String echoString( String sinVal , org.omg.CORBA.StringHolder soutVal)
+		    {
+
+				if(sinVal != true){
+													System.out.println("in value wrong in echoString()");
+													System.out.println("The expected value is "in String" and the actual value is "+sinVal);
+				    }
+
+		        String sretVal = sinVal;
+		        soutVal.value = "After";
+
+		        //System.out.println("[server]In Value Received:"+ sinVal);
+		        //System.out.println("[server]Out Value Sent to the Client:"+ soutVal.value);
+		        //System.out.println("InOut Value:"+ inOutVal.value);
+		        //System.out.println("[server]Returning Value from server:"+sretVal);
+		        return sretVal;
+    }
+
+
     /*
 
     public int echoLong( int iinVal , org.omg.CORBA.IntHolder ioutVal){

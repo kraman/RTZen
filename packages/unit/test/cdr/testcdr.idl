@@ -26,6 +26,11 @@ module unit{
 
             short echoShort( in short inVal ,  out short outVal );
             double echoDouble( in double inVal ,  out double outVal);
+            boolean echoBoolean( in boolean inVal ,  out boolean outVal);
+            string echoString( in string inVal ,  out string outVal);
+            
+            
+            
 /*            long echoLong( in long inVal ,  out long outVal );
             long long echoLongLong( in long long inVal ,  out long long  outVal);
             ushort echoUShort( in ushort inVal ,  out ushort outVal ); */
@@ -39,9 +44,9 @@ module unit{
             fixed echoFixed( in fixed inVal ,  out fixed outVal );
             char echoChar( in char inVal ,  out char outVal );
             wchar echoWChar( in wchar inVal ,  out wchar outVal );
-            string echoString( in string inVal ,  out string outVal);
+            
             wstring echoWString( in wstring inVal ,  out wstring outVal);
-            boolean echoBoolean( in boolean inVal ,  out boolean outVal);
+            
             octet echoOctet( in octet inVal ,  out octet outVal ); 
                         
                    

@@ -96,6 +96,49 @@ public class CDRTestClient extends RealtimeThread
 		}
 	}
 
+	public void testBoolean(){
+
+	        boolean binVal = true;
+	        org.omg.CORBA.BooleanHolder boutVal =
+	                                new org.omg.CORBA.BooleanHolder(true);
+	        boolean bretVal = datatypes.echoBoolean( binVal, boutVal);
+	        if(bretVal != true){
+						System.out.println("return value wrong in echoBoolean()");
+						System.out.println("The expected value is true and the actual value is "+bretVal);
+					}
+
+					if(boutVal.value != false){
+						System.out.println("out value wrong in echoBoolean()");
+						System.out.println("The expected value is false and the actual value is "+boutVal);
+
+		}
+
+    }
+
+
+    public void testString()
+	    {
+
+	        String sinVal = "in String";
+	        StringHolder soutVal = new StringHolder("Before");
+	        String sretVal = datatypes.echoString( sinVal, soutVal);
+
+
+	        if(sretVal != "in String"){
+									System.out.println("return value wrong in echoString()");
+									System.out.println("The expected value is "in String" and the actual value is "+sretVal);
+								}
+
+								if(boutVal.value != "After"){
+									System.out.println("out value wrong in echoString()");
+									System.out.println("The expected value is "After" and the actual value is "+soutVal);
+
+		}
+
+
+
+    }
+
 
 	/*
     public void testLong(){
@@ -139,35 +182,7 @@ public class CDRTestClient extends RealtimeThread
         (coutVal.value == 'O')?:System.out.println("out value wrong in echoChar()");
     }
 
-	public void testString()
-    {
 
-        String sinVal = "in String";
-        StringHolder soutVal = new StringHolder("Before");
-        //System.out.println("[client]InValue Sent to Server:"+ sinVal);
-        //System.out.println("[client]Out value before = "+ soutVal.value);
-        String sretVal = datatypes.echoString( sinVal, soutVal);
-		assertEquals("in String", sretVal);
-        assertEquals("out Value", soutVal.value);
-        //System.out.println("[client]Out value after= "+ soutVal.value);
-        //System.out.println("[client]Received Returned Value = "+ sretVal);
-    }
-
-	public void testBoolean()
-    {
-
-        boolean binVal = true;
-        org.omg.CORBA.BooleanHolder boutVal =
-                                new org.omg.CORBA.BooleanHolder(true);
-        //System.out.println("[client]InValue Sent to Server:"+ binVal);
-        //System.out.println("[client]Out value before = "+ boutVal.value);
-
-        boolean bretVal = datatypes.echoBoolean( binVal, boutVal);
-		assertEquals(true, bretVal);
-        assertEquals(false, boutVal.value);
-        //System.out.println("[client]Out value after= "+ boutVal.value);
-        //System.out.println("[client]Received Returned Value = "+ bretVal);
-    }
 
 	public void testDouble()
     {
