@@ -625,14 +625,14 @@ public class NamingContextExtImpl extends NamingContextExtPOA {
 		// TODO: Throw InvalidAddress if addr is malformed
 		// TODO: Throw InvalidName if sn is malformed
 
-		try
-		{
-			return "corbaloc:" +
-					URLEncoder.encode(addr, "UTF-8") +
-					"/" +
-					URLEncoder.encode(sn, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e)
+//		try
+//		{
+		    // foundation.jar (tjvm) complains about it.
+		    //return "corbaloc:" + URLEncoder.encode(addr, "UTF-8") + 
+		    //       "/" + URLEncoder.encode(sn, "UTF-8");
+			return "corbaloc:" + URLEncoder.encode(addr) + "/" + URLEncoder.encode(sn);
+//		}
+/*		catch (UnsupportedEncodingException e)
 		{
 			String unencodedURL = "corbaloc:" + addr + "/" + sn;
             ZenProperties.logger.log(
@@ -643,7 +643,7 @@ public class NamingContextExtImpl extends NamingContextExtPOA {
                     );
             //Logger.error("UTF-8 encoding is not supported by the current runtime system. URL will be returned without encoding: " + unencodedURL);
 			return unencodedURL;
-		}
+		}*/
 	}
 
     public org.omg.CORBA.Object resolve_str(java.lang.String sn) throws
