@@ -174,10 +174,10 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.SEVERE,
-                "edu.uci.ece.zen.orb.ClientRequest",
+                getClass(),
                 "invoke()",
-                "Could not invoke remote object due to exception: " + e.toString()
-                );
+                "Could not invoke remote object",
+				e);
         }
                 //edu.uci.ece.zen.utils.Logger.printMemStats(310);
         if(ZenProperties.devDbg) System.out.println( "ClientRequest invoke 3" );
@@ -296,10 +296,10 @@ class MessageComposerRunnable implements Runnable{
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.SEVERE,
-                "edu.uci.ece.zen.orb.MessageComposerRunnable",
+                getClass(),
                 "run",
-                "Could not sent message on transport due to exception: " + e.toString()
-                );
+                "Could not sent message on transport",
+				e);
             clr.releaseWaiter();
             waitingStrategy = null;
             success = false;
