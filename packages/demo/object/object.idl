@@ -1,0 +1,11 @@
+module demo{
+    module object{
+        interface TestObject{
+            string getName();            
+        };
+        interface ExchangeObject{
+            Object exchange(in Object inVal, out Object outVal);
+        };
+    };
+};
+
