@@ -83,6 +83,7 @@ public class WriteBuffer {
     }
 
     public void free() {
+        //Thread.dumpStack();
         ByteArrayCache cache = ByteArrayCache.instance();
         for (int i = 0; i < buffers.size(); i++)
             cache.returnByteArray((byte[]) buffers.elementAt(i));
@@ -98,6 +99,7 @@ public class WriteBuffer {
     private void ensureCapacity(int size) {
         if (size <= 0) return;
         while (position + size > capacity) {
+            //Thread.dumpStack();
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
             capacity += byteArray.length;
             buffers.addElement(byteArray);

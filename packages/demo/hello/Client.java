@@ -18,6 +18,8 @@ public class Client extends RealtimeThread
 {
     public static void main(String[] args) throws Exception
     {
+        if(args.length > 0)
+            runNum = Integer.parseInt(args[0]);
         System.out.println( "=====================Creating RT Thread in client==========================" );
         RealtimeThread rt = (Client) ImmortalMemory.instance().newInstance( Client.class );
         System.out.println( "=====================Starting RT Thread in client==========================" );
@@ -28,13 +30,15 @@ public class Client extends RealtimeThread
         //super(null,new LTMemory(3000,300000));
     }
 
-    public static final int runNum = 5000;
+    public static int warmupNum = 500;
+    public static int runNum = 50000;
 
     public void run()
     {
         try
         {
-            System.out.println( "=====================Calling ORB Init in client============================" );
+
+           System.out.println( "=====================Calling ORB Init in client============================" );
             ORB orb = ORB.init((String[])null, null);
             System.out.println( "=====================ORB Init complete in client===========================" );
             String ior = "";
@@ -47,7 +51,7 @@ public class Client extends RealtimeThread
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
             System.out.println( server.getMessage() );
 
-
+/*
             // Create a scope for running requests in, so that we don't waste the scope we are in.
             ScopedMemory sm = new LTMemory(32000, 100000);
             Runnable r = new Runnable() {
@@ -55,11 +59,14 @@ public class Client extends RealtimeThread
                     server.getMessage();
                 }
             };
-
+*/
             System.out.println( "====================== Performance warmup =================================" );
-            for( int i=0;i<runNum;i++ ){
-                sm.enter(r);
-                if(i % 500 == 0){
+            for( int i=0;i<warmupNum;i++ ){
+                
+                server.getMessage();
+                //sm.enter(r);
+                if(i % 100 == 0){
+                
                     Logger.write(i);
                     Logger.writeln();
                 }
@@ -68,8 +75,8 @@ public class Client extends RealtimeThread
             System.out.println( "====================== Performance benchmark ==============================" );
             long start = System.currentTimeMillis();
             for( int i=0;i<runNum;i++ ){
-                //server.getMessage();
-                sm.enter(r);
+                server.getMessage();
+                //sm.enter(r);
                 if(i % 500 == 0){
                     Logger.write(i);
                     Logger.writeln();
@@ -77,7 +84,7 @@ public class Client extends RealtimeThread
             }
             long end = System.currentTimeMillis();
 
-            System.err.println( runNum/((end-start)/((double)runNum)) );
+            System.err.println( (double)runNum/((end-start)/1000.0));
             System.exit(0);
         }
         catch (Exception e)
