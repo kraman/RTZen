@@ -57,7 +57,7 @@ public class MSGRunnable implements Runnable{
         }catch( Exception e ){
             e.printStackTrace();
         }
-        //((Transport)( (ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal()).send(wb);
+        //((Transport)( rm.getTransport() ).getPortal()).send(wb);
     }
 }
 

@@ -26,7 +26,7 @@ public abstract class RequestMessage extends GIOPMessage {
     public void associatePOA( Object poa ){
         this.poa=poa;
     }
-    public Object getAssociatedPoa(){ return poa; }
+    public Object getAssociatedPOA(){ return poa; }
 
     // Abstract declarations in addition to those in GIOPMessage 
     public abstract FString getServiceContexts();

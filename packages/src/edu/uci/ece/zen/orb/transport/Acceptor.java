@@ -71,9 +71,15 @@ class AcceptorLogic implements Runnable{
 
     public void run(){
         AcceptRunnable runnable = new AcceptRunnable( acc );
+        ExecuteInRunnable eir = new ExecuteInRunnable();
         while( acc.isActive ){
-            ScopedMemory transportMem = acc.orb.getScopedRegion();
-            transportMem.enter( runnable );
+            try{
+                ScopedMemory transportMem = acc.orb.getScopedRegion();
+                eir.init( runnable , transportMem );
+                acc.orb.orbImplRegion.executeInArea( eir );
+            }catch( Exception e ){
+                e.printStackTrace();
+            }
         }
     }
 }
@@ -99,7 +105,6 @@ class ProfileRunnable implements Runnable{
     public TaggedProfile getRetVal(){ return retVal; }
 
     public void run(){
-
         retVal = acc.getInternalProfile(major, minor, objKey);
     }
 }

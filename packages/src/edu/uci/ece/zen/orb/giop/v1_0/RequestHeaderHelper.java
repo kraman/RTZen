@@ -99,8 +99,8 @@ public class RequestHeaderHelper
      */
     public static RequestHeader read(org.omg.CORBA.portable.InputStream istream)
     {
-
         RequestHeader new_one = RequestHeader.instance();
+        System.out.println( "In request header read" );
 
         new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.
                 read(istream,FString.instance(new_one.service_context));

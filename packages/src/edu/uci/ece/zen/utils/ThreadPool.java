@@ -215,17 +215,23 @@ class ThreadSleepRunnable implements Runnable{
 
                 //process the task in the portal of the scoped region
                 ir.init( task );
-                eir.init( ir , ((edu.uci.ece.zen.poa.POA)task.getAssociatedPoa()).poaMemoryArea );
+                System.out.println( "HandleRequestRunnable finished in ThreadPool" );
+                System.out.println( task.getAssociatedPOA() );
+                eir.init( ir , ((edu.uci.ece.zen.poa.POA)task.getAssociatedPOA()).poaMemoryArea );
+                System.out.println( "Calling executeInArea on HandleRequestRunnable" );
                 try{
                     lane.tp.orb.orbImplRegion.executeInArea( eir );
                 }catch( Exception e ){
                     e.printStackTrace();
                 }
+                System.out.println( "Returned executeInArea on HandleRequestRunnable" );
                 task = null;
             }
         }catch( InterruptedException e ){
             ZenProperties.logger.log( Logger.INFO , "edu.uci.ece.zen.utils.ThreadSleepRunnable" , "run()" , "Recieved an Interrupt exception. Shutting down." );
             //Ignore. Expected while shutting down.
+        }catch( Exception e1 ){
+            e1.printStackTrace();
         }
     }
 

@@ -157,7 +157,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
 
         ScopedMemory sm = poa.getORB().getScopedRegion();
 
-        MSGRunnable msgr = poa.getORB().getMSGR();
+        MSGRunnable msgr = getMSGR();
         msgr.init(request, myServant , reply, poa.getORB());
         sm.enter(msgr);
         poa.getORB().freeScopedRegion(sm);
@@ -208,4 +208,21 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         }*/
         //return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
     }
+
+    //TODO: Cache this in a queue
+    private MSGRunnable msgr;
+    private MSGRunnable getMSGR()
+    {
+        try
+        {
+            if (msgr == null)
+                msgr = new MSGRunnable();
+            return msgr;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

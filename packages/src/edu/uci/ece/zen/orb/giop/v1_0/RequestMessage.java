@@ -40,7 +40,6 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
         return null;
     }
 
-
     public RequestMessage( ORB orb , ReadBuffer stream ){
         super( orb , stream );
         header = RequestHeaderHelper.read( istream );
