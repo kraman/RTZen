@@ -14,6 +14,8 @@ import org.omg.CORBA.ORB;
 
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.NativeTimeStamp;
+import org.omg.RTCORBA.maxPriority;
+import org.omg.RTCORBA.minPriority;
 
 /**
  * This class implements a simple Client for the Hello World CORBA
@@ -30,6 +32,7 @@ public class Client2 extends NoHeapRealtimeThread
     public static final int RUN_NUM = 10000;
     public static final int ARRAY_SIZE = 10;
     public static final int WARM_UP = 3000;
+    public static short priority = maxPriority.value;
 
     static int[] array1 = new int[ARRAY_SIZE];
 
@@ -99,11 +102,12 @@ public class Client2 extends NoHeapRealtimeThread
             NativeTimeStamp.Init(1, 20.0);
             System.out.println( "===================NativeTimeStamp gets initialized================" );
 
-            org.omg.RTCORBA.Current rtcur = 
+            org.omg.RTCORBA.Current rtcur =
                     org.omg.RTCORBA.CurrentHelper.narrow(
                     orb.resolve_initial_references("RTCurrent"));
-            rtcur.the_priority(org.omg.RTCORBA.maxPriority.value);
-            
+
+            rtcur.the_priority(priority);
+
             sleep(INITIAL_SLEEP);
 
             System.out.println("==============Warm Up 2==============");
@@ -133,7 +137,7 @@ public class Client2 extends NoHeapRealtimeThread
                 NativeTimeStamp.RecordTime(22);
 
                 sleep(REQUEST_SLEEP);
-                
+
                 if (i != 0 && i % 500 == 0)
                 {
                     Logger.write(id);

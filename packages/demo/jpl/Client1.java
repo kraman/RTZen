@@ -12,6 +12,8 @@ import org.omg.CORBA.ORB;
 import edu.uci.ece.zen.utils.Logger;
 
 import edu.uci.ece.zen.utils.NativeTimeStamp;
+import org.omg.RTCORBA.maxPriority;
+import org.omg.RTCORBA.minPriority;
 
 /**
  * This class implements a simple CORBA client
@@ -26,6 +28,7 @@ public class Client1 extends RealtimeThread
     public static final int RUN_NUM = 10000;
     public static final int ARRAY_SIZE = 200;
     public static final int WARM_UP = 3000;
+    public static short priority = minPriority.value;
 
     static int[] array1 = new int[ARRAY_SIZE];
 
@@ -105,12 +108,12 @@ public class Client1 extends RealtimeThread
             NativeTimeStamp rtts = new NativeTimeStamp();
             NativeTimeStamp.Init(1, 20.0);
             System.out.println( "===================NativeTimeStamp gets initialized 1================" );
-            
-            org.omg.RTCORBA.Current rtcur = 
+
+            org.omg.RTCORBA.Current rtcur =
                     org.omg.RTCORBA.CurrentHelper.narrow(
                     orb.resolve_initial_references("RTCurrent"));
-            rtcur.the_priority(org.omg.RTCORBA.minPriority.value);
-            
+            rtcur.the_priority(priority);
+
             sleep(INITIAL_SLEEP);
 
             System.out.println("==============Warm Up 1==============");

@@ -85,9 +85,6 @@ public class Server extends RealtimeThread
 
             int threadPoolId, threadPoolId2;
 
-
-
-
             if(isClientPropagated){
                 System.out.println("[Server] Using client-propagated policy.....");
                 Policy[] policy = new Policy[2];
@@ -321,6 +318,8 @@ public class Server extends RealtimeThread
         System.err.println("\t-lp "+ minPriority.value+"-" + maxPriority.value + "\tPriority of low-priority task. Defaults to CORBA min if not specified.");
         System.err.println("\t-hp "+ minPriority.value+"-" + maxPriority.value + "\tPriority of high-priority task. Defaults to CORBA max if not specified.");
         System.err.println("\t-st 1-10\tNumber of static threads to use. Defaults to 1.");
+        System.err.println("\tIMPORTANT: Make sure client priorities match the ones offered by the server!!!");
+        System.err.println("\t           Please see client usage parameters.");
         System.exit(-1);
     }
 
