@@ -57,6 +57,7 @@ public abstract class Acceptor {
     }
 
     public final void startAccepting( int priority ) {
+        //System.out.println("Priority="+priority);
         this.priority = priority;
         acceptorLogic = new AcceptorLogic(this);
         isActive = true;
