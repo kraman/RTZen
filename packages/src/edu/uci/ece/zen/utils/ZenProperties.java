@@ -36,6 +36,7 @@ public final class ZenProperties{
     private static boolean isInit = false;
 
     private static synchronized void init(){
+        System.out.println("The current memory region in ZenProperties.init() is "+ javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
         if( isInit )
             return;
         isInit = true;
