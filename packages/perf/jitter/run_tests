@@ -1,9 +1,5 @@
 #!/bin/sh
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/timesys/rtsj-ri/lib/:/opt/timesys/rtsj-ri/pthreadrt
-export LD_ASSUME_KERNEL=2.4.1
-
 PROGNAME=$0
-
 
 function printUsage() {
 	echo "ERROR: $1"
@@ -22,6 +18,10 @@ function printUsage() {
 }
 
 
+
+
+
+
 # stoptoken filename (contains the PID)
 STOPFNAME=$PROGNAME.stopToken
 
@@ -37,11 +37,35 @@ STOPTOKEN=0
 
 # make a good guess about the project home directory
 # get the absolute path to current script name
-ABSPROGNAME="`pwd`/$PROGNAME"
+if echo $PROGNAME | egrep '^\/' > /dev/null ; then
+	# program started with absolute path name
+	ABSPROGNAME="$PROGNAME"
+else
+	# program started with relative path name
+	ABSPROGNAME="`pwd`/$PROGNAME"
+fi
 # cut off everything after packages
 # assume that sed is greedy, so we can handle something like
 #  /packages/RTZen/packages/...
 PROJECT_HOME="`echo $ABSPROGNAME | sed 's/\(.*\)\/packages.*/\1/'`"
+
+# force the timesys settings
+if echo $LD_LIBRARY_PATH | grep timesys >> /dev/null; then
+	# path is set correctly nothing to be done
+	true
+else
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/timesys/rtsj-ri/lib/:/opt/timesys/rtsj-ri/pthreadrt
+	export LD_ASSUME_KERNEL=2.4.1
+fi
+
+# check if LD_PATH is set to include own lib directory
+if echo $LD_LIBRARY_PATH | grep $PROJECT_HOME >> /dev/null; then
+	# path is set correctly nothing to be done
+	true
+else
+	export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PROJECT_HOME/lib"
+fi
+
 
 #JAVA_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$PROJECT_HOME/classes:$CLASSPATH:/usr/java/j2sdk1.4.2_01/lib/tools.jar -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton -Dsun.boot.library.path=/usr/java/j2sdk1.4.2_01/jre/lib/i386:$PROJECT_HOME/lib -Xms200M -Xmx500M"
 JAVA_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$PROJECT_HOME/classes:$CLASSPATH:/usr/java/j2sdk1.4.2_01/lib/tools.jar -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton -Xms200M -Xmx500M"
@@ -51,7 +75,7 @@ TJVM_START="/opt/timesys/rtsj-ri/bin/tjvm -Xverify:all -Ximmortal100M -Xms200M -
 
 # startup function for the server
 # parameters 
-#   type of rt system to start  ( 1 simulated rt, 2 tao, 3 timesys )
+#   type of rt system to start  ( 1 simulated rt, 2 tao, 3 timesys, 30 timesysremote )
 function startServer(){
 	echo "start server "
 	if [ $1 -eq 1 ]; then
@@ -77,6 +101,14 @@ function startServer(){
 		echo $EXEC_CMD
 		$EXEC_CMD&
 		echo $! > $STOPFNAME
+	elif [ $1 -eq 30 ]; then
+		# TimeSys JVM on node 0
+		# start ZEN server in simulated RT
+		EXEC_CMD="ssh node0.rtzen.pces.emulab.net ~/RTZen/packages/perf/jitter/run_tests startServer 3 $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD
+		echo $! > $STOPFNAME	
 	else
 		printUsage "startServer, unknown server type '$1'"
 	fi
