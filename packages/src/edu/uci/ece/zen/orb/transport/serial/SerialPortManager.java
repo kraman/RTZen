@@ -71,7 +71,7 @@ public class SerialPortManager
         // iterating over it
         synchronized (listeningConnections)
         {
-            System.out.println("SerialPortManager: connect: trying to find a listening local connection to " + host);
+            // System.out.println("SerialPortManager: connect: trying to find a listening local connection to " + host);
             // Search for a listening local connection...
             for (Iterator i = listeningConnections.iterator(); i.hasNext(); )
             {
@@ -82,7 +82,7 @@ public class SerialPortManager
                 {
                     i.remove();
                     connections.add(listeningConnection);
-                    System.out.println("SerialPortManager: connect: found local connection! binding...");
+                    // System.out.println("SerialPortManager: connect: found local connection! binding...");
 
                     listeningConnection.connect(socket, fromLocalHost, serialPort);
 
@@ -105,13 +105,13 @@ public class SerialPortManager
                 synchronized (buffer)
                 {
                     int messageLength = SerialPortSocketProtocol.encodeConnectionRequested(requestedConnection, buffer);
-                    System.out.println("SerialPortManager: connect: couldn't find local listener, sending request to remote host...");
+                    // System.out.println("SerialPortManager: connect: couldn't find local listener, sending request to remote host...");
                     serialPort.sendMessage(buffer, messageLength);
                 }
 
-                System.out.println("SerialPortManager: connect: waiting for response from remote host...");
+                // System.out.println("SerialPortManager: connect: waiting for response from remote host...");
                 requestedConnection.waitForConnection();
-                System.out.println("SerialPortManager: connect: response from remote host received!");
+                // System.out.println("SerialPortManager: connect: response from remote host received!");
 
                 return requestedConnection;
             }
@@ -121,7 +121,7 @@ public class SerialPortManager
             }
         }
 
-        System.out.println("SerialPortManager: connect: no connections found, returning...");
+        // System.out.println("SerialPortManager: connect: no connections found, returning...");
 
         // The requested host could not be found, or it had no sockets open for connections.
         return null;
@@ -140,9 +140,9 @@ public class SerialPortManager
                 try
                 {
                     // Block until a message is available
-System.out.println("SerialPortListener: run: calling serialPort.getMessage...");
+                    // System.out.println("SerialPortListener: run: calling serialPort.getMessage...");
                     int messageLength = serialPort.getMessage(message);
-System.out.println("SerialPortListener: run: got a message! " + messageLength + " bytes long");
+                    // System.out.println("SerialPortListener: run: got a message! " + messageLength + " bytes long");
 
                     if (message != null)
                     {
@@ -152,7 +152,7 @@ System.out.println("SerialPortListener: run: got a message! " + messageLength + 
                         switch (SerialPortSocketProtocol.getMessageType(message))
                         {
                             case SerialPortSocketProtocol.CONNECTION_REQUESTED:
-                                System.out.println("SerialPortListener: run: it's a connection request");
+                                // System.out.println("SerialPortListener: run: it's a connection request");
                                 requestedConnection = SerialPortSocketProtocol.decodeConnectionRequested(message, messageLength);
 
                                 socket = new Socket();
@@ -163,21 +163,21 @@ System.out.println("SerialPortListener: run: got a message! " + messageLength + 
                                 {
                                     messageLength = SerialPortSocketProtocol.encodeConnectionAccepted(
                                         requestedConnection, socket, buffer);
-                                    System.out.println("SerialPortListener: run: sending connection accept message back to caller");
+                                    // System.out.println("SerialPortListener: run: sending connection accept message back to caller");
                                     serialPort.sendMessage(buffer, messageLength);
                                 }
                                 else
                                 {
                                     messageLength = SerialPortSocketProtocol.encodeConnectionDenied(
                                         requestedConnection, socket, buffer);
-                                    System.out.println("SerialPortListener: run: sending connection denied message back to caller");
+                                    // System.out.println("SerialPortListener: run: sending connection denied message back to caller");
                                     serialPort.sendMessage(buffer, messageLength);
                                 }
 
                                 break;
 
                             case SerialPortSocketProtocol.CONNECTION_ACCEPTED:
-                                System.out.println("SerialPortListener: run: it's a connection accept");
+                                // System.out.println("SerialPortListener: run: it's a connection accept");
                                 SerialPortConnection acceptedConnection = new SerialPortConnection();
                                 byte socketID = SerialPortSocketProtocol.decodeConnectionAccepted(message, messageLength, acceptedConnection);
                                 boolean connectionFound = false;
@@ -194,7 +194,7 @@ System.out.println("SerialPortListener: run: got a message! " + messageLength + 
 
                                         requestedConnection.getSocket().setID(socketID);
 
-                                        System.out.println("SerialPortListener: run: found socket awaiting acceptance, connecting...");
+                                        // System.out.println("SerialPortListener: run: found socket awaiting acceptance, connecting...");
                                         requestedConnection.connect(requestedConnection.getSocket(), false, serialPort);
 
                                         connectionFound = true;
@@ -212,7 +212,7 @@ System.out.println("SerialPortListener: run: got a message! " + messageLength + 
                                 break;
 
                             case SerialPortSocketProtocol.CONNECTION_DENIED:
-                                System.out.println("SerialPortListener: run: it's a connection denied");
+                                // System.out.println("SerialPortListener: run: it's a connection denied");
                                 connection = SerialPortSocketProtocol.decodeConnectionDenied(message, messageLength);
                                 // FIXME: We should interrupt the waiting connection here. Otherwise, it will
                                 // block forever, waiting for waitForConnection to return.
@@ -223,7 +223,7 @@ System.out.println("SerialPortListener: run: got a message! " + messageLength + 
                                 break;
 
                             case SerialPortSocketProtocol.SOCKET_DATA:
-                                System.out.println("SerialPortListener: run: it's socket data");
+                                // System.out.println("SerialPortListener: run: it's socket data");
                                 byte id = SerialPortSocketProtocol.getSocketID(message);
                                 boolean foundSocket = false;
 
@@ -252,12 +252,12 @@ System.out.println("SerialPortListener: run: got a message! " + messageLength + 
                                 break;
 
                             default:
-                                System.out.println("SerialPortListener: run: unknown message! message="+Integer.toHexString(SerialPortSocketProtocol.getMessageType(message)));
-                                for (int i = 0; i < messageLength; i++)
-                                {
-                                    System.out.print(message[i] + " ");
-                                }
-                                System.out.println();
+                                // System.out.println("SerialPortListener: run: unknown message! message="+Integer.toHexString(SerialPortSocketProtocol.getMessageType(message)));
+                                // for (int i = 0; i < messageLength; i++)
+                                // {
+                                //     System.out.print(message[i] + " ");
+                                // }
+                                // System.out.println();
                                 edu.uci.ece.zen.utils.ZenProperties.logger.log(
                                     edu.uci.ece.zen.utils.Logger.WARN,
                                     getClass(), "run",

@@ -35,16 +35,16 @@ class LocalSerialPortStream implements SerialPortStream
         {
             try
             {
-                System.out.println("LocalSerialPortStream: InputStream.read: blocking until data available");
+                // System.out.println("LocalSerialPortStream: InputStream.read: blocking until data available");
                 dataAvailable.acquire();
 
                 int b = data;
 
                 dataEmpty.release();
 
-                byte[] ch = new byte[1];
-                ch[0] = (byte) b;
-                System.out.println("LocalSerialPortStream: InputStream.read: got lock, read byte: " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
+                // byte[] ch = new byte[1];
+                // ch[0] = (byte) b;
+                // System.out.println("LocalSerialPortStream: InputStream.read: got lock, read byte: " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
 
                 return b & 0xFF;
             }
@@ -68,13 +68,13 @@ class LocalSerialPortStream implements SerialPortStream
         {
             try
             {
-                System.out.println("LocalSerialPortStream: OutputStream.write: trying to write to buffer");
+                // System.out.println("LocalSerialPortStream: OutputStream.write: trying to write to buffer");
                 dataEmpty.acquire();
 
                 data = b;
 
                 dataAvailable.release();
-                System.out.println("LocalSerialPortStream: OutputStream.write: wrote byte: " + (b & 0xFF));
+                // System.out.println("LocalSerialPortStream: OutputStream.write: wrote byte: " + (b & 0xFF));
             }
             catch (InterruptedException e)
             {
@@ -117,7 +117,7 @@ class RemoteSerialPortStream implements SerialPortStream
 
     void addToInputStream(int b) throws InterruptedException, IOException
     {
-//        System.out.println("RemoteSerialPortStream: addToInputStream: trying to write to byte");
+        // System.out.println("RemoteSerialPortStream: addToInputStream: trying to write to byte");
 
         inputEmpty.acquire();
 
@@ -125,9 +125,9 @@ class RemoteSerialPortStream implements SerialPortStream
 
         inputAvailable.release();
 
-        byte[] ch = new byte[1];
-        ch[0] = (byte) b;
-//        System.out.println("RemoteSerialPortStream: addToInputStream: done writing to input byte " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
+        // byte[] ch = new byte[1];
+        // ch[0] = (byte) b;
+        // System.out.println("RemoteSerialPortStream: addToInputStream: done writing to input byte " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
     }
 
     class IS extends InputStream
@@ -143,9 +143,9 @@ class RemoteSerialPortStream implements SerialPortStream
 
                 inputEmpty.release();
 
-                byte[] ch = new byte[1];
-                ch[0] = (byte) b;
-                System.out.println("RemoteSerialPortStream: InputStream.read: read byte: " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
+                // byte[] ch = new byte[1];
+                // ch[0] = (byte) b;
+                // System.out.println("RemoteSerialPortStream: InputStream.read: read byte: " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
 
                 return b & 0xFF;
             }
@@ -156,7 +156,7 @@ class RemoteSerialPortStream implements SerialPortStream
                 throw ioex;
             }
         }
-
+/*
    public int read(byte b[], int off, int len) throws IOException {
        System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): trying to read " + len + " bytes into buffer");
 	if (b == null) {
@@ -192,7 +192,7 @@ System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): 
 System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): returning " + i + " bytes");
 	return i;
     }
-
+*/
         public int available() throws IOException
         {
             return (int) inputAvailable.permits();
@@ -217,9 +217,9 @@ System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): 
                     throw new IOException("Serial port output buffer is full");
                 }
 
-                byte[] ch = new byte[1];
-                ch[0] = (byte) b;
-                System.out.println("RemoteSerialPortStream: OutputStream.write: writing byte: " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
+                // byte[] ch = new byte[1];
+                // ch[0] = (byte) b;
+                // System.out.println("RemoteSerialPortStream: OutputStream.write: writing byte: " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
 
                 buffer[bufferSize++] = (byte) b;
             }
@@ -235,7 +235,7 @@ System.out.println("RemoteSerialPortStream: InputStream.read(byte[], int, int): 
         {
             synchronized (buffer)
             {
-                System.out.println("RemoteSerialPortStream: OutputStream.flush: flushing " + bufferSize + " bytes to serial port (includes socket data header)");
+                // System.out.println("RemoteSerialPortStream: OutputStream.flush: flushing " + bufferSize + " bytes to serial port (includes socket data header)");
                 SerialPortSocketProtocol.encodeSocketData(socket, buffer);
                 serialPort.sendMessage(buffer, bufferSize);
                 bufferSize = SerialPortSocketProtocol.SOCKET_DATA_HEADER_LENGTH;
