@@ -1,4 +1,4 @@
-package test.cdrstreams;
+package test.cdr;
 
 import org.omg.CORBA.*;
 
