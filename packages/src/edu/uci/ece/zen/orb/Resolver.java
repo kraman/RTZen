@@ -14,9 +14,9 @@ public abstract class Resolver{
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.FATAL,
-                "edu.uci.ece.zen.orb.Resolver",
+                Resolver.class,
                 "registerResolver",
-                e.toString());
+                e);
         }
         resolverList.add( resolver );
     }
@@ -43,7 +43,7 @@ public abstract class Resolver{
         if ( RealtimeThread.getCurrentMemoryArea() != ImmortalMemory.instance() ){
             ZenProperties.logger.log(
                     Logger.FATAL,
-                    "edu.uci.ece.zen.orb.Resolver",
+                    getClass(),
                     "<init>",
                     "Resolver is not allocated in ImmortalMemory" );
             System.exit(-1);

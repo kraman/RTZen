@@ -152,7 +152,7 @@ class ORBImplRunnable implements Runnable{
             }catch( InterruptedException ie ){
                 ZenProperties.logger.log(
                         Logger.INFO ,
-                        "edu.uci.ece.zen.orb.ORBImplRunnable" ,
+                        getClass(),
                         "run()" ,
                         "ORB is shutting down.");
             }
