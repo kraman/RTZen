@@ -39,9 +39,18 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private static long scopeMemorySize;
     private static ORB orbSingleton;
     private static int maxSupportedConnections;
-
+    public static java.net.InetAddress sockAddr;
     static{
         try{
+            try{
+                System.out.println("local address"+java.net.InetAddress.getLocalHost().getHostAddress());   
+                //sockAddr = new java.net.InetSocketAddress(java.net.InetAddress.getLocalHost().getHostAddress(),0); 
+                sockAddr = java.net.InetAddress.getLocalHost(); 
+             }catch(Exception e){
+                e.printStackTrace();
+             }
+
+
             imm = ImmortalMemory.instance();
             //Set up ORB Facades
             int numFacades = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.maxNumOrbs" , "1" ) );

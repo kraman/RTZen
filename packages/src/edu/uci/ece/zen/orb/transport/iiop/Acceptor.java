@@ -13,7 +13,8 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
     public Acceptor( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl ){
         super( orb , orbImpl );
         try{
-            ssock = new java.net.ServerSocket(0);
+            ssock = new java.net.ServerSocket(0,0,orb.sockAddr);
+        
         }catch( Exception ex ){
             ZenProperties.logger.log(
                 Logger.WARN,
@@ -65,7 +66,8 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
 
              System.out.println("yuez in Acceptor objKey"+objKey);    
              
-              
+             
+             
              
 
                 ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey);
