@@ -40,21 +40,21 @@
     <target name="peer1">
         <java classname="demo.hello.Peer1" fork="yes">
             <jvmarg line="${zen.jvm.properties}"/>
-            <arg line="-ORBListenEndpoints"/>
+            <!--arg line="-ORBListenEndpoints"/-->
         </java>
     </target>
 
     <target name="peer2">
         <java classname="demo.hello.Peer2" fork="yes">
             <jvmarg line="${zen.jvm.properties}"/>
-            <arg line="-ORBListenEndpoints"/>
+            <!--arg line="-ORBListenEndpoints"/-->
         </java>
     </target>
 
     <target name="server">
         <java classname="demo.hello.Server" fork="yes">
             <jvmarg line="${zen.jvm.properties}"/>
-            <arg line="-ORBListenEndpoints"/>
+            <!--arg line="-ORBListenEndpoints"/-->
         </java>
     </target>
     

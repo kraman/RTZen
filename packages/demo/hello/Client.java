@@ -38,6 +38,7 @@ public class Client extends RealtimeThread
 
     public void run()
     {
+        while(true)
         try
         {
 
@@ -45,11 +46,15 @@ public class Client extends RealtimeThread
             if (orb == null) orb = ORB.init((String[])null, null);
             System.out.println( "=====================ORB Init complete in client===========================" );
             String ior = "";
+
+            org.omg.CORBA.Object object = null;
+
             File iorfile2 = new File( iorfile );
             BufferedReader br = new BufferedReader( new FileReader(iorfile2) );
             ior = br.readLine();
             System.out.println( "===========================IOR read========================================" );
-            org.omg.CORBA.Object object = orb.string_to_object(ior);
+            object = orb.string_to_object(ior);
+
             System.out.println( "===================Trying to establish connection==========================" );
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
             //System.out.println(  );
@@ -94,8 +99,19 @@ public class Client extends RealtimeThread
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            System.exit(-1);
+            System.out.println("Cannot connect to server -- retrying");
+            System.out.println("Exception Reported:");
+            System.out.println(e);
+
+            try{
+                Thread.currentThread().sleep(1000);
+            }catch(Exception e1){
+                e1.printStackTrace();
+            }
+            //e.printStackTrace();
+
         }
+
+        //System.exit(-1);
     }
 }

@@ -36,26 +36,53 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     public Transport(edu.uci.ece.zen.orb.ORB orb,
             edu.uci.ece.zen.orb.ORBImpl orbImpl, String host, int port) {
         super(orb, orbImpl);
-        try {
-            if (ZenProperties.dbg) ZenProperties.logger.log("Connecting to "
-                    + host + ":" + port);
-            if (ZenProperties.dbg) ZenProperties.logger.log("Current transport thread is of type "
-                            + javax.realtime.RealtimeThread
-                                    .currentRealtimeThread());
 
-            sock = new java.net.Socket(host, port);
-            ZenProperties.logger.log("Connected");
-            //setSockProps(sock, orb);
-            //             System.err.println( "sock = " + sock );
-            istream = sock.getInputStream();
-            ostream = sock.getOutputStream();
-            if (ZenProperties.dbg) ZenProperties.logger.log("Transport ready: "
-                    + istream + " " + ostream);
-        } catch (Exception ex) {
-            ZenProperties.logger.log(Logger.WARN,
-                    getClass(), "<init>",
-                    "Error connecting to remote location.", ex);
-        }
+
+/*
+
+        int retries = 1;
+
+        while(retries <= 20)
+            try{
+
+                break;
+            }catch(Exception e){
+                retries++;
+                System.out.println("Cannot connect to server -- retrying");
+                try{
+                    Thread.currentThread().sleep(1000);
+                }catch(Exception e1){
+                    e.printStackTrace();
+                }
+            }
+*/
+            try {
+                if (ZenProperties.dbg) ZenProperties.logger.log("Connecting to "
+                        + host + ":" + port);
+                if (ZenProperties.dbg) ZenProperties.logger.log("Current transport thread is of type "
+                                + javax.realtime.RealtimeThread
+                                        .currentRealtimeThread());
+
+                sock = new java.net.Socket(host, port);
+                ZenProperties.logger.log("Connected");
+                //setSockProps(sock, orb);
+                //             System.err.println( "sock = " + sock );
+                istream = sock.getInputStream();
+                ostream = sock.getOutputStream();
+                if (ZenProperties.dbg) ZenProperties.logger.log("Transport ready: "
+                        + istream + " " + ostream);
+            } catch (java.net.UnknownHostException ex) {
+                ZenProperties.logger.log(Logger.WARN,
+                        getClass(), "<init>",
+                        "Error connecting to remote location.", ex);
+
+            } catch (java.io.IOException ex) {
+                ZenProperties.logger.log(Logger.WARN,
+                        getClass(), "<init>",
+                        "Error connecting to remote location.", ex);
+
+            }
+
     }
 
     public java.io.InputStream getInputStream() {

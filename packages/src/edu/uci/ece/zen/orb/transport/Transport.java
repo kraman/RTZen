@@ -171,15 +171,15 @@ class MessageProcessor implements Runnable {
             //gmr.setRequestScope( messageScope );
             //eir.init( gmr , messageScope );
 
-            try {
+            //try {
                 //messageScope.enter(gmr);
                 //messageScope.enter(gmr);
                 gmr.run();
-            } catch (Exception e) {
+            /*} catch (Exception e) {
                 ZenProperties.logger.log(Logger.SEVERE,
                         getClass(),
                         "run", "Could not process message", e);
-            }
+            }*/
             gmr.setRequestScope(null);
             //ORB.freeScopedRegion( messageScope );
         }
