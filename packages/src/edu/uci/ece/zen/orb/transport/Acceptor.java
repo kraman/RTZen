@@ -29,7 +29,7 @@ public abstract class Acceptor{
 
     protected final void registerTransport( Transport t ){
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( t );
-        NoHeapRealtimeThread transportThread = new NoHeapRealtimeThread(null,null,null,null,null,t);
+        RealtimeThread transportThread = new NoHeapRealtimeThread(null,null,null,null,null,t);
         transportThread.start();
     }
 

@@ -35,7 +35,7 @@ public abstract class Transport implements Runnable{
         System.out.println( MemoryArea.getMemoryArea(messageProcessor) );
         System.out.println( MemoryArea.getMemoryArea(this) );
         
-        NoHeapRealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,messageProcessor );
+        RealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,messageProcessor );
         System.out.println("Transport.run() 2");
         messageProcessorThr.setDaemon( true );
         System.out.println("Transport.run() yue 3");

@@ -13,7 +13,7 @@ import javax.realtime.*;
  * @version 1.0
  */
 
-public class Client extends NoHeapRealtimeThread
+public class Client extends RealtimeThread
 {
     public static void main(String[] args) throws Exception
     {
@@ -24,7 +24,7 @@ public class Client extends NoHeapRealtimeThread
     }
 
     public Client(){
-        super(null,new LTMemory(3000,300000));
+        //super(null,new LTMemory(3000,300000));
     }
 
     public void run()

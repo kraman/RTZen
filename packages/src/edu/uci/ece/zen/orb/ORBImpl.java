@@ -30,7 +30,7 @@ public class ORBImpl{
         System.out.println( "======================Creating nhrt sleeper thread=========================" );
         System.out.println( orbFacade.orbImplRegion );
         System.out.println( MemoryArea.getMemoryArea( orbImplRunnable ) );
-        System.out.println( RealtimeThread.getCurrentMemoryArea() );
+        System.out.println( NoHeapRealtimeThread.getCurrentMemoryArea() );
         //NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null, null,null,(ScopedMemory)orbFacade.orbImplRegion,null,(java.lang.Runnable )orbImplRunnable );
         System.out.println( MemoryArea.getMemoryArea( new Integer(42)) );
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,null,null,orbFacade.orbImplRegion,null,orbImplRunnable );
@@ -45,8 +45,8 @@ public class ORBImpl{
             policyCurrent = (ThreadLocal)(orbFacade.parentMemoryArea.newInstance( ThreadLocal.class ));
             policyManager = (PolicyManagerImpl)(orbFacade.parentMemoryArea.newInstance( PolicyManagerImpl.class ));
             policyManager.init(orbFacade);
-            rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance( RTORBImpl.class ));
-            rtorb.init(orbFacade);
+            //rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance( RTORBImpl.class ));
+            //rtorb.init(orbFacade);
 
             cachedObjects.put( "ExecuteInRunnable" , new Queue() );
             cachedObjects.put( "ConnectorRunnable" , new Queue() );
@@ -129,9 +129,9 @@ class ORBImplRunnable implements Runnable{
     }
 
     public void run(){
-        //System.out.println("getting portal for: " + RealtimeThread.getCurrentMemoryArea().getClass().getName());
+        //System.out.println("getting portal for: " + NoHeapRealtimeThread.getCurrentMemoryArea().getClass().getName());
         //System.out.println("inner thread: " + Thread.currentThread().toString());
-        //ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
+        //ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)NoHeapRealtimeThread.getCurrentMemoryArea()).getPortal();
         ORBImpl orbImpl = (ORBImpl) sm.getPortal();
         synchronized( orbImpl ){
             try{

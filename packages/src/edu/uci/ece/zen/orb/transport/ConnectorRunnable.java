@@ -45,7 +45,7 @@ public class ConnectorRunnable implements Runnable{
         System.out.println("Yuez in ConnectorRunnable 1");
         Transport trans = conn.internalConnect( host2 , iport , orb , (ORBImpl) orb.orbImplRegion.getPortal() );
         System.out.println("Yuez in ConnectorRunnable 2");        
-        NoHeapRealtimeThread transportThread = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);
+        RealtimeThread transportThread = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);
         System.out.println("Yuez in ConnectorRunnable 3");        
         transportThread.start();
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( trans );

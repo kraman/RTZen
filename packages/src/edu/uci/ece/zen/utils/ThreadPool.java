@@ -234,7 +234,7 @@ class InvokeRunnable implements Runnable{
     }
 
     public void run(){
-        Runnable r = (Runnable) ((ScopedMemory) RealtimeThread.getCurrentMemoryArea() ).getPortal();
+        Runnable r = (Runnable) ((ScopedMemory) NoHeapRealtimeThread.getCurrentMemoryArea() ).getPortal();
         r.run();
     }
 }

@@ -70,7 +70,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     public synchronized void addLaneData( int min , int max , ScopedMemory transport , byte[] objectKey ){
         if( ZenProperties.dbg )
-            System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "New lane info: " + min + " <--> " + max + "  :  " + transport );
+            System.out.println( RealtimeThread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "New lane info: " + min + " <--> " + max + "  :  " + transport );
         priorityLanes[numLanes++].init( min , max , transport , objectKey );
     }
 
@@ -78,6 +78,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         int priority = RealtimeThread.currentThread().getPriority();
         for( int i=0;i<priorityLanes.length;i++ ){
             LaneInfo ln = (LaneInfo) priorityLanes[i];
+            System.out.println( "Checking if " + priority + " is within " + ln.minPri + " <--> " + ln.maxPri );
             if( ln.minPri <= priority && ln.maxPri >= priority )
                 return ln;
         }
@@ -111,7 +112,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                     orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
                                 }
 
-                                addLaneData( Thread.MIN_PRIORITY , Thread.MAX_PRIORITY , transportScope , profilebody.object_key );
+                                addLaneData( RealtimeThread.MIN_PRIORITY , 99/*RealtimeThread.MAX_PRIORITY*/ , transportScope , profilebody.object_key );
                             }break;
                             case 1:
                             case 2:{
@@ -188,7 +189,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                 }
 
                                 //TODO: process priority policies here and add the appropriate lanes
-                                addLaneData( NoHeapRealtimeThread.MIN_PRIORITY , NoHeapRealtimeThread.MAX_PRIORITY , transportScope , profilebody.object_key );
+                                addLaneData( RealtimeThread.MIN_PRIORITY , 99/*RealtimeThread.MAX_PRIORITY*/ , transportScope , profilebody.object_key );
                             }break;
                         }
                     }catch( HashtableOverflowException hoe ){
