@@ -20,7 +20,7 @@ function printUsage() {
     echo "                4  RTZEN server on OVM interpreter"
     echo "                40 RTZEN server remote on OVM interpreter"
     echo "                5  RTZEN server on OVM ahead-of-time compiler"
-    echo "                5  RTZEN server remote on OVM ahead-of-time compiler"
+    echo "                50  RTZEN server remote on OVM ahead-of-time compiler"
     echo "                6  RTZEN server on regular ZEN and JVM"
     echo "                60 RTZEN server remote on regular ZEN and JVM"
     echo "                7  RTZEN server on JacORB and JVM"
