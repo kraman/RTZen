@@ -24,7 +24,7 @@ public abstract class RequestMessage extends GIOPMessage {
 
     // Abstract declarations in addition to those in GIOPMessage 
     public abstract FString getServiceContexts();
-    public abstract void getObjectKey( FString id_out );
+    public abstract FString getObjectKey( );
     public abstract FString getOperation();
     public abstract int getResponseExpected();
 }
