@@ -241,6 +241,9 @@ public class SystemExceptionFactory
             case PORTABLE_UNKNOWN_EXCEPTION:
                 return UnknownException.class;
             default:
+                ZenProperties.logger.log(Logger.FATAL, this.getClass(), "getSysExClass", 
+                                        "Using an invalid system exception id.");
+
                 throw ILLEGAL_ARG_EXCEPTION; // it shouldn't happen
         } 
     }
