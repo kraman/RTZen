@@ -144,10 +144,10 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         }catch( Exception e2 ){
              ZenProperties.logger.log(
                 Logger.FATAL,
-                "edu.uci.ece.zen.orb.POA",
+                getClass(),
                 "<init>",
-                "Could not initialize POA facade due to exception: " + e2.toString()
-                );
+                "Could not initialize POA facade",
+				e2);
              System.exit(-1);
         }
     }

@@ -524,7 +524,7 @@ class POAImplRunnable implements Runnable{
             }catch( InterruptedException ie ){
                 ZenProperties.logger.log(
                         Logger.INFO ,
-                        "edu.uci.ece.zen.poa.POAImplRunnable" ,
+                        getClass(),
                         "run()" ,
                         "ORB is shutting down.");
             }
