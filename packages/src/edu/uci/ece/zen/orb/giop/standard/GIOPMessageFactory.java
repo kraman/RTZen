@@ -4,7 +4,7 @@
  * --------------------------------------------------------------------------
  */
 
-package edu.uci.ece.zen.orb.giop;
+package edu.uci.ece.zen.orb.giop.standard;
 
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ClientRequest;
@@ -16,6 +16,7 @@ import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 import javax.realtime.*;
+import edu.uci.ece.zen.orb.giop.*;
 
 /**
  * This class is a factory for creating GIOP messages for marshalling or
@@ -27,6 +28,8 @@ import javax.realtime.*;
  * @version $Revision: 1.8 $ $Date: 2004/08/01 09:25:19 $
  */
 public final class GIOPMessageFactory {
+    public static final int TYPE = 1;
+    
     private static final byte magic[] = {
             0x47, 0x49, 0x4f, 0x50
     }; // GIOP
@@ -36,8 +39,7 @@ public final class GIOPMessageFactory {
         ReadBuffer buffer = ReadBuffer.instance();
         buffer.init();
 
-        GIOPHeaderInfo mainMsgHdr = (GIOPHeaderInfo) GIOPHeaderInfoHelper
-                .instance();
+        GIOPHeaderInfo mainMsgHdr = (GIOPHeaderInfo) GIOPHeaderInfoHelper.instance();
 
         edu.uci.ece.zen.orb.giop.GIOPMessage ret = null;
 

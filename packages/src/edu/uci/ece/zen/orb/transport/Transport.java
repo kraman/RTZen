@@ -20,6 +20,8 @@ public abstract class Transport implements Runnable {
     protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
 
     private MessageProcessor messageProcessor;
+    
+    public int giopType;
 
     public Object objectTable[]; //used to store misc
 
@@ -46,6 +48,7 @@ public abstract class Transport implements Runnable {
         objectTable[2] = new byte[12];
         if (ZenProperties.dbg) ZenProperties.logger.log("Transport being created "
                 + RealtimeThread.getCurrentMemoryArea());
+        giopType = edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE;
     }
 
     public byte[] getGIOPHeader() {
