@@ -684,7 +684,13 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         throw new org.omg.CORBA.NO_IMPLEMENT("ORB.cancelRequest(int) not implemented");
     }
 
-
+    /**
+     * Given a thread pool ID, this method returns the ScopedMemory region 
+     * associated with that thread pool.
+     */
+    public ScopedMemory getThreadPoolRegion( int tpId ){
+        return null;
+    }
 }
 
 

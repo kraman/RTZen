@@ -139,14 +139,14 @@ public class POAImpl{
             return;
         }
 
-        req.setHandlers(this, numberOfCurrentRequests, this.requestProcessingStrategy);
-
         try {
-            ScopedMemory tpRegion = this.orb.getTPRegion(tpId);
-            ExecuteInRunnable eir = req.messageScope.newInstance( ExecuteInRunnable.class );
-            TPRunnable tpr = req.messageScope.newInstance( TPRunnable.class );
+            ScopedMemory tpRegion = this.orb.getThreadPoolRegion(tpId);
+            ScopedMemory requestScope = (ScopedMemory) MemoryArea.getMemoryArea( req );
+
+            ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
+            TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );
+            tpr.init( this , numberOfCurrentRequests , this.requestProcessingStrategy , req );
             eir.init( tpr , tpRegion );
-            tpr.init( req );
             orb.orbImplRegion.executeInArea( eir );
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here

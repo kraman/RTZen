@@ -21,10 +21,12 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
         try{
             System.out.println( "Connecting to " + host + ":" + port );
             sock = new java.net.Socket( host , port );
+            System.out.println( "Connected" );
             //setSockProps(sock, orb);
             //             System.err.println( "sock = " + sock ); 
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
+            System.out.println( "Transport ready" );
         }catch( Exception ex ){
             ZenProperties.logger.log(
                 Logger.WARN,

@@ -4,10 +4,7 @@
 
 package edu.uci.ece.zen.poa.mechanism;
 
-
 import edu.uci.ece.zen.poa.ActiveDemuxLoc;
-import edu.uci.ece.zen.poa.ActiveDemuxLocOperations;
-import edu.uci.ece.zen.poa.ObjectKey;
 
 public final class TransientStrategy extends LifespanStrategy {
 
@@ -44,11 +41,8 @@ public final class TransientStrategy extends LifespanStrategy {
     * @param index poa demux index
     * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
     */
-
-    public byte[]  create(String path_name,
-                                                byte[] oid,
-                                                ActiveDemuxLoc index) {
-          System.out.println("ok no servant loc here ");
+    public byte[] create(String path_name, byte[] oid, ActiveDemuxLoc index) {
+        System.out.println("ok no servant loc here ");
 
         return IdNoHintStrategy.create(prefix, oid, this.timeStamp,
                 index.marshall());
@@ -62,10 +56,7 @@ public final class TransientStrategy extends LifespanStrategy {
     * @param servLoc servant index
     * @return edu.uci.ece.zen.poa.ObjectKey corresponding object key
     */
-    public byte[] create(String path_name,
-            byte[] oid,
-            ActiveDemuxLoc poaLoc,
-            int index, int count) {
+    public byte[] create(String path_name, byte[] oid, ActiveDemuxLoc poaLoc, int index, int count) {
          System.out.println("ok servant loc here ");
 
         return IdHintStrategy.create(prefix, oid, this.timeStamp,

@@ -14,8 +14,8 @@ import org.omg.PortableServer.ImplicitActivationPolicyValue;
 
 public class ImplicitActivationPolicy extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.ImplicitActivationPolicy {
 
-    public static final ImplicitActivation = new ImplicitActivationPolicy();
-    public static final ExplicitActivation = new ImplicitActivationPolicy( ImplicitActivationPolicyValue.NO_IMPLICIT_ACTIVATION );
+    public static final ImplicitActivationPolicy ImplicitActivation = new ImplicitActivationPolicy();
+    public static final ImplicitActivationPolicy ExplicitActivation = new ImplicitActivationPolicy( ImplicitActivationPolicyValue.NO_IMPLICIT_ACTIVATION );
 
     /**
      * The default Id Assignment IMPLICIT_ACTIVATION
@@ -38,7 +38,7 @@ public class ImplicitActivationPolicy extends org.omg.CORBA.LocalObject implemen
      * @return org.omg.CORBA.Policy
      */
     public org.omg.CORBA.Policy copy() {
-        if( value().equals( ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION )
+        if( value().equals( ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION ) )
             return ImplicitActivationPolicy.ImplicitActivation;
         else
             return ImplicitActivationPolicy.ExplicitActivation;

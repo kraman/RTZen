@@ -15,8 +15,8 @@ import org.omg.PortableServer.IdAssignmentPolicyValue;
 
 public class IdAssignmentPolicy extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.IdAssignmentPolicy {
 
-    public static final SystemIdAssignmentPolicy = new IdAssignmentPolicy();
-    public static final UserIdAssignmentPolicy = new IdAssignmentPolicy( IdAssignmentPolicyValue.USER_ID );
+    public static final IdAssignmentPolicy SystemIdAssignmentPolicy = new IdAssignmentPolicy();
+    public static final IdAssignmentPolicy UserIdAssignmentPolicy = new IdAssignmentPolicy( IdAssignmentPolicyValue.USER_ID );
 
     /**
      * The default Id Assignment Policy is SYSTEM_ID

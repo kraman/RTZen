@@ -12,14 +12,10 @@ import org.omg.PortableServer.LifespanPolicyValue;
  * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna</a>
  * @version 1.0
  */
-
-
-
-
 public class LifespanPolicy extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.LifespanPolicy {
 
-   public static final TransientLifespan = new LifespanPolicy();
-   public static final PersistantLifespan = new LifespanPolicy( LifespanPolicyValue.PERSISTENT );
+   public static final LifespanPolicy TransientLifespan = new LifespanPolicy();
+   public static final LifespanPolicy PersistantLifespan = new LifespanPolicy( LifespanPolicyValue.PERSISTENT );
 
    /**
      * The default Id Assignment Policy is TRANSIENT

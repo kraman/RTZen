@@ -3,6 +3,7 @@
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.policy;
 
+import org.omg.PortableServer.*;
 
 /**
  * The class <code>ServantRetentionPolicy</code> is the
@@ -11,12 +12,10 @@ package edu.uci.ece.zen.poa.policy;
  * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna</a>
  * @version 1.0
  */
-
-
 public class ServantRetentionPolicy extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.ServantRetentionPolicy {
 
-    public static final RetainServant = new ServantRetentionPolicy();
-    public static final NonRetainServant = new ServantRetentionPolicy( ServantRetentionPolicyValue.NON_RETAIN );
+    public static final ServantRetentionPolicy RetainServant = new ServantRetentionPolicy();
+    public static final ServantRetentionPolicy NonRetainServant = new ServantRetentionPolicy( ServantRetentionPolicyValue.NON_RETAIN );
 
     /**
      * The default Id Assignment Policy is RETAIN

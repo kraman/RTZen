@@ -14,9 +14,9 @@ import org.omg.PortableServer.RequestProcessingPolicyValue;
  */
 public class RequestProcessingPolicy extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.RequestProcessingPolicy {
 
-    public static final AOM = new RequestProcessingPolicy();
-    public static final DefaultServant = new RequestProcessingPolicy( RequestProcessingPolicyValue.USE_DEFAULT_SERVANT );
-    public static final ServantManager = new RequestProcessingPolicy( RequestProcessingPolicyValue.USE_SERVANT_MANAGER );
+    public static final RequestProcessingPolicy AOM = new RequestProcessingPolicy();
+    public static final RequestProcessingPolicy DefaultServant = new RequestProcessingPolicy( RequestProcessingPolicyValue.USE_DEFAULT_SERVANT );
+    public static final RequestProcessingPolicy ServantManager = new RequestProcessingPolicy( RequestProcessingPolicyValue.USE_SERVANT_MANAGER );
 
    /**
      *

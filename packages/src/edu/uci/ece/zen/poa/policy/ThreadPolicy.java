@@ -18,9 +18,9 @@ import org.omg.PortableServer.ThreadPolicyValue;
 
 public class ThreadPolicy extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.ThreadPolicy {
 
-    public static final OrbControlled = new ThreadPolicy();
-    public static final SingleThreaded = new ThreadPolicy( ThreadPolicyValue.SINGLE_THREAD_MODEL );
-    public static final MainThreaded = new ThreadPolicy( ThreadPolicyValue.MAIN_THREAD_MODEL );
+    public static final ThreadPolicy OrbControlled = new ThreadPolicy();
+    public static final ThreadPolicy SingleThreaded = new ThreadPolicy( ThreadPolicyValue.SINGLE_THREAD_MODEL );
+    public static final ThreadPolicy MainThreaded = new ThreadPolicy( ThreadPolicyValue.MAIN_THREAD_MODEL );
 
     /**
      *
