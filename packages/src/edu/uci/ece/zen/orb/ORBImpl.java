@@ -59,7 +59,9 @@ public class ORBImpl {
         // )orbImplRunnable );
         if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
                 .getMemoryArea(new Integer(42)).toString());
-        NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread((SchedulingParameters)null, (ReleaseParameters)null, (MemoryParameters)null,
+        SchedulingParameters sp = null;
+        ReleaseParameters rp = null;
+        NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread(sp, rp, (MemoryParameters)null,
                 orbFacade.orbImplRegion, (ProcessingGroupParameters)null, orbImplRunnable);
         ZenProperties.logger.log("======================starting nhrt in orb impl region=====================");
 

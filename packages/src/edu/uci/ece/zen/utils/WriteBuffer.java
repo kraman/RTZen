@@ -419,15 +419,23 @@ public class WriteBuffer {
     private long mementoPosition;
 
     public void setLocationMemento() {
-        pad(WriteBuffer.BYTE);
         mementoPosition = position;
+        pad(WriteBuffer.BYTE);
+        pad(WriteBuffer.BYTE);
     }
 
     public void writeLongAtLocationMemento(int val) {
         long tmp = position;
         position = mementoPosition;
-        //System.out.println( "len to write: " + val );
-        writeByte((byte) (val & 0xff));
+        //System.out.println( "\n\nlen to write: " + val );
+        //writeByte((byte) (val & 0xff));
+        
+        byte b1 = (byte) ((val >>> 8) & 0xFF);
+        byte b2 = (byte) (val & 0xFF);        
+        
+        writeByte(b1);
+        writeByte(b2);
+        
         position = tmp;
     }
 }

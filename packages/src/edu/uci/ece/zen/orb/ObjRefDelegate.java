@@ -101,6 +101,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         out.getBuffer().dumpBuffer(this.ior);
         out.free();
         ZenProperties.logger.log("ObjRefDel init 1");
+        System.out.println("++++++++++++++++++++++++++++++++++ObjRefDel no of prof:" + ior.profiles.length);
         //process all the tagged profiles
         for (int i = 0; i < ior.profiles.length; i++) { //go through each
             // tagged profile
@@ -336,12 +337,10 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             case TAG_SERIAL.value: //process serial
                 System.out.println( "Serial transport profile found" );
 
-
                 if( isCollocated ){
                     ZenProperties.logger.log("+++++++++++++++++++++++++++++++++++++++++++++Collocated object, Skipping Serial");
                     return;
                 }
-
 
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 1");
 
@@ -362,15 +361,15 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                     try{
                         transportScope = edu.uci.ece.zen.orb.transport.serial.Connector
                             .instance().connect(null, (short)0, orb, orbImpl);
-            orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
-            }catch(Exception e){
+                        orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
+                    }catch(Exception e){
                         e.printStackTrace();
                     }
                 }
 
                 if (transportScope != null) {
-            System.out.println( "Serial connection succesful" );
-            addLaneData(RealtimeThread.MIN_PRIORITY,
+                    System.out.println( "Serial connection succesful" );
+                    addLaneData(RealtimeThread.MIN_PRIORITY,
                     99/* RealtimeThread.MAX_PRIORITY */,
                     transportScope, object_key);
                 }else{
