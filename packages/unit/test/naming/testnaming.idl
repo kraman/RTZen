@@ -1,0 +1,13 @@
+moduel unit{
+	module test
+	{
+		module naming
+		{
+			interface HelloWorld
+			{
+				attribute long id;
+				string getHelloMessage();
+			};
+		};
+	};
+};

@@ -1,0 +1,96 @@
+<project name="RTZen Test - Naming Service " default="all" basedir="../../../..">
+    <property file="zen-build-bootstrap.properties"/>
+    <property file="zen-build.properties"/>
+    <import file="${zen.srcdir}/property_processor.xml"/>
+    
+    <property name="package.dir" value="${zen.srcdir}/unit/test/naming"/>
+    <property name="idl.src" value="testnaming.idl"/>
+
+    <target name="all" depends="openorb , compile, jRate"/>
+
+    <target name="openorb">
+       <antcall target="idl">
+           <param name="idl.flags" value="-all -d"/>
+           <param name="gendir" value="${zen.gendir}"/>
+           <param name="classpath" value="${openorb.class.path}"/>
+           <param name="idl.dir" value="${package.dir}"/>
+       </antcall>
+    </target>
+
+    <target name="idl">
+      <java classpath="${classpath}"
+            dir="${zen.gendir}"
+            classname="${idl2java.compiler}"
+            fork="yes">
+            <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
+      </java>
+   </target>
+
+   <target name="compile">
+      <javac srcdir="${zen.srcdir}:${zen.gendir}"
+             destdir="${zen.classdir}"
+             classpath="${classpath}"
+             debug="${zen.debug}"
+             optimize="${zen.optimization}"
+             includes="unit/test/naming/**.java"
+             target="1.1"
+             bootclasspath="${zen.rtbootclasspath}"
+             includeJavaRuntime="yes"
+             >
+      </javac>
+
+      <jar 
+        jarfile="${zen.libdir}/testnaming.jar" 
+        basedir="${zen.classdir}" 
+        includes="unit/test/naming/**"
+        />
+    </target>
+
+    <target name="jRate" if="compiler_jRate">
+      <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
+      <jRate
+            optimizeLevel="2"
+            libDirs="${zen.jRateLibDir}"
+            additionalLinkOptions="-L ${zen.libdir} -lZen"
+            destdir="${zen.libdir}"
+            bootclasspath="${zen.rtbootclasspath}"
+            classpath="${jRate_classpath}:${zen.classdir}"
+            out="${package.dir}/NamingTestClient"
+            main="unit.test.naming.NamingTestClient"
+            debug="true">
+            <fileset dir="${zen.srcdir}">
+                <patternset>
+                    <include name="unit/test/naming/NamingTestClient.java"/>
+                    <exclude name="unit/test/naming/NamingTestServer.java"/>
+                </patternset>
+            </fileset>
+            <fileset dir="${zen.gendir}">
+                <patternset>
+                    <include name="unit/test/naming/**.java"/>
+                </patternset>
+            </fileset>
+       </jRate>
+   </target>
+
+    <target name="server">
+        <java classname="unit.test.naming.NamingTestServer" fork="yes">
+            <jvmarg line="${zen.jvm.properties}"/>
+        </java>
+    </target> 
+
+    <target name="client">
+        <java classname="unit.test.naming.NamingTestClient" fork="yes">
+            <jvmarg line="${zen.jvm.properties} -Xms200M -Xmx500M"/>
+        </java>
+    </target> 
+
+    <target name="clean">
+      <delete dir="${zen.gendir}/${package.dir}"/>
+      <delete dir="${zen.classdir}/${package.dir}"/>
+      <delete file="${package.dir}/NamingTestClient"/>
+      <delete file="${package.dir}/NamingTestServer"/>
+      <delete quiet="true" defaultexcludes="no"> 
+          <fileset dir="${package.dir}" includes="*.o"/> 
+      </delete> 
+    </target>
+</project>
