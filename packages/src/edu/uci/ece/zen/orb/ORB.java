@@ -173,10 +173,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         }catch( Exception e2 ){
              ZenProperties.logger.log(
                 Logger.FATAL,
-                "edu.uci.ece.zen.orb.ORB",
+                getClass(),
                 "<init>",
-                "Could not initialize ORB facade due to exception: " + e2.toString()
-                );
+                "Could not initialize ORB facade",
+				e2);
              System.exit(-1);
         }
     }
@@ -528,7 +528,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         if( unusedMemoryAreas.isEmpty() ){
             ZenProperties.logger.log(
                 Logger.SEVERE,
-                "edu.uci.ece.zen.orb.ORB",
+                ORB.class,
                 "getScopedRegion()",
                 "Out of memory areas" );
             return null;
@@ -560,10 +560,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.FATAL,
-                "edu.uci.ece.zen.orb.ORB",
-                "",
-                e.toString()
-                );
+                ORB.class,
+				"executeInORBRegion(Runnable)",
+                e);
             System.exit(-1);
         }
     }
@@ -585,10 +584,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.FATAL,
-                "edu.uci.ece.zen.orb.RTORBImpl",
+                getClass(),
                 "create_threadpool",
-                "Could not create threadpool due to exception: " + e.toString()
-                );
+                "Could not create threadpool",
+				e);
             System.exit(-1);
         }
     }
