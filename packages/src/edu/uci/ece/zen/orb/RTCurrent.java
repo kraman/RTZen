@@ -37,7 +37,7 @@ public class RTCurrent extends org.omg.CORBA.LocalObject implements
         }catch(Exception e){
             e.printStackTrace();//TODO
         }        
-        hash.init(1024);
+        hash.init(1023);
     }
 
     /**

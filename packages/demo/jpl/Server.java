@@ -12,22 +12,29 @@ import org.omg.CORBA.ORB;
 import org.omg.CORBA.Policy;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
+import org.omg.PortableServer.POAManager;
 import org.omg.RTCORBA.RTORB;
 import org.omg.RTCORBA.RTORBHelper;
+import org.omg.RTCORBA.ThreadpoolLane;
+import org.omg.RTCORBA.maxPriority;
+import org.omg.RTCORBA.minPriority;
 
 /**
  * This class implements a simple CORBA Server.
  * 
  * @author Juan Colmenares
  * @author Hojjat Jafarpour 
+ * @author Mark Panahi 
  * @version 1.0
  */
 
 public class Server extends RealtimeThread
 {
     private static final int ITERATION_FACTOR_2 = 1;
-    private static final int ITERTATION_FACTOR_1 = 20;
+    private static final int ITERATION_FACTOR_1 = 20;
     public String[] args;
+    private static boolean isClientPropagated = false;
+    ORB orb;
     
     public static void main(String[] args) throws Exception
     {
@@ -51,23 +58,15 @@ public class Server extends RealtimeThread
         try
         {
             System.out.println( "=====================Calling ORB Init in server============================" );
-            ORB orb = ORB.init(args , null);
+            orb = ORB.init(args , null);
             System.out.println( "=====================ORB Init complete in server===========================" );
 
             POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
             System.out.println( "=================== RootPOA resolved, starting servant_to_ref ==============" );
-            rootPOA.the_POAManager().activate();
-            System.out.println( "=================== Activating POA Manager ==============" );
-
-            HelloWorldImpl impl = new HelloWorldImpl(ITERTATION_FACTOR_1);
-            org.omg.CORBA.Object obj = rootPOA.servant_to_reference(impl);
-            System.out.println( "=================== Servant registered, getting IOR ========================" );
-            String ior = orb.object_to_string(obj);
-
-            System.out.println( "[Server] " + ior );
-            BufferedWriter bw = new BufferedWriter( new FileWriter("ior1.txt") );
-            bw.write(ior);
-            bw.close();
+            
+            POAManager poaManager = rootPOA.the_POAManager ();   
+            poaManager.activate();
+            System.out.println( "=================== Activated POA Manager ==============" );
 
             // Creating a child poa with a threadpool
             
@@ -80,25 +79,40 @@ public class Server extends RealtimeThread
             short priority = (short) PriorityScheduler.instance().getMaxPriority();
             System.out.println("Higher priority is: " + priority);
             
-            int threadPoolId = rtorb.create_threadpool(100, 50, 50, priority, false, 10, 10);            
-            Policy[] policy = new Policy[1];
-            policy[0] = rtorb.create_threadpool_policy(threadPoolId);
+            int threadPoolId;
+            Policy[] policy;
+            
+            if(isClientPropagated){
+                System.out.println("Using client-propagated policy.....");
+                policy = new Policy[2];
+                policy[0] = rtorb.create_priority_model_policy (
+                        org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,
+                        (short)0);
+                        
+                ThreadpoolLane[] lanes = new ThreadpoolLane[2];
+                lanes[0] = new ThreadpoolLane(minPriority.value, 1, 1);
+                lanes[1] = new ThreadpoolLane(maxPriority.value, 1, 1);
+                    
+                threadPoolId = rtorb.create_threadpool_with_lanes(10, lanes, false, false, 10, 10);
+                policy[1] = rtorb.create_threadpool_policy(threadPoolId);
+            }else{
+                System.out.println("Using server-declared policy.....");                
+                threadPoolId = rtorb.create_threadpool(10, 5, 5, priority, false, 10, 10);            
+                policy = new Policy[1];
+                policy[0] = rtorb.create_threadpool_policy(threadPoolId);                
+            }
             
             System.out.println("Creating a child POA"); 
-            POA childPOA = rootPOA.create_POA("childPOA", null, policy); 
-            childPOA.the_POAManager().activate();
-          
-            HelloWorldImpl impl2 = new HelloWorldImpl(ITERATION_FACTOR_2);
+            POA childPOA = rootPOA.create_POA("childPOA", poaManager, policy); 
+
+            if(isClientPropagated){
+                createObj(ITERATION_FACTOR_1, childPOA, "ior1.txt");
+            }else{
+                createObj(ITERATION_FACTOR_1, rootPOA, "ior1.txt");
+            }
             
-            childPOA.activate_object(impl2);
-            org.omg.CORBA.Object obj2 = childPOA.servant_to_reference(impl2);
-            //System.out.println( "=================== Servant registered, getting IOR ========================" );
-            String ior2 = orb.object_to_string(obj2);
-            System.out.println( "[Server] " + ior2 );
-            BufferedWriter bw2 = new BufferedWriter( new FileWriter("ior2.txt") );
-            bw2.write(ior2);
-            bw2.close();
-            
+            createObj(ITERATION_FACTOR_2, childPOA, "ior2.txt");
+
             System.out.println( "RTZen is running ...." );
 			orb.run();
         }
@@ -107,5 +121,24 @@ public class Server extends RealtimeThread
             e.printStackTrace();
             System.exit(-1);
         }
+    }
+    
+    private void createObj(int iFactor, POA poa, String iorFile){
+        try{
+            HelloWorldImpl impl = new HelloWorldImpl(iFactor);
+            org.omg.CORBA.Object obj = poa.servant_to_reference(impl);
+            System.out.println( "=================== Servant registered, getting IOR ========================" );
+            String ior = orb.object_to_string(obj);
+
+            System.out.println( "[Server] " + ior );
+            BufferedWriter bw = new BufferedWriter( new FileWriter(iorFile) );
+            bw.write(ior);
+            bw.close();
+
+        }catch(Exception e){
+            e.printStackTrace();
+            System.exit(-1);            
+        }
+            
     }
 }

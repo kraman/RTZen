@@ -99,7 +99,11 @@ public class Client2 extends NoHeapRealtimeThread
             NativeTimeStamp.Init(1, 20.0);
             System.out.println( "===================NativeTimeStamp gets initialized================" );
 
-
+            org.omg.RTCORBA.Current rtcur = 
+                    org.omg.RTCORBA.CurrentHelper.narrow(
+                    orb.resolve_initial_references("RTCurrent"));
+            rtcur.the_priority(org.omg.RTCORBA.maxPriority.value);
+            
             sleep(INITIAL_SLEEP);
 
             System.out.println("==============Warm Up 2==============");
@@ -115,10 +119,7 @@ public class Client2 extends NoHeapRealtimeThread
                     Logger.write(i);
                     Logger.writeln();
                 }
-
-
             }
-
 
             System.out.println("==============Performance benchmark 2 ==============");
             long start = System.currentTimeMillis();
@@ -132,9 +133,7 @@ public class Client2 extends NoHeapRealtimeThread
                 NativeTimeStamp.RecordTime(22);
 
                 sleep(REQUEST_SLEEP);
-
-
-
+                
                 if (i != 0 && i % 500 == 0)
                 {
                     Logger.write(id);

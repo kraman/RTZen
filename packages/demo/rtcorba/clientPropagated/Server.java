@@ -52,7 +52,7 @@ public class Server extends RealtimeThread
                     System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             }
             */
-            ZenProperties.iiopMinor = 2;
+            //ZenProperties.iiopMinor = 2;
             System.out.println( "=====================Calling ORB Init in server============================" );
             ORB orb = ORB.init( args , null);
             System.out.println( "=====================ORB Init complete in server===========================" );
@@ -73,7 +73,7 @@ public class Server extends RealtimeThread
             System.out.println("Min prio " + PriorityScheduler.instance().getMinPriority() + ", " + RealtimeThread.MIN_PRIORITY);
             System.out.println("Norm prio " + PriorityScheduler.instance().getNormPriority() + ", " + RealtimeThread.NORM_PRIORITY);
             int minPrio = 0;
-            //for standard CORBA, this would be reenabled
+
             poa_policy_list[0] = rtorb.create_priority_model_policy (org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,(short)minPrio);
 
             ThreadpoolLane[] lanes = new ThreadpoolLane[3];

@@ -31,7 +31,7 @@ public final class ZenProperties {
     public static final ImmortalMemory immortalMem = ImmortalMemory.instance();
     public static final HeapMemory heapMem = HeapMemory.instance();
     public static final Logger logger = Logger.instance();
-    public static byte iiopMinor = 0;
+    public static byte iiopMinor = 2;
 
     public static final String zenVersion = "Zen RT Corba ORB Version 1.1, UNSTABLE\n"
             + "Build Revision: "

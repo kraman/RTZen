@@ -105,7 +105,12 @@ public class Client1 extends RealtimeThread
             NativeTimeStamp rtts = new NativeTimeStamp();
             NativeTimeStamp.Init(1, 20.0);
             System.out.println( "===================NativeTimeStamp gets initialized 1================" );
-
+            
+            org.omg.RTCORBA.Current rtcur = 
+                    org.omg.RTCORBA.CurrentHelper.narrow(
+                    orb.resolve_initial_references("RTCurrent"));
+            rtcur.the_priority(org.omg.RTCORBA.minPriority.value);
+            
             sleep(INITIAL_SLEEP);
 
             System.out.println("==============Warm Up 1==============");

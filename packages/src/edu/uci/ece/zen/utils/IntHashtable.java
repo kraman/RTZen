@@ -6,9 +6,12 @@ import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ZenProperties;
 
 /**
- * This class provides a constant space hashtable which is Scoped Memory safe.
+ * This class provides a constant space hashtable for integer values.
+ * This is somewhat of a kludge for now since it doesn't handle collisions
+ * since allocating nodes for chaining causes various memory-related problems.
  * 
- * @author Krishna Raman
+ * @author Mark Panahi
+ * @author Krishna Raman 
  */
 public class IntHashtable {
 
@@ -78,6 +81,7 @@ public class IntHashtable {
     }    
 
     public void clear() {
+        ZenProperties.logger.log(Logger.WARN, getClass(), "clear", "Not implemented.");
     }
 
     /**
