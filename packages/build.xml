@@ -65,8 +65,8 @@
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TracerAspect.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TypeCodeAspect.java"/>
-            <exclude name="src/edu/uci/ece/zen/orb/resolvers/**"/>
             <include name="src/edu/uci/ece/zen/poa/**"/>
+            <exclude name="src/edu/uci/ece/zen/orb/resolvers/**"/>
             <exclude name="src/edu/uci/ece/zen/poa/mechanism/ServantLocatorStrategy.java"/>
 
         <!--*** classes that jRate cant compile ***-->
@@ -82,7 +82,7 @@
 
     <target name="idl">
         <echo message="Compiling IDL files"/>
-        <!--<ant antfile="${zen.srcdir}/idl/build.xml"/>-->
+        <ant antfile="${zen.srcdir}/idl/build.xml"/>
     </target>    
 
     <target name="lib">
@@ -125,7 +125,7 @@
             <patternset refid="sources"/>
             <patternset>
                 <include name="src/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java"/>
-                <exclude name="src/javax/**"/>
+                <exclude name="src/javax/**"/>                
             </patternset>
             
             <classpath>
