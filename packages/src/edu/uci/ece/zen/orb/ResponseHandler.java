@@ -5,10 +5,23 @@ import edu.uci.ece.zen.orb.giop.type.*;
 public class ResponseHandler implements org.omg.CORBA.portable.ResponseHandler {
     private RequestMessage req;
     private ORB orb;
-    
+    private static ResponseHandler rh;
+    public ResponseHandler() {}
     public ResponseHandler(ORB orb, RequestMessage req ) {
         this.orb = orb;
         this.req = req;
+    }
+
+    public void init(ORB orb, RequestMessage req ) {
+        this.orb = orb;
+        this.req = req;
+    }
+
+    public static ResponseHandler instance()
+    {
+        if (rh == null)
+            rh = new ResponseHandler();
+        return rh;
     }
 
     /**

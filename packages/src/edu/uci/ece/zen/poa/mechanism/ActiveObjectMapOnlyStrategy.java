@@ -160,6 +160,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         MSGRunnable msgr = poa.getORB().getMSGR();
         msgr.init(request, myServant , reply, poa.getORB());
         sm.enter(msgr);
+        poa.getORB().freeScopedRegion(sm);
 
         /*if (request.getOperation().equals("_is_a") )
         {
