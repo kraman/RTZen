@@ -30,7 +30,7 @@ public class IsoLeak {
     static long methodId = 0;
     static long classId = 0;
     static void changeMethods( JavaClass cls , String name ){
-        if( name.indexOf("uci") > -1 && !cls.isNative() ){
+        if( !cls.isNative() ){
             Type[] parameters = new Type[]{Type.INT};
             String methodSignature = Type.getMethodSignature(Type.VOID, parameters);
             ConstantPoolGen pool = new ConstantPoolGen( cls.getConstantPool() );
