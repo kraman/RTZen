@@ -21,12 +21,14 @@ zen.debug = on
 #zen.build.runtime = jRate
 #zen.build.runtime = OVM
 zen.build.runtime = jvm
+#zen.build.runtime = JamaicaVM
 
 #Set up paths where each compiler is available
 timesys_ri_install = /opt/timesys/rtsj-ri/
 jRate_install = /home/jay/RTZen/jRate/
 jRate_classpath = /home/jay/RTZen/jRate-gcc/share/java/libgcj-3.3.1.jar:/home/jay/RTZen/jRate/classes/
 OVM_install = /home/kraman/OpenVM/OpenVM_bin/
+JamaicaVM_install = /usr/local/jamaica-2.4-10
 
 #Set up the tag if you need to compile the naming service
 zen.naming = on
