@@ -11,10 +11,10 @@ class LaneInfo{
         }catch( Exception e2 ){
              ZenProperties.logger.log(
                 Logger.SEVERE,
-                "edu.uci.ece.zen.orb.LaneInfo",
+                getClass(),
                 "<init>",
-                "Could not initialize Lane due to exception: " + e2.toString()
-                );
+                "Could not initialize Lane",
+				e2);
         }
     }
 
