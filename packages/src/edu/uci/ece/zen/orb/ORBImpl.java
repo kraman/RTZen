@@ -17,6 +17,7 @@ import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
 //import edu.uci.ece.zen.utils.ThreadLocal;
+import org.omg.RTCORBA.minPriority;
 
 public class ORBImpl {
     ZenProperties properties;
@@ -83,7 +84,8 @@ public class ORBImpl {
             orbFacade.getRTORB().create_threadpool(0,//stacksize,
                     10,//static_threads,
                     0,//dynamic_threads,
-                    PriorityMappingImpl.toCORBA((short) PriorityScheduler.instance().getNormPriority()),//default_thread_priority,
+                    minPriority.value,
+                    //PriorityMappingImpl.toCORBA((short) PriorityScheduler.instance().getNormPriority()),//default_thread_priority,
                     false,//allow_request_buffering,
                     0,//max_buffered_requests,
                     0//max_request_buffer_size

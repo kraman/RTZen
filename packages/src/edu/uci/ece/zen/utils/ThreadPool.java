@@ -173,6 +173,8 @@ public class ThreadPool {
             }
         }
 
+        if (ZenBuildProperties.dbgTP) ZenProperties.logger.log("current native priority: "
+                    + RealtimeThread.currentRealtimeThread().getPriority());
         if (laneFound) {
             lanes[i].execute(task);
         }
