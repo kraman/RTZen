@@ -63,7 +63,9 @@ public final class GIOPMessageFactory extends MessageFactory{
             java.io.InputStream in = trans.getInputStream();
  //           edu.uci.ece.zen.utils.Logger.printMemStats(335);
 
-            parseStreamForHeaderImpl(in, mainMsgHdr, trans);
+            boolean status = parseStreamForHeaderImpl(in, mainMsgHdr, trans);
+            if( !status )
+                return null;
 
  //           edu.uci.ece.zen.utils.Logger.printMemStats(336);
 
@@ -250,7 +252,10 @@ public final class GIOPMessageFactory extends MessageFactory{
         boolean moreFragments = true;
         while (moreFragments) {
             java.io.InputStream in = trans.getInputStream();
-            parseStreamForHeaderImpl(in, headerInfo, trans);
+            boolean status = parseStreamForHeaderImpl(in, headerInfo, trans);
+            if( !status ){
+                return;
+            }
 
             // Create the ReadBuffer to store the data of the fragment
             ReadBuffer buffer = ReadBuffer.instance();
@@ -312,8 +317,7 @@ public final class GIOPMessageFactory extends MessageFactory{
      * @param headerInfo
      *            ProtocolHeaderInfo object to fill with data read from header
      */
-    public void parseStreamForHeaderImpl(java.io.InputStream in,
-            ProtocolHeaderInfo headerInfo, Transport trans)
+    public boolean parseStreamForHeaderImpl(java.io.InputStream in, ProtocolHeaderInfo headerInfo, Transport trans)
             throws java.io.IOException {
         ZenProperties.logger.log("parseStreamForHeader");
         //byte[] header = new byte[12];
@@ -328,8 +332,7 @@ public final class GIOPMessageFactory extends MessageFactory{
             int tmp = in.read(header, 0, header.length);
             //if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
-                ZenProperties.logger.log(Logger.FATAL, MessageFactory.class, "parseStreamForHeader(InputStream, ProtocolHeaderInfo, Transport)", "RTZen doesnt support closing connection yet :-P ... shutting down");
-                System.exit(0);
+                return false;
             }
             read += tmp;
         }
@@ -384,6 +387,7 @@ public final class GIOPMessageFactory extends MessageFactory{
             headerInfo.messageSize |= header[11] & 0xFF;
         }
         //System.out.println( "Message size " + headerInfo.messageSize );
+        return true;
     }
 
     /**

@@ -111,6 +111,7 @@ public abstract class Transport implements Runnable {
         } catch (InterruptedException ie) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "run", ie);
         }
+        ORB.freeScopedRegion( (ScopedMemory) RealtimeThread.getCurrentMemoryArea() );
     }
 
     /**
@@ -205,7 +206,6 @@ class MessageProcessor implements Runnable {
                         "run", "Could not process message", e);
             }
             gmr.setRequestScope(null);
-            //ORB.freeScopedRegion( messageScope );
         }
         synchronized (this) {
             this.notifyAll();
@@ -280,6 +280,12 @@ class GIOPMessageRunnable implements Runnable {
  //           edu.uci.ece.zen.utils.Logger.printMemStats(306);
 
             message = edu.uci.ece.zen.orb.protocol.MessageFactory.parseStream(orb, trans);
+
+            if( message == null )   //connection closed
+            {
+                trans.shutdown(true);
+                return;
+            }
 
  //           edu.uci.ece.zen.utils.Logger.printMemStats(307);
 

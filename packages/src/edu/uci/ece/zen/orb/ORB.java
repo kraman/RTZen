@@ -631,10 +631,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     public static void freeScopedRegion(ScopedMemory sm) {
         unusedMemoryAreas.enqueue(sm);
-            //Logger.write(901);
-            //System.out.write(',');
-           // Logger.write(unusedMemoryAreas.size());
-            //Logger.writeln();
+        //Logger.write(901);
+        //System.out.write(',');
+        // Logger.write(unusedMemoryAreas.size());
+        //Logger.writeln();
    }
 
     public ConnectionRegistry getConnectionRegistry() {
