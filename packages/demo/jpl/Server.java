@@ -105,8 +105,8 @@ public class Server extends RealtimeThread
                         (short)0);
                         
                 ThreadpoolLane[] lanes = new ThreadpoolLane[2];
-                lanes[0] = new ThreadpoolLane(minPriority.value, 5, 0);
-                lanes[1] = new ThreadpoolLane(maxPriority.value, 5, 0);
+                lanes[0] = new ThreadpoolLane(minPriority.value, 1, 0);
+                lanes[1] = new ThreadpoolLane(maxPriority.value, 1, 0);
                     
                 threadPoolId = rtorb.create_threadpool_with_lanes(10, lanes, false, false, 10, 10);
                 policy[1] = rtorb.create_threadpool_policy(threadPoolId);
@@ -114,7 +114,7 @@ public class Server extends RealtimeThread
                 System.out.println("Using server-declared policy.....");    
                 threadPoolId = rtorb.create_threadpool(
                         0,//stacksize,
-                        5,//static_threads,
+                        1,//static_threads,
                         0,//dynamic_threads,
                         maxPriority.value,//default_thread_priority,
                         false,//allow_request_buffering,

@@ -297,6 +297,7 @@ class Lane implements Comparable{
     }
 
     private void newThread() {
+        ZenProperties.logger.log(Logger.WARN, getClass(), "newThread()", "Creating new thread.");
         ThreadSleepRunnable r = new ThreadSleepRunnable(this);
         NoHeapRealtimeThread thr = new NoHeapRealtimeThread(null, null, null, RealtimeThread.getCurrentMemoryArea(), null, r);
         short pr = PriorityMappingImpl.toNative(priority);
