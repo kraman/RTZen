@@ -1,5 +1,3 @@
-package demo.serial_transport;
-
 import java.io.*;
 import javax.realtime.*;
 
@@ -42,9 +40,9 @@ public class Client extends RealtimeThread
                 noFlyZone[i].longitude = -90000 - i;
             }
 
-            for (int i = 1; i <= 10; i++)
+            for (int i = 1; i <= 1; i++)
             {
-                server.sendWayPoint((short)i, noFlyZone);
+                server.sendWayPt((short)i, noFlyZone);
             }
 
             System.exit(0);
