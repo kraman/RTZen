@@ -1,0 +1,83 @@
+<project name="Zen ORB Hello Demo" default="IdlCheck" basedir="../../../..">
+
+    <property file="zen-build-bootstrap.properties"/>
+    <property file="zen-build.properties"/>
+    
+    
+    <property name="example.name" value="serverDeclared"/>
+    
+    <property name="package.rel.dir" value="demo/rtcorba/${example.name}"/>
+    <property name="package.dir" value="${zen.srcdir}/${package.rel.dir}"/>
+    <property name="idl.src" value="test.idl"/>
+    <property name="server.class" value="demo.rtcorba.${example.name}.Server"/>
+    <property name="client.class" value="demo.rtcorba.${example.name}.Client"/>
+
+   <target name="IdlCheck" depends="zen, openorb"/>
+   
+   <target name="zen" if="zen.idl.compiler">
+       <antcall target="compile">
+           <param name="idl.flags" value="-o"/>
+           <param name="gendir" value="${zen.gendir}/"/>
+           <param name="idl.dir" value="${package.dir}"/>
+           <param name="classpath" value="${zen.classpath}"/>
+       </antcall>
+   </target>
+
+   <target name="openorb" if="openorb.idl.compiler">
+       <antcall target="compile">
+           <param name="idl.flags" value="-all -d"/>
+           <param name="gendir" value="${zen.gendir}"/>
+           <param name="classpath" value="${openorb.class.path}"/>
+           <param name="idl.dir" value="${package.dir}"/>
+       </antcall>
+   </target>
+
+   <target name="idl">
+      <java classpath="${classpath}"
+            dir="${zen.gendir}"
+            classname="${idl2java.compiler}"
+            fork="yes">
+            <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
+      </java>
+   </target>
+
+   <target name="compile" depends="idl">
+      <javac srcdir="${zen.srcdir}:${zen.gendir}"
+             destdir="${zen.classdir}"
+             classpath="${classpath}"
+             debug="${zen.debug}"
+             optimize="${zen.optimization}"
+             >
+             
+             <patternset>
+                <include name="src/edu/uci/ece/zen/util/TracerAspect.java" if="zen.aspects.trace"/>
+                <include name="${package.rel.dir}/**.java"/>
+             </patternset> 
+      </javac>
+   </target>
+
+    <target name="server">
+        <java classname="${server.class}" fork="yes">
+            <jvmarg line="${zen.jvm.properties}"/>
+        </java>
+    </target> 
+    
+     <target name="server_jacorb">
+         <java classname="${server.class}" fork="yes">
+             <jvmarg line="-Xbootclasspath/p:/JacORB_2_1/lib/jacorb.jar;C:/Zen/RTZen/classes;c:/JacORB_2_1/lib/logkit-1.2.jar;c:/JacORB_2_1/lib/avalon-framework-4.1.5.jar -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=orb.jacorb.orb.ORBSingleton"/>
+         </java>
+    </target>   
+    
+
+    <target name="client">
+        <java classname="${client.class}" fork="yes">
+            <jvmarg line="${zen.jvm.properties} -Xms200M -Xmx500M"/>
+        </java>
+    </target> 
+
+    <target name="clean">
+      <delete dir="${zen.gendir}/${package.rel.dir}"/>
+      <delete dir="${zen.classdir}/${package.rel.dir}"/>
+    </target>
+</project>
+

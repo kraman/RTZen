@@ -50,9 +50,9 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
 
         //TODO:Assemble and write message header and policies here
 
-        contexts = new ServiceContext[1]; //kludge: of course there will be more than just 1
 
         if(del.priorityModel == PriorityModel._CLIENT_PROPAGATED && del.serverPriority >= 0){
+            contexts = new ServiceContext[1]; //kludge: of course there will be more than just 1
             contexts[0] = new ServiceContext();
             contexts[0].context_id = RTCorbaPriority.value;
             CDROutputStream out1 = CDROutputStream.create(orb);
@@ -76,6 +76,8 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
 
             System.out.println("________________Sending priority: " + priority);
             out1.free();
+        }else{
+             contexts = new ServiceContext[0];
         }
 
         messageId = WaitingStrategy.newMessageId();
