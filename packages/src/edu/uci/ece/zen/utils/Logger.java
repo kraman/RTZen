@@ -1,5 +1,6 @@
 package edu.uci.ece.zen.utils;
 
+import java.io.PrintStream;
 import javax.realtime.*;
 
 /** Class to enable loggin in RTZen
@@ -8,7 +9,7 @@ import javax.realtime.*;
  * @author Gunar Schirne
  */
 public abstract class Logger{
-    
+
 	// Logging levels
     public static final int PEDANTIC=0;
     public static final int CONFIG=1;
@@ -16,10 +17,10 @@ public abstract class Logger{
     public static final int WARN=3;
     public static final int SEVERE=4;
     public static final int FATAL=5;
-    protected static final String levelLabels[] = 
+    protected static final String levelLabels[] =
         new String[]{ "PEDANTIC" ,
-            "CONFIG" , "INFO" , 
-            "WARNING" , "SEVERE" , 
+            "CONFIG" , "INFO" ,
+            "WARNING" , "SEVERE" ,
             "FATAL" };
 
     /** Static instance of the logger */
@@ -36,7 +37,7 @@ public abstract class Logger{
             }catch( Exception e ){
 				System.err.println("Logger.instance(): " +
 					"Unable to load logger of type " + loggerType + ". Loading NullLogger.");
-				instance = new NullLogger(); 
+				instance = new NullLogger();
             }
             instance.setLevel(level);
         }
@@ -61,12 +62,12 @@ public abstract class Logger{
     public static void printMemStatsImm(int code){
         printMemStats(code, ImmortalMemory.instance());
     }
-    
+
     public static void printMemStats(int code){
-    
+
         MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
         printMemStats(code, ma);
-    
+
     }
     public static void writeln(){
         System.out.write( '\n' );
@@ -89,11 +90,11 @@ public abstract class Logger{
         write( pos );
         writeln();
     }
-        
+
     public static void printMemStats(int code, MemoryArea ma){
 	    long mem = ma.memoryConsumed();
 	    long rem = ma.memoryRemaining();
-        //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());            
+        //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());
         if(edu.uci.ece.zen.utils.ZenProperties.memDbg){
             write(code);
         System.out.write( ',' );
@@ -110,7 +111,7 @@ public abstract class Logger{
         /*
           mem = ma.memoryConsumed();
 	     rem = ma.memoryRemaining();
-  
+
              write(code);
         System.out.write( '\n' );
             write(mem);
@@ -120,7 +121,7 @@ public abstract class Logger{
         System.out.write( '\n' );
           mem = ma.memoryConsumed();
 	     rem = ma.memoryRemaining();
- 
+
              write(code);
         System.out.write( '\n' );
             write(mem);
@@ -128,10 +129,10 @@ public abstract class Logger{
             write(rem);
         System.out.write( '\n' );
         System.out.write( '\n' );
-          */ 
+          */
         System.out.flush();
-           
-           /* 
+
+           /*
             if(ma instanceof ScopedMemory){
                perf.cPrint.nativePrinter.print(code,(int)mem,((ScopedMemory)ma).getReferenceCount());
             } else {
@@ -139,24 +140,24 @@ public abstract class Logger{
             }*/
         }
     }
-      
+
     public static void printMemStats(edu.uci.ece.zen.orb.ORB orb){
 	    printMemStats(0,orb.parentMemoryArea);
 	    printMemStats(1,orb.orbImplRegion);
 	    printMemStats();
-        //System.out.println("orb,"+orb.orbImplRegion.memoryConsumed()+","+orb.orbImplRegion.memoryRemaining());            
-	    //System.out.println("client,"+orb.parentMemoryArea.memoryConsumed()+","+orb.parentMemoryArea.memoryRemaining());            
+        //System.out.println("orb,"+orb.orbImplRegion.memoryConsumed()+","+orb.orbImplRegion.memoryRemaining());
+	    //System.out.println("client,"+orb.parentMemoryArea.memoryConsumed()+","+orb.parentMemoryArea.memoryRemaining());
 
     }
-    
+
     public static void printThreadStack(){
 		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
 			System.out.println("Current thread is " + RealtimeThread.currentRealtimeThread());
-			System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());            
-            
+			System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());
+
 			int curInd = RealtimeThread.getMemoryAreaStackDepth()-1;
 			System.out.println("cur mem stack pos: " + curInd);
-			
+
 			for(int i = curInd; i >= 0; --i)
 				System.out.println("mem area at pos " + i + " is " + RealtimeThread.getOuterMemoryArea(i));
 		}
@@ -164,9 +165,20 @@ public abstract class Logger{
 
 }
 
-class ConsoleLogger extends Logger{
-    protected ConsoleLogger(){}
-	
+class ConsoleLogger extends Logger
+{
+	protected PrintStream printStream;
+
+    protected ConsoleLogger()
+	{
+		printStream = System.err;
+	}
+
+    protected ConsoleLogger(PrintStream printStream)
+	{
+		this.printStream = printStream;
+	}
+
     public void log(String msg) {
 		log(null, msg);
 	}
@@ -174,27 +186,45 @@ class ConsoleLogger extends Logger{
 	public void log(String thisFunction, String msg) {
 		log(Logger.INFO, null, thisFunction, msg);
 	}
+
     public void log(int level, Class thisClass, String thisFunction, String msg) {
         if( level >= this.level ){
-            System.err.print( Logger.levelLabels[level] + ":");
-			
+            printStream.print( Logger.levelLabels[level] );
+			printStream.print(":");
+
 			if (thisClass != null)
-				System.err.print(thisClass.getName() + " : ");
-			
+			{
+				printStream.print(thisClass.getName());
+				printStream.print(" : ");
+			}
+
 			if (thisFunction != null)
-				System.err.print(thisFunction + " : ");
-			
-			System.err.println(msg);
+			{
+				printStream.print(thisFunction);
+				printStream.print(" : ");
+			}
+
+			printStream.println(msg);
         }
     }
+
     public void log(int level, Class thisClass, String thisFunction, String msg, Throwable e)
 	{
 		log(level, thisClass, thisFunction, msg);
-		e.printStackTrace();
+		e.printStackTrace(printStream);
 	}
+
     public void log(int level, Class thisClass, String thisFunction, Throwable e)
 	{
 		log(level, thisClass, thisFunction, "", e);
+	}
+}
+
+class ScopeSafePrintStream extends ConsoleLogger
+{
+	protected ScopeSafePrintStream()
+	{
+		super(new org.ovmj.java.io.ScopeSafePrintStream(System.err));
 	}
 }
 
