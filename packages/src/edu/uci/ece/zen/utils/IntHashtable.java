@@ -2,6 +2,9 @@ package edu.uci.ece.zen.utils;
 
 import javax.realtime.ImmortalMemory;
 
+import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.ZenProperties;
+
 /**
  * This class provides a constant space hashtable which is Scoped Memory safe.
  * 
@@ -12,6 +15,7 @@ public class IntHashtable {
     /** Table of hash value-objects. */
     int[] keylist;
     int[] valuelist;
+    boolean[] collision;
 
     /**
      * Initialize the hash table and create the hash nodes.
@@ -25,7 +29,10 @@ public class IntHashtable {
                     int.class, limit);
                     
             valuelist = (int[]) ImmortalMemory.instance().newArray(
-            int.class, limit);             
+            int.class, limit);
+            
+            collision = (boolean[]) ImmortalMemory.instance().newArray(
+            boolean.class, limit);
         }catch(Exception e){
             e.printStackTrace();//TODO
         }
@@ -41,10 +48,15 @@ public class IntHashtable {
      */
     public void put(int key, int data) {
         int hash = Math.abs(key) % keylist.length;
+        
+        if(collision[hash] && key != keylist[hash])
+            ZenProperties.logger.log(Logger.FATAL, getClass(), "put", "Collision has occurred.");
+        
         keylist[hash] = key;
         valuelist[hash] = data;
+        collision[hash] = true;
     }
-    
+
     public void put(Object key, int data) {
         put(key.hashCode(), data);
     }
@@ -53,7 +65,7 @@ public class IntHashtable {
      * Lookup the key in the hashtable.
      * 
      * @param key
-     *            Key to loop up.
+     *            Key to look up.
      * @return The object associated with the key or null.
      */
     public int get(int key) {

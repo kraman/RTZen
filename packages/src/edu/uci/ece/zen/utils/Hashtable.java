@@ -67,7 +67,7 @@ public class Hashtable {
      *            The data to associate with the key.
      */
     public void put(Object key, Object data) {
-        int hash = key.hashCode() % list.length;
+        int hash = Math.abs(key.hashCode()) % list.length;
         HashNode hn = pop();
         hn.key = key;
         hn.data = data;
@@ -85,7 +85,7 @@ public class Hashtable {
      * @return The object associated with the key or null.
      */
     public Object get(Object key) {
-        int hash = key.hashCode() % list.length;
+        int hash = Math.abs(key.hashCode()) % list.length;
         synchronized (list) {
             for (HashNode i = list[hash]; i != null; i = i.next) {
                 if (i.key.equals(key)) return i.data;
@@ -104,7 +104,7 @@ public class Hashtable {
      *            The key to remove.
      */
     public void remove(Object key) {
-        int hash = key.hashCode() % list.length;
+        int hash = Math.abs(key.hashCode()) % list.length;
         synchronized (list) {
             HashNode prev = null;
             for (HashNode i = list[hash]; i != null; prev = i, i = i.next) {
