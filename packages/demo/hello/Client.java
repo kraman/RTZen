@@ -59,8 +59,10 @@ public class Client extends RealtimeThread
             System.out.println( "====================== Performance warmup =================================" );
             for( int i=0;i<runNum;i++ ){
                 sm.enter(r);
-                Logger.write(i);
-                Logger.writeln();
+                if(i % 500 == 0){
+                    Logger.write(i);
+                    Logger.writeln();
+                }
             }
 
             System.out.println( "====================== Performance benchmark ==============================" );

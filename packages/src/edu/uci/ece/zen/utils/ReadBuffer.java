@@ -163,10 +163,10 @@ public class ReadBuffer {
     public void free() {
                 //Thread.dumpStack();
         numFree++;
-        edu.uci.ece.zen.utils.Logger.write(numFree);
-        edu.uci.ece.zen.utils.Logger.writeln();
-         edu.uci.ece.zen.utils.Logger.write(bufferCache.size());
-        edu.uci.ece.zen.utils.Logger.writeln();
+        //edu.uci.ece.zen.utils.Logger.write(numFree);
+        //edu.uci.ece.zen.utils.Logger.writeln();
+        // edu.uci.ece.zen.utils.Logger.write(bufferCache.size());
+        //edu.uci.ece.zen.utils.Logger.writeln();
         
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(635);
         ByteArrayCache cache = ByteArrayCache.instance();

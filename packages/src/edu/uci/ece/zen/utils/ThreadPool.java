@@ -181,13 +181,11 @@ class Lane {
         //still couldnt get a thread, wait for one to return
         try {
             ThreadSleepRunnable runnable;
-            //ZenProperties.logger.printTracePoint(1);
             while (((runnable = (ThreadSleepRunnable) threads.dequeue()) == null)) {
                 synchronized (this) {
                     this.wait();
                 }
             }
-            //ZenProperties.logger.printTracePoint(2);
             return runnable.execute(task);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "getLeaderAndExecute", e);
@@ -221,7 +219,6 @@ class Lane {
             runnable.getLane().threads.enqueue(runnable);
         }
         synchronized (this) {
-            //ZenProperties.logger.printTracePoint(3);
             this.notify();
         }
     }
