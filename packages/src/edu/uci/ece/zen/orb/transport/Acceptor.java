@@ -34,12 +34,14 @@ public abstract class Acceptor{
     protected abstract void accept();
     protected abstract void internalShutdown();
 
-    public TaggedProfile getProfile( byte iiopMajorVersion , byte iiopMinorVersion, MemoryArea clientRegion ){
+    public TaggedProfile getProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion ){
         try{
-        ProfileRunnable runnable = (ProfileRunnable)(clientRegion.newInstance( ProfileRunnable.class ));
-        runnable.init( iiopMajorVersion , iiopMinorVersion , this );
-        clientRegion.executeInArea( runnable );
-        return runnable.getRetVal();
+
+            ProfileRunnable runnable = (ProfileRunnable)(clientRegion.newInstance( ProfileRunnable.class ));
+            runnable.init( iiopMajorVersion , iiopMinorVersion , objKey, this );
+            clientRegion.executeInArea( runnable );
+            return runnable.getRetVal();
+
         }catch(IllegalAccessException iae){
             iae.printStackTrace();
         }catch(InstantiationException ie){
@@ -49,12 +51,13 @@ public abstract class Acceptor{
         return null;
     }
 
-    protected abstract TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion);
+    protected abstract TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey);
 }
 
 class ProfileRunnable implements Runnable{
     private byte major;
     private byte minor;
+    private byte[] objKey;
     private Acceptor acc;
 
     private TaggedProfile retVal;
@@ -62,17 +65,18 @@ class ProfileRunnable implements Runnable{
     public ProfileRunnable()
     {}
 
-    public void init( byte major , byte minor , Acceptor acc ){
+    public void init(byte major , byte minor , byte[] objKey, Acceptor acc){
         this.major = major;
         this.minor = minor;
         this.acc = acc;
+        this.objKey = objKey;
     }
 
     public TaggedProfile getRetVal(){ return retVal; }
 
     public void run(){
 
-        retVal = acc.getInternalProfile(major, minor);
+        retVal = acc.getInternalProfile(major, minor, objKey);
     }
 }
 

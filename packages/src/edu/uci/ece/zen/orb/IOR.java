@@ -77,7 +77,7 @@ public class IOR
 
         org.omg.IOP.IOR ior = new org.omg.IOP.IOR();
         ior.type_id = typeID;
-        ior.profiles = orb.getAcceptorRegistry().getProfiles();
+        ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, objKeyLength);
 
         ObjectImpl objectImpl = new ObjectImpl(ior);
         ObjRefDelegate delegate = ObjRefDelegate.instance();

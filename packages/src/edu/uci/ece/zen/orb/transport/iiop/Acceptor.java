@@ -1,7 +1,9 @@
 package edu.uci.ece.zen.orb.transport.iiop;
 
 import edu.uci.ece.zen.utils.*;
-import org.omg.IOP.TaggedProfile;
+import edu.uci.ece.zen.orb.*;
+import org.omg.IOP.*;
+import org.omg.IIOP.*;
 
 public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
     private java.net.ServerSocket ssock;
@@ -35,11 +37,29 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
     protected void internalShutdown(){
     }
 
-    public org.omg.CORBA.portable.IDLEntity getProfile( byte iiopMajorVersion , byte iiopMinorVersion ){
-        return null;
-    }
+    //public org.omg.CORBA.portable.IDLEntity getProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey ){
+    //    return null;
+    //}
 
-    protected TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion){
-        return null;
+    protected TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey){
+
+        Version version = new Version(iiopMajorVersion, iiopMinorVersion);
+
+        ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey);
+
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        out.write_boolean(false); //BIGENDIAN
+
+        ProfileBody_1_0Helper.write(out, pb10);
+
+        TaggedProfile tp = new TaggedProfile();
+        tp.tag = TAG_INTERNET_IOP.value;
+        tp.profile_data = new byte[(int)out.getBuffer().getLimit()];
+        out.getBuffer().readByteArray(tp.profile_data, 0 , (int)out.getBuffer().getLimit());
+
+        out.free();
+
+        return tp;
     }
 }
