@@ -25,13 +25,13 @@ zen.build.runtime = jvm
 
 #Set up paths where each compiler is available
 timesys_ri_install = /opt/timesys/rtsj-ri/
-jRate_install = /home/jay/RTZen/jRate/
-jRate_classpath = /home/jay/RTZen/jRate-gcc/share/java/libgcj-3.3.1.jar:/home/jay/RTZen/jRate/classes/
+jRate_install = /home/jay/jRate/
+jRate_classpath = /home/jay/jRate-gcc/share/java/libgcj-3.3.3.jar:/home/jay/jRate/classes/
 OVM_install = /home/kraman/OpenVM/OpenVM_bin/
 JamaicaVM_install = /usr/local/jamaica-2.4-10
 
 #Set up the tag if you need to compile the naming service
-zen.naming = on
+#zen.naming = on
 
 #Portable Interceptors
 #zen.aspects.pi
