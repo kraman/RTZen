@@ -66,7 +66,7 @@ public abstract class Logger{
 
     public static void printMemStatsImm(int code){
         if( ZenBuildProperties.dbgImmortal ){
-            printMemStats(code, ImmortalMemory.instance());
+//            printMemStats(code, ImmortalMemory.instance());
         }
     }
 
