@@ -34,7 +34,7 @@ STOPFNAME=$PROGNAME.stopToken
 
 
 # startup types 
-TESTSIZES="4 32 128 512 2048"
+TESTSIZES="4 32 128 512 2048 8096"
 SERVERTYPE=1
 CLIENTTYPE=1
 TESTTYPE=1
@@ -83,7 +83,7 @@ fi
 #JAVA_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$PROJECT_HOME/classes:$CLASSPATH:/usr/java/j2sdk1.4.2_01/lib/tools.jar -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton -Dsun.boot.library.path=/usr/java/j2sdk1.4.2_01/jre/lib/i386:$PROJECT_HOME/lib -Xms200M -Xmx500M"
 JAVA_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$PROJECT_HOME/classes:$CLASSPATH:/usr/java/j2sdk1.4.2_01/lib/tools.jar -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton -Xms200M -Xmx500M"
 
-TJVM_START="/opt/timesys/rtsj-ri/bin/tjvm -Xverify:all -Ximmortal100M -Xms200M -Djava.class.path=$PROJECT_HOME/classes/ -Djava.library.path=$LD_LIBRARY_PATH -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar"
+TJVM_START="/opt/timesys/rtsj-ri/bin/tjvm -Xverify:all -Ximmortal400M -Xms200M -Djava.class.path=$PROJECT_HOME/classes/ -Djava.library.path=$LD_LIBRARY_PATH -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar"
 
 
 #change to program dir, all filenames are relative
@@ -102,7 +102,7 @@ function startServer(){
 		$EXEC_CMD&
 		echo $! > $STOPFNAME
 	elif [ $1 -eq 3 ]; then
-		HOST_IP=`host -t A doc | awk ' { print $4 }'`
+		HOST_IP=`host -t A $HOST | grep -v alias | awk ' { print $4 }'`
 		# TAO SERVANT
 		EXEC_CMD="tao/server -ORBListenEndpoints iiop://1.2@$HOST_IP/hostname_in_ior=$HOST_IP"
 		echo "Exec cmd:"
@@ -161,6 +161,14 @@ function stopServer(){
 		# TimeSys JVM on node 0
 		# start ZEN server in simulated RT
 		EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 2 $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD
+		#echo $! > $STOPFNAME	
+    elif [ $1 -eq 30 ]; then
+		# TimeSys JVM on node 0
+		# start ZEN server in simulated RT
+		EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 3 $1"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
 		$EXEC_CMD
