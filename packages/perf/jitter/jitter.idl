@@ -1,0 +1,17 @@
+module perf
+{
+	module jitter
+	{
+
+	  typedef sequence<octet>   OctetSeq;
+	  typedef sequence<short>   ShortSeq;
+	  
+	  
+		interface HelloWorld
+		{
+			void putOctetSeq(in OctetSeq inSeq);
+			void putShortSeq(in ShortSeq inSeq);
+		};
+	};
+};
+

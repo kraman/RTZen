@@ -1,0 +1,143 @@
+<project name="Zen ORB Perf Demo" default="all" basedir="../../..">
+    <property file="zen-build-bootstrap.properties"/>
+    <property file="zen-build.properties"/>
+    <import file="${zen.srcdir}/property_processor.xml"/>
+    
+    <property name="package.dir" value="${zen.srcdir}/perf/jitter"/>
+    <property name="idl.src" value="jitter.idl"/>
+
+    <target name="all" depends="openorb , compile, jRate"/>
+	<property name="CORBA.dir" value="${package.dir}/tao"/>
+
+    <target name="openorb">
+       <antcall target="idl">
+           <param name="idl.flags" value="-all -d"/>
+           <param name="gendir" value="${zen.gendir}"/>
+           <param name="classpath" value="${openorb.class.path}"/>
+           <param name="idl.dir" value="${package.dir}"/>
+       </antcall>
+    </target>
+
+    <target name="idl">
+      <java classpath="${classpath}"
+            dir="${zen.gendir}"
+            classname="${idl2java.compiler}"
+            fork="yes">
+            <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
+      </java>
+   </target>
+
+   <target name="compile">
+      <javac srcdir="${zen.srcdir}:${zen.gendir}"
+             destdir="${zen.classdir}"
+             classpath="${classpath}"
+             debug="${zen.debug}"
+             optimize="${zen.optimization}"
+             includes="perf/jitter/**.java"
+             target="1.1"
+             bootclasspath="${zen.rtbootclasspath}"
+             includeJavaRuntime="yes"
+             >
+      </javac>
+
+      <jar 
+        jarfile="${zen.libdir}/perf_world.jar" 
+        basedir="${zen.classdir}" 
+        includes="perf/jitter/**"
+        />
+    </target>
+
+    <target name="jRate" if="compiler_jRate">
+      <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
+      <jRate
+            optimizeLevel="2"
+            libDirs="${zen.jRateLibDir}"
+            additionalLinkOptions="-L${zen.libdir} -lZen"
+            destdir="${zen.libdir}"
+            bootclasspath="${zen.rtbootclasspath}"
+            classpath="${jRate_classpath}:${zen.classdir}"
+            out="${package.dir}/client"
+            main="perf.jitter.Client"
+            debug="true">
+            <fileset dir="${zen.srcdir}">
+                <patternset>
+                    <include name="perf/jitter/**.java"/>
+                    <exclude name="perf/jitter/Server.java"/>
+                </patternset>
+            </fileset>
+            <fileset dir="${zen.gendir}">
+                <patternset>
+                    <include name="perf/jitter/**.java"/>
+                </patternset>
+            </fileset>
+       </jRate>
+   </target>
+
+    <target name="server">
+        <java classname="perf.jitter.Server" fork="yes">
+            <jvmarg line="${zen.jvm.properties}"/>
+        </java>
+    </target> 
+
+    <target name="client">
+        <java classname="perf.jitter.Client" fork="yes">
+            <jvmarg line="${zen.jvm.properties} -Djava.library.path=/home/hschirne/RTZen/packages/perf/TimeStamp -Xms200M -Xmx500M"/>
+        </java>
+    </target> 
+
+    <target name="clean">
+      <delete dir="${zen.gendir}/${package.dir}"/>
+      <delete dir="${zen.classdir}/${package.dir}"/>
+      <delete file="${package.dir}/client"/>
+      <delete file="${package.dir}/server"/>
+      <delete quiet="true" defaultexcludes="no"> 
+	     <fileset dir="${package.dir}" includes="*.o"/> 
+	     <fileset dir="${package.dir}/tao" includes="*.o"/> 
+	     <fileset dir="${package.dir}/tao" includes="jitterC*"/> 
+	     <fileset dir="${package.dir}/tao" includes="jitterS*"/> 
+      </delete> 
+	  <delete file="${package.dir}/tao/server"/>
+    </target>
+
+
+	<target name="compileCORBA">
+	
+		<property environment="env"/>
+		<property name="compile.flags" value="-W -Wall -Wpointer-arith -pipe -D_RENTRANT -DACE_HAS_AIO_CALLS -D_GNU_SOURCE -DACE_NDEBUG -DACE_USE_RCSID=0 -DACE_HAS_EXCEPTIONS"/>
+		<property name="compile.args" value="${compile.flags} -I${env.ACE_ROOT}/TAO -I${env.ACE_ROOT} -c -o"/> 
+		<property name="link.flags" value="-W -Wall -Wpointer-arith -pipe  -D_REENTRANT -DACE_HAS_AIO_CALLS -D_GNU_SOURCE -Wl,-E -lTAO_PortableServer -lTAO -lACE -ldl -lpthread -lrt"/>
+		<property name="link.args" value="${link.flags} -L${env.ACE_ROOT}/ace -L./ -L${env.ACE_ROOT}/TAO -o"/>
+	
+	    <echo message="${env.ACE_ROOT}/TAO/TAO_IDL/tao_idl"/>
+	    <echo message="${CORBA.dir}" />
+	    <echo message="${package.dir}"/>
+
+		<exec executable="${env.ACE_ROOT}/TAO/TAO_IDL/tao_idl" dir="${CORBA.dir}">
+			<arg line="../jitter.idl"/>
+		</exec>
+
+		<exec executable="g++" dir="${CORBA.dir}">
+			<arg line="${compile.args} jitterS.o jitterS.cpp"/>
+		</exec>
+	
+		<exec executable="g++" dir="${CORBA.dir}">
+			<arg line="${compile.args} jitterS_T.o jitterS_T.cpp"/>
+		</exec>
+	
+		<exec executable="g++" dir="${CORBA.dir}">
+			<arg line="${compile.args} jitterC.o jitterC.cpp"/>
+		</exec>
+	
+		<exec executable="g++" dir="${CORBA.dir}">
+			<arg line="${compile.args} server.o server.cpp"/>
+		</exec>
+
+		<exec executable="g++" dir="${CORBA.dir}">
+			<arg line="${link.args} server jitterC.o jitterS.o jitterS_T.o server.o"/> 
+		</exec>
+
+	</target>
+
+</project>
+
+

@@ -1,0 +1,130 @@
+<project name="Zen ORB Perf Demo" default="all" basedir="../../..">
+    <property file="zen-build-bootstrap.properties"/>
+    <property file="zen-build.properties"/>
+    <import file="${zen.srcdir}/property_processor.xml"/>
+    
+    <property name="package.dir" value="${zen.srcdir}/perf/TimeStamp"/>
+    <property name="idl.src" value="TimeStamp.idl"/>
+
+    <target name="all" depends="compile, compileC, jRate"/>
+	<property name="CORBA.dir" value="${package.dir}/tao"/>
+
+    <target name="openorb">
+       <antcall target="idl">
+           <param name="idl.flags" value="-all -d"/>
+           <param name="gendir" value="${zen.gendir}"/>
+           <param name="classpath" value="${openorb.class.path}"/>
+           <param name="idl.dir" value="${package.dir}"/>
+       </antcall>
+    </target>
+
+    <target name="idl">
+      <java classpath="${classpath}"
+            dir="${zen.gendir}"
+            classname="${idl2java.compiler}"
+            fork="yes">
+            <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
+      </java>
+   </target>
+
+   <target name="compile">
+      <javac srcdir="${zen.srcdir}:${zen.gendir}"
+             destdir="${zen.classdir}"
+             classpath="${classpath}"
+             debug="${zen.debug}"
+             optimize="${zen.optimization}"
+             includes="perf/TimeStamp/**.java"
+             target="1.1"
+             bootclasspath="${zen.rtbootclasspath}"
+             includeJavaRuntime="yes"
+             >
+      </javac>
+
+      <jar 
+        jarfile="${zen.libdir}/perf_TimeStamp.jar" 
+        basedir="${zen.classdir}" 
+        includes="perf/TimeStamp/**"
+        />
+    </target>
+
+    <target name="jRate" if="compiler_jRate">
+      <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
+      <jRate
+            optimizeLevel="2"
+            libDirs="${zen.jRateLibDir}"
+            additionalLinkOptions="-L${zen.libdir} -lZen"
+            destdir="${zen.libdir}"
+            bootclasspath="${zen.rtbootclasspath}"
+            classpath="${jRate_classpath}:${zen.classdir}"
+            out="${package.dir}/client"
+            main="perf.TimeStamp.Client"
+            debug="true">
+            <fileset dir="${zen.srcdir}">
+                <patternset>
+                    <include name="perf/TimeStamp/**.java"/>
+                    <exclude name="perf/TimeStamp/Server.java"/>
+                </patternset>
+            </fileset>
+            <fileset dir="${zen.gendir}">
+                <patternset>
+                    <include name="perf/TimeStamp/**.java"/>
+                </patternset>
+            </fileset>
+       </jRate>
+   </target>
+
+	<target name="compileC">
+	
+		<property environment="env"/>
+		<property name="compile.flags" value="-shared -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/include/linux"/>
+		<property name="link.flags" value="-L/usr/lib -lstdc++"/>
+	
+		<exec executable="gcc" dir="${package.dir}">
+			<arg line="-o ${zen.libdir}/libttimestampjni.so ${compile.flags} NativeTimeStamp.cpp TimeStamp_NativeTimeStamp.cpp ${link.flags}"/>
+		</exec>
+	
+	</target>
+
+   <target name="compileC.old">
+			<property environment="env"/>
+		<property name="compile.flags" value="-W -Wall -Wpointer-arith -pipe -D_RENTRANT -DACE_HAS_AIO_CALLS -D_GNU_SOURCE -DACE_NDEBUG -DACE_USE_RCSID=0 -DACE_HAS_EXCEPTIONS"/>
+		<property name="compile.args" value="${compile.flags} -I${package.dir} -c -o"/> 
+		<property name="link.flags" value="-W -Wall -Wpointer-arith -pipe  -D_REENTRANT -DACE_HAS_AIO_CALLS -D_GNU_SOURCE -Wl,-E"/>
+		<property name="link.args" value="${link.flags} -o"/>
+	
+		<exec executable="gcc" dir="${package.dir}">
+			<arg line="${compile.args} perf_cPrint_nativePrinter.o perf_cPrint_nativePrinter.c"/>
+		</exec>
+
+	    <exec executable="ld" dir="${package.dir}" >
+	       <arg line="-G perf_cPrint_nativePrinter.o -o libCPrinter.so"/>
+	    </exec>
+
+   </target>
+
+    <target name="server">
+        <java classname="perf.TimeStamp.Server" fork="yes">
+            <jvmarg line="${zen.jvm.properties}"/>
+        </java>
+    </target> 
+
+    <target name="client">
+        <java classname="perf.TimeStamp.Client" fork="yes">
+            <jvmarg line="${zen.jvm.properties} -Xms200M -Xmx500M"/>
+        </java>
+    </target> 
+
+    <target name="clean">
+      <delete dir="${zen.gendir}/${package.dir}"/>
+      <delete dir="${zen.classdir}/${package.dir}"/>
+      <delete file="${package.dir}/client"/>
+      <delete file="${package.dir}/server"/>
+      <delete quiet="true" defaultexcludes="no"> 
+	     <fileset dir="${package.dir}" includes="*.o"/> 
+      </delete> 
+    </target>
+
+
+</project>
+
+
