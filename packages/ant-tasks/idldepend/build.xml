@@ -8,7 +8,7 @@
 
 <project name="IDLdepend" default="all" basedir=".">
 
-	<property name="javacchome" value="/opt/devJava/javacc-3.2" />
+	<property name="javacchome" value="javacc-3.2" />
 
 	<property name="src.dir" value="source" />
 	<property name="build.dir" value="bytecode" />
