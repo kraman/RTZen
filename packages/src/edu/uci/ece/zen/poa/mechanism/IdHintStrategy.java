@@ -32,7 +32,6 @@ final public class IdHintStrategy {
     public static void create(char prefix, FString objectId, FString time,
             int poaIndex, int poaGenCount, int servIndex, int servGenCount,
             FString ok_out) {
-	System.out.println( "blah" );
 
         // length = prefix + <no of bytes that poaPathName occupies> +
         // poaPathName + length of the time stamp <8 bytes>
@@ -59,7 +58,7 @@ final public class IdHintStrategy {
 
         // copy the Object Id
         ok_out.append(objectId.getData(), 0, objectId.length());
-	System.out.println( "POA index: " + poaIndex + " POA gen: " + poaGenCount + " Servant index: " + servIndex + " Servant Gen count: " + servGenCount + " oid: " + objectId.length() + " final len: " + ok_out.length() );
+	//System.out.println( "POA index: " + poaIndex + " POA gen: " + poaGenCount + " Servant index: " + servIndex + " Servant Gen count: " + servGenCount + " oid: " + objectId.length() + " final len: " + ok_out.length() );
         // Logger.debug("Okey Created: Transient Hint Strategy = "
         // + new String(temp));
         // Logger.debug("Start = " + start);

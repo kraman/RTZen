@@ -144,7 +144,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         ZenProperties.logger.log("ObjRefDel processTaggedProfile 1");
         switch (tag) {
             case TAG_INTERNET_IOP.value: //establish appropriate connections
-                System.out.println( "IIOP transport profile found" );
+                ZenProperties.logger.log( "IIOP transport profile found" );
             // and
             // register them
             {

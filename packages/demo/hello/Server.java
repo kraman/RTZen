@@ -30,7 +30,9 @@ public class Server extends RealtimeThread
     }
 
     public Server(){
-        super(null,null,null,new LTMemory(3000,300000),null,null);
+        super((SchedulingParameters)null, (ReleaseParameters)null, (MemoryParameters)null,
+                new LTMemory(3000,300000),(ProcessingGroupParameters)null,(Runnable)null);
+                    
     }
 
     public void init( String args[] ){

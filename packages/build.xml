@@ -141,6 +141,11 @@
         basedir="${zen.classdir}"
         includes="javax/realtime/**"
         />
+        <jar
+        jarfile="${zen.libdir}/everything.jar"
+        basedir="${zen.classdir}"
+        includes="**"
+        />        
     </target>
 
     <target name="compile_perf" unless="compiler_jdk">
