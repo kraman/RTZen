@@ -1,7 +1,7 @@
 package javax.realtime;
 
 public class RealtimeThread extends Thread{
-    RealtimeThread( Runnable r ){
+    public RealtimeThread( Runnable r ){
         super( r );
     }
 
@@ -9,9 +9,9 @@ public class RealtimeThread extends Thread{
     public static void setCurrentMemoryArea( MemoryArea currentMem ){
         if( currentMem == null )
             currentMem = HeapMemory.instance();
-        memHash.put(Thread.currentThread(),currentMem);  
+        memHash.put(Thread.currentThread(),currentMem);
     }
-    public static MemoryArea getCurrentMemoryArea(){ 
+    public static MemoryArea getCurrentMemoryArea(){
         MemoryArea mem = (MemoryArea)memHash.get(Thread.currentThread());
         if( mem == null )
             return HeapMemory.instance();
