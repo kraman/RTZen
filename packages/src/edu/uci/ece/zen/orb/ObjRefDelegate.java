@@ -350,7 +350,10 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      * </p>
      */
     public org.omg.CORBA.portable.OutputStream request(org.omg.CORBA.Object self, String operation, boolean responseExpected) {
-        return new ClientRequest( operation , responseExpected , (byte)1 , (byte)0 , orb , this );
+        //return new ClientRequest( operation , responseExpected , (byte)1 , (byte)0 , orb , this );
+        ClientRequest cr = ClientRequest.instance();
+        cr.init( operation , responseExpected , (byte)1 , (byte)0 , orb , this );
+        return cr;
     }
 
     /**
@@ -360,7 +363,10 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      * </p>
      */
     public org.omg.CORBA.portable.OutputStream request(org.omg.CORBA.Object self, String operation, boolean responseExpected, byte majorVersion, byte minorVersion) {
-        return new ClientRequest( operation , responseExpected , majorVersion , minorVersion , orb , this );
+        //return new ClientRequest( operation , responseExpected , majorVersion , minorVersion , orb , this );
+        ClientRequest cr = ClientRequest.instance();
+        cr.init( operation , responseExpected , majorVersion , minorVersion , orb , this );
+        return cr;
     }
 
     /**
@@ -371,7 +377,11 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      */
     public org.omg.CORBA.portable.InputStream invoke(org.omg.CORBA.Object self, org.omg.CORBA.portable.OutputStream os)
             throws org.omg.CORBA.portable.ApplicationException, org.omg.CORBA.portable.RemarshalException {
-        return ((ClientRequest)os).invoke();
+        //        edu.uci.ece.zen.utils.Logger.printMemStats(302);
+        org.omg.CORBA.portable.InputStream ret = ((ClientRequest)os).invoke();
+          //      edu.uci.ece.zen.utils.Logger.printMemStats(303);
+
+        return ret;
     }
 
     public void releaseReply(org.omg.CORBA.Object self, org.omg.CORBA.portable.InputStream is) {

@@ -11,6 +11,21 @@ import edu.uci.ece.zen.utils.*;
 public class TwoWayWaitingStrategy extends WaitingStrategy{
     Semaphore clientSem;
     CDRInputStream replyMsg;
+    
+    private static TwoWayWaitingStrategy inst;
+    public static TwoWayWaitingStrategy instance()
+    {
+        if (inst == null){
+            try
+            {
+                inst = (TwoWayWaitingStrategy) ImmortalMemory.instance().newInstance(TwoWayWaitingStrategy.class);
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return inst;
+    }
 
     TwoWayWaitingStrategy(){
         clientSem = new Semaphore(0);

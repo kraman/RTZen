@@ -29,9 +29,12 @@ class LaneInfo{
         this.transpScope = transpScope;
         objectKey.append( objKey , 0 , objKey.length );
     }
-
+/*
     public byte[] getObjectKey(){
         return objectKey.getTrimData();
+    }*/
+    public FString getObjectKey(){
+        return objectKey;
     }
 
 }

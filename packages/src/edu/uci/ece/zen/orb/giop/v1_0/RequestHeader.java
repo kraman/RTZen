@@ -83,7 +83,7 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity
      * @param requesting_principal requesting_principal struct member
      */
     public void init(FString service_context, int request_id, boolean response_expected,
-                                byte [] object_key, String operation, byte [] requesting_principal)
+                                FString object_key, String operation, byte [] requesting_principal)
     {
         this.service_context = service_context;
         this.request_id = request_id;

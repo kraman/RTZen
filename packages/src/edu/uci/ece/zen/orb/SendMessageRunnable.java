@@ -7,8 +7,22 @@ import edu.uci.ece.zen.utils.*;
 public class SendMessageRunnable implements Runnable{
     WriteBuffer msg;
     ScopedMemory transScope;
+    private static SendMessageRunnable inst;
+    public static SendMessageRunnable instance()
+    {
+        if (inst == null){
+            try
+            {
+                inst = (SendMessageRunnable) ImmortalMemory.instance().newInstance(SendMessageRunnable.class);
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return inst;
+    }
 
-    public SendMessageRunnable(ScopedMemory transScope){
+    public void init(ScopedMemory transScope){
         this.transScope = transScope;
     }
 

@@ -200,6 +200,7 @@ class GIOPMessageRunnable implements Runnable{
             if(statCount % 100 == 0){
                 //System.out.print(name);
                 edu.uci.ece.zen.utils.Logger.printMemStats(3);
+                edu.uci.ece.zen.utils.Logger.printMemStats(orb);
             }
 
 

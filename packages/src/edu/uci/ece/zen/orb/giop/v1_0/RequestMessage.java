@@ -11,10 +11,11 @@ import javax.realtime.ImmortalMemory;
 public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage {
     private RequestHeader header;
     private static RequestMessage rm;
+    private byte [] reqPrin = new byte[0];
 
-    public RequestMessage() {}
-    public RequestMessage( ClientRequest clr , int messageId ){
-        super();
+    public RequestMessage() {super();}
+    public void init( ClientRequest clr , int messageId ){
+        //super();
         if(ZenProperties.devDbg) System.out.println( "RequestMessage1" );
         header = RequestHeader.instance();
 
@@ -24,7 +25,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
             clr.responseExpected,
             clr.objectKey,
             clr.operation,
-            new byte[0] );
+            reqPrin );
     }
     public static RequestMessage getMessage()
     {

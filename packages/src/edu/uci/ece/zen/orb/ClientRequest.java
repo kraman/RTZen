@@ -16,11 +16,27 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
     public byte giopMajor;
     public byte giopMinor;
     public ScopedMemory transportScope;
-    public byte[] objectKey;
+    public FString objectKey;
+    //public byte[] objectKey;
     //public FString objectKey;
     public ORB orb;
     private int messageId;
     public FString contexts;
+
+    private static ClientRequest inst;
+    public static ClientRequest instance()
+    {
+        if (inst == null){
+            try
+            {
+                inst = (ClientRequest) ImmortalMemory.instance().newInstance(ClientRequest.class);
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return inst;
+    }
 
     /**
      * Client upcall:
@@ -28,8 +44,9 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
      *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */
-    public ClientRequest( String operation , boolean responseExpected , byte giopMajor , byte giopMinor , ORB orb , ObjRefDelegate del )
+    public void init( String operation , boolean responseExpected , byte giopMajor , byte giopMinor , ORB orb , ObjRefDelegate del )
     {
+      //          edu.uci.ece.zen.utils.Logger.printMemStats(310);
         this.orb = orb;
         this.del = del;
         this.operation = operation;
@@ -126,6 +143,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         if(ZenProperties.devDbg) System.out.println( "ClientRequest 9" );
         if(ZenProperties.devDbg) System.out.println( "3ClientRequest: cur ORBImpl mem (cons, remaining)= " + orb.orbImplRegion.memoryConsumed() + " " + orb.orbImplRegion.memoryRemaining());
         if(ZenProperties.devDbg) System.out.println( "3ClientRequest: cur Client mem (cons, remaining)= " + orb.parentMemoryArea.memoryConsumed() + " " + orb.parentMemoryArea.memoryRemaining());
+                //edu.uci.ece.zen.utils.Logger.printMemStats(311);
     }
 
     /**
@@ -137,11 +155,12 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
     public CDRInputStream invoke(){
         if(ZenProperties.devDbg) System.out.println( "ClientRequest invoke 1" );
         out.updateLength();
-        MessageComposerRunnable mcr = new MessageComposerRunnable( this );
+        MessageComposerRunnable mcr = MessageComposerRunnable.instance();
+        mcr.init( this );
         ScopedMemory messageScope = orb.getScopedRegion();
 
-        ExecuteInRunnable erOrbMem = new ExecuteInRunnable();
-        ExecuteInRunnable erMsgMem = new ExecuteInRunnable();
+        ExecuteInRunnable erOrbMem = orb.getEIR();//new ExecuteInRunnable();
+        ExecuteInRunnable erMsgMem = orb.getEIR();//new ExecuteInRunnable();
 
         erOrbMem.init( erMsgMem , orb.orbImplRegion );
         erMsgMem.init( mcr, messageScope );
@@ -159,6 +178,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
                 "Could not invoke remote object due to exception: " + e.toString()
                 );
         }
+                //edu.uci.ece.zen.utils.Logger.printMemStats(310);
         if(ZenProperties.devDbg) System.out.println( "ClientRequest invoke 3" );
         orb.freeScopedRegion( messageScope );
         if( mcr.success )
@@ -218,13 +238,28 @@ class MessageComposerRunnable implements Runnable{
     CDRInputStream reply;
     boolean success;
 
+    private static MessageComposerRunnable inst;
+    public static MessageComposerRunnable instance()
+    {
+        if (inst == null){
+            try
+            {
+                inst = (MessageComposerRunnable) ImmortalMemory.instance().newInstance(MessageComposerRunnable.class);
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return inst;
+    }
+    
     /**
      * Client upcall:
      * <p>
      *     <b>Client scope</b> --ex in --&gt; ORB parent scope --&gt; ORB scope --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */
-    public MessageComposerRunnable( ClientRequest clr ){
+    public void init( ClientRequest clr ){
         this.clr = clr;
     }
 
@@ -237,12 +272,19 @@ class MessageComposerRunnable implements Runnable{
     public void run(){
         //setup waiting straterg
         WaitingStrategy waitingStrategy = null;
-        if( clr.responseExpected )
-            waitingStrategy = new TwoWayWaitingStrategy();
-        ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( waitingStrategy );
+        if( clr.responseExpected ){
+            //waitingStrategy = TwoWayWaitingStrategy.instance();//new TwoWayWaitingStrategy();
+            //TODO: Krishna, make sure this is correct, had to do this to solve mem leak    
+            waitingStrategy = (WaitingStrategy)(((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal());
+            if(waitingStrategy == null){
+                waitingStrategy = new TwoWayWaitingStrategy();
+                ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( waitingStrategy );
+            }
+        }
         clr.registerWaiter();
-        ExecuteInRunnable eir = new ExecuteInRunnable();
-        SendMessageRunnable smr = new SendMessageRunnable(clr.transportScope);
+        ExecuteInRunnable eir = clr.orb.getEIR();//new ExecuteInRunnable();
+        SendMessageRunnable smr = SendMessageRunnable.instance();
+        smr.init(clr.transportScope);
         smr.init( clr.out.getBuffer() );
         eir.init( smr , clr.transportScope );
         success = true;

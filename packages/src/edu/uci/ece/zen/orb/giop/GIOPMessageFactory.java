@@ -304,6 +304,7 @@ public final class GIOPMessageFactory
      * </p>
      */
     public static void constructMessage( ClientRequest req , int messageId , CDROutputStream out ){
+                //edu.uci.ece.zen.utils.Logger.printMemStats(304);
         out.write_octet_array( magic , 0 , 4 );
         //giop version
         out.write_octet( (byte)1 );
@@ -314,7 +315,11 @@ public final class GIOPMessageFactory
         out.write_octet( (byte)org.omg.GIOP.MsgType_1_0._Request );
         out.setLocationMemento();
         out.write_long(0);
-        (new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId )).marshal( out );
+        //(new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId )).marshal( out );
+        
+        edu.uci.ece.zen.orb.giop.v1_0.RequestMessage rm = edu.uci.ece.zen.orb.giop.v1_0.RequestMessage.getMessage();
+        rm.init( req , messageId );
+        rm.marshal( out );
     }
 
     public static CDROutputStream constructReplyMessage( ORB orb , RequestMessage req ){
