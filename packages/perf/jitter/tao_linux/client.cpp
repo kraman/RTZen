@@ -15,7 +15,7 @@
 
 
 const char *ior = "file://ior.txt";
-int niterations = 10000;
+int niterations = 50000;
 int nWarmUpIterations = 5000;
 int do_dump_history = 0;
 int do_shutdown = 1;
