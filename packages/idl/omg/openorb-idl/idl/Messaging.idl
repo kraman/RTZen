@@ -161,6 +161,15 @@ module Messaging {
 
     // Profile components through which policy values are expressed in IORs
 
+	struct PolicyValue {
+		CORBA::PolicyType ptype;
+		sequence<octet> pvalue;
+	};
+
+	typedef sequence<PolicyValue> PolicyValueSeq;
+	const IOP::ComponentId TAG_POLICIES = 2;
+	const IOP::ServiceId INVOCATION_POLICIES = 7;
+
    /* struct PolicyValue {
         CORBA::PolicyType ptype;
         sequence<octet> pvalue;
