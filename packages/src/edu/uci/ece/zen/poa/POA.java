@@ -170,8 +170,9 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         POARunnable r = new POARunnable( POARunnable.HANDLE_REQUEST );
         r.addParam( sreq );
         r.addParam( RealtimeThread.getCurrentMemoryArea() );
+        System.out.println("Inside POAServerRequestHandler.handleRequest() and memoryArea: " + RealtimeThread.getCurrentMemoryArea());
 
-        edu.uci.ece.zen.utils.Logger.printThreadStack();
+        //edu.uci.ece.zen.utils.Logger.printThreadStack();
         
         ExecuteInRunnable eir1 = new ExecuteInRunnable();
         eir1.init( r , poaMemoryArea );

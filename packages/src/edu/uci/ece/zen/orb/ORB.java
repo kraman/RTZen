@@ -1,6 +1,8 @@
 package edu.uci.ece.zen.orb;
 
 import edu.uci.ece.zen.utils.*;
+import edu.uci.ece.zen.orb.giop.MSGRunnable;
+import edu.uci.ece.zen.poa.TPRunnable;
 import org.omg.CORBA.portable.*;
 import java.io.*;
 import javax.realtime.*;
@@ -138,6 +140,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     public edu.uci.ece.zen.poa.POA rootPOA;
     public Object orbRunningLock;
     public RTORBImpl rtorb;
+    private TPRunnable tpr;
+    private MSGRunnable msgr;
 
     private FString orbId;
 
@@ -185,6 +189,32 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         executeInRunnableCache.enqueue( r );
     }
 
+    public TPRunnable getTPR()
+    {
+        try
+        {
+            if (tpr == null)
+                tpr = (TPRunnable) ImmortalMemory.instance().newInstance(TPRunnable.class);
+            return tpr;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public MSGRunnable getMSGR()
+    {
+        try
+        {
+            if (msgr == null)
+                msgr = (MSGRunnable) ImmortalMemory.instance().newInstance(MSGRunnable.class);
+            return msgr;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
     private void internalInit( ScopedMemory mem , String orbId , String[] args , Properties props ){
         this.orbId.reset();
         this.orbId.append( orbId );

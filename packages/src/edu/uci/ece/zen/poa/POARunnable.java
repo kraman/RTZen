@@ -74,7 +74,8 @@ public class POARunnable implements Runnable{
                 ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal(pimpl);
                 break;
             case HANDLE_REQUEST:
-                pimpl.handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) args.elementAt(0) , (MemoryArea) args.elementAt(1) , this );
+            System.out.println("Inside POARunnable.runa and memarea: " + RealtimeThread.getCurrentMemoryArea() + " and this: " + this);
+                pimpl.handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) args.elementAt(0), this );
                 break;
             case SERVANT_TO_ID:
                 pimpl.servant_to_id( (Servant) args.elementAt(0) , 

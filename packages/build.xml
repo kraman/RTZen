@@ -43,6 +43,7 @@
             <include name="src/edu/uci/ece/zen/orb/policies/**.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/GIOPMessage.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/GIOPMessageFactory.java"/>
+            <include name="src/edu/uci/ece/zen/orb/giop/MSGRunnable.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/GIOPHeaderInfo.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/v1_0/**.java"/>
             <include name="src/edu/uci/ece/zen/orb/giop/v1_1/**.java"/>
@@ -89,6 +90,7 @@
             failonerror = "true"
             fork = "true"
             target="1.1"
+			debug="true"
             bootclasspath="${zen.rtbootclasspath}"
             includeJavaRuntime="yes"
             >

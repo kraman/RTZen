@@ -47,6 +47,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
                                                 //anything here
        req.getObjectKey( objKey );
 
+        System.out.println("Inside ServerRequestHandler.handleRequest and mem area: " + javax.realtime.RealtimeThread.getCurrentMemoryArea());
        int index = ObjectKeyHelper.getPOAIndex( objKey );
        int genCount = ObjectKeyHelper.getPOAGeneration( objKey );
 

@@ -220,6 +220,7 @@ class GIOPMessageRunnable implements Runnable{
      */
     public void run(){
         try{
+            System.out.println("Inside Transport and mem area: " + RealtimeThread.getCurrentMemoryArea());
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
             if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
                 trans.orbImpl.getServerRequestHandler().handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) message );

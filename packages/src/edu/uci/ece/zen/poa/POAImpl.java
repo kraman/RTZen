@@ -218,7 +218,7 @@ public class POAImpl{
      *      </p>
      * </p>
      */
-    public void handleRequest( RequestMessage req , MemoryArea requestScope , POARunnable prun ){
+    public void handleRequest( RequestMessage req, POARunnable prun ){
         if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 1" );
         IntHolder ih = getIntHolder();
 
@@ -249,18 +249,14 @@ public class POAImpl{
 
             edu.uci.ece.zen.utils.Logger.printThreadStack();
 
-            if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
-                System.out.println("tp region is " + tpRegion);
-                System.out.println("requestScope  is " + requestScope);
-                System.out.println("req allocated in " + MemoryArea.getMemoryArea(req));
-            }
             //ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
+            ExecuteInRunnable eir = orb.getEIR(); 
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 9.5" );
-            //TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );
+            TPRunnable tpr = orb.getTPR();
 
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 10" );
-            //tpr.init( self , (ScopedMemory) requestScope );
-            //eir.init( tpr , tpRegion );
+            tpr.init( self , req );
+            eir.init( tpr , tpRegion );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 11" );
 
             //HandleRequestRunnable hrr = (HandleRequestRunnable) requestScope.newInstance( HandleRequestRunnable.class );
@@ -268,8 +264,9 @@ public class POAImpl{
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 12" );
             //((ScopedMemory)requestScope).setPo{rtal( hrr );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 13" );
-            //orb.orbImplRegion.executeInArea( eipr );
+            orb.orbImplRegion.executeInArea( eir );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 14" );
+            orb.freeEIR(eir);
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here
             // -- Throw a transient exception

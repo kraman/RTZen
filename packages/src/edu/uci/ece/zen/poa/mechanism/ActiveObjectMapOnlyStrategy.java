@@ -8,6 +8,7 @@ import org.omg.CORBA.IntHolder;
 import edu.uci.ece.zen.poa.*;
 import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.utils.*;
+import edu.uci.ece.zen.orb.giop.MSGRunnable;
 import javax.realtime.*;
 
 
@@ -177,12 +178,22 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
             requests.decrementAndNotifyAll(poa.processingState == POA.DESTRUCTION_APPARANT);
             map.decrementActiveRequestsAndDeactivate();
         }
-
-        reply.updateLength();
-        WriteBuffer wbret = reply.getBuffer();
-        if(ZenProperties.devDbg) System.out.println( "MsgLen: " + (wbret.getPosition()-12) );
-        ((edu.uci.ece.zen.orb.transport.Transport)request.getTransport().getPortal()).send( wbret );
-        reply.free();
+        try
+        {
+            reply.updateLength();
+            WriteBuffer wbret = reply.getBuffer();
+            if(ZenProperties.devDbg) System.out.println( "MsgLen: " + (wbret.getPosition()-12) );
+            //((edu.uci.ece.zen.orb.transport.Transport)request.getTransport().getPortal()).send( wbret );
+            MSGRunnable msgr = poa.getORB().getMSGR();
+            ExecuteInRunnable eir = poa.getORB().getEIR();
+            msgr.init(wbret);
+            eir.init(msgr, request.getTransport()); 
+            poa.getORB().orbImplRegion.executeInArea(eir);
+            reply.free();
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         //return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
     }
 }
