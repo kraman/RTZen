@@ -43,7 +43,7 @@
             includes="${package.dir}/**.java"
             debug="${zen.debug}"
             optimize="${zen.optimization}"
-            target="1.1"
+            target="${javac.target}"
             includeJavaRuntime="yes"
             bootclasspath="${zen.rtbootclasspath}"
             classpath="${zen.classpath}"/>

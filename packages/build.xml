@@ -97,6 +97,7 @@
             failonerror = "true"
             fork = "true"
             debug="${zen.debug}"
+            target="${javac.target}"
             bootclasspath="${zen.classpath};${java.home}/lib/rt.jar;${zen.rtbootclasspath}"
             includeJavaRuntime="yes"
             memoryMaximumSize="256m"
