@@ -83,7 +83,7 @@ public class Server extends RealtimeThread
             //short priority = (short) PriorityScheduler.instance().getMaxPriority();
             //System.out.println("Higher priority is: " + priority);
 
-            int threadPoolId, threadPoolId2;
+            int threadPoolId;
 
             if(isClientPropagated){
                 System.out.println("[Server] Using client-propagated policy.....");
@@ -118,29 +118,14 @@ public class Server extends RealtimeThread
                         org.omg.RTCORBA.PriorityModel.SERVER_DECLARED,
                         hiPrio);
 
-                threadPoolId = rtorb.create_threadpool(
-                        0,//stacksize,
-                        staticThreads,//static_threads,
-                        0,//dynamic_threads,
-                        loPrio,//default_thread_priority,
-                        false,//allow_request_buffering,
-                        0,//max_buffered_requests,
-                        0//max_request_buffer_size
-                        );
+                ThreadpoolLane[] lanes = new ThreadpoolLane[2];
 
-                threadPoolId2 = rtorb.create_threadpool(
-                        0,//stacksize,
-                        staticThreads,//static_threads,
-                        0,//dynamic_threads,
-                        hiPrio,//default_thread_priority,
-                        false,//allow_request_buffering,
-                        0,//max_buffered_requests,
-                        0//max_request_buffer_size
-                        );
-                //threadPoolId = rtorb.create_threadpool(10, 5, 5, maxPriority.value, false, 0, 10);
-
+                //args are: priority, static threads, dynamic threads
+                lanes[0] = new ThreadpoolLane(loPrio, staticThreads, 0);
+                lanes[1] = new ThreadpoolLane(hiPrio, staticThreads, 0);
+                threadPoolId = rtorb.create_threadpool_with_lanes(10, lanes, false, false, 10, 10);
                 loPolicy[1] = rtorb.create_threadpool_policy(threadPoolId);
-                hiPolicy[1] = rtorb.create_threadpool_policy(threadPoolId2);
+                hiPolicy[1] = rtorb.create_threadpool_policy(threadPoolId);
 
                 System.out.println("[Server] Creating a low priority child POA");
                 POA lpChildPOA = rootPOA.create_POA("lpChildPOA", poaManager, loPolicy);

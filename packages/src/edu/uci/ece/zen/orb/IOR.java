@@ -111,7 +111,8 @@ public class IOR {
      * @return The CORBA object.
      */
     public synchronized static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID,
-            FString objKey, MemoryArea clientArea, POA poa, int threadPoolId)
+            FString objKey, MemoryArea clientArea, POA poa, int threadPoolId, int priorityModel ,
+            short objectPriority )
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
@@ -126,7 +127,7 @@ public class IOR {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 1.5 " + MemoryArea.getMemoryArea(objKey));
         //final org.omg.IOP.IOR tempior = ior;
         IORRunnable iorRun = IORRunnable.instance();//new IORRunnable();
-        iorRun.init(objKey, clientArea, poa, out);
+        iorRun.init(objKey, clientArea, poa, out, priorityModel , objectPriority );
         tpRegion.enter(iorRun);
 
         ZenProperties.logger.log("makeCORBAObject 2");

@@ -24,6 +24,7 @@ import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
 import org.omg.RTCORBA.ThreadpoolLane;
 import org.omg.RTCORBA.ThreadpoolLanesHelper;
+import org.omg.RTCORBA.PriorityModel;
 
 
 public class ThreadPool {
@@ -199,8 +200,8 @@ public class ThreadPool {
      *            The memory area to create the profiles in.
      * @return A array containing the list of transport profiles.
      *///TODO Leaks mem
-    public /*TaggedProfile[]*/ void getProfiles(FString objKey, MemoryArea clientArea,
-                POA poa, CDROutputStream out)
+    public void getProfiles(FString objKey, MemoryArea clientArea,
+                POA poa, CDROutputStream out, int priorityModel , short objectPriority )
             {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("-----TP.getProfiles0");
         
@@ -210,6 +211,11 @@ public class ThreadPool {
         //System.out.println("prof: " + out.toString());
         try{
             for(int i = 0; i < lanes.length; ++i){
+
+                if( priorityModel == PriorityModel.SERVER_DECLARED.value() )
+                    if( objectPriority != lanes[i].getPriority() )
+                        continue;
+                
                 ScopedMemory accArea = lanes[i].getAcceptorArea();
                 gpr1.init(i, accArea, objKey, clientArea, poa, out);
                 orb.executeInORBRegion(gpr1);
@@ -217,10 +223,6 @@ public class ThreadPool {
         }catch(Exception e){
             e.printStackTrace();//TODO better exception handling
         }
-        //System.out.println("prof: " + out.toString());
-        
-        //System.out.println("prof: " + out.toString());
-        //if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("-----TP.getProfiles2:  " + out.toString());
     }
     
     public static CDROutputStream marshalLanes(ThreadpoolLane[] lanes, ORB orb){

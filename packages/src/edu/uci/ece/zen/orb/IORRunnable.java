@@ -29,6 +29,8 @@ public class IORRunnable implements Runnable {
     POA poa;
     org.omg.IOP.IOR ior;
     CDROutputStream out;
+    int priorityModel;
+    short objectPriority;
 
     private static IORRunnable instance;
 
@@ -42,24 +44,12 @@ public class IORRunnable implements Runnable {
         }
         return instance;
     }
-    /*
-    public static IORRunnable instance(IORRunnable inst){
-        if(inst == null){
-            try{
-                inst = (IORRunnable) (RealtimeThread.getCurrentMemoryArea().newInstance(IORRunnable.class));
-            }catch(Exception e){
-                e.printStackTrace();//TODO better error handling
-            }
-        }
 
-        return inst;
-    }    
-*/
     public IORRunnable() {
     }
 
     public void init(FString objKey, MemoryArea clientArea, 
-            POA poa, CDROutputStream out) {
+            POA poa, CDROutputStream out, int priorityModel , short objectPriority ) {
 
          if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 2");
         this.clientArea = clientArea;
@@ -69,11 +59,12 @@ public class IORRunnable implements Runnable {
         this.ior = ior;
         this.objKey = objKey;
         this.out = out;
+        this.priorityModel = priorityModel;
+        this.objectPriority = objectPriority;
     }
 
     public void run() {
-        ThreadPool tp = (ThreadPool)((ScopedMemory) RealtimeThread
-                .getCurrentMemoryArea()).getPortal();
-        tp.getProfiles(objKey, clientArea, poa, out);
+        ThreadPool tp = (ThreadPool)((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
+        tp.getProfiles(objKey, clientArea, poa, out, priorityModel , objectPriority );
     }
 }

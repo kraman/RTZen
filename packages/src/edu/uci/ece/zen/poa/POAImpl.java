@@ -750,7 +750,7 @@ if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------PO
             ZenProperties.logger.log("create_reference_with_object_key 1");
             if (crwor == null) crwor = new CreateReferenceWithObjectRunnable();
             ZenProperties.logger.log("create_reference_with_object_key 2");
-            crwor.init(ok, intf, clientArea, orb, threadPoolId, self);
+            crwor.init(ok, intf, clientArea, orb, threadPoolId, self, this.priorityModel.value() , (short) this.serverPriority );
             ZenProperties.logger.log("create_reference_with_object_key 3");
             try {
                 orb.orbImplRegion.executeInArea(crwor);
@@ -792,11 +792,14 @@ if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------PO
 
         public int threadPoolId;
 
+        public int priorityModel;
+        public short objectPriority;
+
         public CreateReferenceWithObjectRunnable() {
         }
 
         public void init(FString ok, String intf, MemoryArea ma, ORB orb, int threadPoolId,
-                POA poa) {
+                POA poa, int priorityModel , short objectPriority ) {
             this.ok = ok;
             this.intf = intf;
             this.ma = ma;
@@ -804,11 +807,13 @@ if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------PO
             this.poa = poa;
             this.tcLen = 0;
             this.threadPoolId = threadPoolId;
+            this.priorityModel = priorityModel;
+            this.objectPriority = objectPriority;
         }
 
         public void run() {
             try {
-                retVal = edu.uci.ece.zen.orb.IOR.makeCORBAObject(orb, intf, ok, ma, poa, threadPoolId);
+                retVal = edu.uci.ece.zen.orb.IOR.makeCORBAObject(orb, intf, ok, ma, poa, threadPoolId, priorityModel , objectPriority );
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
             }
