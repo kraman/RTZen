@@ -1,7 +1,7 @@
 package javax.realtime;
 
 /**
- * This class provides a stub for the RTSJ memory regions. It is used on Java 
+ * This class provides a stub for the RTSJ memory regions. It is used on Java
  * implementations that dont support RTSJ as a placeholder so that ZEN can
  * compile.
  */
@@ -12,7 +12,7 @@ public abstract class MemoryArea{
     protected MemoryArea(){
        //System.err.println( "RTSJ:  New memory area created ["+this.toString()+"]" );
     }
-    
+
     protected MemoryArea( long sizeInBytes ){
         //System.err.println( "RTSJ:  New memory area created ( "+sizeInBytes+" bytes )  ["+this.toString()+"]" );
         this.sizeInBytes = sizeInBytes;
@@ -42,8 +42,8 @@ public abstract class MemoryArea{
         RealtimeThread.setCurrentMemoryArea( old );
        //System.err.println( "RTSJ:  Return from memory area ["+this.toString()+"]" );
     }
-    
-    public void executeInArea( java.lang.Runnable logic ){
+
+    public void executeInArea( java.lang.Runnable logic ) throws InaccessibleAreaException{
         //System.err.println( "RTSJ:  Execute in memory area ["+this.toString()+"]" );
         //Thread.dumpStack();
         MemoryArea old = RealtimeThread.getCurrentMemoryArea();
@@ -60,8 +60,8 @@ public abstract class MemoryArea{
     public long memoryRemaining(){
         return sizeInBytes;
     }
-    
-    public java.lang.Object newArray( java.lang.Class type , int number ) 
+
+    public java.lang.Object newArray( java.lang.Class type , int number )
         throws java.lang.IllegalAccessException,
             java.lang.InstantiationException{
         //System.err.println( "RTSJ:  New array("+type+") in memory area ["+this.toString()+"]" );
