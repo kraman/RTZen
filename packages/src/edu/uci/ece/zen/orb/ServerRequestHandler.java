@@ -7,7 +7,7 @@ public abstract class ServerRequestHandler {
         this.orb = orb;
     }
 
-    public abstract int addPOA(byte[] path, int poaPathLen, edu.uci.ece.zen.poa.POA poa);
+    public abstract int addPOA(byte[] path, int poaPathLen, org.omg.PortableServer.POA poa);
     
     /**
      * Call scoped region graph:
