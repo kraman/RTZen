@@ -249,7 +249,7 @@ public class POAImpl{
             
             statCount++;
             if(statCount % 100 == 0)
-                edu.uci.ece.zen.utils.Logger.printMemStats(orb);
+                edu.uci.ece.zen.utils.Logger.printMemStats(2);
 
             //ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             ExecuteInRunnable eir = orb.getEIR(); 

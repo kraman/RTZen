@@ -185,15 +185,15 @@ class GIOPMessageRunnable implements Runnable{
         this.requestScope = requestScope;
     }
     private int statCount = 0;
-    private static final String name = "Trans: ";
+    //private static final String name = "Trans: ";
     public void run(){
         try{
 
 
             statCount++;
             if(statCount % 100 == 0){
-                System.out.print(name);
-                edu.uci.ece.zen.utils.Logger.printMemStats();
+                //System.out.print(name);
+                edu.uci.ece.zen.utils.Logger.printMemStats(3);
             }
 
 

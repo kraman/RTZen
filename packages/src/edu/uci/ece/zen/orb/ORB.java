@@ -50,6 +50,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 e.printStackTrace();
              }
 
+            perf.cPrint.nativePrinter.print(0,0,0);
 
             imm = ImmortalMemory.instance();
             //Set up ORB Facades

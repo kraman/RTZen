@@ -50,14 +50,14 @@ public class ThreadPool{
     }
 
     private int statCount = 0;
-    private static final String name = "TP: ";
+    //private static final String name = "TP: ";
     public void execute( RequestMessage task , short minPriority , short maxPriority ){
 
 
         statCount++;
         if(statCount % 100 == 0){
-            System.out.print(name);
-            edu.uci.ece.zen.utils.Logger.printMemStats();
+            //System.out.print(name);
+            edu.uci.ece.zen.utils.Logger.printMemStats(4);
         }
 
         //TODO: Have to improve performance here
