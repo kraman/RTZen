@@ -12,7 +12,7 @@ import javax.realtime.RealtimeThread;
 public class DoomServer extends RealtimeThread
 {
 	private static final int MAP_ARRAY_SIZE = 0x10000;
-    private static final ScopedMemory scope = new LTMemory(1024 * 1024,1024 * 1024 * 10);
+    public static final ScopedMemory scope = new LTMemory(1024 * 1024,1024 * 1024 * 10);
     static DoomMap curMap = generateMap();
     PlayerTable playerTable;
 
@@ -54,8 +54,6 @@ public class DoomServer extends RealtimeThread
             // - with the CORBA Naming Service
             // NamingContextExt nameService = NamingContextExtHelper.narrow(zen.resolve_initial_references("NameService"));
 
-            CallServerImpl callServerImpl = new CallServerImpl(this);
-            org.omg.CORBA.Object callServerObj = rootPOA.servant_to_reference(callServerImpl);
             System.out.println( "=================== CallServer registered ========================" );
             PlayerTableImpl playerTableImpl = new PlayerTableImpl();
             System.out.println("rootPOA.servant_to_reference(playerTableImpl)");
@@ -63,6 +61,9 @@ public class DoomServer extends RealtimeThread
 	    //            System.out.println("PlayerTableHelper.narrow(" + playerTableObj + ")");
             playerTable = PlayerTableHelper.unchecked_narrow(playerTableObj);
             System.out.println( "=================== PlayerTable registered ========================" );
+	    CallServerImpl callServerImpl = new CallServerImpl(this);
+            org.omg.CORBA.Object callServerObj = rootPOA.servant_to_reference(callServerImpl);
+            System.out.println( "=================== CallServer registered ========================" );
 
 
             // Register
@@ -243,5 +244,6 @@ public class DoomServer extends RealtimeThread
 			s += player.name + "\n";
 		}
 		System.out.println("### A new player added/removed! List of all current players: \n" + s);
+        System.out.println("Exiting showPlayer()");
 	}
 }

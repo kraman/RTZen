@@ -36,16 +36,23 @@ public class ReadBuffer {
             System.exit(-1);
         }
     }
-
+    static int idgen = -1000000;
+    int id;
+    boolean inUse = false;
     public static ReadBuffer instance() {
         try {
             //Thread.dumpStack();
                 numFree--;
-            if (bufferCache.isEmpty()) return (ReadBuffer) ImmortalMemory
-                    .instance().newInstance(ReadBuffer.class);
-            else {
+            if (bufferCache.isEmpty()) {
+                ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
+                rb.id = idgen++;
+                
+                rb.inUse = true;
+                return rb;
+            }else {
                 //Thread.dumpStack();
                 ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
+                ret.inUse = true;
                 ret.init();
                 return ret;
             }
@@ -122,7 +129,10 @@ public class ReadBuffer {
     }
 
     public void appendFromStream(java.io.InputStream stream, int numBytes) {
+     
+        
         try {
+              
             ensureCapacity(numBytes);
             while (numBytes > 0) {
                 //System.err.println( "Still need to read " + numBytes + "
@@ -173,8 +183,21 @@ public class ReadBuffer {
     }
 
     public void free() {
+        if(!inUse){
+            ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, 
+                "free",
+                "Buffer already freed.");   
+                //System.exit(-1);
+                //still deciding what to do here  
+            return;
+        }
                 //Thread.dumpStack();
-
+                /*
+        System.out.write('f');
+        System.out.write('\n'); 
+        System.out.flush();           
+        edu.uci.ece.zen.utils.Logger.writeln(id);*/
+        
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(635);
         ByteArrayCache cache = ByteArrayCache.instance();
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(636);
@@ -201,6 +224,7 @@ public class ReadBuffer {
         if(ZenProperties.memDbg1) System.out.write('r');
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(numFree);
        // edu.uci.ece.zen.utils.Logger.writeln(bufferCache.size());
+       inUse = false;
     }
 
     public void freeWithoutBufferRelease() {

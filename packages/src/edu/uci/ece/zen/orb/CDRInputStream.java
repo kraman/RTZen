@@ -18,6 +18,8 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     public edu.uci.ece.zen.orb.ORB orb;
 
     private static edu.uci.ece.zen.utils.Queue cdrInputStreamCache;
+    
+    private boolean inUse = false;
 
     static {
         try {
@@ -31,9 +33,16 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     public static CDRInputStream instance() {
         try {
-            if (cdrInputStreamCache.isEmpty()) return (CDRInputStream) ImmortalMemory
+            if (cdrInputStreamCache.isEmpty()){
+                CDRInputStream cdr = (CDRInputStream) ImmortalMemory
                     .instance().newInstance(CDRInputStream.class);
-            else return (CDRInputStream) cdrInputStreamCache.dequeue();
+                cdr.inUse = true;
+                return cdr;
+            } else {
+                CDRInputStream cdr = (CDRInputStream) cdrInputStreamCache.dequeue();
+                cdr.inUse = true;
+                return cdr;                
+            }
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, CDRInputStream.class, "instance", e);
             System.exit(-1);
@@ -509,8 +518,17 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /** Free all allocated buffers and resources. */
     public void free() {
+        if(!inUse){
+            ZenProperties.logger.log(Logger.WARN, CDRInputStream.class, 
+                "free",
+                "Stream already freed.");   
+                //System.exit(-1);
+                //still deciding what to do here  
+            return;
+        }        
         buffer.free();
         CDRInputStream.release(this);
+        inUse = false;
     }
 
     // Needs to be implemented
