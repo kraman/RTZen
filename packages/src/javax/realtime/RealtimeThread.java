@@ -23,4 +23,10 @@ public class RealtimeThread extends Thread{
         else
             return mem;
     }
+
+    public static RealtimeThread currentRealtimeThread(){
+
+        System.out.println("current thread is: " + Thread.currentThread() + " class:" + Thread.currentThread().getClass().toString());
+        return new RealtimeThread(null,null,null,null,null,null);
+    }
 }
