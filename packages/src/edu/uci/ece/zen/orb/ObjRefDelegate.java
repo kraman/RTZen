@@ -151,7 +151,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             {
                 boolean startSerialTransportAcceptor = ZenProperties.getGlobalProperty("serial.client.only" , "" ).equals("1");
 
-                if( startSerialTransportAcceptor && !isCollocated ){
+                //if( startSerialTransportAcceptor && !isCollocated ){
+                if( startSerialTransportAcceptor){    
 
                     ZenProperties.logger.log("+++++++++++++++++++++++++++++++++++++++++++++Skipping IIOP");
                     return;
@@ -355,7 +356,10 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 //if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + object_key.length());
                // if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + object_key.decode());
                 long connectionKey = -TAG_SERIAL.value;
-                ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
+                ScopedMemory transportScope = null;
+                synchronized(edu.uci.ece.zen.orb.transport.serial.SerialPort.class){
+                    transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
+                }
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 2");
                 if( transportScope == null ){
                     try{

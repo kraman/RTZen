@@ -32,11 +32,13 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
 
     protected void accept() {
         try {
-            System.err.println( "Serial transport: accept() " );
-            sock.lock.acquire();
-            Transport t = new Transport(orb, orbImpl, sock);
-            registerTransport(t);
-        orb.getConnectionRegistry().putConnection((long)-TAG_SERIAL.value,(ScopedMemory) RealtimeThread.getCurrentMemoryArea());
+            synchronized(SerialPort.class){
+            System.err.println( "]]]]]]]]]]]]]]]]]]]]]]]]]Serial transport: accept() -- getting lock" );
+            sock.lock.acquire();            
+            Transport t = new Transport(orb, orbImpl, sock);            
+            registerTransport(t);           
+            orb.getConnectionRegistry().putConnection((long)-TAG_SERIAL.value,(ScopedMemory) RealtimeThread.getCurrentMemoryArea());
+            }
         } catch (Exception ioex) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "accept", ioex);
         }

@@ -51,9 +51,9 @@ public abstract class Acceptor {
     }
 
     protected final void registerTransport(Transport t) {
-        ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(t);
+        ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(t);        
         RealtimeThread transportThread = new NoHeapRealtimeThread(null, null,
-                null, RealtimeThread.getCurrentMemoryArea(), null, t);
+                null, RealtimeThread.getCurrentMemoryArea(), null, t);               
         transportThread.start();
     }
 
