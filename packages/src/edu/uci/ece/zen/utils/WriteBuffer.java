@@ -71,7 +71,7 @@ public class WriteBuffer{
     private void ensureCapacity( int size ){
         if( size <= 0 )
             return;
-        if( position + size > capacity ){
+        while( position + size > capacity ){
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
             capacity += byteArray.length;
             buffers.addElement( byteArray );
