@@ -1,9 +1,3 @@
-/*
- * Created on May 4, 2004
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package edu.uci.ece.zen.orb.giop.parent;
 
 import edu.uci.ece.zen.orb.giop.*;
@@ -13,10 +7,9 @@ import edu.uci.ece.zen.orb.*;
 /**
  * @author bmiller
  *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public abstract class RequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage {
+    protected static final byte reserved[] = { 0x00, 0x00, 0x00 };
 
     public RequestMessage() {
         super();
@@ -31,7 +24,6 @@ public abstract class RequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessag
     public boolean isReply() { return false; }
 
     // Abstract declarations in addition to those in GIOPMessage 
-
     public abstract int getReplyStatus();
     public abstract org.omg.IOP.ServiceContext[] getServiceContexts();
 }
