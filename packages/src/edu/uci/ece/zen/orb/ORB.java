@@ -78,7 +78,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         System.out.println( "======================Locating OBR ID from ZenProperties====================" );
         String orbId = ZenProperties.getORBId( args , props );
         if( orbId == null ){
-                orbId = "edu.uci.ece.zen.orb.ORB." + nextOrbId();
+            orbId = "edu.uci.ece.zen.orb.ORB." + nextOrbId();
         }
         props.setProperty( "org.omg.CORBA.ORBId" , orbId );
 

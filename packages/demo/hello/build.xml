@@ -47,6 +47,11 @@
                 <include name="src/edu/uci/ece/zen/util/TracerAspect.java" if="zen.aspects.trace"/>
              </patternset> 
       </javac>
+      <jar 
+        jarfile="${zen.libdir}/hello_world.jar" 
+        basedir="${zen.classdir}" 
+        includes="demo/hello/**"
+        />
       <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate"/>
       <jRate
             optimizeLevel="2"

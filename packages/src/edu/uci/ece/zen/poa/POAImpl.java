@@ -94,71 +94,13 @@ public class POAImpl{
         }
     }
 
-    public void servant_to_id( Servant servant , MemoryArea mem , POARunnable prun ){
-    }
-
-    public void servant_to_reference( Servant servant , MemoryArea mem , POARunnable prun ){
-    }
-
-    public void reference_to_servant( org.omg.CORBA.Object obj , MemoryArea  mem , POARunnable prun ){
-    }
-
-    public void references_to_id( org.omg.CORBA.Object obj , MemoryArea mem , POARunnable prun ){
-    }
-
-    public void id_to_servant( byte[] oid , MemoryArea mem , POARunnable prun ){
-    }
-
-    public void id_to_reference( byte[] oid , MemoryArea mem , POARunnable prun ){
-    }
-
-    public void activate_object( Servant servant , MemoryArea mem , POARunnable prun ){
-    }
-
-    public void activate_object_with_id( byte[] oid , Servant servant , MemoryArea mem , POARunnable prun ){
-    }
-
-    public void deactivate_object( byte[] oid , MemoryArea mem , POARunnable prun ){
-    }
-
-    public void removeFromParent( POA poa ){
-    }
-
-    public void destroy( POA thisPoa ){
-    }
-
-    public void id( MemoryArea mem , POARunnable prun ){
-    }
-
-    public void get_servant_manager( ServantManager manager , POARunnable prun ){
-    }
-
-    public void get_servant( POARunnable prun ){
-    }
-
-    public void set_servant( Servant servant , POARunnable prun ){
-    }
-
-    public void create_reference( String atr , MemoryArea mem , POARunnable prun ){
-    }
-
-    public void create_reference_with_id( byte[] oid , String str , MemoryArea mem , POARunnable prun ){
-    }
-
-    public void get_policy_list( MemoryArea mem , POARunnable prun ){
-    }
-
-    public void handleRequest(final ServerRequest req) {
-    }
     /**
      * Generates the object reference for that particular servant.
      * @param p_servant The servant object.
      * @throws org.omg.PortableServer.POAPackage.ServantNotActive  If the servant passed in is not active.
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy If the policies of the POA dont contain RETAIN and UNIQUE_ID/MYULTIPLE_ID policies.
      * @return The object reference for that particular servant.
-
      */
-
     public org.omg.CORBA.Object servant_to_reference(
             final org.omg.PortableServer.Servant p_servant)
         throws
@@ -172,7 +114,6 @@ public class POAImpl{
             if (p_servant == current.get_servant()) {
                 return current.get_reference();
             }
-
         } catch (org.omg.PortableServer.CurrentPackage.NoContext ex) {
             //KLUDGE:
             //TODO: Check what is supposed to happen here
@@ -228,6 +169,61 @@ public class POAImpl{
         }
 
     }
+
+
+    public void servant_to_id( Servant servant , MemoryArea mem , POARunnable prun ){
+    }
+
+    public void servant_to_reference( Servant servant , MemoryArea mem , POARunnable prun ){
+    }
+
+    public void reference_to_servant( org.omg.CORBA.Object obj , MemoryArea  mem , POARunnable prun ){
+    }
+
+    public void references_to_id( org.omg.CORBA.Object obj , MemoryArea mem , POARunnable prun ){
+    }
+
+    public void id_to_servant( byte[] oid , MemoryArea mem , POARunnable prun ){
+    }
+
+    public void id_to_reference( byte[] oid , MemoryArea mem , POARunnable prun ){
+    }
+
+    public void activate_object( Servant servant , MemoryArea mem , POARunnable prun ){
+    }
+
+    public void activate_object_with_id( byte[] oid , Servant servant , MemoryArea mem , POARunnable prun ){
+    }
+
+    public void deactivate_object( byte[] oid , MemoryArea mem , POARunnable prun ){
+    }
+
+    public void removeFromParent( POA poa ){
+    }
+
+    public void destroy( POA thisPoa ){
+    }
+
+    public void id( MemoryArea mem , POARunnable prun ){
+    }
+
+    public void get_servant_manager( ServantManager manager , POARunnable prun ){
+    }
+
+    public void get_servant( POARunnable prun ){
+    }
+
+    public void set_servant( Servant servant , POARunnable prun ){
+    }
+
+    public void create_reference( String atr , MemoryArea mem , POARunnable prun ){
+    }
+
+    public void create_reference_with_id( byte[] oid , String str , MemoryArea mem , POARunnable prun ){
+    }
+
+    public void get_policy_list( MemoryArea mem , POARunnable prun ){
+    }
     /**
      * Returns the servant associated with the given object id
      * @param oid The object_is object.
@@ -268,7 +264,8 @@ public class POAImpl{
     org.omg.CORBA.Object create_reference_with_object_key(
             final byte[]  ok,
             final String intf) {
-        edu.uci.ece.zen.orb.protocols.ProfileList list = ((edu.uci.ece.zen.poa.POAManager) this.poaManager).getAcceptorRegistry().findMatchingProfiles(ok);
+        edu.uci.ece.zen.orb.protocols.ProfileList list = 
+            ((edu.uci.ece.zen.poa.POAManager) this.poaManager).getAcceptorRegistry().findMatchingProfiles(ok);
         // this.orb.getAcceptorRegistry().findMatchingProfiles (ok);
 
         IOR ior = new IOR(list, intf);

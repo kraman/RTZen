@@ -77,7 +77,6 @@ public class IOR
      */
     public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID, byte [] objKey, int objKeyLength, ORBImpl orbImpl )
     {
-
         org.omg.IOP.IOR ior = new org.omg.IOP.IOR();
         ior.type_id = typeID;
         ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, objKeyLength);
