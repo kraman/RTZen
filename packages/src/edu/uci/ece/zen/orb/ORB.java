@@ -66,7 +66,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     private static int maxSupportedConnections;
     public static String [] endpoints;
     private static RTCurrentRunnable rtrun;
-    
+
     static {
         try {
             try {
@@ -74,7 +74,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                 endpoints = new String[ addrList.length ];
                 for( int i=0;i<addrList.length;i++ )
                     endpoints[i] = addrList[i].getHostAddress();
-                
+
                 //endpoints = new String [] {java.net.InetAddress.getLocalHost().getHostAddress(), "127.0.0.1"};
                 if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("local address" + endpoints[0]);
                 //sockAddr = new
@@ -116,8 +116,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             maxSupportedConnections = Integer.parseInt(ZenProperties
                     .getGlobalProperty("doc.zen.orb.maxConnectionsPerORB",
                             "100"));
-                            
-            
+
+
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, ORB.class, "static <init>", e);
             System.exit(-1);
@@ -514,11 +514,11 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     public synchronized org.omg.CORBA.Object string_to_object(String str) {
         if (ZenBuildProperties.dbgIOR){
-            System.out.println("The String IOR need to changed to Object is...");
+            ZenProperties.logger.log("The String IOR being resolved to an Object is...");
             if(str.equals("")){
-                System.out.println("Empty String IOR");
+                ZenProperties.logger.log("Empty String IOR");
             }else
-                System.out.println(str);
+                ZenProperties.logger.log(str);
         }
 
         org.omg.IOP.IOR ior = IOR.parseString(this, str);
@@ -918,16 +918,16 @@ class RTCurrentRunnable implements Runnable {
     public ThreadLocal tl;
     private ScopedMemory sm;
     private static RTCurrentRunnable instance;
-    
+
     public static RTCurrentRunnable instance(MemoryArea parentMemoryArea){
         if(instance == null){
             try{
                 instance = (RTCurrentRunnable) (parentMemoryArea.newInstance(RTCurrentRunnable.class));
             }catch(Exception e){
                 e.printStackTrace();//TODO better error handling
-            }            
+            }
         }
-            
+
         return instance;
     }
 
@@ -946,7 +946,7 @@ class RTCurrentRunnable implements Runnable {
             Object o = sm.getPortal();
             ZenProperties.logger.log("======================RTCurrentRunnable2.5");
             tl = ((ORBImpl) o).rtCurrent;
-            
+
             //tl = ((ORBImpl) (sm.getPortal())).rtCurrent;
         } else {
             ZenProperties.logger.log("======================RTCurrentRunnable3");

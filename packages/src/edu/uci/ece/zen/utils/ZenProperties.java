@@ -64,9 +64,10 @@ public final class ZenProperties {
     private static boolean isInit = false;
 
     private static synchronized void init() {
-        if (ZenBuildProperties.dbgZenProperties) System.out.println("The current memory region in ZenProperties.init() is " + javax.realtime.RealtimeThread.getCurrentMemoryArea());
         if (isInit) return;
         isInit = true;
+
+        if (ZenBuildProperties.dbgZenProperties) System.out.println("The current memory region in ZenProperties.init() is " + javax.realtime.RealtimeThread.getCurrentMemoryArea());
         //load global properties
 
         Properties tmpProperties = new Properties();
@@ -266,8 +267,8 @@ public final class ZenProperties {
                         System.err.println( "Unable to proceed due to excetion: " + e + " while trying to load protocol" );
                         System.exit(-1);
                     }
-                } else if (arg.startsWith("-ORB")) { 
-                    throw new org.omg.CORBA.BAD_PARAM( "Bad parameter " + arg); 
+                } else if (arg.startsWith("-ORB")) {
+                    throw new org.omg.CORBA.BAD_PARAM( "Bad parameter " + arg);
                 }
             }
         }

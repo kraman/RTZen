@@ -115,6 +115,7 @@ public class IOR {
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject -- typeID: " + typeID + " objKey: " + objKey.decode());
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea
                 .newInstance(org.omg.IOP.IOR.class);
         ior.type_id = typeID;
@@ -129,7 +130,7 @@ public class IOR {
         tpRegion.enter(iorRun);
 
         ZenProperties.logger.log("makeCORBAObject 2");
-        
+
         //read back tagged profiles -- uhhhgggg, kludge for now
         CDRInputStream in = (CDRInputStream)(out.create_input_stream());
 
@@ -147,11 +148,11 @@ public class IOR {
                 byte.class, size);
             in.read_octet_array(ior.profiles[i].profile_data, 0, ior.profiles[i].profile_data.length);
         }
-        
+
         ZenProperties.logger.log("makeCORBAObject 5");
         in.free();
         ///////////////////////////////
-        
+
         ObjectImpl objectImpl = (ObjectImpl) clientArea
                 .newInstance(edu.uci.ece.zen.orb.ObjectImpl.class);
         objectImpl.init(ior);

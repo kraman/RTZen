@@ -23,8 +23,6 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     public byte giopMinor;
     public ScopedMemory transportScope;
     public FString objectKey;
-    //public byte[] objectKey;
-    //public FString objectKey;
     public ORB orb;
     private int messageId;
     public FString contexts;
@@ -74,6 +72,10 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         objectKey = ln.getObjectKey();
         ZenProperties.logger.log("ClientRequest 7");
 
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log(
+                "ClientRequest -- operation: " + operation.toString() +
+                " objkey " + objectKey.decode() + " ORD: " + del.id());
+        //TODO:Assemble and write message header and policies here
         contexts.reset();
         if (del.priorityModel == PriorityModel._CLIENT_PROPAGATED
                 && del.serverPriority >= 0) {

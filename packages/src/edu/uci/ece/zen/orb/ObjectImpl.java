@@ -16,7 +16,7 @@ public class ObjectImpl extends org.omg.CORBA.portable.ObjectImpl {
         this.ior = ior;
         ids[0] = ior.type_id;
         if (ZenBuildProperties.dbgIOR){
-            System.out.println("It's in ObjectImpl.init() and the type id is "+ids[0]);
+            ZenProperties.logger.log("It's in ObjectImpl.init() and the type id is "+ids[0]);
         }
     }
 
@@ -25,7 +25,7 @@ public class ObjectImpl extends org.omg.CORBA.portable.ObjectImpl {
     }
 
     protected void finalize(){
-        //System.out.println("WWFinalize called");
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("ObjectImpl being finalized with type id: " +ids[0]);
         _release();
     }
 }

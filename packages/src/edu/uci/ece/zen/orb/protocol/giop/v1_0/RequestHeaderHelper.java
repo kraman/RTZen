@@ -6,13 +6,13 @@ import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 /**
  * Helper class for : RequestHeader_1_0
- * 
+ *
  * @author OpenORB Compiler
  */
 public class RequestHeaderHelper {
     /**
      * Insert RequestHeader_1_0 into an any
-     * 
+     *
      * @param a
      *            an any
      * @param t
@@ -23,7 +23,7 @@ public class RequestHeaderHelper {
      */
     /**
      * Extract RequestHeader_1_0 from an any
-     * 
+     *
      * @param a
      *            an any
      * @return the extracted RequestHeader_1_0 value public static
@@ -38,7 +38,7 @@ public class RequestHeaderHelper {
     //private static boolean _working = false;
     /**
      * Return the RequestHeader_1_0 TypeCode
-     * 
+     *
      * @return a TypeCode public static org.omg.CORBA.TypeCode type() { if (_tc ==
      *         null) { synchronized(org.omg.CORBA.TypeCode.class) { if (_tc !=
      *         null) return _tc; if (_working) return
@@ -69,14 +69,14 @@ public class RequestHeaderHelper {
      */
     /**
      * Return the RequestHeader_1_0 IDL ID
-     * 
+     *
      * @return an ID public static String id() { return _id; } private final
      *         static String _id = "IDL:omg.org/GIOP/RequestHeader_1_0:1.0";
      */
 
     /**
      * Read RequestHeader_1_0 from a marshalled stream
-     * 
+     *
      * @param istream
      *            the input stream
      * @return the readed RequestHeader_1_0 value
@@ -115,12 +115,15 @@ public class RequestHeaderHelper {
         //new_one.requesting_principal.append(rp_length);
         new_one.requesting_principal.read(istream, rp_length);
 
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("sc len: " + new_one.service_context.length());
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("sc: " + new_one.service_context.decode());
+
         return new_one;
     }
 
     /**
      * Write RequestHeader_1_0 into a marshalled stream
-     * 
+     *
      * @param ostream
      *            the output stream
      * @param value
@@ -141,9 +144,9 @@ public class RequestHeaderHelper {
         //System.out.println("RequestHeader write -- ok len: " + value.object_key.length());
         ostream.write_ulong(value.object_key.length());
         value.object_key.write(ostream);
-        
+
         if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("ok len: " + value.object_key.length());
-        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("ok: " + value.object_key.decode());        
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("ok: " + value.object_key.decode());
         //ostream.write_octet_array(value.object_key1,
         // 0,value.object_key1.length);
 
