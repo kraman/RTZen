@@ -1,4 +1,4 @@
-package perf.jitter;
+package edu.uci.ece.zen.utils;
 
 import javax.realtime.AbsoluteTime;
 import javax.realtime.Clock;
