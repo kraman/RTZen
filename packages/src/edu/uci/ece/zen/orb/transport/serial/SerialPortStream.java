@@ -42,7 +42,9 @@ class LocalSerialPortStream implements SerialPortStream
 
                 dataEmpty.release();
 
-                System.out.println("LocalSerialPortStream: InputStream.read: got lock, read byte: " + Integer.toHexString(b&0xFF));
+                byte[] ch = new byte[1];
+                ch[0] = (byte) b;
+                System.out.println("LocalSerialPortStream: InputStream.read: got lock, read byte: " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
 
                 return b & 0xFF;
             }
@@ -122,7 +124,10 @@ class RemoteSerialPortStream implements SerialPortStream
         input = b;
 
         inputAvailable.release();
-        System.out.println("RemoteSerialPortStream: addToInputStream: done writing to input byte" + Integer.toHexString(b&0xFF));
+
+        byte[] ch = new byte[1];
+        ch[0] = (byte) b;
+        System.out.println("RemoteSerialPortStream: addToInputStream: done writing to input byte " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
     }
 
     class IS extends InputStream
@@ -138,7 +143,9 @@ class RemoteSerialPortStream implements SerialPortStream
 
                 inputEmpty.release();
 
-                System.out.println("RemoteSerialPortStream: InputStream.read: read byte: " + Integer.toHexString(b&0xFF));
+                byte[] ch = new byte[1];
+                ch[0] = (byte) b;
+                System.out.println("RemoteSerialPortStream: InputStream.read: read byte: " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
 
                 return b & 0xFF;
             }
@@ -181,7 +188,9 @@ return bytesRead;
                     throw new IOException("Serial port output buffer is full");
                 }
 
-                System.out.println("RemoteSerialPortStream: OutputStream.write: writing byte: " + Integer.toHexString(b & 0xFF));
+                byte[] ch = new byte[1];
+                ch[0] = (byte) b;
+                System.out.println("RemoteSerialPortStream: OutputStream.write: writing byte: " + ((b&0xFF) >=32 && (b&0xFF) <=126 ? new String(ch) : ("0x" + Integer.toHexString(b&0xFF))));
 
                 buffer[bufferSize++] = (byte) b;
             }
