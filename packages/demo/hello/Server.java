@@ -25,7 +25,7 @@ public class Server extends RealtimeThread
     }
 
     public Server(){
-        //super(null,new LTMemory(3000,300000));
+        super(null,null,null,new LTMemory(3000,300000),null,null);
     }
 
     public void run()
