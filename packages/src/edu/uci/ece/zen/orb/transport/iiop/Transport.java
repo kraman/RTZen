@@ -22,9 +22,10 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
         }catch( Exception ex ){
             ZenProperties.logger.log(
                 Logger.WARN,
-                "edu.uci.ece.zen.orb.transport.iiop.Transport",
+                getClass(),
                 "<cinit>",
-                "Error connecting to remote location. " + ex.toString() );
+                "Error connecting to remote location.",
+				ex);
         }
     }
 
@@ -45,9 +46,10 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
         }catch( Exception ex ){
             ZenProperties.logger.log(
                 Logger.WARN,
-                "edu.uci.ece.zen.orb.transport.iiop.Transport",
+                getClass(),
                 "<cinit>",
-                "Error connecting to remote location. " + ex.toString() );
+                "Error connecting to remote location.",
+				ex);
         }
     }
     public java.io.InputStream getInputStream(){
