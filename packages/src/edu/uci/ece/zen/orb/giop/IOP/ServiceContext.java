@@ -44,7 +44,8 @@ public final class ServiceContext implements org.omg.CORBA.portable.IDLEntity
     private static FString sc;
 
     public static FString instance(){
-        return FString.instance(sc);
+        sc = FString.instance(sc);
+        return  sc;  
     }
 
     /**

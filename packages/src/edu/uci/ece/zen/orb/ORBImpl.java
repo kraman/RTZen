@@ -49,7 +49,7 @@ public class ORBImpl{
             rtorb.init(orbFacade);
 */
             orbFacade.getRTORB().create_threadpool (0,//stacksize,
-                                   1,//static_threads,
+                                   10,//static_threads,
                                    0,//dynamic_threads,
                                    (short)RealtimeThread.NORM_PRIORITY,//default_thread_priority,
                                    false,//allow_request_buffering,
