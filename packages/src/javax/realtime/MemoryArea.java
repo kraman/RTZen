@@ -1,4 +1,5 @@
 package javax.realtime;
+import edu.uci.ece.zen.utils.ZenProperties;
 
 /**
  * This class provides a stub for the RTSJ memory regions. It is used on Java
