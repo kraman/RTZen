@@ -18,7 +18,7 @@ import perf.TimeStamp.*;
 public class Client extends RealtimeThread
 {
 	public static final int warmUpIterations =   1000;
-	public static final int iterations       = 100000;
+	public static final int iterations       = 10000;
 
 	public static int seqSize = 4;
 	public static int testType =1;
@@ -102,8 +102,10 @@ public class Client extends RealtimeThread
 
 					
 					System.out.println( "====================== Performance warmup =================================" );
-					for( i=0;i<warmUpIterations;i++ )
+					for( i=0;i<warmUpIterations;i++ ) {
 						server.putOctetSeq(inOctetSeq);
+						//NativeTimeStamp.RecordTime(20);
+                    }
 
 					System.out.println( "====================== Performance benchmark BYTE =========================" );
 					// repeat the call 
