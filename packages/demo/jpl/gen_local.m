@@ -4,7 +4,7 @@ clear;
 close all;
 
 fNameBase='timeRecords.1.';
-title('Roundtrip Latency/Jitter, constant size (128 bytes), Single Host');
+title('Roundtrip Latency/Jitter, Single Host, Interpreted Mode');
 
 noOfBins = 999;
 difference = 2;
@@ -61,7 +61,7 @@ ylabel('Roundtrip Latency [seconds] ');
 %xlabel('ORB Implementation');
 
 set(gca, 'xtick', [2 4]);
-set(gca,'XTickLabel',{'Low Priority';'High Priority'})
+set(gca,'XTickLabel',{'Low Priority Task';'High Priority Task'})
 
 %gset term tgif;
 %gset output "timeRecords.gif";
