@@ -94,10 +94,13 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     public WriteBuffer getBuffer() {
         return buffer;
     }
+   
+    /*
 
     public void setAlignment( boolean enable ){
         buffer.setAlignment( enable );
     }
+    */
     
 /*
     public void printWriteBuffer() {
