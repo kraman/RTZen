@@ -2,7 +2,7 @@ package edu.uci.ece.zen.orb.giop.v1_2;
 
 import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.*;
-import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.orb.*;
 
 public class RequestMessage extends edu.uci.ece.zen.orb.giop.v1_1.RequestMessage {
     private RequestHeader_1_2 header;
