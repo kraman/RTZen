@@ -33,7 +33,7 @@ public class ConnectorRunnable implements Runnable{
         for( int i=0;i<hostLen;i++ )
             buf.append( (char)host[i] );
         String host2 = buf.toString();
-        Transport trans = conn.internalConnect( host2 , iport , orb );
+        Transport trans = conn.internalConnect( host2 , iport , orb , (ORBImpl) orb.orbImplRegion.getPortal() );
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( trans );
         NoHeapRealtimeThread transportThread = new NoHeapRealtimeThread(trans);
         transportThread.start();

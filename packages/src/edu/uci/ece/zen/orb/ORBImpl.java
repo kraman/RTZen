@@ -9,6 +9,7 @@ public class ORBImpl{
     edu.uci.ece.zen.orb.ORB orbFacade;
     ORBImplRunnable orbImplRunnable;
     public Hashtable cachedObjects;
+    public ServerRequestHandler serverRequestHandler;
     
     public ORBImpl( String args[] , Properties props, edu.uci.ece.zen.orb.ORB orbFacade ){
         properties = new ZenProperties();
@@ -43,6 +44,14 @@ public class ORBImpl{
         ObjRefDelegate delegate = ObjRefDelegate.instance();
         delegate.init( ior , (edu.uci.ece.zen.orb.ObjectImpl) objImpl , orbFacade , this );
         objImpl._set_delegate( delegate );
+    }
+
+    public void setServerRequestHandler( ServerRequestHandler handler ){
+        serverRequestHandler = handler;
+    }
+
+    public ServerRequestHandler getServerRequestHandler(){
+        return serverRequestHandler;
     }
 }
 

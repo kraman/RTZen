@@ -9,14 +9,14 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
     private java.io.OutputStream ostream;
 
 
-    public Transport( edu.uci.ece.zen.orb.ORB orb , java.net.Socket sock ){
-        super( orb );
+    public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl , java.net.Socket sock ){
+        super( orb , orbImpl );
         sock = sock;
         setSockProps(sock, orb);
     }
 
-    public Transport( edu.uci.ece.zen.orb.ORB orb , String host , int port ){
-        super( orb );
+    public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl , String host , int port ){
+        super( orb , orbImpl );
         try{
             sock = new java.net.Socket( java.net.InetAddress.getByName( "doc.ece.uci.edu" ) , port );
             setSockProps(sock, orb);

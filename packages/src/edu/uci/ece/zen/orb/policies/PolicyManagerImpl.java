@@ -1,6 +1,8 @@
 package edu.uci.ece.zen.orb.policies;
 
-import org.omg.CORBA.*;
+import org.omg.CORBA.PolicyManager;
+import org.omg.CORBA.Policy;
+import org.omg.CORBA.SetOverrideType;
 import javax.realtime.*;
 
 /**

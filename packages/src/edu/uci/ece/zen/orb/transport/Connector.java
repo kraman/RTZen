@@ -39,5 +39,5 @@ public abstract class Connector{
         return transportMem;
     }
 
-    protected abstract Transport internalConnect( String host , int port , edu.uci.ece.zen.orb.ORB orb );
+    protected abstract Transport internalConnect( String host , int port , edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl );
 }

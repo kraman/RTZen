@@ -41,6 +41,9 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
     public int getRequestId() { return header.request_id; }
 
     public org.omg.IOP.ServiceContext[] getServiceContexts() { return header.service_context; }
+    public byte[] getObjectKey(){ return header.target.object_key(); }
+    public String getOperation(){ return header.operation; }
+    public int getResponseExpected(){ return header.response_flags; }
 
     public void marshal( CDROutputStream out ) {
         RequestHeader_1_2Helper.write( out, header );

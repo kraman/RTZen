@@ -8,6 +8,7 @@ import edu.uci.ece.zen.orb.*;
 public abstract class Transport implements Runnable{
     private Object waitObj;
     protected edu.uci.ece.zen.orb.ORB orb;
+    protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
     private MessageProcessor messageProcessor;
 
     /**
@@ -15,8 +16,9 @@ public abstract class Transport implements Runnable{
      *     ORBImpl region --&gt; <b>Transport scope</b>
      * </p>
      */
-    public Transport( edu.uci.ece.zen.orb.ORB orb ){
+    public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl ){
         this.orb = orb;
+        this.orbImpl = orbImpl;
         waitObj = new Integer(0);
     }
 
@@ -188,14 +190,10 @@ class GIOPMessageRunnable implements Runnable{
     public void run(){
         try{
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
-            //message.setScope( requestScope );
-            //((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( message );
             if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
-                //ThreadPoolProcessor tpProc = new ThreadPoolProcessor();
-                //POADispatchRunnable pdispatcher = new POADispatchRunnable( message , tpProc , orb );
-                //ImmortalMemory.instance().executeInArea( pdispatcher );
+                trans.orbImpl.getServerRequestHandler().handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) message );
             }
-            if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
+            if( message instanceof edu.uci.ece.zen.orb.giop.type.ReplyMessage ){
                 ScopedMemory waiterRegion = orb.getWaiterRegion( message.getRequestId() );
                 WaitingStratergyNotifyRunnable wsnr = new WaitingStratergyNotifyRunnable( message , waiterRegion );
                 ExecuteInRunnable eir = new ExecuteInRunnable();

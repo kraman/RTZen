@@ -393,10 +393,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         return connectionRegistry;
     }
 
-    public org.omg.CORBA.Object resolveRootPOA(){
-        return null;
-    }
-
     public AcceptorRegistry getAcceptorRegistry(){
         return acceptorRegistry;
     }

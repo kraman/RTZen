@@ -5,14 +5,13 @@ import edu.uci.ece.zen.orb.*;
 import org.omg.IOP.*;
 import org.omg.IIOP.*;
 import org.omg.RTCORBA.*;
-import org.omg.CORBA.*;
 import org.omg.Messaging.*;
 
 public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
     private java.net.ServerSocket ssock;
 
-    public Acceptor( edu.uci.ece.zen.orb.ORB orb ){
-        super( orb );
+    public Acceptor( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl ){
+        super( orb , orbImpl );
         try{
             ssock = new java.net.ServerSocket();
         }catch( Exception ex ){
@@ -26,7 +25,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
 
     protected void accept(){
         try{
-            Transport t = new Transport( orb , ssock.accept() );
+            Transport t = new Transport( orb , orbImpl , ssock.accept() );
             registerTransport( t );
         }catch( java.io.IOException ioex ){
             ZenProperties.logger.log(

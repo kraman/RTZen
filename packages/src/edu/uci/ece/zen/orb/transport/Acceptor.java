@@ -5,10 +5,12 @@ import org.omg.IOP.TaggedProfile;
 
 public abstract class Acceptor{
     protected edu.uci.ece.zen.orb.ORB orb;
+    protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
     protected boolean isActive;
 
-    public Acceptor( edu.uci.ece.zen.orb.ORB orb ){
+    public Acceptor( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl ){
         this.orb = orb;
+        this.orbImpl = orbImpl;
     }
 
     public final void startAccepting(){

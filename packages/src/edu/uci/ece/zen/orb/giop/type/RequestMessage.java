@@ -20,4 +20,7 @@ public abstract class RequestMessage extends GIOPMessage {
 
     // Abstract declarations in addition to those in GIOPMessage 
     public abstract org.omg.IOP.ServiceContext[] getServiceContexts();
+    public abstract byte[] getObjectKey();
+    public abstract String getOperation();
+    public abstract int getResponseExpected();
 }
