@@ -131,14 +131,10 @@ public class IsoLeak {
             }
         }
         
-        LocalVariableGen varGen = method.addLocalVariable( "__isoLeak_memAlloc" , Type.LONG , null , null );
-        LocalVariableGen varGenImm = method.addLocalVariable( "__isoLeak_immMemAlloc" , Type.LONG , null , null );
-        Type[] invokeMethodParams = new Type[]{};
+        Type[] invokeMethodParams = new Type[]{ Type.LONG };
         InstructionList newList = new InstructionList();
-        newList.append( factory.createInvoke( "iSoLeak.IsoLeakHelper" , "__isoLeak_recordScopedSize" , Type.LONG , invokeMethodParams , Constants.INVOKESTATIC ) );
-        newList.append( factory.createStore( Type.LONG , varGen.getIndex() ) );
-        newList.append( factory.createInvoke( "iSoLeak.IsoLeakHelper" , "__isoLeak_recordImmortal" , Type.LONG , invokeMethodParams , Constants.INVOKESTATIC ) );
-        newList.append( factory.createStore( Type.LONG , varGenImm.getIndex() ) );
+        newList.append(new PUSH(pool , (long)methodId ));
+        newList.append( factory.createInvoke( "iSoLeak.IsoLeakHelper" , "__iSoLeak_enterMethod" , Type.VOID , invokeMethodParams , Constants.INVOKESTATIC ) );
         InstructionHandle IStartTry = newList.append( new NOP() );
         if( startInstructionHandle == null ){
             newList.append( oldList );
@@ -160,12 +156,9 @@ public class IsoLeak {
         LocalVariableGen varGenTmp = method.addLocalVariable( "__Tmp" , Type.OBJECT , null , null );
         InstructionHandle IStartFinally = oldList.append( factory.createStore( Type.THROWABLE , varGenTmp.getIndex() ) );
 
-        invokeMethodParams = new Type[]{ Type.LONG , Type.LONG , Type.LONG };
+        invokeMethodParams = new Type[]{ Type.LONG };
         oldList.append(new PUSH(pool , (long)methodId ));
-        oldList.append( factory.createLoad( Type.LONG , varGen.getIndex() ) );
-        oldList.append( factory.createLoad( Type.LONG , varGenImm.getIndex() ) );
-        oldList.append( factory.createInvoke( "iSoLeak.IsoLeakHelper" , "__isoLeak_checkMemStats" , Type.VOID , invokeMethodParams , Constants.INVOKESTATIC ) );
-        //oldList.append( factory.createStore( Type.LONG , varGen.getIndex() ) );
+        oldList.append( factory.createInvoke( "iSoLeak.IsoLeakHelper" , "__iSoLeak_exitMethod" , Type.VOID , invokeMethodParams , Constants.INVOKESTATIC ) );
 
         oldList.append( new RET(varGenTmp.getIndex()) );
         InstructionHandle IAfterTCF = oldList.append( new NOP() );
@@ -176,15 +169,12 @@ public class IsoLeak {
         IGotoAfterTCF.setTarget( IAfterTCF );
         method.addExceptionHandler( IStartTry , IEndTry , ICatchFinally , null );
         
-        
         oldList.setPositions(true);
         method.setInstructionList(oldList);
         method.setMaxStack();
         method.setMaxLocals();
         Method m = method.getMethod();
-        //REMINDER: must do method.getMethod() before can free memory
         oldList.dispose();
-        //newList.dispose();
         return m;
     }
 }
