@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2005 by the University of California, Irvine
+ * All Rights Reserved.
+ * 
+ * This software is released under the terms of the RTZen license, which
+ * you should have received along with this software. If not, you may
+ * obtain a copy here: http://zen.ece.uci.edu/rtzen/license.php
+ */
+
 /*******************************************************************************
  * --------------------------------------------------------------------------
  * $Id: RequestProcessingPolicy.java,v 1.1 2003/11/26 22:24:46 nshankar Exp $
