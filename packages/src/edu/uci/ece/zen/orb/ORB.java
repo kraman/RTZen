@@ -24,6 +24,10 @@ import org.omg.CORBA.PolicyError;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.PolicyManager;
 
+/**
+ * @author Krishna Raman
+ */
+
 public class ORB extends org.omg.CORBA_2_3.ORB{
     private static Queue unusedFacades;
     private static Hashtable orbTable;

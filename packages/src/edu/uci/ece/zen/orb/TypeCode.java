@@ -177,10 +177,16 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
         else if (_name.indexOf("Object") != -1) {
             kind = TCKind._tk_objref;
         }
+        // Bruce discovered on 2004-04-30 that the default is to make something an Object reference
+        /*
         else {
             System.out.println("Unrecognized.  _name " + _name);
             System.out.println("_id " + _id);
-            throw new org.omg.CORBA.NO_IMPLEMENT("Unrecognized name so for implementation for " + _name);
+            throw new org.omg.CORBA.NO_IMPLEMENT("Unrecognized name for " + _name);
+        }
+        */
+        else {
+            kind = TCKind._tk_objref;
         }
         // kind = TCKind._tk_abstract_interface;
         id = _id;
