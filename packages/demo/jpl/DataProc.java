@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 
 class DataProc{
+
     public static void main(String[] args){
         try{
             BufferedReader br = new BufferedReader(new FileReader("timeRecords.txt"));
@@ -76,6 +77,5 @@ class DataProc{
             System.exit(-1);
         }
     }
-    */
 }
 
