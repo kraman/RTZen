@@ -37,9 +37,32 @@ public class Client3 extends RealtimeThread
     /**
      * Main function.
      */
-    public static void main(String[] args)
+
+
+    public static void main(String[] args){
+	    parseCmdLine(args);
+
+	    try{
+		    RealtimeThread rt = (Client3) ImmortalMemory.instance().newInstance(Client3.class);
+		    rt.start();
+	    }
+	    catch(Throwable ex){
+		    ex.printStackTrace();
+		    System.exit(-1);
+	    }
+    }
+
+    public void run(){
+	    old_main();
+    }
+
+
+
+
+      
+    public static void old_main( )
     {
-        parseCmdLine(args);
+//        parseCmdLine(args);
         try
         {
             RealtimeThread rt1 = (Client1) ImmortalMemory.instance().newInstance(Client1.class);
