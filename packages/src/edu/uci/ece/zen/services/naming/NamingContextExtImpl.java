@@ -4,7 +4,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
-import edu.uci.edu.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 import org.omg.CORBA.*;
 import org.omg.CosNaming.*;
