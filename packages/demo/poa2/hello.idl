@@ -1,0 +1,11 @@
+module demo
+{
+	module poa2
+	{
+		interface HelloWorld
+		{
+			long getMessage();
+		};
+	};
+};
+
