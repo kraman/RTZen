@@ -14,6 +14,7 @@ import java.io.FileWriter;
 
 import javax.realtime.ImmortalMemory;
 import javax.realtime.LTMemory;
+import javax.realtime.HeapMemory;
 import javax.realtime.PriorityScheduler;
 import javax.realtime.RealtimeThread;
 
@@ -162,17 +163,44 @@ public class Server extends RealtimeThread
             org.omg.CORBA.Object obj = poa.servant_to_reference(impl);
             System.out.println( "=================== Servant registered, getting IOR ========================" );
             String ior = orb.object_to_string(obj);
-
-            System.out.println( "[Server] " + ior );
-            BufferedWriter bw = new BufferedWriter( new FileWriter(iorFile) );
-            bw.write(ior);
-            bw.close();
+            writeIOR(ior, iorFile);
+            //BufferedWriter bw = new BufferedWriter( new FileWriter(iorFile) );
+            //bw.write(ior);
+            //bw.close();
 
         }catch(Exception e){
             e.printStackTrace();
             System.exit(-1);
         }
 
+    }
+    /**
+     * Writes the Server ior to file
+     */
+    private void writeIOR(final String ior, final String filename ) {
+        RealtimeThread rt = new RealtimeThread( null, null, null, HeapMemory.instance(), null, new Runnable() {
+                public void run() {
+                    try {
+                        BufferedWriter bw = new BufferedWriter( new FileWriter(filename) );
+                        bw.write(ior);
+                        bw.close();
+
+                        System.out.println( "[Server] " + ior );
+                        //pw.println( ior );
+                        //pw.flush();
+                        //pw.close();
+                    }
+                    catch ( java.io.IOException ioe ) {
+                        System.out.println( "Exception writing " + filename );
+                    }
+                }
+                } );
+            rt.start();
+        try {
+            rt.join();
+        }
+        catch ( InterruptedException e ) {
+        }
     }
 
     private static void parseCmdLine(String[] args) {
