@@ -49,7 +49,7 @@ public class DataTypesImpl extends DataTypesPOA
 
 				if(sinVal != true){
 													System.out.println("in value wrong in echoString()");
-													System.out.println("The expected value is "in String" and the actual value is "+sinVal);
+													System.out.println("The expected value is \"in String\" and the actual value is "+sinVal);
 				    }
 
 		        String sretVal = sinVal;
@@ -60,7 +60,7 @@ public class DataTypesImpl extends DataTypesPOA
     }
 
 
-    public short echoShort( octet oinVal , org.omg.CORBA.ShortHolder ooutVal) {
+    public short echoOctet( octet oinVal , org.omg.CORBA.OctetHolder ooutVal) {
 
 			if(oinVal != 100){
 				System.out.println("in value wrong in echoOctet()");

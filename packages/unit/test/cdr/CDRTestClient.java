@@ -104,7 +104,7 @@ public class CDRTestClient extends RealtimeThread
 	        boolean binVal = true;
 	        org.omg.CORBA.BooleanHolder boutVal =
 	                                new org.omg.CORBA.BooleanHolder(true);
-	        boolean bretVal = datatypes.echoBoolean( binVal, boutVal);
+	        boolean bretVal = stub.echoBoolean( binVal, boutVal);
 	        if(bretVal != true){
 						System.out.println("return value wrong in echoBoolean()");
 						System.out.println("The expected value is true and the actual value is "+bretVal);
@@ -124,17 +124,17 @@ public class CDRTestClient extends RealtimeThread
 
 	        String sinVal = "in String";
 	        StringHolder soutVal = new StringHolder("Before");
-	        String sretVal = datatypes.echoString( sinVal, soutVal);
+	        String sretVal = stub.echoString( sinVal, soutVal);
 
 
 	        if(sretVal != "in String"){
 									System.out.println("return value wrong in echoString()");
-									System.out.println("The expected value is "in String" and the actual value is "+sretVal);
+									System.out.println("The expected value is \"in String\" and the actual value is "+sretVal);
 								}
 
-								if(boutVal.value != "After"){
+								if(soutVal.value != "After"){
 									System.out.println("out value wrong in echoString()");
-									System.out.println("The expected value is "After" and the actual value is "+soutVal);
+									System.out.println("The expected value is \"After\" and the actual value is "+soutVal);
 
 		}
 
@@ -147,7 +147,7 @@ public class CDRTestClient extends RealtimeThread
 
 			octet oinVal = 100;
 			OctetHolder ooutVal = new OctetHolder((octet)101);
-		    byte oretVal = stub.echoOctet( oinVal, ooutVal);
+		    octet oretVal = stub.echoOctet( oinVal, ooutVal);
 
 		    if(oretVal != 100){
 			    System.out.println("return value wrong in echoOctet()");
