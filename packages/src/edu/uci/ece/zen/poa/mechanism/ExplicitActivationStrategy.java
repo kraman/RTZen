@@ -1,8 +1,6 @@
-/* --------------------------------------------------------------------------*
- * $Id: ExplicitActivationStrategy.java,v 1.1 2003/11/26 22:28:51 nshankar Exp $
- *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
+import org.omg.CORBA.IntHolder;
 
 public final class ExplicitActivationStrategy extends ActivationStrategy {
 
@@ -11,12 +9,11 @@ public final class ExplicitActivationStrategy extends ActivationStrategy {
      * @param name strategy value
      * @return boolean true if same, else false
      */
-
-    public boolean validate(int name) {
+    public void validate(int name, IntHolder exceptionValue ) {
         if (ImplicitActivationStrategy.EXPLICIT_ACTIVATION == name) {
-            return true;
+            exceptionValue.value = ActivationStrategy.NoException;
         } else {
-            return false;
+            exceptionValue.value = ActivationStrategy.InvalidPolicyException;
         }
     }
 }
