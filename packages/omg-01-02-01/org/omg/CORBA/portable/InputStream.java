@@ -83,9 +83,20 @@ public abstract class InputStream extends java.io.InputStream {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    // ajc public abstract org.omg.CORBA.TypeCode read_TypeCode();
 
-    // ajc public abstract org.omg.CORBA.Any read_any();
+    /** Abstract declaration of method to read TypeCode from this stream.
+     *
+     * @return TypeCode read from from this stream.
+     */
+    public abstract org.omg.CORBA.TypeCode read_TypeCode();
+
+
+    /** Declaration of method to read an Any, inserted into abstract class InputStream. 
+     * 
+     * @return Any read from this stream.
+     */
+    public abstract org.omg.CORBA.Any read_any();
+
 
     public org.omg.CORBA.Context read_Context() {
         throw new org.omg.CORBA.NO_IMPLEMENT();

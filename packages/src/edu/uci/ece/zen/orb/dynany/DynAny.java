@@ -242,6 +242,7 @@ public class DynAny extends org.omg.CORBA.LocalObject implements org.omg.Dynamic
      */
     public static org.omg.CORBA.TypeCode copyTypeCode(org.omg.CORBA.TypeCode tc) {
         edu.uci.ece.zen.orb.CDROutputStream cdrOut = edu.uci.ece.zen.orb.CDROutputStream.instance();
+        cdrOut.init( orb );
         cdrOut.write_TypeCode(tc);
         edu.uci.ece.zen.orb.CDRInputStream cdrIn = (edu.uci.ece.zen.orb.CDRInputStream) cdrOut.create_input_stream();
         return cdrIn.read_TypeCode();

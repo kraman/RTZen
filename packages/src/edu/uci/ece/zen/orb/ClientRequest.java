@@ -124,6 +124,9 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
     public void write_Object(org.omg.CORBA.Object value) { out.write_Object( value ); }
     public void write_CDROutputStream(CDROutputStream cdr) { out.write_CDROutputStream( cdr ); }
     public void write_Principal(org.omg.CORBA.Principal pr) { out.write_Principal( pr ); }
+
+    public void write_TypeCode(org.omg.CORBA.TypeCode value) { out.write_TypeCode( value ); }
+    public void write_any(org.omg.CORBA.Any value) { out.write_any( value ); }
 }
 
 class MessageComposerRunnable implements Runnable{

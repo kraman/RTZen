@@ -404,6 +404,126 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     public org.omg.CORBA.Current get_current() {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
+
+
+
+    public org.omg.CORBA.TypeCode get_primitive_tc(org.omg.CORBA.TCKind tcKind) {
+        return edu.uci.ece.zen.orb.TypeCode.lookupPrimitiveTc(tcKind.value());
+        // Discarded old implementation:
+        //return new edu.uci.ece.zen.orb.TypeCode(tcKind.value());
+    }
+
+    public org.omg.CORBA.TypeCode create_struct_tc(String id, String name,
+                        org.omg.CORBA.StructMember[] members) {
+        return new edu.uci.ece.zen.orb.TypeCode(org.omg.CORBA.TCKind._tk_struct,
+                        id, name, members);
+    }
+
+    public org.omg.CORBA.TypeCode create_union_tc(String id, String name,
+                        org.omg.CORBA.TypeCode discriminator_type,
+                        org.omg.CORBA.UnionMember[] members) {
+        return new edu.uci.ece.zen.orb.TypeCode(id, name, discriminator_type,
+                        members);
+    }
+
+    public org.omg.CORBA.TypeCode create_enum_tc(String id, String name,
+                        String[] members) {
+        return new edu.uci.ece.zen.orb.TypeCode(id, name, members);
+    }
+    
+    public org.omg.CORBA.TypeCode create_alias_tc(String id, String name,
+                        org.omg.CORBA.TypeCode original_type) {
+        return new edu.uci.ece.zen.orb.TypeCode(id, name, original_type);
+    }
+
+    public org.omg.CORBA.TypeCode create_exception_tc(String id, String name,
+                            org.omg.CORBA.StructMember[] members) {
+        return new edu.uci.ece.zen.orb.TypeCode(org.omg.CORBA.TCKind._tk_except, id, name, members);
+    }
+
+    public org.omg.CORBA.TypeCode create_interface_tc(String id, String name) {
+        return new edu.uci.ece.zen.orb.TypeCode(id, name);
+    }
+
+    public org.omg.CORBA.TypeCode create_string_tc(int bound) {
+        //return new edu.uci.ece.zen.orb.TypeCode(bound);
+        return new edu.uci.ece.zen.orb.TypeCode(org.omg.CORBA.TCKind._tk_string);
+    }
+
+    public org.omg.CORBA.TypeCode create_wstring_tc(int bound) {
+        //return new edu.uci.ece.zen.orb.TypeCode(bound);
+        return new edu.uci.ece.zen.orb.TypeCode(org.omg.CORBA.TCKind._tk_wstring);
+    }
+
+    public org.omg.CORBA.TypeCode create_sequence_tc(int bound,
+                            TypeCode element_type) {
+        return new edu.uci.ece.zen.orb.TypeCode(bound, element_type);
+    }
+
+    public org.omg.CORBA.TypeCode create_sequence_tc(int bound,
+                            org.omg.CORBA.TypeCode element_type) {
+        return new edu.uci.ece.zen.orb.TypeCode(bound, element_type);
+    }
+
+    public org.omg.CORBA.TypeCode create_recursive_sequence_tc(int bound, int offset) {
+        return new edu.uci.ece.zen.orb.TypeCode(bound, offset);
+    }
+
+    public org.omg.CORBA.TypeCode create_array_tc(int length, org.omg.CORBA.TypeCode element_type) {
+        edu.uci.ece.zen.orb.TypeCode arrayTypecode = new edu.uci.ece.zen.orb.TypeCode(length, element_type);
+        arrayTypecode.kind = TCKind._tk_array;
+
+        return arrayTypecode;//new edu.uci.ece.zen.orb.TypeCode(length, element_type);
+    }
+
+    public org.omg.CORBA.TypeCode create_native_tc(String id,
+                        String name) {
+        throw new org.omg.CORBA.NO_IMPLEMENT();
+    }
+
+    public org.omg.CORBA.TypeCode create_abstract_interface_tc(String id, String name) {
+        return new edu.uci.ece.zen.orb.TypeCode(id, name);
+    }
+
+    public org.omg.CORBA.TypeCode create_fixed_tc(short digits, short scale) {
+        return new edu.uci.ece.zen.orb.TypeCode(digits, scale);
+    }
+
+    public org.omg.CORBA.TypeCode create_value_tc(String id,
+                                                String name,
+                                                short type_modifier,
+                                                org.omg.CORBA.TypeCode concrete_base,
+                                                org.omg.CORBA.ValueMember[] members) {
+        return new edu.uci.ece.zen.orb.TypeCode (id, name, type_modifier, concrete_base, members);
+    }
+
+    public org.omg.CORBA.TypeCode create_recursive_tc(String id) {
+        throw new org.omg.CORBA.NO_IMPLEMENT();
+    }
+
+    public org.omg.CORBA.TypeCode create_value_box_tc(String id,
+                            String name,
+                            org.omg.CORBA.TypeCode boxed_type) {
+        // Uses the constructor for alias TypeCode, then changes the kind.
+        edu.uci.ece.zen.orb.TypeCode newTC = new edu.uci.ece.zen.orb.TypeCode(id, name, boxed_type);
+        newTC.kind = org.omg.CORBA.TCKind._tk_value_box;
+        return newTC;
+    }
+
+
+    /**
+     * Creata a new Any that has its orb reference populated by this
+     * orb.
+     *
+     * @return edu.uci.ece.zen.orb.any.Any using default strategy for
+     * implementing Anys, with its orb reference populated by this
+     * orb.
+    */
+    public org.omg.CORBA.Any create_any() {
+        return new edu.uci.ece.zen.orb.any.Any(this);
+    }
+
+
 }
 
 class ORBInitRunnable implements Runnable{
@@ -476,4 +596,5 @@ class ORBImplRunnable implements Runnable{
             active=false;
         }
     }
+
 }

@@ -83,8 +83,20 @@ public abstract class OutputStream extends java.io.OutputStream {
 
     public abstract void write_Object(org.omg.CORBA.Object value);
 
-    // ajc public abstract void write_TypeCode(org.omg.CORBA.TypeCode value);
-    // ajc public abstract void write_any(org.omg.CORBA.Any value);
+    /**
+     * Abstract declaration, writes the Any <code>any</code> to the
+     * output stream.
+     */
+    public abstract void write_any(org.omg.CORBA.Any any);
+
+    /**
+     * Abstract declaration, writes the TypeCode <code>value</code> to
+     * this output stream.
+     *
+     * @param value TypeCode to write to outputstream.
+     */
+    public abstract void write_TypeCode(org.omg.CORBA.TypeCode value);
+
 
     public void write_Context(org.omg.CORBA.Context ctx,
             org.omg.CORBA.ContextList contexts) {

@@ -36,7 +36,8 @@ public final class Any extends edu.uci.ece.zen.orb.any.AnyStrategy {
     /** TypeCode used to represent the currently held object's type */
     private org.omg.CORBA.TypeCode typeCode;
     /** A reference to the orb, needed to creaet CDRInputStream instances */
-    private org.omg.CORBA.ORB orb;
+    //private org.omg.CORBA.ORB orb;
+    private edu.uci.ece.zen.orb.ORB orb;
 
 
     
@@ -58,7 +59,7 @@ public final class Any extends edu.uci.ece.zen.orb.any.AnyStrategy {
      *
      * @param _orb org.omg.CORBA.orb reference to store.
      */
-    public void setOrb(org.omg.CORBA.ORB _orb) {
+    public void setOrb(edu.uci.ece.zen.orb.ORB _orb) {
         orb = _orb;
     }
 
@@ -66,7 +67,7 @@ public final class Any extends edu.uci.ece.zen.orb.any.AnyStrategy {
     /** Constructor takes a reference to the orb.  Call this one.
      * @param orb the orb 
      */
-    public Any (org.omg.CORBA.ORB orb) {
+    public Any (edu.uci.ece.zen.orb.ORB orb) {
         this.orb = orb;
         type( orb.get_primitive_tc (org.omg.CORBA.TCKind.tk_null) );
     }
@@ -202,7 +203,9 @@ public final class Any extends edu.uci.ece.zen.orb.any.AnyStrategy {
                 CDROutputStream out1, out2;
 
                 out1 = CDROutputStream.instance();
+                out1.init(orb);
                 out2 = CDROutputStream.instance();
+                out2.init(orb);
                 write_value( out1 );
                 anAny.write_value( out2 );
 
@@ -317,6 +320,7 @@ public final class Any extends edu.uci.ece.zen.orb.any.AnyStrategy {
         case org.omg.CORBA.TCKind._tk_alias:
 
             value = CDROutputStream.instance();
+            ((CDROutputStream)value).init(orb);
             ((CDROutputStream)value).write_value(tc, input);
             break;
         case org.omg.CORBA.TCKind._tk_value:
@@ -473,6 +477,7 @@ public final class Any extends edu.uci.ece.zen.orb.any.AnyStrategy {
     public org.omg.CORBA.portable.OutputStream create_output_stream() { 
 
         value = CDROutputStream.instance();
+        ((CDROutputStream)value).init(orb);
         return (edu.uci.ece.zen.orb.CDROutputStream) value; 
 
     }
@@ -495,6 +500,7 @@ public final class Any extends edu.uci.ece.zen.orb.any.AnyStrategy {
         }
         else {
             CDROutputStream outStream = CDROutputStream.instance();
+            outStream.init(orb);
             write_value(outStream);
             return outStream.create_input_stream();
         }

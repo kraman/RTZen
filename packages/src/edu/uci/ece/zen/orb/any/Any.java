@@ -70,7 +70,7 @@ public class Any
         */
         try {
             anyStrategy = (edu.uci.ece.zen.orb.any.AnyStrategy) currentAnyStrategyClass.newInstance();
-            anyStrategy.setOrb(_orb);
+            anyStrategy.setOrb((edu.uci.ece.zen.orb.ORB) _orb);
         }
         catch (InstantiationException ie) {
             System.err.println("edu.uci.ece.zen.orb.any.Any had instantiation exception while instantiating the class set in the zen.properties file for the property name \"zen.any.anyStrategy\".  That property led to the strategy class being set to \"" + currentAnyStrategyClass + "\"");

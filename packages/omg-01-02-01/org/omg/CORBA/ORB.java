@@ -185,7 +185,7 @@ abstract public class ORB {
 
     abstract public Request get_next_response() throws WrongTransaction;
 
-    /*
+
      abstract public TypeCode get_primitive_tc(TCKind tcKind);
 
      abstract public TypeCode create_struct_tc(String id, String name,
@@ -251,11 +251,11 @@ abstract public class ORB {
      TypeCode boxed_type) {
      throw new org.omg.CORBA.NO_IMPLEMENT();
      }
-     */
 
-    /* ajc
-     abstract public Any create_any();
-     */
+    abstract public Any create_any();
+
+
+
     public org.omg.CORBA.Current get_current() {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }

@@ -15,5 +15,5 @@ package edu.uci.ece.zen.orb.any;
  * @see edu.uci.ece.zen.orb.any.monolithic.Any edu.uci.ece.zen.orb.any.monolithic.Any
  */
 public abstract class AnyStrategy extends org.omg.CORBA.Any {
-    public abstract void setOrb(org.omg.CORBA.ORB orb);
+    public abstract void setOrb(edu.uci.ece.zen.orb.ORB orb);
 }

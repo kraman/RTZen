@@ -30,7 +30,7 @@ public class DynAnyFactoryImpl extends org.omg.CORBA.LocalObject implements org.
 
     /** 
      * Assigns a copy of an Any to be stored in a new DynAny,
-     * createing the new DynAny based on the passed Any's type.  A
+     * creating the new DynAny based on the passed Any's type.  A
      * copy of the TypeCode in <code>value</code> will be assigned to
      * the returned DynAny.
      *
