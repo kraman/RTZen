@@ -3,6 +3,7 @@ package unit.test.cdr;
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.*;
 import javax.realtime.RealtimeThread;
+import javax.realtime.ImmortalMemory;
 import javax.realtime.LTMemory;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -18,9 +19,15 @@ import java.io.FileWriter;
 public class CDRTestServer extends RealtimeThread{
 
 	public static void main( String[] args){
-		//CDRTestServer rt = (CDRTestServer) (new RealtimeThread(null,null,null,new LTMemory(3000,300000),null,null) );
+             try{
+//CDRTestServer rt = (CDRTestServer) (new RealtimeThread(null,null,null,new LTMemory(3000,300000),null,null) );
 		RealtimeThread rt = (CDRTestServer) ImmortalMemory.instance().newInstance( CDRTestServer.class );
 		rt.start();
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+            System.exit(-1);
+        }
 	}
 
 	public void run(){

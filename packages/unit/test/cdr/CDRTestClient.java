@@ -3,6 +3,7 @@ package unit.test.cdr;
 import org.omg.CORBA.*;
 import javax.realtime.RealtimeThread;
 import javax.realtime.LTMemory;
+import javax.realtime.ImmortalMemory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
@@ -18,14 +19,20 @@ public class CDRTestClient extends RealtimeThread
 
 	private DataTypes stub;
 
-	public static void main( String[] args ){
+    public static void main( String[] args ){
+        try{
+            //CDRTestClient rt = (CDRTestClient)( new RealtimeThread (null, null, null, new LTMemory( 3000, 300000), null, null));
+            RealtimeThread rt = (CDRTestClient) ImmortalMemory.instance().newInstance( CDRTestClient.class );
+            rt.start();
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+            System.exit(-1);
+        }
 
-		//CDRTestClient rt = (CDRTestClient)( new RealtimeThread (null, null, null, new LTMemory( 3000, 300000), null, null));
-		RealtimeThread rt = (CDRTestClient) ImmortalMemory.instance().newInstance( CDRTestClient.class );
-		rt.start();
-	}
+    }
 
-	public void run(){
+    public void run(){
 		try{
 
 			ORB orb = ORB.init((String[]) null, null);
