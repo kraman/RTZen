@@ -106,8 +106,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
     //TODO: Peter, get rid of new calls over here. this will be executed from POA Impl region
     public void handleRequest( edu.uci.ece.zen.orb.giop.type.RequestMessage request, POA poa, SynchronizedInt requests , IntHolder exceptionValue ) {
         exceptionValue.value = POARunnable.NoException;
-        FString okey = new FString(255);
-        request.getObjectKey( okey );
+        FString okey = request.getObjectKey();
 
         int index = ObjectKeyHelper.servDemuxIndex( okey );
         int genCount = ObjectKeyHelper.servDemuxGenCount( okey );
@@ -143,7 +142,8 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
 
         ((POACurrent)pimpl.poaCurrent.get()).init(poa, okey, (org.omg.PortableServer.Servant) invokeHandler);
 
-        ResponseHandler responseHandler = new ResponseHandler(((edu.uci.ece.zen.poa.POA) poa).getORB(),request );
+        ResponseHandler responseHandler = ResponseHandler.instance();
+        responseHandler.init(((edu.uci.ece.zen.poa.POA) poa).getORB(),request );
 
         CDROutputStream reply;
         synchronized (mutex) {
@@ -155,7 +155,13 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         //TODO: Peter, get a ScopedRegion from the orb and all the actual invocations need to happen
         //inside this region. At the end...free the region.
 
-        if (request.getOperation().equals("_is_a") )
+        ScopedMemory sm = poa.getORB().getScopedRegion();
+
+        MSGRunnable msgr = poa.getORB().getMSGR();
+        msgr.init(request, reply, myServant, responseHandler);
+        sm.enter(msgr);
+
+        /*if (request.getOperation().equals("_is_a") )
         {
             boolean _result = myServant._is_a(request.getCDRInputStream().read_string());
             org.omg.CORBA.portable.OutputStream _output = responseHandler.createReply();
@@ -175,7 +181,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
                 invokeHandler._invoke(request.getOperation().toString(),
                         (org.omg.CORBA.portable.InputStream)request.getCDRInputStream(),
                         responseHandler);
-        }
+        }*/
 
         // --- POST-INVOKE ---
         this.threadPolicyStrategy.exit(invokeHandler);
@@ -183,22 +189,22 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
             requests.decrementAndNotifyAll(poa.processingState == POA.DESTRUCTION_APPARANT);
             map.decrementActiveRequestsAndDeactivate();
         }
-        try
+        /*try
         {
             reply.updateLength();
             WriteBuffer wbret = reply.getBuffer();
             if(ZenProperties.devDbg) System.out.println( "MsgLen: " + (wbret.getPosition()-12) );
             //((edu.uci.ece.zen.orb.transport.Transport)request.getTransport().getPortal()).send( wbret );
-            MSGRunnable msgr = poa.getORB().getMSGR();
             ExecuteInRunnable eir = poa.getORB().getEIR();
             msgr.init(wbret);
             eir.init(msgr, request.getTransport()); 
             poa.getORB().orbImplRegion.executeInArea(eir);
             reply.free();
+            poa.getORB().freeEIR(eir);
         }catch (Exception e)
         {
             e.printStackTrace();
-        }
+        }*/
         //return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
     }
 }
