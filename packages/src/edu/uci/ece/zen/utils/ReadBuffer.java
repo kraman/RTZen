@@ -46,20 +46,26 @@ public class ReadBuffer {
 	    ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
             if (ret == null) {
                 ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
-                //rb.id = idgen++;
-
+                rb.id = idgen++;
+                if(ZenProperties.memDbg1) System.out.write('r');
+                if(ZenProperties.memDbg1) System.out.write('n');                
+                if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.write(rb.id);
                 rb.inUse = true;
                 return rb;
             }else {
                 //Thread.dumpStack();
                 if(ret.inUse)
                     ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class,
-                        "free",
+                        "instance",
                         "Buffer already in use.");
                 //ret.previd = ret.id;
                 //ret.id = idgen++;
                 ret.inUse = true;
                 ret.init();
+                
+                if(ZenProperties.memDbg1) System.out.write('r');
+                if(ZenProperties.memDbg1) System.out.write('u');                 
+                if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(ret.id);                
                 return ret;
             }
         } catch (Exception e) {
@@ -230,9 +236,9 @@ public class ReadBuffer {
         System.out.flush();
         edu.uci.ece.zen.utils.Logger.writeln(id);*/
 
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(635);
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(635);
         ByteArrayCache cache = ByteArrayCache.instance();
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(636);
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(636);
         for (int i = 0; i < buffers.size(); i++){
             cache.returnByteArray((byte[]) buffers.elementAt(i));
             ba--;
@@ -245,18 +251,20 @@ public class ReadBuffer {
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(buffers.size());
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(bs);
 
-
-       edu.uci.ece.zen.utils.Logger.printMemStatsImm(637);
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(637);
         //buffers.removeAllElements();
         init();
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(638);
-        ReadBuffer.release(this);
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(639);
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(638);
+        inUse = false;
+        
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(639);
         numFree++;
         if(ZenProperties.memDbg1) System.out.write('r');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(numFree);
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.write(numFree);
+        if(ZenProperties.memDbg1) System.out.write(',');
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(id);        
        // edu.uci.ece.zen.utils.Logger.writeln(bufferCache.size());
-       inUse = false;
+       ReadBuffer.release(this);
     }
 
     public void freeWithoutBufferRelease() {
