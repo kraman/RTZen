@@ -11,7 +11,7 @@
 
 zen.optimization = on
 zen.debug = on
-#build.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
+build.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
 
 ####################################
 ##### Compiler/runtime Options #####
@@ -32,6 +32,9 @@ JamaicaVM_install = /usr/local/jamaica-2.4-10
 
 #Set up the tag if you need to compile the naming service
 zen.naming = on
+
+#Portable Interceptors
+#zen.aspects.pi
 
 ###############################################################################
 ###############################################################################

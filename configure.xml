@@ -56,7 +56,7 @@
 
         <pathconvert dirsep="/" property="new.java.class.path" refid="class.path"/>
 
-        <property name="zen.classpath" value="{zen.rtbootclasspath}${path.separator}${zen.classdir}${path.separator}${new.java.class.path}"/>
+        <property name="zen.classpath" value="${zen.rtbootclasspath}${path.separator}${zen.classdir}${path.separator}${new.java.class.path}"/>
 
         <property
             name="zen.jvm.properties"
