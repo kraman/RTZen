@@ -4,32 +4,32 @@ import javax.realtime.*;
 import java.util.Vector;
 
 public class POARunnable implements Runnable{
-    public static final INIT=0;
-    public static final HANDLE_REQUEST=1;
-    public static final SERVANT_TO_ID=2;
-    public static final SERVANT_TO_REFERENCE=3;
-    public static final REFERENCE_TO_SERVANT=4;
-    public static final REFERENCE_TO_ID=5;
-    public static final ID_TO_SERVANT=6;
-    public static final ID_TO_REFERENCE=0;
-    public static final ACTIVATE_OBJECT=7;
-    public static final ACTIVATE_OBJECT_WITH_ID=8;
-    public static final DEACTIVATE_OBJECT=9;
-    public static final REMOVE_FROM_PARENT=10;
-    public static final DESTROY=11;
-    public static final ID=12;
-    public static final GET_SERVANT_MANAGER=13;
-    public static final SET_SERVANT_MANAGER=14;
-    public static final GET_SERVANT=15;
-    public static final SET_SERVANT=16;
-    public static final CREATE_REFERENCE=17;
-    public static final CREATE_REFERENCE_WITH_ID=18;
-    public static final GET_POLICY_LIST=19;
+    public static final int INIT=0;
+    public static final int HANDLE_REQUEST=1;
+    public static final int SERVANT_TO_ID=2;
+    public static final int SERVANT_TO_REFERENCE=3;
+    public static final int REFERENCE_TO_SERVANT=4;
+    public static final int REFERENCE_TO_ID=5;
+    public static final int ID_TO_SERVANT=6;
+    public static final int ID_TO_REFERENCE=0;
+    public static final int ACTIVATE_OBJECT=7;
+    public static final int ACTIVATE_OBJECT_WITH_ID=8;
+    public static final int DEACTIVATE_OBJECT=9;
+    public static final int REMOVE_FROM_PARENT=10;
+    public static final int DESTROY=11;
+    public static final int ID=12;
+    public static final int GET_SERVANT_MANAGER=13;
+    public static final int SET_SERVANT_MANAGER=14;
+    public static final int GET_SERVANT=15;
+    public static final int SET_SERVANT=16;
+    public static final int CREATE_REFERENCE=17;
+    public static final int CREATE_REFERENCE_WITH_ID=18;
+    public static final int GET_POLICY_LIST=19;
     
     private int operation;
     private Vector args;
 
-    private int exception;
+    public int exception;
     public Object retVal;
 
     public POARunnable( int op ){
@@ -37,7 +37,7 @@ public class POARunnable implements Runnable{
         args = new Vector();
     }
 
-    public addParam( Object arg ){
+    public void addParam( Object arg ){
         args.addElement( arg );
     }
 

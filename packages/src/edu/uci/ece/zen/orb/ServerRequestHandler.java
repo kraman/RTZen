@@ -6,6 +6,8 @@ public abstract class ServerRequestHandler {
     public ServerRequestHandler(ORB orb) {
         this.orb = orb;
     }
+
+    public abstract int addPOA(byte[] path, int poaPathLen, edu.uci.ece.zen.poa.POA poa);
     
     /**
      * Call scoped region graph:
@@ -17,7 +19,6 @@ public abstract class ServerRequestHandler {
      * </p>
      */
     public abstract void handleRequest(RequestMessage req);
-
 
     public abstract LocateReplyMessage handleLocateRequest(LocateRequestMessage req);
     public abstract void handleCancelRequest(CancelRequestMessage req);

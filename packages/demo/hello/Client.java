@@ -13,18 +13,18 @@ import javax.realtime.*;
  * @version 1.0
  */
 
-public class Client implements Runnable
+public class Client extends NoHeapRealtimeThread
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
-
-        //RealtimeThread rt = new RealtimeThread(null,null,null,null,null,(Runnable)new Client());
-
         System.out.println( "=====================Creating RT Thread in client==========================" );
-        RealtimeThread rt = new RealtimeThread(null,null,null,new LTMemory(3000,300000),null,new Client());
+        RealtimeThread rt = (Client) ImmortalMemory.instance().newInstance( Client.class );
         System.out.println( "=====================Starting RT Thread in client==========================" );
-
         rt.start();
+    }
+
+    public Client(){
+        super(null,new LTMemory(3000,300000));
     }
 
     public void run()
@@ -35,7 +35,7 @@ public class Client implements Runnable
             ORB orb = ORB.init((String[])null, null);
             System.out.println( "=====================ORB Init complete in client===========================" );
             String ior = "";
-            File iorfile = new File( "/home/yuez/RTZen/packages/demo/hello/ior.txt" );
+            File iorfile = new File( "/home/kraman/RTZen/packages/demo/hello/ior.txt" );
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
             ior = br.readLine();
             System.out.println( "===========================IOR read========================================" );
@@ -43,7 +43,7 @@ public class Client implements Runnable
             System.out.println( "===================Trying to establish connection==========================" );
             HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
             long start = System.currentTimeMillis();
-	    System.out.println( server.getMessage() );
+            System.out.println( server.getMessage() );
 		/*
             for( int i=0;i<10000;i++ ){
             }

@@ -79,8 +79,7 @@ abstract public class LifespanStrategy {
      * @exception org.omg.CORBA.OBJECT_NOT_EXISTS if the test fails.
      */
     
-    abstract public void validate(byte[] objectKey)
-        throws org.omg.CORBA.OBJECT_NOT_EXIST;
+    abstract public int validate(byte[] objectKey) throws org.omg.CORBA.OBJECT_NOT_EXIST;
 
     // --Persistent Strategy Singleton ---
 //    protected static PersistentStrategy persistentStrategy;

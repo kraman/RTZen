@@ -326,7 +326,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public synchronized org.omg.CORBA.Object string_to_object(String str) {
         org.omg.IOP.IOR ior = IOR.parseString( this , str );
-        org.omg.CORBA.portable.ObjectImpl objImpl = new ObjectImpl( ior );
+        edu.uci.ece.zen.orb.ObjectImpl objImpl = new ObjectImpl();
+        objImpl.init( ior );
+
         ORBStrToObjRunnable strToObjRunnable = new ORBStrToObjRunnable();
         strToObjRunnable.init( ior , objImpl ); 
         System.out.println("yue1");

@@ -2,20 +2,82 @@ package edu.uci.ece.zen.poa;
 
 import org.omg.CORBA.CompletionStatus;
 import javax.realtime.*;
-import edu.uci.ece.zen.orb.ObjRefDelegate;
-import edu.uci.ece.zen.orb.ServerRequest;
-import edu.uci.ece.zen.orb.IOR;
-import edu.uci.ece.zen.orb.protocols.ProfileList;
-import edu.uci.ece.zen.sys.ThreadFactory;
+import edu.uci.ece.zen.orb.*;
+import edu.uci.ece.zen.utils.*;
+import edu.uci.ece.zen.orb.giop.type.*;
+import org.omg.CORBA.Policy;
 
 public class POAImpl{
-    ORB orb;
-    POA self;
-    Policy[] policies;
-    POA parent;
+
+    //////////////////////////////////////////////////////////////////
+    ////                   DATA MEMBERS                         /////
+    /////////////////////////////////////////////////////////////////
+    // -- Exceptions--
+    private org.omg.PortableServer.POAPackage.NoServant ns = new org.omg.PortableServer.POAPackage.NoServant();
+    private org.omg.PortableServer.POAPackage.ServantAlreadyActive saa = new org.omg.PortableServer.POAPackage.ServantAlreadyActive();
+    private org.omg.PortableServer.POAPackage.ObjectAlreadyActive oaa = new org.omg.PortableServer.POAPackage.ObjectAlreadyActive();
+    private org.omg.PortableServer.POAPackage.ObjectNotActive ona = new org.omg.PortableServer.POAPackage.ObjectNotActive();
+    private org.omg.PortableServer.POAPackage.ServantNotActive sna = new org.omg.PortableServer.POAPackage.ServantNotActive();
+    private org.omg.PortableServer.POAPackage.WrongAdapter wa = new org.omg.PortableServer.POAPackage.WrongAdapter();
+
+    // -- ZEN ORB ---
+    MemoryArea thisMemory;
+    private edu.uci.ece.zen.orb.ORB orb;
+
+    // --- POA Names relative and Complete Path Names ---
+    private int poaId;
+
+    // --- POA Specific references ---
+    private POA                                     parent;
+    private POA                                     self;
+    private java.util.Hashtable                     theChildren;
+    private org.omg.PortableServer.POAManager       poaManager;
+    private org.omg.PortableServer.AdapterActivator adapterActivator;
+    private org.omg.PortableServer.ServantManager   theServantManager;
+    private org.omg.PortableServer.Servant          theServant = null;
+    private POAServerRequestHandler                 serverRequestHandler;
+
+    // ---  Current Number of request executing in the POA ---
+    private SynchronizedInt numberOfCurrentRequests;
+
+    // --- Mutexes POA and varable specific to the create and destroy ops ---
+    private Object createDestroyPOAMutex = new byte[0];
+
+    private boolean disableCreatePOA = false;
+    private boolean etherealize;
+
+    // -- Policy List for the POA
+    private org.omg.CORBA.Policy[] policyList;
+
+    // --- State of the POA ---
+    private int poaState;
+    private int processingState = POA.ACTIVE; // RequestProcessing state
+
+    // --- POA Specific strategies ----
+    private transient edu.uci.ece.zen.poa.mechanism.LifespanStrategy
+        lifespanStrategy;
+
+    private transient edu.uci.ece.zen.poa.mechanism.ThreadPolicyStrategy
+        threadPolicyStrategy;
+
+    private transient edu.uci.ece.zen.poa.mechanism.IdAssignmentStrategy
+        idAssignmentStrategy;
+
+    private transient edu.uci.ece.zen.poa.mechanism.ServantRetentionStrategy
+        retentionStrategy;
+
+    public transient edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy
+        requestProcessingStrategy;
+
+    private transient edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy
+        uniquenessStrategy;
+
+    private transient edu.uci.ece.zen.poa.mechanism.ActivationStrategy
+        activationStrategy;
+
     POAManager manager;
     int tpId;
-    
+
     public void init( ORB orb , POA self , Policy[] policies , POA parent , POAManager manager , POARunnable prun ){
         this.orb = orb;
         this.self = self;
@@ -24,19 +86,19 @@ public class POAImpl{
         this.tpId = 0;
 
         //make a local copy of the policies
-        this.policies = new Policy[policies.length];
+        this.policyList = new Policy[policies.length];
         for( int i=0;i<policies.length;i++ )
-            this.policies[i] = policies[i].copy();
+            this.policyList[i] = policies[i].copy();
         
         //init the stratergies
         try{
-            this.threadPolicyStrategy = edu.uci.ece.zen.poa.mechanism.ThreadPolicyStrategy.init(policies);
-            this.idAssignmentStrategy = edu.uci.ece.zen.poa.mechanism.IdAssignmentStrategy.init(policies);
-            this.uniquenessStrategy = edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy.init(policies);
-            this.retentionStrategy = edu.uci.ece.zen.poa.mechanism.ServantRetentionStrategy.init(policies, this.uniquenessStrategy);
-            this.lifespanStrategy = edu.uci.ece.zen.poa.mechanism.LifespanStrategy.init(this.policies);
-            this.activationStrategy = edu.uci.ece.zen.poa.mechanism.ActivationStrategy.init(this.policies, this.idAssignmentStrategy, this.retentionStrategy);
-            this.requestProcessingStrategy = edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy.init(this.policies,
+            this.threadPolicyStrategy = edu.uci.ece.zen.poa.mechanism.ThreadPolicyStrategy.init(policyList);
+            this.idAssignmentStrategy = edu.uci.ece.zen.poa.mechanism.IdAssignmentStrategy.init(policyList);
+            this.uniquenessStrategy = edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy.init(policyList);
+            this.retentionStrategy = edu.uci.ece.zen.poa.mechanism.ServantRetentionStrategy.init(policyList, this.uniquenessStrategy);
+            this.lifespanStrategy = edu.uci.ece.zen.poa.mechanism.LifespanStrategy.init(this.policyList);
+            this.activationStrategy = edu.uci.ece.zen.poa.mechanism.ActivationStrategy.init(this.policyList, this.idAssignmentStrategy, this.retentionStrategy);
+            this.requestProcessingStrategy = edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy.init(this.policyList,
                 this.retentionStrategy, this.uniquenessStrategy, this.threadPolicyStrategy); 
         }
         catch( Exception e) {
@@ -58,7 +120,7 @@ public class POAImpl{
      *      </p>
      * </p>
      */
-    public void handleRequest( ServerRequest req , POARunnable prun ){
+    public void handleRequest( RequestMessage req , POARunnable prun ){
         prun.exception = validateProcessingState(); // check for the state of the poa? if it is discarding then throw the transient exception...
         if( prun.exception != -1 )
             return;
@@ -80,7 +142,7 @@ public class POAImpl{
         req.setHandlers(this, numberOfCurrentRequests, this.requestProcessingStrategy);
 
         try {
-            ScopedRegion tpRegion = this.orb.getTPRegion(tpId);
+            ScopedMemory tpRegion = this.orb.getTPRegion(tpId);
             ExecuteInRunnable eir = req.messageScope.newInstance( ExecuteInRunnable.class );
             TPRunnable tpr = req.messageScope.newInstance( TPRunnable.class );
             eir.init( tpr , tpRegion );
@@ -295,75 +357,6 @@ public class POAImpl{
     	return numberOfCurrentRequests;
     }
 
-    // //////////////////////////////////////////////////////////////////
-    // ////                   DATA MEMBERS                         /////
-    // /////////////////////////////////////////////////////////////////
-   // -- Exceptions--
-   private org.omg.PortableServer.POAPackage.NoServant ns = new org.omg.PortableServer.POAPackage.NoServant();
-   private org.omg.PortableServer.POAPackage.ServantAlreadyActive saa = new org.omg.PortableServer.POAPackage.ServantAlreadyActive();
-  private org.omg.PortableServer.POAPackage.ObjectAlreadyActive oaa = new org.omg.PortableServer.POAPackage.ObjectAlreadyActive();
-   private org.omg.PortableServer.POAPackage.ObjectNotActive ona = new org.omg.PortableServer.POAPackage.ObjectNotActive();
-   private org.omg.PortableServer.POAPackage.ServantNotActive sna = new org.omg.PortableServer.POAPackage.ServantNotActive();
-   private org.omg.PortableServer.POAPackage.WrongAdapter wa = new org.omg.PortableServer.POAPackage.WrongAdapter();
-
-    // -- ZEN ORB ---
-    MemoryArea thisMemory;
-    private edu.uci.ece.zen.orb.ORB orb;
-
-    // --- POA Names relative and Complete Path Names ---
-    private int poaId;
-    private String poaName;
-    private String poaPath;
-
-    // --- POA Specific references ---
-    private POA                                     parent;
-    private java.util.Hashtable                     theChildren;
-    private org.omg.PortableServer.POAManager       poaManager;
-    private org.omg.PortableServer.AdapterActivator adapterActivator;
-    private org.omg.PortableServer.ServantManager   theServantManager;
-    private org.omg.PortableServer.Servant          theServant = null;
-    private POAServerRequestHandler                 serverRequestHandler;
-
-    // ---  Current Number of request executing in the POA ---
-    private SynchronizedInt numberOfCurrentRequests;
-
-    // --- Mutexes POA and varable specific to the create and destroy ops ---
-    private Object createDestroyPOAMutex = new byte[0];
-
-    private boolean disableCreatePOA = false;
-    private boolean etherealize;
-
-    // -- Policy List for the POA
-    private org.omg.CORBA.Policy[] policyList;
-
-    // -- Index into the Active Demux Map
-    private ActiveDemuxLoc poaDemuxIndex;
-
-    // --- State of the POA ---
-    private int poaState;
-    private int processingState = Util.ACTIVE; // RequestProcessing state
-
-    // --- POA Specific strategies ----
-    private transient edu.uci.ece.zen.poa.mechanism.LifespanStrategy
-            lifespanStrategy;
-
-    private transient edu.uci.ece.zen.poa.mechanism.ThreadPolicyStrategy
-            threadPolicyStrategy;
-
-    private transient edu.uci.ece.zen.poa.mechanism.IdAssignmentStrategy
-            idAssignmentStrategy;
-
-    private transient edu.uci.ece.zen.poa.mechanism.ServantRetentionStrategy
-            retentionStrategy;
-
-    public transient edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy
-            requestProcessingStrategy;
-
-    private transient edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy
-            uniquenessStrategy;
-
-    private transient edu.uci.ece.zen.poa.mechanism.ActivationStrategy
-            activationStrategy;
 }
 
 class CreateReferenceWithObjectRunnable implements Runnable{
