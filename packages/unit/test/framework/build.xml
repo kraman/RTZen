@@ -1,0 +1,20 @@
+<project default="compile">
+
+	<import file="../../../../init.xml"/>
+
+	<target name="compile">
+		<javac debug="true" srcdir="${zen.testdir}" destdir="${zen.classdir}" classpath="${zen.classpath}">
+			<include name="test/framework/**"/>
+		</javac>
+	</target>
+	
+	<target name="javadocs">
+		<javadoc packagenames="test.framework" sourcepath="${zen.testdir}" destdir="${zen.testdir}/test/framework/docs"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${zen.classdir}/test/framework"/>
+	</target>
+
+</project>
+

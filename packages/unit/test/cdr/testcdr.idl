@@ -1,0 +1,86 @@
+module test{
+    module cdr{
+        interface DataTypes{
+
+            typedef sequence<short> shortSeq;
+            typedef sequence<long> longSeq;
+            typedef sequence<longlong> longlongSeq;
+            typedef sequence<ushort> ushortSeq;
+            typedef sequence<ulong> ulongSeq;
+            typedef sequence<ulonglong> ulonglongSeq;
+            typedef sequence<float> floatSeq;
+            typedef sequence<double> doubleSeq;
+            typedef sequence<longdouble> longdoubleSeq;
+            typedef sequence<fixed> fixedSeq;
+            typedef sequence<char> charSeq;
+            typedef sequence<wchar> wcharSeq;
+            typedef sequence<string> stringSeq;
+            typedef sequence<wstring> wstringSeq;
+            typedef sequence<boolean> booleanSeq;       
+            typedef sequence<octet> octetSeq;           
+          
+            
+            
+       
+
+            short echoShort( in short inVal ,  out short outVal );
+            long echoLong( in long inVal ,  out long outVal );
+            longlong echoLongLong( in longlong inVal ,  out longlong  outVal);
+            ushort echoUShort( in ushort inVal ,  out ushort outVal );
+            
+            /*
+            ulong echoULong( in ulong inVal ,  out ulong outVal );
+            ulonglong echoULongLong( in ulonglong inVal ,  out ulonglong  outVal);
+            float echoFloat( in float inVal ,  out float outVal );  
+            double echoDouble( in double inVal ,  out double outVal);
+            ldouble echoLongDouble( in longdouble inVal ,  out longdouble outVal);
+            fixed echoFixed( in fixed inVal ,  out fixed outVal );
+            char echoChar( in char inVal ,  out char outVal );
+            wchar echoWChar( in wchar inVal ,  out wchar outVal );
+            string echoString( in string inVal ,  out string outVal);
+            wstring echoWString( in wstring inVal ,  out wstring outVal);
+            boolean echoBoolean( in boolean inVal ,  out boolean outVal);
+            octet echoOctet( in octet inVal ,  out octet outVal ); 
+                        
+                   
+                               
+                        
+            
+            shortSeq echoShortSeq ( in shortSeq inVal, out shortSeq outVal );            
+	    longSeq echoLongSeq( in longSeq inVal ,  out longSeq outVal); 
+	    longlongSeq echoLongLongSeq( in longlongSeq inVal ,  out longlongSeq outVal); 
+	    ushortSeq echoUShortSeq ( in ushortSeq inVal, out ushortSeq outVal );
+	    ulongSeq echoULongSeq( in ulongSeq inVal ,  out ulongSeq outVal); 
+	    ulonglongSeq echoULongLongSeq( in ulonglongSeq inVal ,  out ulonglongSeq outVal); 
+	    floatSeq echoFloatSeq( in floatSeq inVal ,  out floatSeq outVal);
+	    doubleSeq echoDoubleSeq( in doubleSeq inVal , out doubleSeq outVal);
+	    ldoubleSeq echoLongDoubleSeq( in longdoubleSeq inVal , out longdoubleSeq outVal);
+	    fixedSeq echoFixedSeq ( in fixedSeq inVal, out fixedSeq outVal );   
+	    charSeq echoCharSeq( in charSeq inVal ,  out charSeq outVal);  
+	    wcharSeq echoWCharSeq( in wcharSeq inVal ,  out wcharSeq outVal); 
+	    stringSeq echoStringSeq( in stringSeq inVal , out stringSeq outVal ); 
+	    stringSeq echoWStringSeq( in wstringSeq inVal , out wstringSeq outVal ); 
+	    booleanSeq echoBooleanSeq( in booleanSeq inVal , out booleanSeq outVal );
+	    octetSeq echoOctetSeq ( in octetSeq inVal, out octetSeq outVal );                     			 
+            */
+            
+            //string echo( in string inVal ,  out string outVal , inout string inOutVal );
+            //double echo( in double inVal ,  out double outVal , inout double inOutVal );
+            //float echo( in float inVal ,  out float outVal , inout float inOutVal );
+            //long echo( in long inVal ,  out long outVal , inout long inOutVal );
+            //long long echo( in long long inVal ,  out long long  outVal , inout long long  inOutVal );
+            //short echo( in short inVal ,  out short outVal , inout short inOutVal );
+            //wstring echo( in wstring inVal ,  out wstring outVal , inout wstring inOutVal );
+
+            //octetSeq echo( in octetSeq inVal ,  out octetSeq outVal , inout octetSeq inOutVal );
+            //booleanSeq echo( in booleanSeq inVal ,  out booleanSeq outVal , inout booleanSeq inOutVal );
+            //charSeq echo( in charSeq inVal ,  out charSeq outVal , inout charSeq inOutVal );
+            //StringSeq echo( in stringSeq inVal ,  out stringSeq outVal , inout stringSeq inOutVal );
+            //doubleSeq echo( in doubleSeq inVal ,  out doubleSeq outVal , inout doubleSeq inOutVal );
+            //floatSeq echo( in floatSeq inVal ,  out floatSeq outVal , inout floatSeq inOutVal );
+            //longSeq echo( in longSeq inVal ,  out longSeq outVal , inout longSeq inOutVal );
+            //shortSeq echo( in shortSeq inVal ,  out shortSeq outVal , inout shortSeq inOutVal );
+            //wstringSeq echo( in wstringSeq inVal ,  out wstringSeq outVal , inout wstringSeq inOutVal );
+        };
+    };
+};
