@@ -132,12 +132,9 @@ public class ReadBuffer {
         }
     }
     public String toString(){
-
         byte [] newarr = new byte[(int)limit];
-
         for(int i = 0; i < limit; ++i)
             newarr[i] = ((byte[]) buffers.elementAt((int) (i / 1024)))[i%1024];
-
         return FString.byteArrayToString(newarr) + "\n\nlimit: " + limit;
     }
     public void init() {
@@ -182,40 +179,20 @@ public class ReadBuffer {
     }
 
     public void appendFromStream(java.io.InputStream stream, int numBytes) {
-
-
         try {
-
             ensureCapacity(numBytes);
             while (numBytes > 0) {
-                //System.err.println( "Still need to read " + numBytes + "
-                // bytes" );
                 int readBytes = numBytes;
-                if (readBytes > 1024 - (int) (limit % 1024)) readBytes = 1024 - (int) (limit % 1024);
-                //System.err.println( "Going to read " + readBytes + " to fill
-                // buffer" );
+                if (readBytes > 1024 - (int) (limit % 1024))
+                    readBytes = 1024 - (int) (limit % 1024);
                 numBytes -= readBytes;
 
                 while (readBytes > 0) {
-                    int read = stream.read((byte[]) buffers
-                            .elementAt((int) (limit / 1024)),
-                            ((int) limit % 1024), readBytes);
-                    //System.err.println( "Read " + read + " ... " );
+                    int read = stream.read((byte[]) buffers.elementAt((int) (limit / 1024)), ((int) limit % 1024), readBytes);
                     readBytes -= read;
                     limit += read;
                 }
-
             }
-
-            //System.err.println( "---BEGIN Incomming GIOP message---" );
-            //for( int i=0;i<limit/1024-1;i++ ){
-            //    System.err.write( (byte[])buffers.elementAt(i) , 0 , 1024 );
-            // }
-            //System.err.write( (byte[])buffers.elementAt(((int)(limit/1024)))
-            // , 0 , (int)(limit%1024) );
-            //System.err.println( "\n---END Incomming GIOP message---" );
-            //System.out.println( "Limit is " + limit );
-
         } catch (java.io.IOException ioex) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "appendFromStream", ioex);
         }
@@ -238,22 +215,6 @@ public class ReadBuffer {
     }
 
     public void free() {
-        /*
-        synchronized(ReadBuffer.class){
-            System.out.println("freeing id" + id + "prev id" + previd);
-
-            Thread.dumpStack();
-        }
-
-        if(position < limit) {
-            synchronized(ReadBuffer.class){
-                System.out.println("pos: " + position);
-                System.out.println("lim: " + limit);
-            }
-            return;
-
-        }*/
-
         if(!inUse){
             ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
                 "free",
@@ -262,16 +223,7 @@ public class ReadBuffer {
                 //still deciding what to do here
             return;
         }
-
-                /*
-        System.out.write('f');
-        System.out.write('\n');
-        System.out.flush();
-        edu.uci.ece.zen.utils.Logger.writeln(id);*/
-
-        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(635);
         ByteArrayCache cache = ByteArrayCache.instance();
-        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(636);
         for (int i = 0; i < buffers.size(); i++){
             cache.returnByteArray((byte[]) buffers.elementAt(i));
             ba--;
@@ -287,7 +239,6 @@ public class ReadBuffer {
             edu.uci.ece.zen.utils.Logger.writeln(bs);
         }
 
-        //init();
         inUse = false;
 
         numFree++;
@@ -306,12 +257,6 @@ public class ReadBuffer {
     public void freeWithoutBufferRelease() {
         ReadBuffer.release(this);
     }
-
-    /*
-     * public void writeUnAligned( WriteBuffer wb , int bufOffset , int numBufs ){
-     * for( int i=0;i <numBufs;i++ ){ byte[] buf = (byte[]) buffers.elementAt(
-     * bufOffset+i ); wb.writeUnAligned( buf , 1024 , 1024 ); } }
-     */
 
     public void setEndian(boolean isLittleEndian) {
         this.isLittleEndian = isLittleEndian;
@@ -335,17 +280,13 @@ public class ReadBuffer {
             }
             buffers.addElement(byteArray);
             ba++;
+            bs = buffers.size();
        }
-        bs = buffers.size();
     }
 
     public long getPosition() {
         return position;
     }
-
-    /*
-     * public void setPosition(int pos){ position = pos; }
-     */
 
     public long getLimit() {
         return limit;

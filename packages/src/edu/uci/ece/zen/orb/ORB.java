@@ -60,8 +60,6 @@ import java.net.*;
 /**
  * @author Alex Potanin (alex@mcs.vuw.ac.nz)
  * @author Krishna Raman
- *
- *
  */
 
 public class ORB extends org.omg.CORBA_2_3.ORB {
@@ -138,8 +136,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         return orbIdSeq;
     }
 
-    public static synchronized org.omg.CORBA.ORB init(String[] args,
-            java.util.Properties props) {
+    public static synchronized org.omg.CORBA.ORB init(String[] args, java.util.Properties props) {
         if (props == null) props = new Properties();
 
         //Find the ORBId
@@ -179,29 +176,16 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     public MemoryArea parentMemoryArea;
 
-    //private ORBImplRunnable orbImplRunnable;
     private ConnectionRegistry connectionRegistry;
-
     private AcceptorRegistry acceptorRegistry;
-
     private WaiterRegistry waiterRegistry;
-
     private Queue executeInRunnableCache;
-
-    //public RTORB rtorb;
-    //public PolicyManager policyManager;
     public ScopedMemory[] threadpoolList;
-
     public edu.uci.ece.zen.poa.POA rootPOA;
-
     public Object orbRunningLock;
-
     public RTORBImpl rtorb;
-
     public NamingContextExt cachedNamingReference;
-
     private TPRunnable tpr;
-
     private FString orbId;
 
     public ORB() {
@@ -289,10 +273,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     private void isActive() {
         isNotDestroyed();
-        //if( !orbImplRunnable.isActive() ){
-        //    throw new org.omg.CORBA.BAD_INV_ORDER("ORB has been shutdown", 4,
-        // CompletionStatus.COMPLETED_NO);
-        //}
     }
 
     public void set_parameters(String args[], java.util.Properties props) {
@@ -300,14 +280,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         orbInitRunnable.init(args, props, this);
 
         executeInORBRegion(orbInitRunnable);
-        /*
-         * ExecuteInRunnable r = new ExecuteInRunnable(); r.init(
-         * orbInitRunnable , this.orbImplRegion ); try{
-         * parentMemoryArea.executeInArea( r ); }catch( Exception e ){
-         * ZenProperties.logger.log( Logger.FATAL, "edu.uci.ece.zen.orb.ORB",
-         * "set_parameters", "Could not initialize ORB due to exception: " +
-         * e.toString() ); System.exit(-1); }
-         */
     }
 
     //For Multithreaded ORB's
@@ -406,15 +378,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             return getNaming();
         }
 
-
-
-    //org.omg.CORBA.Object ret = Resolver.resolve( this , object_name );
-        //if( ret == null )
         throw new org.omg.CORBA.ORBPackage.InvalidName(object_name
                 + " resolver not implemented");
-        //return ret;
-        //else if(object_name.equals("RTCurrent"))
-        //return policyManager;
     }
 
     /**
@@ -435,22 +400,12 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public PolicyManager getPolicyManager() {
-        PolicyManagerRunnable runnable = new PolicyManagerRunnable(
-                orbImplRegion);
+        PolicyManagerRunnable runnable = new PolicyManagerRunnable(orbImplRegion);
         executeInORBRegion(runnable);
         return runnable.val;
     }
 
-    /*
-     * class RTORBRunnable implements Runnable{ public RTORBImpl val; private
-     * ScopedMemory sm; public RTORBRunnable(ScopedMemory sm){ this.sm = sm; }
-     * public void run(){ val = ((ORBImpl)(sm.getPortal())).rtorb; } }
-     */
     public RTORB getRTORB() {
-        /*
-         * RTORBRunnable runnable = new RTORBRunnable(orbImplRegion);
-         * executeInORBRegion(runnable); return runnable.val;
-         */
         return rtorb;
     }
 

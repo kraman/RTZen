@@ -43,8 +43,7 @@ public class ByteArrayCache {
      */
     public static ByteArrayCache instance() {
         if (_instance == null) try {
-            _instance = (ByteArrayCache) ImmortalMemory.instance().newInstance(
-                    ByteArrayCache.class);
+            _instance = (ByteArrayCache) ImmortalMemory.instance().newInstance( ByteArrayCache.class);
             ZenProperties.logger.log(Logger.INFO, ByteArrayCache.class, "instance", "ByteArrayCache created");
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, ByteArrayCache.class, "instance", e);

@@ -24,13 +24,22 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     private java.io.OutputStream ostream;
 
     //Acceptor
-    public Transport(edu.uci.ece.zen.orb.ORB orb,
-            edu.uci.ece.zen.orb.ORBImpl orbImpl, java.net.Socket sock) {
+    public Transport(edu.uci.ece.zen.orb.ORB orb, edu.uci.ece.zen.orb.ORBImpl orbImpl, java.net.Socket sock) {
         super(orb, orbImpl);
         setProtocolFactory( edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
         try {
             ZenProperties.logger.log("*****IIOP Transport: Trying to get io streams");
             this.sock = sock;
+            
+            int sendBufferSize = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.transport.iiop.sendBufferSize" , "1024" ) );
+            int recvBufferSize = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.transport.iiop.receiveBufferSize" , "1024" ) );
+
+            sock.setSendBufferSize(sendBufferSize);
+            ZenProperties.logger.log( Logger.INFO , "Socket send buffer size is " + sock.getSendBufferSize() );
+            sock.setReceiveBufferSize(recvBufferSize);
+            ZenProperties.logger.log( Logger.INFO , "Socket receive buffer size is " + sock.getReceiveBufferSize() );
+            sock.setTcpNoDelay( true );
+
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
             ZenProperties.logger.log("IIOP Transport: Got io streams");
@@ -45,8 +54,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     }
 
     //Connector
-    public Transport(edu.uci.ece.zen.orb.ORB orb,
-            edu.uci.ece.zen.orb.ORBImpl orbImpl, String host, int port) {
+    public Transport(edu.uci.ece.zen.orb.ORB orb, edu.uci.ece.zen.orb.ORBImpl orbImpl, String host, int port) {
         super(orb, orbImpl);
         setProtocolFactory( edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
             try {
@@ -58,6 +66,15 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
                 ZenProperties.logger.log("Connected");
                 //setSockProps(sock, orb);
                 //             System.err.println( "sock = " + sock );
+             
+                int sendBufferSize = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.transport.iiop.sendBufferSize" , "1024" ) );
+                int recvBufferSize = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.orb.transport.iiop.receiveBufferSize" , "1024" ) );
+                sock.setSendBufferSize(sendBufferSize);
+                ZenProperties.logger.log( Logger.INFO , "Socket send buffer size is " + sock.getSendBufferSize() );
+                sock.setReceiveBufferSize(recvBufferSize);
+                ZenProperties.logger.log( Logger.INFO , "Socket receive buffer size is " + sock.getReceiveBufferSize() );
+                sock.setTcpNoDelay( true );
+
                 istream = sock.getInputStream();
                 ostream = sock.getOutputStream();
                 if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Transport ready: " + istream + " " + ostream);
