@@ -54,15 +54,40 @@
          </java>
     </target>   
     
-     <target name="server_zen">
+    
+    <!-- Running this example on old Zen -->   
+    <!-- 
+            - build old Zen
+            - build RTZen with jvm option
+            - build this example
+            - set "oldzen.home" property below
+            - run "setup_oldzen" target, i.e. type "ant setup_oldzen"
+            - now you can run the targets below: server_oldzen and client_oldzen
+    -->    
+
+    <property name="oldzen.home" value="c:/Zen/Zen"/>
+    
+    <property name="oldzen.jvmarg" value="-Xbootclasspath/p:${oldzen.home}/classes; -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"/>    
+        
+    <target name="setup_oldzen">
+      <copy todir="${oldzen.home}/classes">
+        <fileset dir="${zen.classdir}">
+          <include name="javax/**/*.class"/>
+          <include name="demo/**/*.class"/>
+          <include name="edu/uci/ece/zen/utils/**/*.class"/>
+        </fileset>
+      </copy>        
+    </target>          
+        
+    <target name="server_oldzen">
          <java classname="demo.hello.Server" fork="yes">
-             <jvmarg line="-Xbootclasspath/p:C:/Zen/Zen/classes; -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"/>
+             <jvmarg line="${oldzen.jvmarg}"/>
          </java>
     </target>  
 
-     <target name="client_zen">
+     <target name="client_oldzen">
          <java classname="demo.hello.Client" fork="yes">
-             <jvmarg line="-Xbootclasspath/p:C:/Zen/Zen/classes; -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"/>
+             <jvmarg line="${oldzen.jvmarg}"/>
          </java>
     </target>       
 
