@@ -18,7 +18,9 @@ public class FString{
         this.maxSize = maxSize;
         this.currentSize = 0;
         try{
-            this.data = (byte[]) MemoryArea.getMemoryArea(this).newArray( byte.class , maxSize );
+           // this.data = (byte[]) MemoryArea.getMemoryArea(this).newArray( byte.class , maxSize );
+           byte[] dataTemp =  (byte[]) MemoryArea.getMemoryArea(this).newArray( byte.class , maxSize );
+           this.data = dataTemp;
         }catch( Exception e ){
             e.printStackTrace();
         }
