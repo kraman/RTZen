@@ -117,6 +117,7 @@ class Lane{
 
     public synchronized boolean getLeaderAndExecute( RequestMessage task , boolean forBorrowing ){
         if( threads.isEmpty() ){
+            //try to get a thread from somewhere else
             if( numThreads < maxStaticThreads + maxDynamicThreads - 1 ){
                 //already at max thread limit, try borrowing
                 if( allowBorrowing ){
@@ -137,7 +138,20 @@ class Lane{
                 newThread();
             }
         }
-        return ((ThreadSleepRunnable) threads.dequeue()).execute( task );
+
+        //still couldnt get a thread, wait for one to return
+        try{
+            ThreadSleepRunnable runnable;
+            while( ((runnable = (ThreadSleepRunnable)threads.dequeue()) == null )){
+                synchronized( this ){
+                    this.wait();
+                }
+            }
+            return runnable.execute( task );
+        }catch( Exception e ){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean execute( RequestMessage task ){
@@ -164,6 +178,9 @@ class Lane{
     public void returnToPool( ThreadSleepRunnable runnable ){
         if( !runnable.getLane().checkRequestBuffer() ){
             runnable.getLane().threads.enqueue( runnable );
+        }
+        synchronized( this ){
+            this.notify();
         }
     }
 
