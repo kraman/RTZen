@@ -208,14 +208,11 @@ public final class GIOPMessageFactory
      * @param headerInfo GIOPHeaderInfo object to fill with data read from header
     */
     public static void parseStreamForHeader(java.io.InputStream in, GIOPHeaderInfo headerInfo)  throws java.io.IOException{
-        System.out.println( "parseStreamForHeader 1 " + in + javax.realtime.MemoryArea.getMemoryArea(in) );
         byte[] header = new byte[12];
-        
         int read = 0;
         while( read < 12 )
             read += in.read( header , 0 , 12 );
-        System.out.println( "parseStreamForHeader 2" );
-        
+       
         // Bytes 0,1,2,3 should equal 'GIOP'
         if (  header[0] != magic[0]
               || header[1] != magic[1]
@@ -224,11 +221,10 @@ public final class GIOPMessageFactory
             {
                 throw new RuntimeException(""); //THROW GIOP Error here
             }
-        System.out.println( "parseStreamForHeader 3" );
-        
         headerInfo.giopMajorVersion = header[4];
         headerInfo.giopMinorVersion = header[5];
         headerInfo.isLittleEndian = (header[6] & 0x01) == 1;   //Endian byte (byte 6)
+
         
         headerInfo.nextMessageIsFragment=false;
         if ( headerInfo.giopMajorVersion == 1 && headerInfo.giopMinorVersion == 1) {
