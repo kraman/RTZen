@@ -18,13 +18,13 @@ import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 
 public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
-    private java.net.ServerSocket ssock;
+    private edu.uci.ece.zen.orb.transport.serial.ServerSocket ssock;
 
     public Acceptor(edu.uci.ece.zen.orb.ORB orb,
             edu.uci.ece.zen.orb.ORBImpl orbImpl) {
         super(orb, orbImpl);
         try {
-            ssock = new java.net.ServerSocket(0, 0, orb.sockAddr);
+            ssock = new edu.uci.ece.zen.orb.transport.serial.ServerSocket(0, 0, orb.sockAddr);
 
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,

@@ -6,7 +6,7 @@ import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ZenProperties;
 
 public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
-    private java.net.Socket sock;
+    private edu.uci.ece.zen.orb.transport.serial.Socket sock;
 
     private java.io.InputStream istream;
 
@@ -14,7 +14,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
 
     //Acceptor
     public Transport(edu.uci.ece.zen.orb.ORB orb,
-            edu.uci.ece.zen.orb.ORBImpl orbImpl, java.net.Socket sock) {
+            edu.uci.ece.zen.orb.ORBImpl orbImpl, edu.uci.ece.zen.orb.transport.serial.Socket sock) {
         super(orb, orbImpl);
         try {
             sock = sock;
@@ -41,7 +41,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
                             + javax.realtime.RealtimeThread
                                     .currentRealtimeThread());
 
-            sock = new java.net.Socket(host, port);
+            sock = new edu.uci.ece.zen.orb.transport.serial.Socket(host, port);
             ZenProperties.logger.log("Connected");
             //setSockProps(sock, orb);
             //             System.err.println( "sock = " + sock );
@@ -65,7 +65,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     }
 
     //hook method to weave in TCPProtocolProperties
-    private void setSockProps(java.net.Socket sock, ORB orb) {
+    private void setSockProps(edu.uci.ece.zen.orb.transport.serial.Socket sock, ORB orb) {
         //org.omg.RTCORBA.TCPProtocolProperties tcpPP =
         // ((RTORBImpl)(orb.getRTORB())).tcpPP;
 

@@ -1,21 +1,50 @@
 package edu.uci.ece.zen.orb.transport.serial;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.*;
 
 import edu.uci.ece.zen.utils.ZenProperties;
 
 public class Socket
 {
     private String serialPort;
+    private SerialStream serialStream;
 
     public Socket(String host, int port) throws UnknownHostException, IOException {
-        // Ignore host and port. Use serial port device in zen.properties instead.
-System.out.println("socket: creating new socket");
         serialPort = ZenProperties.getGlobalProperty("serial.port", "/dev/ttyS0");
 
-        System.err.println("zen port = " + serialPort);
+        synchronized (ServerSocket.connections)
+        {
+            // Search for a waiting connection for the requested host and port
+            Connection requestedConnection = new Connection(port, host);
+            for (Iterator i = ServerSocket.connections.iterator(); i.hasNext(); )
+            {
+                Connection waitingConnection = (Connection) i.next();
+
+                if (waitingConnection.equals(requestedConnection))
+                {
+                    // If the waiting connection and the requested connection are on the same host...
+                    if (InetAddress.getLocalHost().equals(requestedConnection.address))
+                    {
+                        System.out.println("requested socket was a LOCAL host");
+                        serialStream = new LocalSerialStream();
+                        waitingConnection.connect(this);
+                    }
+                    else
+                    {
+                        System.out.println("requested socket was a REMOTE host");
+                        serialStream = new RemoteSerialStream();
+                    }
+
+                    return;
+                }
+            }
+
+            throw new IOException("Could not connect to the host at " + requestedConnection);
+        }
     }
 
     public synchronized void setReceiveBufferSize(int size) throws SocketException {
@@ -35,36 +64,64 @@ System.out.println("socket: creating new socket");
     }
 
     public InputStream getInputStream() throws IOException {
-        return new SerialInputStream();
+        return serialStream.getInputStream();
     }
 
     public OutputStream getOutputStream() throws IOException {
-        return new SerialOutputStream();
+        return serialStream.getOutputStream();
     }
 }
 
-class SerialInputStream extends InputStream
+abstract class SerialStream
 {
-    public int read() throws IOException
-    {
-        try
-        {
-            System.out.println("read request for serialinputstream, waiting 5 seconds...");
-            Thread.currentThread().sleep(5000);
-            System.out.println("returning from read");
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-        return 0;
-    }
+    abstract InputStream getInputStream();
+    abstract OutputStream getOutputStream();
 }
 
-class SerialOutputStream extends OutputStream
+class LocalSerialStream extends SerialStream
 {
-    public void write(int b) throws IOException
+    private List queue;
+
+    LocalSerialStream()
     {
-        System.out.println("write request for serial input stream, data=" + Integer.toHexString(b));
+        queue = new LinkedList();
+    }
+
+    InputStream getInputStream()
+    {
+        return new LocalSerialStream.IS();
+    }
+
+    OutputStream getOutputStream()
+    {
+        return new LocalSerialStream.OS();
+    }
+
+    class IS extends InputStream
+    {
+        public int read() throws IOException
+        {
+            try
+            {
+                Integer n = (Integer) queue.remove(0);
+                System.out.println("Local connection reading " + n.toHexString(n.intValue()));
+                return n.intValue();
+            }
+            catch (IndexOutOfBoundsException e)
+            {
+                IOException ioex = new IOException();
+                ioex.initCause(e);
+                throw ioex;
+            }
+        }
+    }
+
+    class OS extends OutputStream
+    {
+        public void write(int b) throws IOException
+        {
+            System.out.println("Local connection writing " + Integer.toHexString(b));
+            queue.add(new Integer(b));
+        }
     }
 }
