@@ -21,7 +21,7 @@ public class TPRunnable implements Runnable{
 
     public void run(){
         ThreadPool tp = (ThreadPool) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
-        tp.execute( null, (short)0 , (short)99 );
+        tp.execute( (RequestMessage) mseg , (short)0 , (short)99 );
         //KLUDGE: ?? sreq.waitTillInvoked();
     }
 }

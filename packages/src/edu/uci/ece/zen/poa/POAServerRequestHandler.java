@@ -45,7 +45,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
        // gt the index into the Active Map
        FString objKey = req.getObjectKey();
 
-        System.out.println("Inside ServerRequestHandler.handleRequest and mem area: " + javax.realtime.RealtimeThread.getCurrentMemoryArea());
+       System.out.println("Inside ServerRequestHandler.handleRequest and mem area: " + javax.realtime.RealtimeThread.getCurrentMemoryArea());
        int index = ObjectKeyHelper.getPOAIndex( objKey );
        int genCount = ObjectKeyHelper.getPOAGeneration( objKey );
 
@@ -66,7 +66,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
            throw new org.omg.CORBA.OBJECT_NOT_EXIST("The transient poa not found");
        }
 
-        poa.handleRequest(req);
+       poa.handleRequest(req);
     }
 
     public void handleCancelRequest( CancelRequestMessage crm ){
