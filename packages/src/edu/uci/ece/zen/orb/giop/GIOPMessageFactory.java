@@ -48,6 +48,10 @@ public final class GIOPMessageFactory
                                 case org.omg.GIOP.MsgType_1_0._LocateReply :
                                 case org.omg.GIOP.MsgType_1_0._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_0._CancelRequest :
+                                    // A cancel request header is just the request id to cancel.
+                                    int requestIdToCancel = read_long(in, mainMsgHdr);
+                                    orb.cancelRequest(requestIdToCancel);
+                                    break;
                                 case org.omg.GIOP.MsgType_1_0._MessageError :
                                     //TODO: Handle these properly
                                     break;
@@ -72,6 +76,10 @@ public final class GIOPMessageFactory
                                 case org.omg.GIOP.MsgType_1_1._LocateRequest :
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
+                                    // A cancel request header is just the request id to cancel.
+                                    int requestIdToCancel = read_long(in, mainMsgHdr);
+                                    orb.cancelRequest(requestIdToCancel);
+                                    break;
                                 case org.omg.GIOP.MsgType_1_1._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_1._MessageError :
                                 case org.omg.GIOP.MsgType_1_1._Fragment :
@@ -99,6 +107,7 @@ public final class GIOPMessageFactory
                                 case org.omg.GIOP.MsgType_1_1._LocateRequest :
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
+                                    throw new org.omg.CORBA.BAD_CONTEXT("CancelRequest Cannot be called in GIOP 1.2 and higher");
                                 case org.omg.GIOP.MsgType_1_1._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_1._MessageError :
                                 case org.omg.GIOP.MsgType_1_1._Fragment :
@@ -148,27 +157,13 @@ public final class GIOPMessageFactory
         // Read the fragment header
 
         boolean moreFragments = true;
-        byte [] fragRequestIdBytes = new byte [4];
         while (moreFragments) {
             java.io.InputStream in = trans.getInputStream();
             parseStreamForHeader(in, headerInfo);
 
             // Read the GIOP v1_2 fragment header, which is composed
             // of a single long.
-            int fragRequestId = 0;
-            in.read(fragRequestIdBytes, 0, 4);
-
-            if( !headerInfo.isLittleEndian ){
-                fragRequestId += ((short)(fragRequestIdBytes[8] & 0xFF)) << 24;
-                fragRequestId += ((short)(fragRequestIdBytes[9] & 0xFF)) << 16;
-                fragRequestId += ((short)(fragRequestIdBytes[10] & 0xFF)) << 8;
-                fragRequestId += ((short)(fragRequestIdBytes[11] & 0xFF)) << 0;
-            } else{
-                fragRequestId += ((short)(fragRequestIdBytes[11] & 0xFF)) << 24;
-                fragRequestId += ((short)(fragRequestIdBytes[10] & 0xFF)) << 16;
-                fragRequestId += ((short)(fragRequestIdBytes[9] & 0xFF)) << 8;
-                fragRequestId += ((short)(fragRequestIdBytes[8] & 0xFF)) << 0;
-            }
+            int fragRequestId = read_long(in, headerInfo);
 
             // If the request id in the fragment is not the request id
             // that we were collecting fragments regarding, throw an
@@ -257,4 +252,36 @@ public final class GIOPMessageFactory
         out.write_long(0);
         (new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId )).marshall( out );
     }
+
+
+
+    /**
+     * Read a CORBA long (Java int) from the input stream, using
+     * headerInfo.isLittleEndian to decide if it should be treated as
+     * little endian or big endian.
+     *
+     * @param in InputStream to read four bytes from
+     * @param headerInfo GIOPHeaderInfo object whose isLittleEndian member will be used to determine how to treat input stream
+     */
+    public static int read_long(java.io.InputStream in, GIOPHeaderInfo headerInfo) {
+        byte [] bytesOfLong = new byte [4];
+        in.read(fragRequestIdBytes, 0, 4);
+        int readLong = 0;
+        
+        if( !headerInfo.isLittleEndian ){
+            readLong += ((short)(bytesOfLong[0] & 0xFF)) << 24;
+            readLong += ((short)(bytesOfLong[1] & 0xFF)) << 16;
+            readLong += ((short)(bytesOfLong[2] & 0xFF)) << 8;
+            readLong += ((short)(bytesOfLong[3] & 0xFF)) << 0;
+        } else{
+            readLong += ((short)(bytesOfLong[3] & 0xFF)) << 24;
+            readLong += ((short)(bytesOfLong[2] & 0xFF)) << 16;
+            readLong += ((short)(bytesOfLong[1] & 0xFF)) << 8;
+            readLong += ((short)(bytesOfLong[0] & 0xFF)) << 0;
+        }
+
+        return readLong;
+    }
+
+
 }
