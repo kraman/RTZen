@@ -2,7 +2,7 @@ module unit
 {
     module test
     {
-        module naming_JacORB
+        module naming
         {
             interface HelloWorld
             {

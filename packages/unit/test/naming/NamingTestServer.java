@@ -1,4 +1,4 @@
-package unit.test.naming_JacORB;
+package unit.test.naming;
 
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.*;
@@ -52,9 +52,9 @@ public class NamingTestServer extends RealtimeThread{
 			//System.out.println ( " [Server] " + ior);
 
 
-			//BufferedWriter bw = new BufferedWriter( new FileWriter ( "ior.txt" ) );
-			//bw.write( ior );
-			//bw.close();
+            //BufferedWriter bw = new BufferedWriter( new FileWriter ( "ior.txt" ) );
+            //bw.write( ior );
+            //bw.close();
             org.omg.CORBA.Object nameServiceObject = orb.resolve_initial_references("NameService");
 
             if (nameServiceObject == null){
@@ -69,23 +69,47 @@ public class NamingTestServer extends RealtimeThread{
             for (int i = 0; i < 3; i++)
             {
                 bindHello(nameService, prefix, i);
-            }/*
-            for (int i = 0; i < 3; i++)
+            }
+
+            HelloWorld hello;
+
+            // Bind a servant with id "1" and make sure it was bound correctly
+            bindHello(nameService, prefix, 1, false, false);
+            hello = HelloWorldHelper.unchecked_narrow( nameService.resolve(nameService.to_name(prefix)) );
+            if(hello.id() == 1){
+                System.out.println("Pass the testRebind() first try");
+            }
+            else{
+                System.out.println("Didn't pass the testRebind() first try");
+            }
+            // Try to bind another servant with id "2" and make sure an AlreadyBound exception is thrown
+            /*
+            try
             {
-                System.out.println("Begin to resolve "+(prefix+i));
-                String naming = prefix+i;
-                org.omg.CORBA.Object helloObject = nameService.resolve(nameService.to_name(naming));
-                System.out.println("The object is "+helloObject);
-                HelloWorld hello = HelloWorldHelper.unchecked_narrow( helloObject );
-                System.out.println(hello);
-                System.out.println(hello.id());
-                if(hello.id() != i){
-                    System.out.println("TestBind()failed!");
-                }
-                else{
-                    System.out.println("TestBind() succeed in id "+i);
-                }
-            }*/
+
+                bindHello(nameService, prefix, 2, false, false);
+
+                System.err.println("The name service should have thrown an AlreadyBound exception but didn't");
+            }
+            catch (AlreadyBound e)
+            {
+                // Exception is supposed to happen; continue
+            }
+*/
+            // Rebind a servant with id "2" and make sure it replaces the old
+            
+            bindHello(nameService, prefix, 2, false, true);
+            hello = HelloWorldHelper.unchecked_narrow( nameService.resolve(nameService.to_name(prefix)) );
+            
+            if(hello.id() == 2){
+                System.out.println("Pass the testRebind() second try");
+            }
+            else{
+                System.out.println("Didn't pass the testRebind() second try");
+            }
+
+            
+            
 
 
             orb.run();
@@ -105,7 +129,6 @@ public class NamingTestServer extends RealtimeThread{
 
         obj = rootPOA.servant_to_reference(impl);
 
-        System.out.println("It's about bind obj to name: "+id+" "+obj);
 
         NameComponent[] name = nameService.to_name(useIdInName ? prefix + id : prefix);
 
