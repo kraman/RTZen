@@ -17,7 +17,7 @@ import edu.uci.ece.zen.orb.transport.*;
  */
 public final class GIOPMessageFactory
 {
-	private static final byte magic[] = { 0x47, 0x49, 0x4f, 0x50 }; // GIOP
+    private static final byte magic[] = { 0x47, 0x49, 0x4f, 0x50 }; // GIOP
     
     public static GIOPMessage parseStream( ORB orb , Transport trans ) throws java.io.IOException{
         ReadBuffer buffer = ReadBuffer.instance();
@@ -45,7 +45,8 @@ public final class GIOPMessageFactory
 
             byte giopMajorVersion = header[4];
             byte giopMinorVersion = header[5];
-            isLittleEndian = header[6] == 1;   //Endian byte (byte 6)
+            isLittleEndian = (header[6] & 0x01) == 1;   //Endian byte (byte 6)
+            
             byte messageType = header[7];      //Message type (byte 7)
             buffer.setEndian( isLittleEndian );
             if( !isLittleEndian ){
@@ -60,9 +61,9 @@ public final class GIOPMessageFactory
                 messageSize += ((short)(header[8] & 0xFF)) << 0;
             }
             nextMessageIsFragment=false;
-            //System.err.println( "----GIOP Message Header ----" );
-            //System.err.write( header , 0 , 12 );
-            //System.err.println( "---- ----" );
+            System.err.println( "----GIOP Message Header ----" );
+            System.err.write( header , 0 , 12 );
+            System.err.println( "---- ----" );
 
             
             buffer.appendFromStream( in , messageSize );
@@ -73,6 +74,8 @@ public final class GIOPMessageFactory
                         case 0:
                             switch( messageType ){
                                 case org.omg.GIOP.MsgType_1_0._Request:
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_0._Reply :
                                     ret = new edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage( orb , buffer );
                                     break;
@@ -88,7 +91,11 @@ public final class GIOPMessageFactory
                         case 1:
                             switch( messageType ){
                                 case org.omg.GIOP.MsgType_1_1._Request:
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.RequestMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_1._Reply :
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.ReplyMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_1._LocateRequest :
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
@@ -98,11 +105,15 @@ public final class GIOPMessageFactory
                                     break;
                             }
                             break;
-                        case 2:
+                        case 2: // No newer version than MsgType_1_1 is generated for RTZen
                         case 3:
                             switch( messageType ){
                                 case org.omg.GIOP.MsgType_1_1._Request:
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_2.RequestMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_1._Reply :
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_2.ReplyMessage( orb , buffer );
+                                    break;
                                 case org.omg.GIOP.MsgType_1_1._LocateRequest :
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
