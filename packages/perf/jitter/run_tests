@@ -216,9 +216,8 @@ function startServer(){
                 $EXEC_CMD&
                 echo $! > $STOPFNAME
                 sleep $SLEEPTIME
-                EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+                EXEC_CMD2="scp $REMNODE:`pwd`/OVMServer_NAT/ior.txt OVMServer_NAT/ior.txt"
                 $EXEC_CMD2&
-
 
 		elif [ $1 -eq 6 ]; then
 # start ZEN server in regular JVM
