@@ -1,13 +1,10 @@
-/* --------------------------------------------------------------------------*
- * $Id: ActiveObjectMapOnlyStrategy.java,v 1.8 2003/09/03 20:44:19 spart Exp $
- *--------------------------------------------------------------------------*/
-
 package edu.uci.ece.zen.poa.mechanism;
 
 
 // ---- OMG specific imports ----
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.portable.InvokeHandler;
+import org.omg.CORBA.IntHolder;
 
 import edu.uci.ece.zen.orb.ResponseHandler;
 import edu.uci.ece.zen.orb.ServerReply;
@@ -47,34 +44,37 @@ public final class ActiveObjectMapOnlyStrategy extends
      */
 
     public void initialize(ServantRetentionStrategy strategy,
-            ThreadPolicyStrategy threadStrategy)
-        throws org.omg.PortableServer.POAPackage.InvalidPolicy {
-        try {
+            ThreadPolicyStrategy threadStrategy, IntHolder exceptionValue)
+   {
+        exceptionValue.value = ActivationStrategy.NoException;
+       if (strategy instanceof RetainStrategy)
+       {
             this.retainStr = (RetainStrategy) strategy;
             this.servant = this.retainStr.getAOM();
             this.threadPolicyStrategy = threadStrategy;
-        } catch (ClassCastException ex) {
-            throw new org.omg.PortableServer.POAPackage.InvalidPolicy();
-        } catch (org.omg.PortableServer.POAPackage.WrongPolicy wrPl) {
-            throw new org.omg.PortableServer.POAPackage.InvalidPolicy();
-        }
+       }
+       else
+       {
+           exceptionValue.value = ActivationStrategy.InvalidPolicyException;
+           return null;
+       }
     }
 
 /**
  *
  * @param servant java.lang.Object
  */
-    public void setInvokeHandler(java.lang.Object servant)throws
-                org.omg.PortableServer.POAPackage.WrongPolicy {
-        throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+    public void setInvokeHandler(java.lang.Object servant, IntHolder exceptionValue)
+    {
+        exceptionValue.value = ActivationStrategy.InvalidPolicyException;
     }
 
-    public boolean validate(int policyName) throws
-                org.omg.PortableServer.POAPackage.WrongPolicy {
+    public boolean validate(int policyName, IntHolder exceptionValue) 
+    {
         if (RequestProcessingStrategy.ACTIVE_OBJECT_MAP == policyName) {
             return true;
         } else {
-            throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+            exceptionValue.value = ActivationStrategy.WrongPolicyException;
         }
     }
 /**
@@ -84,10 +84,9 @@ public final class ActiveObjectMapOnlyStrategy extends
  * @throws org.omg.PortableServer.POAPackage.ObjectNotActive
  * @throws org.omg.PortableServer.POAPackage.WrongPolicy
  */
-    public Object getRequestProcessor(int name) throws
-                org.omg.PortableServer.POAPackage.ObjectNotActive,
-                org.omg.PortableServer.POAPackage.WrongPolicy {
-        throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+    public Object getRequestProcessor(int name, IntHolder exceptionValue) 
+    {
+        exceptionValue.value = ActivationStrategy.WrongPolicyException;
     }
 
 /**
@@ -99,21 +98,24 @@ public final class ActiveObjectMapOnlyStrategy extends
  */
     public int handleRequest(ServerRequest request,
             edu.uci.ece.zen.poa.POA poa,
-            edu.uci.ece.zen.poa.SynchronizedInt requests) {
-        edu.uci.ece.zen.poa.ObjectKey okey = request.getObjectKey();
+            edu.uci.ece.zen.poa.SynchronizedInt requests, IntHolder exceptionValue) {
+
+        exceptionValue.value = POARunnable.NoException;
+        byte[] okey = request.getObjectKey();
         // edu.uci.ece.zen.poa.ObjectID  oid  = new ObjectID(okey.getId());
         ActiveDemuxLoc loc = okey.servDemuxIndex();
 
         if (this.servant == null) {
-            throw new org.omg.CORBA.OBJ_ADAPTER(2, CompletionStatus.COMPLETED_NO);
+            exceptionValue.value = POARunnable.ObjNotExistException;
+            return null;
         }
 
         int count = this.retainStr.activeMap.getGenCount(loc.index);
         POAHashMap map = this.retainStr.activeMap.mapEntry(loc.index);
 
         if (count != loc.count || !map.isActive()) {
-            throw new org.omg.CORBA.OBJECT_NOT_EXIST(2,
-                    CompletionStatus.COMPLETED_NO);
+            exceptionValue.value = POARunnable.ObjNotExistException;
+            return null;
         }
 
         org.omg.PortableServer.Servant myServant = this.retainStr.activeMap.mapEntry(loc.index).getServant();
