@@ -98,7 +98,7 @@ public class Client2 extends RealtimeThread
             {
                 //System.out.print("# ");
                 //System.out.println(server.getMessage(id, array1));
-                server.getMessage(id, array1)
+                server.getMessage(id, array1);
                 
                 NativeTimeStamp.RecordTime(21);
                  
