@@ -27,11 +27,10 @@ public class NamingService
 			org.omg.CORBA.Object obj = poa.servant_to_reference(impl);
 			String ior = orb.object_to_string(obj);
 
-			String fileName =
-				edu.uci.ece.zen.sys.ZenProperties.getProperty(
-					"naming.ior_file.for_writing");
-			File iorFile = new File(fileName);
-			FileOutputStream ostream = new FileOutputStream(iorFile);
+            String fileName =
+                edu.uci.ece.zen.utils.ZenProperties.getGlobalProperty(                                                "naming.ior_file.for_writing", "");
+            File iorFile = new File(fileName);
+            FileOutputStream ostream = new FileOutputStream(iorFile);
 
 			ostream.write(ior.getBytes());
 			ostream.flush();
