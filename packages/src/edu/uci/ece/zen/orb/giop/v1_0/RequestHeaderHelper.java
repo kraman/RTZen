@@ -148,10 +148,20 @@ public class RequestHeaderHelper
 
         ostream.write_ulong(value.request_id);
         ostream.write_boolean(value.response_expected);
-        ostream.write_ulong(value.object_key1.length);
-        ostream.write_octet_array(value.object_key1, 0,value.object_key1.length);
-        ostream.write_string(value.operation1);
-        org.omg.CORBA.OctetSeqHelper.write(ostream,value.requesting_principal1);
+
+        ostream.write_ulong(value.object_key.length());
+        value.object_key.write(ostream);
+        //ostream.write_octet_array(value.object_key1, 0,value.object_key1.length);
+
+        //ostream.write_string(value.operation1);
+        //System.out.println("operation: " + value.operation.toString());
+        ostream.write_ulong(value.operation.length()+1);
+        value.operation.write(ostream);
+        ostream.write_octet((byte)0);
+
+        ostream.write_ulong(value.requesting_principal.length());
+        value.requesting_principal.write(ostream);
+        //org.omg.CORBA.OctetSeqHelper.write(ostream,value.requesting_principal1);
         //ostream.write_ulong(value.requesting_principal_length);
         //ostream.write_octet_array(value.requesting_principal, 0,value.requesting_principal_length);
 

@@ -44,21 +44,21 @@ public final class ReplyHeader implements org.omg.CORBA.portable.IDLEntity
 
     /**
      * Default constructor
-
+*/
     public ReplyHeader()
     { }
-*/
+
     /**
      * Constructor with fields initialization
      * @param service_context service_context struct member
      * @param request_id request_id struct member
      * @param reply_status reply_status struct member
-
-    public ReplyHeader(org.omg.IOP.ServiceContext[] service_context, int request_id, org.omg.GIOP.ReplyStatusType_1_0 reply_status)
+*/
+    public void init(FString service_context, int request_id, int reply_status)
     {
         this.service_context = service_context;
         this.request_id = request_id;
         this.reply_status = reply_status;
     }
-*/
+
 }

@@ -326,9 +326,12 @@ public final class GIOPMessageFactory
 
         switch( req.getGiopVersion() ){
             case 10:
-                org.omg.GIOP.ReplyHeader_1_0Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] ,
-                        req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.NO_EXCEPTION ));
+                edu.uci.ece.zen.orb.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.giop.v1_0.ReplyHeader.instance();
+                rh.init(FString.instance(rh.service_context), req.getRequestId(), org.omg.GIOP.ReplyStatusType_1_0._NO_EXCEPTION);
+                rh.service_context.append(0);
+                edu.uci.ece.zen.orb.giop.v1_0.ReplyHeaderHelper.write(out, rh);
                 break;
+                /*
             case 11:
                 org.omg.GIOP.ReplyHeader_1_1Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] ,
                         req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.NO_EXCEPTION ));
@@ -337,6 +340,9 @@ public final class GIOPMessageFactory
                 org.omg.GIOP.ReplyHeader_1_2Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_2( req.getRequestId() ,
                         org.omg.GIOP.ReplyStatusType_1_2.NO_EXCEPTION , new org.omg.IOP.ServiceContext[0] ));
                 break;
+                */
+            default:
+                if(ZenProperties.devDbg) System.out.println( "giop version not supported" );
         }
         return out;
     }
@@ -358,9 +364,12 @@ public final class GIOPMessageFactory
 
         switch( req.getGiopVersion() ){
             case 10:
-                org.omg.GIOP.ReplyHeader_1_0Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] ,
-                        req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.USER_EXCEPTION ));
+                edu.uci.ece.zen.orb.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.giop.v1_0.ReplyHeader.instance();
+                rh.init(FString.instance(rh.service_context), req.getRequestId(), org.omg.GIOP.ReplyStatusType_1_0._USER_EXCEPTION);
+                rh.service_context.append(0);
+                edu.uci.ece.zen.orb.giop.v1_0.ReplyHeaderHelper.write(out, rh);
                 break;
+                /*
             case 11:
                 org.omg.GIOP.ReplyHeader_1_1Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_0( new org.omg.IOP.ServiceContext[0] ,
                         req.getRequestId() , org.omg.GIOP.ReplyStatusType_1_0.USER_EXCEPTION ));
@@ -369,6 +378,9 @@ public final class GIOPMessageFactory
                 org.omg.GIOP.ReplyHeader_1_2Helper.write( out ,  new org.omg.GIOP.ReplyHeader_1_2( req.getRequestId() ,
                         org.omg.GIOP.ReplyStatusType_1_2.USER_EXCEPTION , new org.omg.IOP.ServiceContext[0] ));
                 break;
+                */
+             default:
+                if(ZenProperties.devDbg) System.out.println( "giop version not supported" );
         }
         return out;
     }

@@ -41,9 +41,9 @@ public class ReplyHeaderHelper
     {
         //ServiceContextListHelper.write(ostream,value.service_context);
 
-        //value.service_context.write(ostream);
-        System.out.println("writing empty service context");
-        ostream.write_ulong(0);
+        value.service_context.write(ostream);
+        //System.out.println("writing empty service context");
+        //ostream.write_ulong(0);
 
         ostream.write_ulong(value.request_id);
         ostream.write_ulong(value.reply_status);
