@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: IdNoHintStrategy.java,v 1.3 2004/03/11 19:31:37 nshankar Exp $
+ * $Id: IdNoHintStrategy.java,v 1.7 2003/09/03 20:44:19 spart Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
@@ -18,7 +18,7 @@ final public class IdNoHintStrategy {
      * @param poaIndex byte[]
      * @return ObjectKey representation
      */
-    public static byte[]  create(char prefix,
+    public static ObjectKey create(char prefix,
                                    byte[] objectId,
                                    byte[] time,
                                    byte[] poaIndex) {
@@ -42,19 +42,19 @@ final public class IdNoHintStrategy {
 
         // copy the Object Id
         System.arraycopy(objectId, 0, temp, start, objectId.length);
-        return temp;
+        return new ObjectKey(temp);
     }
 
     // For a persistent poa: No Hints present
     /**
      * Persistent Strategy with no hints
      * @param prefix char
-     * @param poaPath POAPath Name
+     * @param poaPath POAPath Name 
      * @param objectId byte[]
      * @param poaIndex byte[]
      * @return ObjectKey
      */
-    public static byte[] create(char prefix,
+    public static ObjectKey create(char prefix,
                                    String poaPath,
                                    byte[] time,
                                    byte[] objectId,
@@ -90,7 +90,7 @@ final public class IdNoHintStrategy {
         // copy the Object Id
         System.arraycopy(objectId, 0, temp, start, objectId.length);
 
-        return temp;
+        return new ObjectKey(temp);
 
     }
 

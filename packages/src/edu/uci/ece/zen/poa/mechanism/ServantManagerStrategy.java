@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: ServantManagerStrategy.java,v 1.1 2003/11/26 22:29:02 nshankar Exp $
+ * $Id: ServantManagerStrategy.java,v 1.2 2003/06/10 03:28:40 kraman Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 

@@ -26,8 +26,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private int processingState = POA.ACTIVE;
     private AdapterActivator adapterActivator;
     
-    private FString poaName;
-    private FString poaPath;
+    protected FString poaName;
+    protected FString poaPath;
 
     /* Mutexes POA and varable specific to the create and destroy ops */
     private Object createDestroyPOAMutex;
@@ -186,24 +186,14 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             e.printStackTrace();
         }
         switch( r.exception ){
-            case -1: //no exception
+            case POARunnable.NoException:
                 break;
-            //exceptions from validateProcessingState
-            case 1:
-                throw new org.omg.CORBA.TRANSIENT("Destruction of the POA in progress", 1, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
-            case 2:
-                throw new org.omg.CORBA.OBJ_ADAPTER("POA Manager associated with the POA is Inactive", 1, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
-            //exceptions from POAManager.checkPOAManagerState
-            case 3: //holding state
+            case POARunnable.TransientException:
                 throw new org.omg.CORBA.TRANSIENT(1, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
-            case 4: //discarding state
-                throw new org.omg.CORBA.TRANSIENT(1, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
-            case 5:
-                 throw new org.omg.CORBA.OBJ_ADAPTER("POA Manager associated with the POA is Inactive", 1, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
-            case 6: //this.lifespanStrategy.validate
+            case POARunnable.ObjAdapterException:
+                throw new org.omg.CORBA.OBJ_ADAPTER(1, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
+            case POARunnable.ObjNotExistException:
                 throw new org.omg.CORBA.OBJECT_NOT_EXIST(2, org.omg.CORBA.CompletionStatus.COMPLETED_NO); 
-            case 7: //other exceptions
-                throw new org.omg.CORBA.TRANSIENT("Request cancelled:Executor shut down", 3, CompletionStatus.COMPLETED_NO);
         }
     }
 
@@ -221,11 +211,11 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             e.printStackTrace();
         }
         switch( r.exception ){
-            case -1: //no exception
+            case POARunnable.NoException:
                 break;
-            case 1:
+            case POARunnable.ServantNotActiveException:
                 throw new ServantNotActive();
-            case 2:
+            case POARunnable.WrongPolicyException:
                 throw new WrongPolicy();
         }
         return (org.omg.CORBA.Object) r.retVal;

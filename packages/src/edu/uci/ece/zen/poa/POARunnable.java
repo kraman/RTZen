@@ -25,6 +25,14 @@ public class POARunnable implements Runnable{
     public static final int CREATE_REFERENCE=17;
     public static final int CREATE_REFERENCE_WITH_ID=18;
     public static final int GET_POLICY_LIST=19;
+
+    public static final int NoException = 0;
+    public static final int InvalidPolicyException = 1;
+    public static final int TransientException = 2;
+    public static final int ObjAdapterException = 3;
+    public static final int ObjNotExistException = 4;
+    public static final int ServantNotActiveException = 5;
+    public static final int WrongPolicyException = 6;
     
     private int operation;
     private Vector args;

@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: NonRetainStrategy.java,v 1.1 2003/11/26 22:28:55 nshankar Exp $
+ * $Id: NonRetainStrategy.java,v 1.5 2003/08/05 23:37:28 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;
@@ -29,7 +29,7 @@ public final class NonRetainStrategy extends
     */
 
     public org.omg.PortableServer.Servant getServant(
-            byte[] ok)
+            edu.uci.ece.zen.poa.ObjectID ok)
         throws org.omg.PortableServer.POAPackage.ObjectNotActive,
                 org.omg.PortableServer.POAPackage.WrongPolicy {
         throw new org.omg.PortableServer.POAPackage.WrongPolicy();
@@ -42,7 +42,7 @@ public final class NonRetainStrategy extends
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      * @throws org.omg.PortableServer.POAPackage.ServantNotActive
      */
-    public byte[] getObjectID(
+    public edu.uci.ece.zen.poa.ObjectID getObjectID(
             org.omg.PortableServer.Servant servant)
         throws org.omg.PortableServer.POAPackage.WrongPolicy,
                 org.omg.PortableServer.POAPackage.ServantNotActive {
@@ -55,7 +55,7 @@ public final class NonRetainStrategy extends
     * @param servant
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public void add(byte[] ok,
+    public void add(edu.uci.ece.zen.poa.ObjectID ok,
             edu.uci.ece.zen.poa.POAHashMap servant)
         throws org.omg.PortableServer.POAPackage.WrongPolicy {
         throw new org.omg.PortableServer.POAPackage.WrongPolicy();
@@ -77,7 +77,7 @@ public final class NonRetainStrategy extends
     * @return boolean
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public boolean objectIDPresent(byte[] ok) throws
+    public boolean objectIDPresent(edu.uci.ece.zen.poa.ObjectID ok) throws
                 org.omg.PortableServer.POAPackage.WrongPolicy {
         throw new org.omg.PortableServer.POAPackage.WrongPolicy();
     }
@@ -89,7 +89,7 @@ public final class NonRetainStrategy extends
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
     public edu.uci.ece.zen.poa.POAHashMap getHashMap
-            (byte[]  ok)
+            (edu.uci.ece.zen.poa.ObjectID ok)
         throws org.omg.PortableServer.POAPackage.WrongPolicy {
         throw new org.omg.PortableServer.POAPackage.WrongPolicy();
     }
@@ -111,7 +111,7 @@ public final class NonRetainStrategy extends
     * @return boolean
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public boolean unbindDemuxIndex(byte[]oid)
+    public boolean unbindDemuxIndex(edu.uci.ece.zen.poa.ObjectID oid)
         throws org.omg.PortableServer.POAPackage.WrongPolicy {
         throw new org.omg.PortableServer.POAPackage.WrongPolicy();
     }
@@ -134,7 +134,7 @@ public final class NonRetainStrategy extends
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
 
-    public int find(byte[] id) throws
+    public int find(edu.uci.ece.zen.poa.ObjectID id) throws
                 org.omg.PortableServer.POAPackage.WrongPolicy {
         throw new org.omg.PortableServer.POAPackage.WrongPolicy();
     }

@@ -1,6 +1,7 @@
 package edu.uci.ece.zen.poa.mechanism;
 
-import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.*;
+import edu.uci.ece.zen.poa.*;
 import org.omg.CORBA.Policy;
 import org.omg.CORBA.IntHolder;
 
@@ -13,13 +14,9 @@ import org.omg.CORBA.IntHolder;
  */
 public abstract class ActivationStrategy {
 
-    public static final int NoException = 0;
-    public static final int InvalidPolicyException = 1;
-
     // --- Type Values ---
     public static int IMPLICIT_ACTIVATION = 0;
     public static int EXPLICIT_ACTIVATION = 1;
-
 
     /**
      *
@@ -32,28 +29,27 @@ public abstract class ActivationStrategy {
              ServantRetentionStrategy retentionStrategy , IntHolder exceptionValue ){
 
         exceptionValue.value = ActivationStrategy.NoException;
-
         if (PolicyUtils.useImplicitActivationPolicy(policy)) {
             // Check if the other policies are Retain and System Id
             retentionStrategy.validate(ServantRetentionStrategy.RETAIN,exceptionValue );
-
             if( exceptionValue.value != ServantRetentionStrategy.NoException ){
-                exceptionValue.value = ActivationStrategy.InvalidPolicyException;
+                exceptionValue.value = ServantRetentionStrategy.InvalidPolicyException;
                 return null;
             }
 
-            assignmentStrategy.validate(IdAssignmentStrategy.SYSTEM_ID);
+            assignmentStrategy.validate(IdAssignmentStrategy.SYSTEM_ID,exceptionValue);
             if( exceptionValue.value != IdAssignmentStrategy.NoException ){
-                exceptionValue.value = ActivationStrategy.InvalidPolicyException;
+                exceptionValue.value = IdAssignmentStrategy.InvalidPolicyException;
                 return null;
             }
 
-            return new ImplicitActivationStrategy();
+//            return new ImplicitActivationStrategy();
         }else{
-            return new ExplicitActivationStrategy();
+//            return new ExplicitActivationStrategy();
         }
+        return null;
     }
 
-    public abstract void validate(int name , IntHolder exceptionValue);
+    public abstract boolean validate(int name);
 }
 

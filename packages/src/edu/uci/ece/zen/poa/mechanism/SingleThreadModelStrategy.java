@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: SingleThreadModelStrategy.java,v 1.1 2003/11/26 22:29:03 nshankar Exp $
+ * $Id: SingleThreadModelStrategy.java,v 1.7 2003/08/05 23:37:28 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;

@@ -1,10 +1,11 @@
 /* --------------------------------------------------------------------------*
- * $Id: RetainStrategy.java,v 1.1 2003/11/26 22:28:59 nshankar Exp $
+ * $Id: RetainStrategy.java,v 1.8 2003/09/03 20:44:19 spart Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;
 
-import edu.uci.ece.zen.poa.*;
+
+import edu.uci.ece.zen.poa.ActiveDemuxServantTable;
 
 
 public final class RetainStrategy extends
@@ -15,9 +16,11 @@ public final class RetainStrategy extends
      */
     public void initialize(IdUniquenessStrategy uniqueId) {
         if (uniqueId.validate(IdUniquenessStrategy.UNIQUE_ID)) {
-            this.AOM = (ActiveObjectMap) edu.uci.ece.zen.poa.POAPolicyFactory.createPolicy(edu.uci.ece.zen.poa.ActiveObjectMap.DUAL_MAP);
+            this.AOM = (edu.uci.ece.zen.poa.ActiveObjectMap)
+                    edu.uci.ece.zen.poa.POAPolicyFactory.createPolicy(edu.uci.ece.zen.poa.ActiveObjectMap.DUAL_MAP);
         } else {
-            this.AOM = (ActiveObjectMap) edu.uci.ece.zen.poa.POAPolicyFactory.createPolicy(edu.uci.ece.zen.poa.ActiveObjectMap.SINGLE_MAP);
+            this.AOM = (edu.uci.ece.zen.poa.ActiveObjectMap)
+                    edu.uci.ece.zen.poa.POAPolicyFactory.createPolicy(edu.uci.ece.zen.poa.ActiveObjectMap.SINGLE_MAP);
         }
         // Active Demux Map
         this.activeMap = new ActiveDemuxServantTable();
@@ -42,7 +45,7 @@ public final class RetainStrategy extends
     * @throws org.omg.PortableServer.POAPackage.ObjectNotActive
     */
     public org.omg.PortableServer.Servant getServant(
-            byte[] ok)
+            edu.uci.ece.zen.poa.ObjectID ok)
         throws org.omg.PortableServer.POAPackage.ObjectNotActive,
                 org.omg.PortableServer.POAPackage.WrongPolicy {
 
@@ -76,9 +79,12 @@ public final class RetainStrategy extends
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     * @throws org.omg.PortableServer.POAPackage.ServantNotActive
     */
-    public int getObjectID( org.omg.PortableServer.Servant servant ,  FString oid_out )
-            throws org.omg.PortableServer.POAPackage.WrongPolicy, org.omg.PortableServer.POAPackage.ServantNotActive 
-    {
+
+    public edu.uci.ece.zen.poa.ObjectID getObjectID(
+            org.omg.PortableServer.Servant servant)
+        throws org.omg.PortableServer.POAPackage.WrongPolicy,
+                org.omg.PortableServer.POAPackage.ServantNotActive {
+
         try {
             if (this.AOM.servantPresent(servant)) {
                 return this.AOM.getObjectID(servant);
@@ -92,7 +98,7 @@ public final class RetainStrategy extends
     * @param ok ObjectID
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public void add(byte[] ok,
+    public void add(edu.uci.ece.zen.poa.ObjectID ok,
             edu.uci.ece.zen.poa.POAHashMap map)
         throws org.omg.PortableServer.POAPackage.WrongPolicy {
         this.AOM.add(ok, map);
@@ -115,7 +121,7 @@ public final class RetainStrategy extends
     * @return boolean
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public boolean objectIDPresent(byte[] ok) throws
+    public boolean objectIDPresent(edu.uci.ece.zen.poa.ObjectID ok) throws
                 org.omg.PortableServer.POAPackage.WrongPolicy {
         return this.AOM.objectIDPresent(ok);
     }
@@ -128,7 +134,7 @@ public final class RetainStrategy extends
      * this method is invoked on the Non Retain Strategy.
      */
 
-    public void deactivateObjectID(byte[] ok) throws
+    public void deactivateObjectID(edu.uci.ece.zen.poa.ObjectID ok) throws
                 org.omg.PortableServer.POAPackage.WrongPolicy {
         edu.uci.ece.zen.poa.POAHashMap map = this.AOM.getHashMap(ok);
 
@@ -149,7 +155,7 @@ public final class RetainStrategy extends
      * @exception org.omg.PortableServer.POAPackage.WrongPolicy is thrown if
      * invoked with the Non Retain Policy.
      */
-    public void destroyObjectID(byte[] ok) throws
+    public void destroyObjectID(edu.uci.ece.zen.poa.ObjectID ok) throws
                 org.omg.PortableServer.POAPackage.WrongPolicy {
         this.AOM.destroyObjectID(ok);
     }
@@ -161,7 +167,7 @@ public final class RetainStrategy extends
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
     public edu.uci.ece.zen.poa.POAHashMap getHashMap(
-            byte[] ok) {
+            edu.uci.ece.zen.poa.ObjectID ok) {
         return this.AOM.getHashMap(ok);
     }
 
@@ -183,7 +189,7 @@ public final class RetainStrategy extends
     * @return boolean true if successful else false
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public boolean unbindDemuxIndex(byte[] oid)
+    public boolean unbindDemuxIndex(edu.uci.ece.zen.poa.ObjectID oid)
         throws org.omg.PortableServer.POAPackage.WrongPolicy {
         return this.activeMap.unbind(oid);
     }
@@ -205,7 +211,7 @@ public final class RetainStrategy extends
     * @return int
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public int find(byte[] id) throws
+    public int find(edu.uci.ece.zen.poa.ObjectID id) throws
                 org.omg.PortableServer.POAPackage.WrongPolicy {
         return activeMap.find(id);
     }

@@ -1,9 +1,7 @@
-/* --------------------------------------------------------------------------*
- * $Id: RequestProcessingStrategy.java,v 1.2 2004/03/11 19:31:37 nshankar Exp $
- *--------------------------------------------------------------------------*/
-
 package edu.uci.ece.zen.poa.mechanism;
 
+import edu.uci.ece.zen.poa.*;
+import edu.uci.ece.zen.utils.*;
 
 /**
  * The class <code>RequestProcessingStrategy</code> takes care of creating
@@ -12,47 +10,39 @@ package edu.uci.ece.zen.poa.mechanism;
  * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna</a>
  * @version 1.0
  */
-
-
-
-import edu.uci.ece.zen.orb.ServerRequest;
-import edu.uci.ece.zen.poa.POAPolicyFactory;
-import edu.uci.ece.zen.poa.Util;
-import edu.uci.ece.zen.sys.ZenProperties;
-
-
 public abstract class RequestProcessingStrategy {
+
+    // --- Type constants ---
+    public static int DEFAULT_SERVANT = 0;
+    public static int SERVANT_MANAGER = 1;
+    public static int ACTIVE_OBJECT_MAP = 2;
+    public static int SERVANT_LOCATOR = 3;
+    public static int SERVANT_ACTIVATOR = 4;
 
     /**
      * <code> init <code> creates the appropriate request processing strategy
      * based on the policies specified in the POA.
-     * @param policy specifies the policy of the POA for which the strategy is
-     *                constructed.
-     * @param uniquenessStrategy is used by the RequestProcessingStrategy for
-     *                             validation.
-     * @param threadStrategy specifies if the POA is Suinglethreaded
-     *                              or not.
-     * @param retentionStrategy is used by the RequestProcessingStrategy for
-     *                             validation.
+     * @param policy specifies the policy of the POA for which the strategy is constructed.
+     * @param uniquenessStrategy is used by the RequestProcessingStrategy for validation.
+     * @param threadStrategy specifies if the POA is Suinglethreaded or not.
+     * @param retentionStrategy is used by the RequestProcessingStrategy for validation.
      * @exception org.omg.PortableServer.POAPackage.InvalidPolicy
      * If the policies used to create this POA are in conflict.
      */
-    public static RequestProcessingStrategy init(
-            org.omg.CORBA.Policy[] policy,
-            ServantRetentionStrategy retentionStrategy,
-            IdUniquenessStrategy uniquenessStrategy,
-            ThreadPolicyStrategy threadStrategy)
-        throws org.omg.PortableServer.POAPackage.InvalidPolicy {
+    public static RequestProcessingStrategy init( org.omg.CORBA.Policy[] policy, ServantRetentionStrategy retentionStrategy,
+            IdUniquenessStrategy uniquenessStrategy, ThreadPolicyStrategy threadStrategy , org.omg.CORBA.IntHolder ih ){
 
-        /*if (Util.useServantManagerPolicy(policy)) {
+        if (PolicyUtils.useServantManagerPolicy(policy)) {
             try {
-                retentionStrategy.validate(retentionStrategy.RETAIN);
-                ServantActivatorStrategy activator = (ServantActivatorStrategy)
+                retentionStrategy.validate( retentionStrategy.RETAIN , ih );
+                if( ih.value != POARunnable.NoException ){ return; }
+
+                ServantActivatorStrategy activator = Reatin(ServantActivatorStrategy)
                         POAPolicyFactory.createPolicy(ZenProperties.getProperty(RequestProcessingStrategy.servantActivatorPath));
 
                 activator.initialize(retentionStrategy, threadStrategy,
                         uniquenessStrategy);
-                return activator;
+                return activator;    
             } catch (Exception ex) {
                 try {
                     retentionStrategy.validate(retentionStrategy.NON_RETAIN);
@@ -81,7 +71,7 @@ public abstract class RequestProcessingStrategy {
             } catch (Exception ex2) {
                 throw new org.omg.PortableServer.POAPackage.InvalidPolicy();
             }
-        } */
+        }
 
         ActiveObjectMapOnlyStrategy aom = (ActiveObjectMapOnlyStrategy)
                 POAPolicyFactory.createPolicy(ZenProperties.getProperty
@@ -100,39 +90,7 @@ public abstract class RequestProcessingStrategy {
      * wrong handler is passed as an argument. E.g if a Servant is passed
      * when an Active Object Map is expected.
      */
-
-    
-    public abstract void setInvokeHandler(java.lang.Object invokeHandler) throws
-                org.omg.PortableServer.POAPackage.WrongPolicy;
-
-    /**
-     * <code> getRequestProcessor </code> returns the handler that would be used
-     * by the POA to service the request and make the upcall on the servant.
-     * @param type specifies the identity of the request processor e.g AOM,
-     * Default Servant, Servant Locator
-     * @exception org.omg.POAPackage.ObjectNotActive is thrown if the specified
-     * handler is not set in the strategy.
-     * @exception org.omg.POAPackage.WrongPolicy is thrown if there is a
-     * mismatch in the type of handler sepcified in the argument and the strategy.
-     * This method is also used for the purpose of validation in the methods of
-     * the POA for which the appropriate exceptions are thrown. 
-     */
-
-    public abstract java.lang.Object getRequestProcessor(int type) throws
-                org.omg.PortableServer.POAPackage.ObjectNotActive,
-                org.omg.PortableServer.POAPackage.WrongPolicy;
-
-    /**
-     * <code> validate </code> is used for the purpose of validation. Checks if
-     * the strategy is of the  same type as specified in the Argument.
-     * @param type specifies the type of the strategy for which the check is
-     * performed.
-     * @exception org.omg.PortableServer.POAPackage.WrongPolicy is thrown in
-     * case the validation fails.
-     */
-
-    public abstract boolean validate(int type) throws
-                org.omg.PortableServer.POAPackage.WrongPolicy;
+    public abstract void setInvokeHandler(java.lang.Object invokeHandler , org.omg.CORBA.IntHolder ih );
  
     /**
      * <code> handleRequest </code> performs the upcall on the servant,
@@ -145,22 +103,6 @@ public abstract class RequestProcessingStrategy {
      * @return signifies the successful completion of request/internal errors,
      Forward Request Exceptions
      */
-
-    public abstract int handleRequest(ServerRequest request,
-            edu.uci.ece.zen.poa.POA poa,
-            edu.uci.ece.zen.poa.SynchronizedInt requests); 
-
-    // --- Classpaths for Loading Strategies ---
-    protected static final String aomPath = "poa.aomOnly";
-    protected static final String servantLocatorPath = "poa.servantLocator";
-    protected static final String servantActivatorPath = "poa.servantActivator";
-    protected static final String defaultServantPath = "poa.defaultServant";
-
-    // --- Type constants ---
-    public static int DEFAULT_SERVANT = 0;
-    public static int SERVANT_MANAGER = 1;
-    public static int ACTIVE_OBJECT_MAP = 2;
-    public static int SERVANT_LOCATOR = 3;
-    public static int SERVANT_ACTIVATOR = 4;
+    public abstract int handleRequest(ServerRequest request, edu.uci.ece.zen.poa.POA poa, edu.uci.ece.zen.poa.SynchronizedInt requests); 
 }
 

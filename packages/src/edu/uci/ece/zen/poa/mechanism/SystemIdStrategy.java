@@ -1,7 +1,11 @@
+/* --------------------------------------------------------------------------*
+ * $Id: SystemIdStrategy.java,v 1.5 2003/08/05 23:37:28 nshankar Exp $
+ *--------------------------------------------------------------------------*/
+
 package edu.uci.ece.zen.poa.mechanism;
 
+
 public final class SystemIdStrategy extends IdAssignmentStrategy {
-    private int id;
 
     /**
      * Create System Id Strategy Strat key genration from 0
@@ -14,13 +18,11 @@ public final class SystemIdStrategy extends IdAssignmentStrategy {
     * Obtain new system id.
     * @return byte[]
     */
-    public void nextId( FString id_out ){
-        ++id;
+    public byte[] nextId()
+        throws org.omg.PortableServer.POAPackage.WrongPolicy {
 
-        id_out.append((byte) ((value >>> 24) & 0xFF) );
-        id_out.append((byte) ((value >>> 16) & 0xFF) );
-        id_out.append((byte) ((value >>> 8) & 0xFF) );
-        id_out.append((byte) (value & 0xFF) );
+        // write the integer into a byte array!
+        return writeInt(++id);
     }
     
    /**
@@ -29,15 +31,22 @@ public final class SystemIdStrategy extends IdAssignmentStrategy {
     * @return boolean
     */
     public boolean isPresent(int policyName) {
-        return IdAssignmentStrategy.SYSTEM_ID == policyName;
+        if (IdAssignmentStrategy.SYSTEM_ID == policyName) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
    /**
     * validate policy type
     * @param policy policy-type
     */
-    public boolean validate(int policy){
-        return isPresent(policy);
+    public void validate(int policy)
+        throws org.omg.PortableServer.POAPackage.WrongPolicy {
+        if (!isPresent(policy)) {
+            throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+        }
     }
 
     /**
@@ -45,7 +54,29 @@ public final class SystemIdStrategy extends IdAssignmentStrategy {
      * @param id
      * @return boolean true if yes, else false
      */
-   public boolean verifyID( FString id_in ) {
-       return true;
-   }
+   public boolean verifyID(byte[] id) {
+        // The only possible way of identification is if this id
+        // corresponds to an integer else it could not be generated
+        // by the system
+        try {
+            Integer.parseInt(new String(id));
+            return true;
+        } catch (NumberFormatException nux) {}
+        return false;
+    }
+
+    private byte[] writeInt(int value) {
+
+        byte[] buffer = new byte[4];
+        int nextFreeByte = 0;
+
+        buffer[nextFreeByte++] = (byte) ((value >>> 24) & 0xFF);
+        buffer[nextFreeByte++] = (byte) ((value >>> 16) & 0xFF);
+        buffer[nextFreeByte++] = (byte) ((value >>> 8) & 0xFF);
+        buffer[nextFreeByte++] = (byte) (value & 0xFF);
+
+        return buffer;
+    }
+
+    private int id;
 }

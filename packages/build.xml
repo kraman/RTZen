@@ -65,7 +65,7 @@
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TracerAspect.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TypeCodeAspect.java"/>
-            <exclude name="src/edu/uci/ece/zen/poa/**"/>
+            <include name="src/edu/uci/ece/zen/poa/**"/>
 
         <!--*** classes that jRate cant compile ***-->
             <exclude name="src/edu/oswego/cs/dl/util/concurrent/VetoableChangeMulticaster.java"/>
@@ -123,7 +123,7 @@
             <patternset refid="sources"/>
             <patternset>
                 <include name="src/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java"/>
-                <exclude name="src/javax/**"/>
+                <include name="src/javax/**"/>
             </patternset>
             
             <classpath>

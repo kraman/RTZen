@@ -15,6 +15,10 @@ public class FString{
         this.data = (byte[]) MemoryArea.getMemoryArea(this).newArray( byte.class , maxSize );
     }
 
+    public void append( byte[] data ){
+        append( data , 0 , data.length );
+    }
+
     public void append( byte[] data , int offset , int length ){
         if( currentSize + length < maxSize ){
             //KLUDGE: ERROR here

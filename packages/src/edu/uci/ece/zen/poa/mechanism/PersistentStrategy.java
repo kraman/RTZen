@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: PersistentStrategy.java,v 1.2 2004/02/25 06:12:46 nshankar Exp $
+ * $Id: PersistentStrategy.java,v 1.5 2003/08/05 23:37:28 nshankar Exp $
  *--------------------------------------------------------------------------*/
 
 
@@ -7,7 +7,6 @@ package edu.uci.ece.zen.poa.mechanism;
 
 
 import edu.uci.ece.zen.poa.ActiveDemuxLoc;
-import edu.uci.ece.zen.poa.ActiveDemuxLocOperations;
 
 
 public final class PersistentStrategy extends LifespanStrategy {
@@ -63,10 +62,10 @@ public final class PersistentStrategy extends LifespanStrategy {
     public edu.uci.ece.zen.poa.ObjectKey create(String path_name,
                                                 byte[] oid,
                                                 ActiveDemuxLoc poaLoc,
-                                                int index, int count) {
+                                                ActiveDemuxLoc servLoc) {
 
         return IdHintStrategy.create(PersistentStrategy.prefix, path_name,
-                this.timeStamp, oid, poaLoc.marshall(), ActiveDemuxLocOperations.marshall(index,count));
+                this.timeStamp, oid, poaLoc.marshall(), servLoc.marshall());
 
     }
 

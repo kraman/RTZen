@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: DefaultServantStrategy.java,v 1.2 2004/02/25 06:12:46 nshankar Exp $
+ * $Id: DefaultServantStrategy.java,v 1.8 2004/02/17 22:51:00 pmartini Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
@@ -23,11 +23,10 @@ public class DefaultServantStrategy extends
     public void initialize(ServantRetentionStrategy retain,
             ThreadPolicyStrategy threadStrategy) throws
                 org.omg.PortableServer.POAPackage.InvalidPolicy {
-        if (retain instanceof ServantRetentionStrategy) {
-        if(retain instanceof RetainStrategy)
-            this.retentionStrategy = (RetainStrategy) retain;
-        else this.retentionStrategy = (NonRetainStrategy) retain;
-        }
+            if(retain instanceof RetainStrategy)
+                this.retentionStrategy = (RetainStrategy) retain;
+            else
+                this.retentionStrategy = (NonRetainStrategy)retain;
         this.threadPolicyStrategy = threadStrategy;
     }
 
@@ -101,7 +100,7 @@ public class DefaultServantStrategy extends
         }
 
         edu.uci.ece.zen.poa.ObjectKey ok = request.getObjectKey();
-        byte[] oid = ok.getId();
+        edu.uci.ece.zen.poa.ObjectID  oid = new edu.uci.ece.zen.poa.ObjectID(ok.getId());
 
         // handling as if non retain is in place
         if (this.servant == null) {
@@ -168,7 +167,7 @@ public class DefaultServantStrategy extends
         throws org.omg.PortableServer.POAPackage.WrongPolicy,
                 org.omg.PortableServer.POAPackage.ObjectNotActive {
         edu.uci.ece.zen.poa.ObjectKey ok = request.getObjectKey();
-        byte[] oid = ok.getId();
+        edu.uci.ece.zen.poa.ObjectID  oid = new edu.uci.ece.zen.poa.ObjectID(ok.getId());
 
         edu.uci.ece.zen.poa.POAHashMap okey = this.retentionStrategy.getHashMap(oid);
 

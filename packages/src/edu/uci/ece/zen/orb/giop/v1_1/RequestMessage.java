@@ -33,7 +33,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
     public int getRequestId() { return header.request_id; }
 
     public org.omg.IOP.ServiceContext[] getServiceContexts() { return header.service_context; }
-    public byte[] getObjectKey(){ return header.object_key; }
+    public void getObjectKey( FString id_out ){ id_out.reset(); id_out.append( header.object_key ); }
     public String getOperation(){ return header.operation; }
     public int getResponseExpected(){ return header.response_expected?1:0; }
 

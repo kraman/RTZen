@@ -1,8 +1,7 @@
-/* --------------------------------------------------------------------------*
- * $Id: ServantRetentionStrategy.java,v 1.2 2004/03/11 19:31:37 nshankar Exp $
- *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
+import edu.uci.ece.zen.utils.*;
+import edu.uci.ece.zen.poa.*;
 
 /**
  * The class <code>ServantRetentionStrategy</code> creates a POA with  
@@ -11,28 +10,12 @@ package edu.uci.ece.zen.poa.mechanism;
  * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna</a>
  * @version 1.0
  */
-
-
-
-import edu.uci.ece.zen.poa.POAPolicyFactory;
-import edu.uci.ece.zen.poa.Util;
-import edu.uci.ece.zen.sys.ZenProperties;
-
-
 public abstract class ServantRetentionStrategy {
 
-    // --- Classpaths for the Strategies ---
-    protected static final String retain = "poa.retain";
-    protected static final String nonRetain = "poa.nonRetain";
+    // --- Strategy Types ----
+    public static final int RETAIN = 0;
+    public static final int NON_RETAIN = 1;
 
-    // --- Initialization Code ----
-
-    /*static {
-        ServantRetentionStrategy.nonRetainStrategy = (NonRetainStrategy)
-                POAPolicyFactory.createPolicy(ZenProperties.getProperty(ServantRetentionStrategy.nonRetain));
-
-    }*/
-    
     /**
      * <code> init </code> builds the appropriate RetentionStrategy based on the
      * Policy of the POA.
@@ -41,20 +24,15 @@ public abstract class ServantRetentionStrategy {
      * @exception org.omg.PoratableServer.POAPackage.InvalidPolicy if the
      * policies of the POA are in conflict.
      */
-
-    public static ServantRetentionStrategy init(
-            org.omg.CORBA.Policy[] policy,
-            IdUniquenessStrategy uniquenessStrategy) {
-       // if (Util.useRetainPolicy(policy)) {
-
-            RetainStrategy retain;
-
-            retain = (RetainStrategy) POAPolicyFactory.createPolicy(ZenProperties.getProperty(ServantRetentionStrategy.retain));
-            retain.initialize(uniquenessStrategy);
-            return retain;
-        //} else {
-           // return ServantRetentionStrategy.nonRetainStrategy;
-        //}
+    public static ServantRetentionStrategy init( org.omg.CORBA.Policy[] policy, IdUniquenessStrategy uniquenessStrategy, org.omg.CORBA.IntHolder ih ) {
+        if (PolicyUtils.useRetainPolicy(policy)) {
+//            RetainStrategy retain = new RetainStrategy();
+//            retain.initialize(uniquenessStrategy , ih );
+//            return retain;
+        } else {
+//            return new NonRetainStrategy();
+        }
+        return null;
     }
 
     /**
@@ -67,13 +45,7 @@ public abstract class ServantRetentionStrategy {
      * @exception org.omg.PortableServer.POAPackage.WrongPolicy is thrown by the
      * Non Retain Strategy if this operation is invoke on it.
      */
-
-    
-
-    public abstract org.omg.PortableServer.Servant getServant(
-            byte[] ok)
-        throws org.omg.PortableServer.POAPackage.ObjectNotActive,
-                org.omg.PortableServer.POAPackage.WrongPolicy;
+    public abstract org.omg.PortableServer.Servant getServant( FString ok , org.omg.CORBA.IntHolder ih );
 
     /**
      * <code> getObjectID </code> returns the ObjectID associated with the
@@ -84,15 +56,7 @@ public abstract class ServantRetentionStrategy {
      * @exception org.omg.PortableServer.POAPackage.WrongPolicy if invoked with
      * the Non Retain Strategy.
      */
-
-    
-
-    public abstract byte[] getObjectID(
-
-            org.omg.PortableServer.Servant servant)
-
-        throws org.omg.PortableServer.POAPackage.WrongPolicy,
-                org.omg.PortableServer.POAPackage.ServantNotActive;
+    public abstract void getObjectID( org.omg.PortableServer.Servant servant , FString oid_out , org.omg.CORBA.IntHolder ih );
 
     /**
      * <code> add </code> adds the association between the ObjectID and the
@@ -102,9 +66,7 @@ public abstract class ServantRetentionStrategy {
      * @exception org.omg.PortableServer.POAPackage.WrongPolicy is thrown if
      * invoked on the Non Retain Strategy.
      */
-    public abstract void add(byte[] ok,
-            edu.uci.ece.zen.poa.POAHashMap map)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy;
+    public abstract void add( FString ok, edu.uci.ece.zen.poa.POAHashMap map );
 
     /**
      * <code> validate </code> checks if the strategy associated is the same as
@@ -114,8 +76,7 @@ public abstract class ServantRetentionStrategy {
      * @exception  org.omg.PortableServer.POAPackage.WrongPolicy is thrown if the
      * validation fails
      */
-    public abstract void validate(int policyName) throws
-                org.omg.PortableServer.POAPackage.WrongPolicy;
+    public abstract void validate(int policyName , org.omg.CORBA.IntHolder ih );
 
     /**
      * <code> servantPresent </code> chekcs if the servant is present in the AOM.
@@ -123,11 +84,7 @@ public abstract class ServantRetentionStrategy {
      * @exception  org.omg.PortableServer.POAPackage.WrongPolicy is thrown if
      * invoked on the Non Retain Strategy
      */
-
-    
-
-    public abstract boolean servantPresent(org.omg.PortableServer.Servant servant)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy;
+    public abstract boolean servantPresent(org.omg.PortableServer.Servant servant , org.omg.CORBA.IntHolder ih );
 
     /**
      * <code> objectKeyPresent </code> checks for the presence of the ObjectID
@@ -136,30 +93,11 @@ public abstract class ServantRetentionStrategy {
      * @exception  org.omg.PortableServer.POAPackage.WrongPolicy is thrown if
      * invoked on the Non Retain Strategy
      */
-
-    public abstract boolean objectIDPresent(byte[]ok)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy;
-
-    public abstract edu.uci.ece.zen.poa.POAHashMap getHashMap(byte[] map)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy;
-
-    public abstract int bindDemuxIndex(edu.uci.ece.zen.poa.POAHashMap oid) throws
-                org.omg.PortableServer.POAPackage.WrongPolicy;
-
-    public abstract boolean unbindDemuxIndex(byte[] oid)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy;
-
-    public abstract int getGenCount(int index)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy;
-
-    public abstract int find(byte[] id) throws
-                org.omg.PortableServer.POAPackage.WrongPolicy;
-
-    // --- Strategy Types ----
-    public static final int RETAIN = 0;
-    public static final int NON_RETAIN = 1;
-
-    // ---Non RetainStrategy Singleton ---
-    //private static NonRetainStrategy nonRetainStrategy;
+    public abstract boolean objectIDPresent( FString ok , org.omg.CORBA.IntHolder ih );
+    public abstract edu.uci.ece.zen.poa.POAHashMap getHashMap( FString map , org.omg.CORBA.IntHolder ih )
+    public abstract int bindDemuxIndex( edu.uci.ece.zen.poa.POAHashMap oid , org.omg.CORBA.IntHolder ih );
+    public abstract boolean unbindDemuxIndex( FString oid , org.omg.CORBA.IntHolder ih );
+    public abstract int getGenCount(int index , org.omg.CORBA.IntHolder ih );
+    public abstract int find( FString id , org.omg.CORBA.IntHolder ih );
 }
 

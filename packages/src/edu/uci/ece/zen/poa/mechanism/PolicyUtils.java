@@ -9,7 +9,6 @@ package edu.uci.ece.zen.poa;
  * @version 1.0
  */
 public class PolicyUtils{
-
     /**
      * This method returns true if the POA has RETAIN policy.
      * The default policy for any poa is the retain policy.

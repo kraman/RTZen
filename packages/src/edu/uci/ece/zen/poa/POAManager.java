@@ -8,13 +8,7 @@ import org.omg.PortableServer.POAManagerPackage.State;
  * This class POAManager is managing the POA operations. This class activates,deactivates the POA.
  * It is also responsible for handelling the requests - queing and discarding of request.
  */
-public class POAManager extends org.omg.CORBA.LocalObject
-    implements org.omg.PortableServer.POAManager {
-
-    public static POAManager instance(){
-        return null;
-    }
-
+public class POAManager extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.POAManager {
     /**
      * Creates a new POAManager associated for the POA assocaited with the given ORB.
      * @param orb the orb associated with the POA.
@@ -62,7 +56,7 @@ public class POAManager extends org.omg.CORBA.LocalObject
 
     }
 /**
- * This methos is used to findout the state of the POAManager that is passed in as the arguement.
+ * This method is used to findout the state of the POAManager that is passed in as the arguement.
  * @param manager The POA manager.
  */
     public static int checkPOAManagerState(org.omg.PortableServer.POAManager manager) {
@@ -72,13 +66,13 @@ public class POAManager extends org.omg.CORBA.LocalObject
                  * for now the queue length in the POAManager is 0.
                  * Should later be implemented.
                  */
-                return 1;
+                return POAManager.TransientException;
             case State._DISCARDING:
-                return 2;
+                return POAManager.TransientException;
             case State._INACTIVE:
-                return 3;
+                return POAManager.ObjAdapterException;
             default:
-                return -1;
+                return POAManager.NoException;
         }
     }
 

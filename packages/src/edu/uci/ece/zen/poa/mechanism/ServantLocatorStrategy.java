@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: ServantLocatorStrategy.java,v 1.1 2003/11/26 22:29:00 nshankar Exp $
+ * $Id: ServantLocatorStrategy.java,v 1.7 2003/09/03 20:44:19 spart Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;
@@ -22,8 +22,7 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
     * @param threadStrategy ThreadPolicyStrategy
     * @throws org.omg.PortableServer.POAPackage.InvalidPolicy
     */
-    public void initialize(ServantRetentionStrategy nonRetain,
-            ThreadPolicyStrategy threadStrategy) throws
+    public void init(ServantRetentionStrategy nonRetain, ThreadPolicyStrategy threadStrategy , org.omg.CORBA.IntHolder ih ) throws
                 org.omg.PortableServer.POAPackage.InvalidPolicy {
         this.threadPolicyStrategy = threadStrategy;
     }

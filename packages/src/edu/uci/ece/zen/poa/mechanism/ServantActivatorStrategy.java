@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: ServantActivatorStrategy.java,v 1.1 2003/11/26 22:29:00 nshankar Exp $
+ * $Id: ServantActivatorStrategy.java,v 1.7 2003/09/03 20:44:19 spart Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;
@@ -12,6 +12,7 @@ import org.omg.CORBA.portable.InvokeHandler;
 import edu.uci.ece.zen.orb.ResponseHandler;
 import edu.uci.ece.zen.orb.ServerReply;
 import edu.uci.ece.zen.orb.ServerRequest;
+import edu.uci.ece.zen.poa.ObjectID;
 import edu.uci.ece.zen.poa.POAHashMap;
 
 
@@ -24,8 +25,7 @@ public class ServantActivatorStrategy extends
     * @param uniqunessStrategy IdUniquenessStrategy
     * @throws org.omg.PortableServer.POAPackage.InvalidPolicy
     */
-    public void initialize(ServantRetentionStrategy retain,
-            ThreadPolicyStrategy threadStrategy,
+    public void init(ServantRetentionStrategy retain, ThreadPolicyStrategy threadStrategy, org.omg.CORBA.IntHolder ih
             IdUniquenessStrategy uniqunessStrategy) throws
                 org.omg.PortableServer.POAPackage.InvalidPolicy {
         try {
@@ -93,7 +93,7 @@ public class ServantActivatorStrategy extends
 
             while (e.hasMoreElements()) {
                 ok = (edu.uci.ece.zen.poa.ObjectKey) e.nextElement();
-                org.omg.PortableServer.Servant servant = this.retain.getServant(ok.getId());
+                org.omg.PortableServer.Servant servant = this.retain.getServant(new ObjectID(ok.getId()));
 
                 synchronized (mutex) {
                     this.manager.etherealize(ok.getId(), poa, servant,
@@ -115,7 +115,7 @@ public class ServantActivatorStrategy extends
             edu.uci.ece.zen.poa.SynchronizedInt requests) {
         InvokeHandler invokeHandler = null;
         edu.uci.ece.zen.poa.ObjectKey ok = request.getObjectKey();
-        byte[] oid = ok.getId();
+        edu.uci.ece.zen.poa.ObjectID oid = new edu.uci.ece.zen.poa.ObjectID(ok.getId());
         POAHashMap map = null;
 
         // first consult the AOM for the Request Processor
@@ -249,7 +249,7 @@ public class ServantActivatorStrategy extends
                     throw new org.omg.CORBA.OBJ_ADAPTER();
                 }
 
-                byte[] oid = ok.getId();
+                ObjectID oid = new ObjectID(ok.getId());
                 POAHashMap map = new POAHashMap(oid,
                         (org.omg.PortableServer.Servant)
                         invokeHandler);

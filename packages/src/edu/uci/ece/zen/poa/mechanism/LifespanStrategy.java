@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------*
- * $Id: LifespanStrategy.java,v 1.3 2004/03/11 19:31:37 nshankar Exp $
+ * $Id: LifespanStrategy.java,v 1.6 2003/09/03 20:44:19 spart Exp $
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa.mechanism;
@@ -15,43 +15,31 @@ package edu.uci.ece.zen.poa.mechanism;
 
 
 // --- ZEN Imports ---
-import edu.uci.ece.zen.poa.ActiveDemuxLoc;
-import edu.uci.ece.zen.poa.ActiveDemuxLocOperations;
-import edu.uci.ece.zen.poa.POAPolicyFactory;
-import edu.uci.ece.zen.poa.Util;
-import edu.uci.ece.zen.sys.ZenProperties;
-
+import edu.uci.ece.zen.utils.*;
+import edu.uci.ece.zen.poa.*;
 
 abstract public class LifespanStrategy {
-
-    public static String eternal = "poa.eternal";
-    public static String ephemeral = "poa.ephemeral";
-
-    // -- Initialization Code ---
-   /* static {
-        LifespanStrategy.persistentStrategy = (PersistentStrategy)
-                POAPolicyFactory.createPolicy(ZenProperties.getProperty(LifespanStrategy.eternal));
-    }*/
-
     /**
      * <code> init </code> creates either a Persistent/Transient Strategy
      * based on the policy of the POA.
      * @param policy specifies the Policy of the POA.
      *
      */
-    public static LifespanStrategy init(org.omg.CORBA.Policy[] policy) {
+    public static LifespanStrategy init(org.omg.CORBA.Policy[] policy , org.omg.CORBA.IntHolder ih ) {
+        ih = POARunnable.NoException;
 
-        //if (Util.useTransientPolicy(policy)) {
-            return (LifespanStrategy) POAPolicyFactory.createPolicy(ZenProperties.getProperty(LifespanStrategy.ephemeral));
-       // }
-        //return LifespanStrategy.persistentStrategy;
+        if (PolicyUtils.usetransientpolicy(policy)) { 
+//            return new TransientStrategy(); 
+        }else{
+//            return new PersistentStrategy();
+        }
+        return null;
     }
 
     /**
      * <code> timeStamp </code> returns the Time Stamp associated in the ObjectKey.
-     *
+     *  
      */
-
     abstract public long timeStamp();
 
     /** <code> create </code> creates the appropriate ObjectKey based on the
@@ -61,8 +49,8 @@ abstract public class LifespanStrategy {
      * @param oid specifies the Object Id of the Object Key
      * @param poaLoc ActiveDemuxLoc
      */
-    abstract public byte[] create(String path_name, byte[] oid, ActiveDemuxLoc poaLoc);
-    abstract public byte[] create(String path_name, byte[] oid, ActiveDemuxLoc poaLoc, int index, int count);
+    abstract public void create(FString path_name, FString oid, ActiveDemuxLoc poaLoc , FString okey_out );
+    abstract public void create(FString path_name, FString oid, int poaLocIndex , int poaLocCount , int servLocIndex , int servLocCount , FString okey_out );
 
     /**
      * <code> isValid </code> checks for the validity of the Object Key.
@@ -71,10 +59,6 @@ abstract public class LifespanStrategy {
      * @param objectKey is the Object Key who's freshness is checked.
      * @exception org.omg.CORBA.OBJECT_NOT_EXISTS if the test fails.
      */
-    
-    abstract public int validate(byte[] objectKey) throws org.omg.CORBA.OBJECT_NOT_EXIST;
-
-    // --Persistent Strategy Singleton ---
-//    protected static PersistentStrategy persistentStrategy;
+    abstract public void validate( FString objKey , org.omg.CORBA.IntHolder ih );
 }
 
