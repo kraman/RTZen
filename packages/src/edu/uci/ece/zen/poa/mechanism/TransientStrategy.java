@@ -12,7 +12,7 @@ public final class TransientStrategy extends LifespanStrategy {
      * Create Transient Strategy
      */
     public TransientStrategy() {
-        value = 0;//System.currentTimeMillis();
+        value = System.currentTimeMillis();
         this.timeStamp = new byte[8];
         int nextFreeByte = 0;
 

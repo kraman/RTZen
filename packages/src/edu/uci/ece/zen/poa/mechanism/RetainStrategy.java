@@ -2,22 +2,34 @@ package edu.uci.ece.zen.poa.mechanism;
 
 import org.omg.CORBA.IntHolder;
 
+import edu.uci.ece.zen.poa.DualMap;
 import edu.uci.ece.zen.poa.POARunnable;
+import edu.uci.ece.zen.poa.SingleMap;
 import edu.uci.ece.zen.utils.ActiveDemuxTable;
 import edu.uci.ece.zen.utils.FString;
 
+/**
+ * Implements the strategy corresponding to the CORBA retain policy. 
+ */
 public final class RetainStrategy extends ServantRetentionStrategy {
+
+    protected edu.uci.ece.zen.poa.ActiveObjectMap AOM;
+
+    public ActiveDemuxTable activeMap;
+    
     /**
-     * Initialize the Retain Strategy
-     * 
-     * @param uniqueId
-     *            IdUniquenessStrategy
+     * Initialize this strategy
+     * @param uniqueId the ID uniqueness strategy
      */
-    public void initialize(IdUniquenessStrategy uniqueId) {
-        if (uniqueId.validate(IdUniquenessStrategy.UNIQUE_ID)) {
-            this.AOM = new edu.uci.ece.zen.poa.DualMap();
-        } else {
-            this.AOM = new edu.uci.ece.zen.poa.SingleMap();
+    public void initialize(IdUniquenessStrategy uniqueId) 
+    {
+        if (uniqueId.validate(IdUniquenessStrategy.UNIQUE_ID)) 
+        {
+            this.AOM = new DualMap();
+        } 
+        else 
+        {
+            this.AOM = new SingleMap();
         }
 
         // Active Demux Map
@@ -229,7 +241,4 @@ public final class RetainStrategy extends ServantRetentionStrategy {
         return activeMap.find(id);
     }
 
-    protected edu.uci.ece.zen.poa.ActiveObjectMap AOM;
-
-    public ActiveDemuxTable activeMap;
 }

@@ -12,6 +12,8 @@ import org.omg.PortableServer.ServantManager;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.ORBImpl;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
+import edu.uci.ece.zen.poa.mechanism.DefaultServantStrategy;
+import edu.uci.ece.zen.poa.mechanism.RetainStrategy;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
@@ -161,21 +163,19 @@ public class POAImpl {
         ZenProperties.logger.log("POAImpl init 2");
 
         try {
-            serverRequestHandler = (POAServerRequestHandler) ((ORBImpl) ((ScopedMemory) orb.orbImplRegion)
-                    .getPortal()).getServerRequestHandler();
+            serverRequestHandler = 
+                (POAServerRequestHandler) ((ORBImpl) orb.orbImplRegion.getPortal()).getServerRequestHandler();
             if (serverRequestHandler == null) {
-                serverRequestHandler = (POAServerRequestHandler) orb.orbImplRegion
-                        .newInstance(POAServerRequestHandler.class);
-                ((ORBImpl) ((ScopedMemory) orb.orbImplRegion).getPortal())
-                        .setServerRequestHandler(serverRequestHandler);
+                serverRequestHandler = 
+                    (POAServerRequestHandler) orb.orbImplRegion.newInstance(POAServerRequestHandler.class);
+                ((ORBImpl) orb.orbImplRegion.getPortal()).setServerRequestHandler(serverRequestHandler);
             }
         } catch (Exception e1) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "init", e1);
         }
         ZenProperties.logger.log("POAImpl init 3");
         self.poaDemuxIndex = serverRequestHandler.addPOA(self.poaPath, self);
-        self.poaDemuxCount = serverRequestHandler
-                .getPOAGenCount(self.poaDemuxIndex);
+        self.poaDemuxCount = serverRequestHandler.getPOAGenCount(self.poaDemuxIndex);
         ZenProperties.logger.log("POAImpl init 4");
 
         //make a local copy of the policies
@@ -257,8 +257,8 @@ public class POAImpl {
 
         poaImplRunnable = new POAImplRunnable(self.poaMemoryArea);
         self.poaMemoryArea.setPortal(this);
-        NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread(null, null, null,
-                self.poaMemoryArea, null, poaImplRunnable);
+        NoHeapRealtimeThread nhrt = 
+            new NoHeapRealtimeThread(null, null, null, self.poaMemoryArea, null, poaImplRunnable);
         ZenProperties.logger.log("======================starting nhrt in poa impl region=====================");
         nhrt.start();
     }
@@ -322,16 +322,15 @@ public class POAImpl {
             ScopedMemory tpRegion = this.orb.getThreadPoolRegion(tpId);
             ZenProperties.logger.log("POAImpl.handled 8");
 
-            //edu.uci.ece.zen.utils.Logger.printThreadStack();
+            edu.uci.ece.zen.utils.Logger.printThreadStack();
 
             statCount++;
-            if (statCount % ZenProperties.MEM_STAT_COUNT == 0) edu.uci.ece.zen.utils.Logger
-                    .printMemStats(2);
-            
+            if (statCount % 100 == 0) edu.uci.ece.zen.utils.Logger.printMemStats(2);
+
             //ExecuteInRunnable eir = (ExecuteInRunnable)
             // requestScope.newInstance( ExecuteInRunnable.class );
             ExecuteInRunnable eir = orb.getEIR();
-            ZenProperties.logger.log("POAImpl.handled 9");
+            ZenProperties.logger.log("POAImpl.handled 9.5");
             TPRunnable tpr = orb.getTPR();
 
             ZenProperties.logger.log("POAImpl.handled 10");
@@ -346,9 +345,9 @@ public class POAImpl {
             //((ScopedMemory)requestScope).setPo{rtal( hrr );
             ZenProperties.logger.log("POAImpl.handled 13");
             req.associatePOA(self);
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(318);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(318);
             orb.orbImplRegion.executeInArea(eir);
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(319);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(319);
             ZenProperties.logger.log("POAImpl.handled 14");
             orb.freeEIR(eir);
         } catch (Exception ex) {
@@ -481,7 +480,6 @@ public class POAImpl {
                         ._all_interfaces(self, null)[0], clientMemoryArea);
             }
         }
-        //System.out.println( "object key length: " + okey.length() );
         retFString(okey);
         retFString(oid);
         retIntHolder(ih);
@@ -535,10 +533,35 @@ public class POAImpl {
     public void set_servant_manager(ServantManager manager, POARunnable prun) {
     }
 
-    public void get_servant(POARunnable prun) {
+
+    public void get_servant(POARunnable prun) 
+    {
+        // TODO test it
+        if (!(requestProcessingStrategy instanceof DefaultServantStrategy))
+        {
+          prun.exception = POARunnable.WrongPolicyException;
+          return;
+        }
+        
+        if (this.theServant == null)
+        {
+            prun.exception = POARunnable.NoServant;
+            return;
+        }
+
+        prun.retVal = this.theServant;
     }
 
-    public void set_servant(Servant servant, POARunnable prun) {
+    public void set_servant(Servant servant, POARunnable prun) 
+    {
+        // TODO test it        
+        if (!(requestProcessingStrategy instanceof DefaultServantStrategy))
+        {
+          prun.exception = POARunnable.WrongPolicyException;
+          return;
+        }
+        
+        this.theServant = servant;
     }
 
     public void create_reference(String atr, MemoryArea mem, POARunnable prun) {
@@ -642,10 +665,8 @@ class POAImplRunnable implements Runnable {
     }
 
     public void run() {
-        if (ZenProperties.dbg) ZenProperties.logger.log("getting portal for: "
-                + sm);
-        if (ZenProperties.dbg) ZenProperties.logger.log("inner thread: "
-                + Thread.currentThread().toString());
+        if (ZenProperties.dbg) ZenProperties.logger.log("getting portal for: " + sm);
+        if (ZenProperties.dbg) ZenProperties.logger.log("inner thread: " + Thread.currentThread().toString());
 
         POAImpl poaImpl = (POAImpl) sm.getPortal();
         if (ZenProperties.dbg) ZenProperties.logger.log("poa impl is " + poaImpl);
@@ -655,9 +676,7 @@ class POAImplRunnable implements Runnable {
                     poaImpl.wait();
                 }
             } catch (InterruptedException ie) {
-                ZenProperties.logger.log(Logger.INFO,
-                        getClass(), "run",
-                        "ORB is shutting down.");
+                ZenProperties.logger.log(Logger.INFO, getClass(), "run", "ORB is shutting down.");
             }
             active = false;
         }

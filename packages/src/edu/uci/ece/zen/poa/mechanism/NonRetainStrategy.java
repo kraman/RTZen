@@ -5,7 +5,8 @@ import org.omg.CORBA.IntHolder;
 import edu.uci.ece.zen.poa.POARunnable;
 import edu.uci.ece.zen.utils.FString;
 
-public final class NonRetainStrategy extends ServantRetentionStrategy {
+public final class NonRetainStrategy extends ServantRetentionStrategy
+{
     /**
      * check if strategy same as this strategy
      * 
@@ -13,10 +14,13 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      *            strategy value
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
-    public void validate(int name, IntHolder exceptionValue) {
-        if (ServantRetentionStrategy.NON_RETAIN != name) {
+    public void validate(int name, IntHolder exceptionValue)
+    {
+        if (ServantRetentionStrategy.NON_RETAIN != name)
+        {
             exceptionValue.value = POARunnable.WrongPolicyException;
-        } else exceptionValue.value = POARunnable.NoException;
+        } else
+            exceptionValue.value = POARunnable.NoException;
     }
 
     /**
@@ -30,7 +34,8 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      */
 
     public org.omg.PortableServer.Servant getServant(FString ok,
-            IntHolder exceptionValue) {
+            IntHolder exceptionValue)
+    {
         exceptionValue.value = POARunnable.WrongPolicyException;
         return null;
     }
@@ -45,7 +50,8 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      * @throws org.omg.PortableServer.POAPackage.ServantNotActive
      */
     public void getObjectID(org.omg.PortableServer.Servant servant,
-            FString oid_out, IntHolder exceptionValue) {
+            FString oid_out, IntHolder exceptionValue)
+    {
         exceptionValue.value = POARunnable.WrongPolicyException;
     }
 
@@ -57,7 +63,8 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
     public void add(FString ok, edu.uci.ece.zen.poa.POAHashMap servant,
-            IntHolder exceptionValue) {
+            IntHolder exceptionValue)
+    {
         exceptionValue.value = POARunnable.WrongPolicyException;
     }
 
@@ -69,7 +76,8 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
     public boolean servantPresent(org.omg.PortableServer.Servant servant,
-            IntHolder exceptionValue) {
+            IntHolder exceptionValue)
+    {
         exceptionValue.value = POARunnable.WrongPolicyException;
         return false;
     }
@@ -82,7 +90,8 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      * @return boolean
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
-    public boolean objectIDPresent(FString ok, IntHolder exceptionValue) {
+    public boolean objectIDPresent(FString ok, IntHolder exceptionValue)
+    {
         exceptionValue.value = POARunnable.WrongPolicyException;
         return false;
     }
@@ -94,7 +103,8 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
     public edu.uci.ece.zen.poa.POAHashMap getHashMap(FString ok,
-            IntHolder exceptionValue) {
+            IntHolder exceptionValue)
+    {
         exceptionValue.value = POARunnable.WrongPolicyException;
         return null;
     }
@@ -108,7 +118,8 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
     public int bindDemuxIndex(edu.uci.ece.zen.poa.POAHashMap oid,
-            IntHolder exceptionValue) {
+            IntHolder exceptionValue)
+    {
         exceptionValue.value = POARunnable.WrongPolicyException;
         return -1;
     }
@@ -121,7 +132,8 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      * @return boolean
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
-    public boolean unbindDemuxIndex(FString oid, IntHolder exceptionValue) {
+    public boolean unbindDemuxIndex(FString oid, IntHolder exceptionValue)
+    {
         exceptionValue.value = POARunnable.WrongPolicyException;
         return false;
     }
@@ -133,7 +145,8 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      * @return int
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
-    public int getGenCount(int index, IntHolder exceptionValue) {
+    public int getGenCount(int index, IntHolder exceptionValue)
+    {
         exceptionValue.value = POARunnable.WrongPolicyException;
         return -1;
     }
@@ -146,7 +159,8 @@ public final class NonRetainStrategy extends ServantRetentionStrategy {
      * @return int
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
-    public int find(FString id, IntHolder exceptionValue) {
+    public int find(FString id, IntHolder exceptionValue)
+    {
         exceptionValue.value = POARunnable.WrongPolicyException;
         return -1;
     }

@@ -19,10 +19,10 @@ public class HandleRequestRunnable implements Runnable {
     }
 
     public void run() {
-        POAImpl pimpl = ((POAImpl) poa.poaMemoryArea.getPortal());
+        POAImpl pimpl = (POAImpl) poa.poaMemoryArea.getPortal();
         try {
-            pimpl.requestProcessingStrategy.handleRequest(req, poa,
-                    poa.numberOfCurrentRequests, exceptionValue);
+            pimpl.requestProcessingStrategy.handleRequest(req, poa, poa.numberOfCurrentRequests, 
+                    									  exceptionValue);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
         }

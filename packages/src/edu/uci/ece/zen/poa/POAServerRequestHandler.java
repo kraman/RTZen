@@ -44,8 +44,9 @@ public class POAServerRequestHandler extends
      * </p>
      */
     public void handleRequest(RequestMessage req) {
-        if (ZenProperties.dbg) ZenProperties.logger.log("POAServerRequestHandler.handleRequest: Got a request to process: "
-                        + req);
+        if (ZenProperties.dbg) 
+            ZenProperties.logger.log("POAServerRequestHandler.handleRequest: " +
+            						 "Got a request to process: " + req);
 
         // gt the index into the Active Map
         FString objKey = req.getObjectKey();

@@ -5,6 +5,7 @@ import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
 
 import org.omg.PortableServer.AdapterActivator;
+import org.omg.PortableServer.Servant;
 import org.omg.PortableServer.ServantManager;
 import org.omg.PortableServer.ThreadPolicy;
 import org.omg.PortableServer.POAPackage.AdapterNonExistent;
@@ -98,8 +99,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
                     "doc.zen.poa.maxNumPOAs", "1"));
             unusedFacades = (Queue) imm.newInstance(Queue.class);
             for (int i = 0; i < numFacades; i++)
-                unusedFacades.enqueue(imm
-                        .newInstance(edu.uci.ece.zen.poa.POA.class));
+                unusedFacades.enqueue(imm.newInstance(edu.uci.ece.zen.poa.POA.class));
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, POA.class, "static <init>", e);
             System.exit(-1);
@@ -144,8 +144,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
         if (parent == null) {
             this.poaPath.append('/');
         } else {
-            this.poaPath.append(parent.poaPath.getData(), 0, parent.poaPath
-                    .length());
+            this.poaPath.append(parent.poaPath.getData(), 0, parent.poaPath.length());
         }
         this.poaPath.append(this.poaName.getData(), 0, this.poaName.length());
         this.poaPath.append('/');
@@ -216,11 +215,10 @@ public class POA extends org.omg.CORBA.LocalObject implements
      */
     public void handleRequest(final RequestMessage sreq) {
 
-        edu.uci.ece.zen.orb.transport.Transport transport = (edu.uci.ece.zen.orb.transport.Transport) sreq
-                .getTransport().getPortal();
+        edu.uci.ece.zen.orb.transport.Transport transport = 
+            	(edu.uci.ece.zen.orb.transport.Transport) sreq.getTransport().getPortal();
         if (transport.objectTable[0] == null) {
-            transport.objectTable[0] = new POARunnable(
-                    POARunnable.HANDLE_REQUEST);
+            transport.objectTable[0] = new POARunnable(POARunnable.HANDLE_REQUEST);
             ZenProperties.logger.log("new poa runnable");
         }
 
@@ -235,7 +233,6 @@ public class POA extends org.omg.CORBA.LocalObject implements
         if (transport.objectTable[1] == null) {
             transport.objectTable[1] = new ExecuteInRunnable();
             ZenProperties.logger.log("new EI  runnable");
-
         }
 
         ExecuteInRunnable eir1 = (ExecuteInRunnable) transport.objectTable[1];
@@ -252,14 +249,11 @@ public class POA extends org.omg.CORBA.LocalObject implements
             case POARunnable.NoException:
                 break;
             case POARunnable.TransientException:
-                throw new org.omg.CORBA.TRANSIENT(1,
-                        org.omg.CORBA.CompletionStatus.COMPLETED_NO);
+                throw new org.omg.CORBA.TRANSIENT(1, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
             case POARunnable.ObjAdapterException:
-                throw new org.omg.CORBA.OBJ_ADAPTER(1,
-                        org.omg.CORBA.CompletionStatus.COMPLETED_NO);
+                throw new org.omg.CORBA.OBJ_ADAPTER(1, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
             case POARunnable.ObjNotExistException:
-                throw new org.omg.CORBA.OBJECT_NOT_EXIST(2,
-                        org.omg.CORBA.CompletionStatus.COMPLETED_NO);
+                throw new org.omg.CORBA.OBJECT_NOT_EXIST(2, org.omg.CORBA.CompletionStatus.COMPLETED_NO);
         }
     }
 
@@ -658,28 +652,74 @@ public class POA extends org.omg.CORBA.LocalObject implements
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public org.omg.PortableServer.Servant get_servant() throws NoServant,
-            WrongPolicy {
-        /*
-         * POARunnable r = getPOARunnable(); r.init( POARunnable.GET_SERVANT ,
-         * null , null , null , null , null , null , null );
-         * poaMemoryArea.getCurrentMemoryArea(); Exception ex =
-         * r.getException(); org.omg.PortableServer.Servant retVal =
-         * (org.omg.PortableServer.Servant) r.getRetVal(); returnPOARunnable( r );
-         * if( ex != null ) throw ex; return retVal;
-         */
-        throw new org.omg.CORBA.NO_IMPLEMENT();
+    public org.omg.PortableServer.Servant get_servant() throws NoServant, WrongPolicy 
+    {
+        // TODO Test it.
+        POARunnable r =  new POARunnable(POARunnable.GET_SERVANT);
+
+        // jumping to PoaImpl scope
+        ExecuteInRunnable eir1 = new ExecuteInRunnable();
+        eir1.init(r, poaMemoryArea);
+        ExecuteInRunnable eir2 = new ExecuteInRunnable();
+        eir2.init(eir1, orb.orbImplRegion);
+        try 
+        {
+            orb.parentMemoryArea.executeInArea(eir2);
+        } 
+        catch (Exception e2) {
+            ZenProperties.logger.log(Logger.WARN, getClass(), "get_servant", e2);
+        }
+        
+        switch (r.exception) {
+            case POARunnable.NoException:
+                break;
+        	case POARunnable.NoServant:
+        	    throw new NoServant();
+        	case POARunnable.WrongPolicyException:
+        	    throw new WrongPolicy();
+        	default:
+        	    if (ZenProperties.dbg) ZenProperties.logger.log("Unexpected exception in " + getClass() +".get_servant.");
+        }
+       
+       if (ZenProperties.dbg) ZenProperties.logger.log("POA.get_servant" + r.retVal);
+       return (Servant) r.retVal;
     }
 
-    public void set_servant(final org.omg.PortableServer.Servant p_servant)
-            throws WrongPolicy {
-        /*
-         * POARunnable r = getPOARunnable(); r.init( POARunnable.SET_SERVANT ,
-         * p_servant , null , null , null , null , null , null );
-         * poaMemoryArea.getCurrentMemoryArea(); Exception ex =
-         * r.getException(); returnPOARunnable( r ); if( ex != null ) throw ex;
-         */
-        throw new org.omg.CORBA.NO_IMPLEMENT();
+    
+    public void set_servant(final org.omg.PortableServer.Servant p_servant) throws WrongPolicy 
+    {
+        if (p_servant == null)
+        {
+            // TODO check about exception and memory scopes. We think that the sooner checking 
+            // parameters and throwing exception the better.
+            throw new NullPointerException(); // p_servant is null;
+        }
+        
+        // TODO Test it.
+        POARunnable r =  new POARunnable(POARunnable.SET_SERVANT);
+        r.addParam(p_servant);
+
+        ExecuteInRunnable eir1 = new ExecuteInRunnable();
+        eir1.init(r, poaMemoryArea);
+        ExecuteInRunnable eir2 = new ExecuteInRunnable();
+        eir2.init(eir1, orb.orbImplRegion);
+        try 
+        {
+            orb.parentMemoryArea.executeInArea(eir2);
+        } 
+        catch (Exception e2) 
+        {
+            ZenProperties.logger.log(Logger.WARN, getClass(), "set_servant", e2);
+        }
+        
+        if (r.exception == POARunnable.WrongPolicyException)
+        {
+           throw new WrongPolicy();
+        }
+        else if (r.exception != POARunnable.NoException)
+        {
+    	    if (ZenProperties.dbg) ZenProperties.logger.log("Unexpected exception in " + getClass() +".set_servant.");
+        }
     }
 
     public org.omg.CORBA.Object create_reference(final String intf)

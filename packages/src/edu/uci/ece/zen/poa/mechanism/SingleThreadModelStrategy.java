@@ -48,8 +48,7 @@ public final class SingleThreadModelStrategy extends ThreadPolicyStrategy {
      * @param invokeHandler
      *            request handler
      */
-    public synchronized void exit(
-            org.omg.CORBA.portable.InvokeHandler invokeHandler) {
+    public synchronized void exit(org.omg.CORBA.portable.InvokeHandler invokeHandler) {
         synchronized (SingleThreadModelStrategy.class) {
             servantTable.remove(invokeHandler);
             SingleThreadModelStrategy.class.notifyAll();

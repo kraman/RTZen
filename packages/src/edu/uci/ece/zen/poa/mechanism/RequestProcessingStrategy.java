@@ -100,8 +100,7 @@ public abstract class RequestProcessingStrategy {
      *                expected.
      */
 
-    public abstract void setInvokeHandler(java.lang.Object invokeHandler,
-            IntHolder ExceptionValue);
+    public abstract void setInvokeHandler(java.lang.Object invokeHandler, IntHolder ExceptionValue);
 
     /**
      * <code> getRequestProcessor </code> returns the handler that would be used
