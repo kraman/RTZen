@@ -50,7 +50,7 @@ public class IntHashtable {
         int hash = Math.abs(key) % keylist.length;
         
         if(collision[hash] && key != keylist[hash])
-            ZenProperties.logger.log(Logger.FATAL, getClass(), "put", "Collision has occurred.");
+            ZenProperties.logger.log(Logger.SEVERE, getClass(), "put", "Collision has occurred.");
         
         keylist[hash] = key;
         valuelist[hash] = data;

@@ -267,6 +267,7 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
             if(numRegisteredPOAs < registeredPOAs.length)
                 registeredPOAs[numRegisteredPOAs++] = poa;
             else{
+                ZenProperties.logger.log(Logger.WARN, getClass(), "register", "Not enough POAManager slots. Please allocate more with doc.zen.poa.maxNumPOAManagers property.");
                 throw new RuntimeException("Not enough POAManager slots. Please allocate more with doc.zen.poa.maxNumPOAManagers property.");
             }
         }
