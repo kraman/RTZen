@@ -9,14 +9,32 @@ import javax.realtime.RealtimeThread;
  * A class that provides a way to represent a mutable String of fixed size. This
  * class internally maintains a byte buffer. It doesnot recycle the byte buffer
  * so be wary when allocating a very big string.
- * 
+ *
  * @author Krishna Raman
  */
 public class FString {
+
+    private static Queue queue = Queue.fromImmortal();
+
+    public static FString instance(){
+        FString ret = null;
+        if(!queue.isEmpty()){
+            ret = (FString)queue.dequeue();
+            ret.reset();
+        }
+        else ret = fromImmortal();
+
+        return ret;
+    }
+
+    public static void free(FString fs){
+        queue.enqueue(fs);
+    }
+
     /**
-     * Static function to create a FString object of 128 bytes in size from
+     * Static function to create a FString object of 1024 bytes in size from
      * immortal memory.
-     * 
+     *
      * @return A FString object of 1024 bytes allocated from ImmortalMemory
      */
     private static FString fromImmortal() {
@@ -29,6 +47,8 @@ public class FString {
         }
         return fs;
     }
+
+
 
     /** I have no idea. */
     public static FString instance(FString fs) {
@@ -52,7 +72,7 @@ public class FString {
     /**
      * Constructor to call when using <code>new</code>. Do not call
      * <code>init</code> after this constructor.
-     * 
+     *
      * @param maxSize
      *            The maximum size of string data.
      */
@@ -65,7 +85,7 @@ public class FString {
     /** Maximum size of data stored in this FString */
     int maxSize;
 
-    /** Current size do data stored in the FString */
+    /** Current size of data stored in the FString */
     int currentSize;
 
     /** Byte array to store the data in */
@@ -74,7 +94,7 @@ public class FString {
     /**
      * Method to initialize the size of the FString when using the 1st
      * constructor.
-     * 
+     *
      * @param maxSize
      *            The maximum size of data that will be stored in the FString
      * @see #FString()
@@ -90,7 +110,7 @@ public class FString {
 
     /**
      * This method appends data to the FString
-     * 
+     *
      * @param data
      *            The data to append to the string.
      */
@@ -102,7 +122,7 @@ public class FString {
      * Reads length bytes from the read buffer into the FString. This function
      * does not throw an ArrayIndexOutOfBounds is the amount of space in the
      * FString is not enough.
-     * 
+     *
      * @param istream
      *            The ReadBuffer object to read from
      * @param length
@@ -120,7 +140,7 @@ public class FString {
      * Reads length bytes from the CDR stream into the FString. This function
      * does not throw an ArrayIndexOutOfBounds is the amount of space in the
      * FString is not enough.
-     * 
+     *
      * @param istream
      *            The CDR input stream to read from
      * @param length
@@ -137,7 +157,7 @@ public class FString {
     /**
      * Dump all data from FString to the CDR output stream. It does not null
      * terminate.
-     * 
+     *
      * @param ostream
      *            The CDR output stream to write to.
      */
@@ -148,7 +168,7 @@ public class FString {
     /**
      * Append bytes to the end of the current FString. The bytes between offset
      * and offset+length will be appended.
-     * 
+     *
      * @param data
      *            The array to add from.
      * @param offset
@@ -166,7 +186,7 @@ public class FString {
 
     /**
      * Append data from the string.
-     * 
+     *
      * @param str
      *            The string to append data from.
      */
@@ -177,7 +197,7 @@ public class FString {
 
     /**
      * Append the byte to the FString
-     * 
+     *
      * @param b
      *            The byte value to append.
      */
@@ -187,7 +207,7 @@ public class FString {
 
     /**
      * Append the char to the FString
-     * 
+     *
      * @param c
      *            The char value to append.
      */
@@ -197,7 +217,7 @@ public class FString {
 
     /**
      * Append the marshalled short to the FString
-     * 
+     *
      * @param value
      *            The marshalled short value to append.
      */
@@ -208,7 +228,7 @@ public class FString {
 
     /**
      * Append the marshalled int to the FString
-     * 
+     *
      * @param value
      *            The marshalled int value to append.
      */
@@ -221,7 +241,7 @@ public class FString {
 
     /**
      * Append the marshalled long to the FString
-     * 
+     *
      * @param value
      *            The marshalled long value to append.
      */
@@ -238,7 +258,7 @@ public class FString {
 
     /**
      * Append the FString to the end of the current FString
-     * 
+     *
      * @param str
      *            The FString to append.
      */
@@ -246,9 +266,16 @@ public class FString {
         append(str.getData(), 0, str.length());
     }
 
+    public char charAt(int i){
+        if(i < 0 || i >= currentSize)
+            ZenProperties.logger.log(Logger.SEVERE, FString.class, "charAt", "Invalid index");
+
+        return (char)data[i];
+    }
+
     /**
      * Return a reference to the internal data array.
-     * 
+     *
      * @return a reference to the internal data array.
      */
     public byte[] getData() {
@@ -257,7 +284,7 @@ public class FString {
 
     /**
      * Returns the length of the data currently stored in the FString
-     * 
+     *
      * @return The length of the data.
      */
     public int length() {
@@ -266,7 +293,7 @@ public class FString {
 
     /**
      * Returns a new byte array allocated from the current memory region.
-     * 
+     *
      * @return A byte array with a copy of the data.
      */
     public byte[] getTrimData() {
@@ -278,7 +305,7 @@ public class FString {
     /**
      * Returns a new byte array allocated in the specified memory region with a
      * copy of the data present in this FString.
-     * 
+     *
      * @param mem
      *            The memory region to allocate the new array from.
      * @return A byte array with a copy of the data.
@@ -298,7 +325,7 @@ public class FString {
 
     /**
      * Returns the FString as a java String. No conversion is performed
-     * 
+     *
      * @return The converted string.
      */
     public String toString() {
@@ -325,7 +352,7 @@ public class FString {
                 Object [] objArr = new Object[1];
                 objArr[0] = getTrimData();
                 edu.uci.ece.zen.utils.Logger.printMemStatsImm(387);
-                String s = 
+                String s =
                     (String) RealtimeThread.getCurrentMemoryArea().newInstance(c,objArr);
                 edu.uci.ece.zen.utils.Logger.printMemStatsImm(388);
                 return s;
@@ -334,7 +361,7 @@ public class FString {
                         getClass(), "getTrimdata",
                         "Could not initialize cached String", e);
 
-            }      
+            }
         return null;
         //return new String(getTrimData());
     }
@@ -343,7 +370,7 @@ public class FString {
         if(cachedString == null){
             try{
                 java.lang.reflect.Constructor c = String.class.getConstructor(new Class [] {byte[].class});
-                cachedString =  
+                cachedString =
                     (String) ImmortalMemory.instance().newInstance(c,new Object [] {getTrimData()});
             }catch(Exception e){
                 ZenProperties.logger.log(Logger.SEVERE,
@@ -357,7 +384,7 @@ public class FString {
     /**
      * Convert this FString into a string, using the inverse algorithm as in
      * stringToCDRByteArray
-     * 
+     *
      * @see #byteArrayToString(byte[])
      */
     public String decode() {
@@ -371,7 +398,7 @@ public class FString {
 
     /**
      * Checks if the passed in object is logically equal to this FString.
-     * 
+     *
      * @param obj
      *            The object to compare.
      * @return True is the objects are equal.

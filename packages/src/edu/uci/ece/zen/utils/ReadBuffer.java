@@ -163,7 +163,7 @@ public class ReadBuffer {
 
     public void free() {
                 //Thread.dumpStack();
-       
+
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(635);
         ByteArrayCache cache = ByteArrayCache.instance();
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(636);
@@ -171,15 +171,15 @@ public class ReadBuffer {
             cache.returnByteArray((byte[]) buffers.elementAt(i));
             ba--;
         }
- 
- 
+
+
          if(ZenProperties.memDbg1) System.out.write('b');
          if(ZenProperties.memDbg1) System.out.write('r');
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(ba);
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(buffers.size());
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(bs);
- 
- 
+
+
        edu.uci.ece.zen.utils.Logger.printMemStatsImm(637);
         //buffers.removeAllElements();
         init();
@@ -391,6 +391,17 @@ public class ReadBuffer {
         }
     }
 
+    public FString readFString(boolean isString) {
+        int len = readLong();
+        len--;
+        FString fs = FString.instance();
+        for(int i = 0; i < len; ++i)
+            fs.append(readByte());
+
+        if (isString) readByte();
+        return fs;
+    }
+
     public String readString() {
         if (peekString != null && peekStringPos == getPosition()) {
             String tmp = peekString;
@@ -451,7 +462,7 @@ public class ReadBuffer {
     /**
      * Get the buffer that has been set to be read from after this buffer is
      * used up. Used by GIOP v1.1 fragments.
-     * 
+     *
      * @return the next buffer to be read from or null if no next buffer.
      */
     public ReadBuffer getNextBuffer() {

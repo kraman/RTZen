@@ -23,6 +23,7 @@ import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.FString;
 
 public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     private static Queue objRefDelegateCache;
@@ -65,7 +66,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     private boolean released = false;
-    
+
     private WriteBuffer ior;
 
     private ORB orb;
@@ -148,19 +149,41 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 if (ZenProperties.dbg) ZenProperties.logger.log("iiop minor " + iiopMinor);
                 switch (iiopMinor) {
                     case 0: {
-                        org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper
-                                .read(in);
-                        long connectionKey = ConnectionRegistry.ip2long(
-                                profilebody.host, profilebody.port);
-                        ScopedMemory transportScope = orb
-                                .getConnectionRegistry().getConnection(
-                                        connectionKey);
+                        /*
+                        TaggedProfileRunnable profRun = TaggedProfileRunnable.instance();
+                        profRun.init(in);
+                        ScopedMemory profScope = ORB.getScopedRegion();
+                        profScope.enter(profRun);
+
+                        ORB.freeScopedRegion(profScope);
+
+
+                        /////////////////////////
+
+                        in.read_octet();
+                        in.read_octet();
+
+                        FString host = in.getBuffer().readFString(true);
+                        int port = in.read_ushort();
+
+                        FString objKey = in.getBuffer().readFString(false);
+
+                        ///////////////////
+
+
+
+                        */
+
+
+
+                        org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read(in);
+                        long connectionKey = ConnectionRegistry.ip2long(profilebody.host, profilebody.port);
+                        ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
+
                         if (transportScope == null) {
                             transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector
-                                    .instance().connect(profilebody.host,
-                                            profilebody.port, orb, orbImpl);
-                            orb.getConnectionRegistry().putConnection(
-                                    connectionKey, transportScope);
+                                    .instance().connect(profilebody.host, profilebody.port, orb, orbImpl);
+                            orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
                         }
 
                         addLaneData(RealtimeThread.MIN_PRIORITY,
@@ -510,3 +533,36 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 }
+/*
+class TaggedProfileRunnable implements Runnable{
+    private static Queue queue = Queue.fromImmortal();
+
+    public org.omg.IIOP.Version iiop_version;
+
+    public FString host;
+
+    public short port;
+
+    public FString object_key;
+
+
+    CDRInputStream in;
+
+    public static TaggedProfileRunnable instance() {
+        return (TaggedProfileRunnable)ORB.getQueuedInstance(TaggedProfileRunnable.class,queue);
+    }
+
+    public void init(CDRInputStream in){
+        this.in = in;
+    }
+
+    public void run(){
+        org.omg.IIOP.ProfileBody_1_0 profilebody =
+                org.omg.IIOP.ProfileBody_1_0Helper.read(in);
+
+
+        port = profilebody.port;
+    }
+
+}
+*/

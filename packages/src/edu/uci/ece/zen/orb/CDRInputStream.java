@@ -65,6 +65,10 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
         this.buffer = b;
     }
 
+    public ReadBuffer getBuffer() {
+        return buffer;
+    }
+
     public CDRInputStream read_CDRInputStream() {
         int len = this.read_long();
         ReadBuffer buf = buffer.readBuffer(len);
@@ -75,7 +79,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Reads a octet from CDR encapsulation
-     * 
+     *
      * @return octet (byte)
      */
     public final byte read_octet() {
@@ -84,7 +88,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Reads a octet array from CDR encapsulation
-     * 
+     *
      * @param value
      *            array to enter read data into.
      * @param offset
@@ -98,7 +102,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Reads a boolean from CDR encapsulation
-     * 
+     *
      * @return boolean value.
      */
     public final boolean read_boolean() {
@@ -107,7 +111,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Reads a boolean array from CDR encapsulation
-     * 
+     *
      * @param value
      *            array to enter read data into.
      * @param offset
@@ -125,7 +129,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a character from the CDR encapsulation
-     * 
+     *
      * @return Read character.
      */
     public final char read_char() {
@@ -134,7 +138,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read an array of characters from CDR encapsulation.
-     * 
+     *
      * @param value
      *            Array to read data into.
      * @param offset
@@ -152,7 +156,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a string from CDR Encapsulation.
-     * 
+     *
      * @return Read string.
      */
     public String read_string() {
@@ -164,7 +168,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     /**
      * Internal method to peek at strings in CDR encapsulation. Used to
      * demarshall System exceptions.
-     * 
+     *
      * @return Read string.
      */
     public String peekAtString() {
@@ -173,7 +177,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Reads a double from CDR encapsulation.
-     * 
+     *
      * @return Read double.
      */
     public final double read_double() {
@@ -182,7 +186,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Reads an array of doubles from CDR encapsulation.
-     * 
+     *
      * @param value
      *            Array to read data into.
      * @param offset
@@ -200,7 +204,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a float from CDR encapsulation.
-     * 
+     *
      * @return Read float
      */
     public final float read_float() {
@@ -209,7 +213,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * read an array of floats from CDR encapsulation.
-     * 
+     *
      * @param value
      *            Array to read floats into.
      * @param offset
@@ -227,7 +231,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a long (java int) from cdr encapsulation.
-     * 
+     *
      * @return read long value.
      */
     public final int read_long() {
@@ -236,7 +240,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read an array of longs from CDR encapsulation.
-     * 
+     *
      * @param value
      *            Array to store read data into.
      * @param offset
@@ -254,7 +258,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * read a long long (java long) from CDR encapsulation.
-     * 
+     *
      * @return Read long long value.
      */
     public final long read_longlong() {
@@ -263,7 +267,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read an array of long longs (java long) from CDR encapsulation.
-     * 
+     *
      * @param value
      *            Array to read data into.
      * @param offset
@@ -281,7 +285,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a short value from CDR encapsulation.
-     * 
+     *
      * @return Short value.
      */
     public final short read_short() {
@@ -290,7 +294,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read an array of shorts from CDR Encapsulation.
-     * 
+     *
      * @param value
      *            The array to read thr data into.
      * @param offset
@@ -308,7 +312,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a wide character from CDR encapsulation.
-     * 
+     *
      * @return Read wide character
      */
     public final char read_wchar() {
@@ -317,7 +321,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Reads an array of wide characters from CDR encapsulation.
-     * 
+     *
      * @param value
      *            Array to read data into.
      * @param offset
@@ -335,7 +339,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a wide string from CDR encapsulation.
-     * 
+     *
      * @return Read wide string
      */
     public final String read_wstring() {
@@ -353,7 +357,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a unsigned short from CDR encapsulation.
-     * 
+     *
      * @return Read unsigned short
      */
     public final short read_ushort() {
@@ -362,7 +366,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Reads an array of unsigned shorts from CDR encapsulation.
-     * 
+     *
      * @param value
      *            Array to read data into.
      * @param offset
@@ -376,7 +380,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a unsigned long from CDR encapsulation.
-     * 
+     *
      * @return Read unsigned long
      */
     public final int read_ulong() {
@@ -385,7 +389,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Reads an array of unsigned longs from CDR encapsulation.
-     * 
+     *
      * @param value
      *            Array to read data into.
      * @param offset
@@ -399,7 +403,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a unisgned long long from CDR encapsulation.
-     * 
+     *
      * @return Read unsigned long long
      */
     public final long read_ulonglong() {
@@ -408,7 +412,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Reads an array of unsigned long longs from CDR encapsulation.
-     * 
+     *
      * @param value
      *            Array to read data into.
      * @param offset
@@ -422,12 +426,12 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a Corba object from CDR encapsulation.
-     * 
+     *
      * @return Read object
      */
     public final org.omg.CORBA.Object read_Object() {
         org.omg.IOP.IOR ior = org.omg.IOP.IORHelper.read(this);
-        
+
         WriteBuffer iorWB = WriteBuffer.instance();
         iorWB.init();
 
@@ -449,7 +453,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a Corba object from CDR encapsulation.
-     * 
+     *
      * @return Read object
      * @param clz
      */
@@ -459,7 +463,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a Corba context from CDR encapsulation. (Not Implemented)
-     * 
+     *
      * @return Read context
      */
     public org.omg.CORBA.Context read_Context() {
@@ -468,7 +472,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a principle from CDR encapsulation. (Not Implemented)
-     * 
+     *
      * @return Read principle.
      * @deprecated Method implemented to make sure zen compiles.
      */
@@ -478,7 +482,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Read a int from CDR encapsulation. (Not Implemented)
-     * 
+     *
      * @return Read int.
      * @throws IOException
      *             When I/O error occurs.
@@ -494,7 +498,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     /**
      * Skip the number of octets (bytes) in the stream.
-     * 
+     *
      * @param n
      *            Number of bytes to skip.
      */
@@ -517,7 +521,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     /**
      * Starts reading from an encapsulated CDRInputStream on the input buffer.
      * The method closeEncapsulation must be called when done.
-     * 
+     *
      * @return CDRInputStream that was encapsulated on the input buffer.
      */
     private CDRInputStream openEncapsulation() {
@@ -552,7 +556,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     /**
      * Reads an any object from the the CDRInputStream. This processes consists
      * of reading a TypeCode representing an Any, then the Any's stored value.
-     * 
+     *
      * @return Any object just read from CDRInputStream.
      */
     public final org.omg.CORBA.Any read_any() {
@@ -567,7 +571,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
      * write it to <code>out</code>
      * <p>
      * The method is called from the monolithic Any implementation.
-     * 
+     *
      * @param tc
      *            TypeCode of type to try to read.
      * @param out
@@ -675,7 +679,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     /**
      * Read a TypeCode from the input stream and return a newly constructed
      * object copying its values.
-     * 
+     *
      * @param tcIndirectionMap
      *            mapping of strings for integer values to either Strings as ids
      *            or TypeCodes already read
