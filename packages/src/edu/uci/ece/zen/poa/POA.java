@@ -26,11 +26,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private int processingState = POA.ACTIVE;
     private AdapterActivator adapterActivator;
     
-    private byte[] poaName;
-    private int poaNameLen;
-
-    private byte[] poaPath;
-    private int poaPathLen;
+    private FString poaName;
+    private FString poaPath;
 
     /* Mutexes POA and varable specific to the create and destroy ops */
     private Object createDestroyPOAMutex;
@@ -93,30 +90,24 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         this.orb = orb;
         this.poaMemoryArea = ORB.getScopedRegion();
 
-        byte[] poaNameBytes = poaName.getBytes();
-        System.arraycopy( poaNameBytes , 0 , this.poaName , 0 , poaName.length() );
-        poaNameLen = poaName.length();
+        this.poaName.reset();
+        this.poaName.append( poaName );
 
-        byte[] poaPathBytes;
+        this.poaPath.reset();
         if( parent == null ){
-            poaPath[0]='/';
-            poaPathLen = 1;
+            this.poaPath.append( '/' );
         }else{
-            System.arraycopy( parent.poaPath , 0 , this.poaPath , 0 , parent.poaPathLen );
-            poaPathLen = parent.poaPathLen;
+            this.poaPath.append( parent.poaPath.getData() , 0 , parent.poaPath.length() );
         }
-
-        System.arraycopy( poaNameBytes , 0 , this.poaPath , poaPathLen , poaName.length() );
-        poaPathLen += poaNameLen;
-        poaPath[poaPathLen]='/';
-        poaPathLen++;
+        this.poaPath.append( this.poaName.getData() , 0 , this.poaName.length() );
+        this.poaPath.append( '/' );
 
         if( manager == null )
             manager = POAManager.instance();
         this.poaManager = manager;
         ((POAManager)poaManager).register( (org.omg.PortableServer.POA) this );
         serverRequestHandler = ((ORBImpl)((ScopedMemory)orb.orbImplRegion).getPortal()).getServerRequestHandler();
-        poaDemuxIndex = serverRequestHandler.addPOA( poaPath , poaPathLen , this );
+        poaDemuxIndex = serverRequestHandler.addPOA( poaPath , this );
         theChildren.empty();
         numberOfCurrentRequests.reset();
         
@@ -144,8 +135,29 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         theChildren.init( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.maxNumPOAs" , "1" ) ) );
         numberOfCurrentRequests = new SynchronizedInt();
         createDestroyPOAMutex = new Integer(0);
-        poaName = new byte[( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.MaxPOANameLen" , "32" ) ) )];
-        poaPath = new byte[( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.MaxPOAPathLen" , "255" ) ) )];
+
+        poaName = new FString();
+        poaPath = new FString();
+        try{
+            poaName.init( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.MaxPOANameLen" , "32" ) ) );
+            poaPath.init( ( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.MaxPOAPathLen" , "255" ) ) ) );
+        }catch( InstantiationException e1 ){
+             ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.POA",
+                "<init>",
+                "Could not initialize POA facade due to exception: " + e1.toString()
+                );
+             System.exit(-1);
+        }catch( IllegalAccessException e2 ){
+             ZenProperties.logger.log(
+                Logger.FATAL,
+                "edu.uci.ece.zen.orb.POA",
+                "<init>",
+                "Could not initialize POA facade due to exception: " + e2.toString()
+                );
+             System.exit(-1);
+        }
     }
 
     /**
@@ -630,15 +642,11 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     }
 
     public java.lang.String the_name() {
-        byte nameBytes[] = new byte[poaNameLen];
-        System.arraycopy( poaName , 0 , nameBytes , 0 , poaNameLen );
-        return new String( nameBytes );
+        return new String( poaName.getTrimData() );
     }
 
     public java.lang.String path_name() {
-        byte pathBytes[] = new byte[poaPathLen];
-        System.arraycopy( poaPath , 0 , pathBytes , 0 , poaPathLen );
-        return new String( pathBytes );
+        return new String( poaPath.getTrimData() );
     }
 
     public org.omg.PortableServer.POA the_parent() {

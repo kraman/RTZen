@@ -61,15 +61,8 @@ abstract public class LifespanStrategy {
      * @param oid specifies the Object Id of the Object Key
      * @param poaLoc ActiveDemuxLoc
      */
-
-    abstract public byte[] create(String path_name,
-            byte[] oid,
-            ActiveDemuxLoc poaLoc);
-
-    abstract public byte[]  create(String path_name,
-            byte[] oid,
-            ActiveDemuxLoc poaLoc,
-            int index, int count);
+    abstract public byte[] create(String path_name, byte[] oid, ActiveDemuxLoc poaLoc);
+    abstract public byte[] create(String path_name, byte[] oid, ActiveDemuxLoc poaLoc, int index, int count);
 
     /**
      * <code> isValid </code> checks for the validity of the Object Key.

@@ -1,7 +1,3 @@
-/* --------------------------------------------------------------------------*
- * $Id: UserIdStrategy.java,v 1.1 2003/11/26 22:29:04 nshankar Exp $
- *--------------------------------------------------------------------------*/
-
 package edu.uci.ece.zen.poa.mechanism;
 
 
@@ -17,9 +13,7 @@ public final class UserIdStrategy extends IdAssignmentStrategy {
     * @return byte[] next id
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public byte[] nextId() throws
-                org.omg.PortableServer.POAPackage.WrongPolicy {
-        throw new org.omg.PortableServer.POAPackage.WrongPolicy();
+    public void nextId( FString id_out ){
     }
 
    /**
@@ -40,11 +34,8 @@ public final class UserIdStrategy extends IdAssignmentStrategy {
     * @param policy type
     * @throws org.omg.PortableServer.POAPackage.WrongPolicy
     */
-    public void validate(int policy)
-        throws org.omg.PortableServer.POAPackage.WrongPolicy {
-        if (!isPresent(policy)) {
-            throw new org.omg.PortableServer.POAPackage.WrongPolicy();
-        }
+    public boolean validate(int policy){
+        return !isPresent(policy);
     }
 
    /**
@@ -53,8 +44,7 @@ public final class UserIdStrategy extends IdAssignmentStrategy {
     * @param id  user id
     * @return boolean true always
     */
-    public boolean verifyID(byte[] id) {
+    public boolean verifyID( FString id_in ) {
         return true;
     }
-
 }

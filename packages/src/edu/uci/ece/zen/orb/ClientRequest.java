@@ -39,8 +39,6 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         this.giopMajor = giopMajor;
         this.giopMinor = giopMinor;
         System.out.println( "ClientRequest 3" );
-        int threadJavaPriority = Thread.currentThread().getPriority();
-        System.out.println( "ClientRequest 4" );
         LaneInfo ln = del.getLane();
         System.out.println( "ClientRequest 5" );
         transportScope = ln.transpScope;
@@ -184,7 +182,7 @@ class MessageComposerRunnable implements Runnable{
      * </p>
      */
     public void run(){
-        //setup waiting stratergy
+        //setup waiting straterg
         WaitingStrategy waitingStrategy = null;
         if( clr.responseExpected )
             waitingStrategy = new TwoWayWaitingStrategy();

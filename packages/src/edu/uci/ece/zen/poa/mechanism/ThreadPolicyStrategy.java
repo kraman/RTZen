@@ -1,10 +1,7 @@
-/* --------------------------------------------------------------------------*
- * $Id: ThreadPolicyStrategy.java,v 1.2 2004/03/11 19:31:37 nshankar Exp $
- *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism;
 
-
-
+import edu.uci.ece.zen.poa.POAPolicyFactory;
+import edu.uci.ece.zen.sys.ZenProperties;
 
 /**
  * The class <code>ThreadPolicyStrategy</code> is strategy for implementing
@@ -14,43 +11,18 @@ package edu.uci.ece.zen.poa.mechanism;
  * @version 1.0
  */
 
-
-
-import edu.uci.ece.zen.poa.POAPolicyFactory;
-import edu.uci.ece.zen.sys.ZenProperties;
-
-
 abstract public class ThreadPolicyStrategy {
-
-    // -- Strategy Classpaths  ----
-    protected static final String singleThreadClasspath = "poa.singleThreaded";
-    protected static final String orbControlClasspath = "poa.multiThreaded";
-
-    static {
-        ThreadPolicyStrategy.multiThreaded = (OrbControlModelStrategy)
-                POAPolicyFactory.createPolicy(ZenProperties.getProperty(ThreadPolicyStrategy.orbControlClasspath));
-    }
-
     public static ThreadPolicyStrategy init(org.omg.CORBA.Policy[] policy) {
-
-        //if (edu.uci.ece.zen.poa.Util.useSingleThreadedPolicy(policy)) {
-           // return (ThreadPolicyStrategy) edu.uci.ece.zen.poa.POAPolicyFactory.createPolicy(ThreadPolicyStrategy.singleThreadClasspath);
-        //} else {
-            return ThreadPolicyStrategy.multiThreaded;
-        //}
+        if( PolicyUtils.useSingleThreadedPolicy( policy ){
+            return new SingleThreadModelStrategy();
+        }else{
+            return new OrbControlModelStrategy();
+        }
     }
 
-    public abstract void enter(org.omg.CORBA.portable.InvokeHandler
-            invokeHandler);
-
+    public abstract void enter(org.omg.CORBA.portable.InvokeHandler invokeHandler);
     public abstract void enter();
-
-    public abstract void exit(org.omg.CORBA.portable.InvokeHandler
-            invokeHandler);
-
+    public abstract void exit(org.omg.CORBA.portable.InvokeHandler invokeHandler);
     public abstract void exit();
-
-    // --Singleton references ---
-    private static OrbControlModelStrategy multiThreaded;
 }
 

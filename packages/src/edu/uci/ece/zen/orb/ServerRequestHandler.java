@@ -8,7 +8,7 @@ public abstract class ServerRequestHandler {
         this.orb = orb;
     }
 
-    public abstract int addPOA( FString path, org.omg.PortableServer.POA poa);
+    public abstract int addPOA( FString path, org.omg.PortableServer.POA poa );
     
     /**
      * Call scoped region graph:

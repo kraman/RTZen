@@ -40,7 +40,7 @@ public class IdAssignmentPolicy extends org.omg.CORBA.LocalObject implements org
      */
 
     public org.omg.CORBA.Policy copy() {
-        if( this.value.equals( IdAssignmentPolicyValue.USER_ID )
+        if( this.value.equals( IdAssignmentPolicyValue.USER_ID ) )
             return IdAssignmentPolicy.UserIdAssignmentPolicy;
         else
             return IdAssignmentPolicy.SystemIdAssignmentPolicy;

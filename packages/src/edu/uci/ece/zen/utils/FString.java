@@ -17,7 +17,7 @@ public class FString{
 
     public void append( byte[] data , int offset , int length ){
         if( currentSize + length < maxSize ){
-            //ERROR
+            //KLUDGE: ERROR here
         }
         System.arraycopy( data , offset , this.data , currentSize , length );
         currentSize += length;
@@ -31,11 +31,16 @@ public class FString{
         data[currentSize++] = b;
     }
 
+    public void append( char c ){
+        data[currentSize++] = (byte) c;
+    }
+
+
     public byte[] getData(){
         return this.data;
     }
 
-    public int getLength(){
+    public int length(){
         return currentSize;
     }
 

@@ -4,6 +4,9 @@
 
 package edu.uci.ece.zen.poa.mechanism;
 
+import edu.uci.ece.zen.poa.POAPolicyFactory;
+import edu.uci.ece.zen.poa.Util;
+import edu.uci.ece.zen.sys.ZenProperties;
 
 /**
  * The class <code>ActivationStrategy</code> creates either a Implicit/
@@ -12,12 +15,6 @@ package edu.uci.ece.zen.poa.mechanism;
  * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna</a>
  * @version 1.0
  */
-
-import edu.uci.ece.zen.poa.POAPolicyFactory;
-import edu.uci.ece.zen.poa.Util;
-import edu.uci.ece.zen.sys.ZenProperties;
-
-
 public abstract class ActivationStrategy {
     // --- Strategy names ---
     protected static final String implicit = "poa.implicitActivation";
@@ -28,16 +25,16 @@ public abstract class ActivationStrategy {
         ActivationStrategy.implicitActivation = (ImplicitActivationStrategy)
                 POAPolicyFactory.createPolicy(ZenProperties.getProperty(ActivationStrategy.implicit));
         //ActivationStrategy.noImplicitActivation = (ExplicitActivationStrategy)
-           //     POAPolicyFactory.createPolicy(ZenProperties.getProperty(ActivationStrategy.explicit));
+        //        POAPolicyFactory.createPolicy(ZenProperties.getProperty(ActivationStrategy.explicit));
     }
 
-/**
- *
- * @param policy Policy list
- * @param assignmentStrategy IdAssignmentStrategy
- * @param retentionStrategy ServantRetentionStrategy
- * @return ActivationStrategy
- */
+    /**
+     *
+     * @param policy Policy list
+     * @param assignmentStrategy IdAssignmentStrategy
+     * @param retentionStrategy ServantRetentionStrategy
+     * @return ActivationStrategy
+     */
     public static ActivationStrategy init(org.omg.CORBA.Policy[] policy,
             IdAssignmentStrategy assignmentStrategy,
             ServantRetentionStrategy retentionStrategy)

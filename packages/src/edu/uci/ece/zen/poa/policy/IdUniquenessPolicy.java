@@ -4,7 +4,6 @@
 
 package edu.uci.ece.zen.poa.policy;
 
-
 /**
  * The class <code>IdUniquenessPolicy</code> is the
  * ZEN specific implementation of IdUniquenessPolicy.
@@ -12,12 +11,10 @@ package edu.uci.ece.zen.poa.policy;
  * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna</a>
  * @version 1.0
  */
-
-
 public class IdUniquenessPolicy extends org.omg.CORBA.LocalObject implements org.omg.PortableServer.IdUniquenessPolicy {
 
     public static final IdUniquenessPolicy UniqueIdUniquenessPolicy = new IdUniquenessPolicy();
-    public static final IdUniquenessPolicy MultipleIdUniquenessPolicy = new IdUniquenessPolicy( IdUniquenessPolicyValue.MULTIPLE_ID );
+    public static final IdUniquenessPolicy MultipleIdUniquenessPolicy = new IdUniquenessPolicy( org.omg.PortableServer.IdUniquenessPolicyValue.MULTIPLE_ID );
 
     public IdUniquenessPolicy() {
         this.value = org.omg.PortableServer.IdUniquenessPolicyValue.UNIQUE_ID;
@@ -39,7 +36,7 @@ public class IdUniquenessPolicy extends org.omg.CORBA.LocalObject implements org
      */
 
     public org.omg.CORBA.Policy copy() {
-        if( value().equals( IdUniquenessPolicyValue.UNIQUE_ID )
+        if( value().equals( IdUniquenessPolicyValue.UNIQUE_ID ) )
             return IdUniquenessPolicy.UniqueIdUniquenessPolicy;
         else
             return IdUniquenessPolicy.MultipleIdUniquenessPolicy;
