@@ -8,7 +8,6 @@
     <patternset id="sources" >
         <!--*** OMG Sources ***-->
             <include name="src/edu/uci/ece/zen/utils/**"/>
-            <exclude name="src/edu/uci/ece/zen/utils/ScopeSafeConsoleLogger.java"/>
             <include name="omg-01-02-01/org/omg/CORBA/**"/>
             <include name="omg-01-02-01/org/omg/CORBA_2_3/**"/>
             <include name="generated/org/omg/Dynamic/**/" if="zen.aspects.pi"/>
@@ -85,6 +84,7 @@
 
     <target name="compile">
         <echo message="Compiling OMG and Zen sources"/>
+        <echo message="Current rt classpath is: ${zen.rtbootclasspath}"/>
 
         <javac
             destdir="${zen.classdir}"
@@ -98,7 +98,6 @@
             >
             <patternset refid="sources"/>
             <include name="ant-tasks/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java" if="compiler_jRate"/>
-            <include name="src/edu/uci/ece/zen/utils/ScopeSafeConsoleLogger.java" if="compiler_OVM"/>
             <include name="src/javax/**" if="compiler_jdk"/>
             <classpath>
                 <pathelement location="${zen.classpath}"/>
