@@ -285,9 +285,12 @@ public class CDRTestClient extends RealtimeThread
 
 	public void testonewayShort(){
 
-			short shinVal = 100;
+                    System.out.println("This is in testonewayShort()"); 
 
-		    stub.echoShort( shinVal);
+		    short shinVal = 100;
+
+		    stub.onewayShort( shinVal);
+
 
 		    return;
 
