@@ -33,6 +33,14 @@ public abstract class Logger{
     protected void setLevel( int level ){
         //this.level=level;
     }
+   
+    public static void printMemStats(edu.uci.ece.zen.orb.ORB orb){
+        MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
+	    System.out.println(ma+","+ma.memoryConsumed()+","+ma.memoryRemaining());            
+	    System.out.println("orb,"+orb.orbImplRegion.memoryConsumed()+","+orb.orbImplRegion.memoryRemaining());            
+	    System.out.println("client,"+orb.parentMemoryArea.memoryConsumed()+","+orb.parentMemoryArea.memoryRemaining());            
+
+    }
     
     public static void printThreadStack(){
 		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {

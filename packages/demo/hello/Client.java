@@ -46,13 +46,19 @@ public class Client extends RealtimeThread
             System.out.println( server.getMessage() );
 	
             System.out.println( "====================== Performance warmup =================================" );
-            for( int i=0;i<10000;i++ )
+            for( int i=0;i<10000;i++ ){
                 server.getMessage();
+                if(i % 250 == 0)
+                    System.out.println(i);
+            }
 
             System.out.println( "====================== Performance benchmark ==============================" );
             long start = System.currentTimeMillis();
-            for( int i=0;i<10000;i++ )
+            for( int i=0;i<10000;i++ ){
                 server.getMessage();
+                if(i % 500 == 0)
+                    System.out.println(i);
+            }
             long end = System.currentTimeMillis();
 
             System.err.println( 10000/((end-start)/1000.0) );

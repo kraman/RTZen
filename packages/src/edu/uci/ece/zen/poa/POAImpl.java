@@ -203,7 +203,7 @@ public class POAImpl{
         if(ZenProperties.devDbg) System.out.println( "======================starting nhrt in poa impl region=====================" );
         nhrt.start();
     }
-
+    private int statCount = 0;
     /**
      * Call scoped region graph:
      * <p>
@@ -246,6 +246,10 @@ public class POAImpl{
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 8" );
 
             edu.uci.ece.zen.utils.Logger.printThreadStack();
+            
+            statCount++;
+            if(statCount % 100 == 0)
+                edu.uci.ece.zen.utils.Logger.printMemStats(orb);
 
             //ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             ExecuteInRunnable eir = orb.getEIR(); 
