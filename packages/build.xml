@@ -80,7 +80,12 @@
     </target>
 
     <target name="compile">
-        <echo message="Compiling OMG and Zen sources"/>
+        <echo message="Compiling OMG and Zen sources with the AspectJ compiler."/>
+        <echo message=""/>
+        <echo message="********** New message from mpanahi: Jan. 27, 2005 **********"/>
+        <echo message="Make sure you are using the AspectJ compiler adapter."/>
+        <echo message="To use it, please copy the appropriate line from zen-build_properties to zen-build.properties."/>
+        <echo message=""/>
         <!--echo message="Current rt classpath is: ${zen.rtbootclasspath}"/-->
         <!--echo message="Current classpath is: ${zen.classpath}"/-->
         <!--echo message="Current classpath is: ${java.home}"/-->
