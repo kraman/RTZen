@@ -1,15 +1,18 @@
 package edu.uci.ece.zen.poa;
 
+import org.omg.PortableServer.Servant;
+
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ZenProperties;
 
+// TODO This is not a map. change the name. 
+// Provides information about the state of the servant.  
 public class POAHashMap {
 
     private int requests = 0;
-
-    // --Making this volatile does not need to be synchronized
-    private volatile boolean active = true;
+    
+    private volatile boolean active = true; // Making this volatile does not need to be synchronized
 
     private FString key;
 
@@ -18,7 +21,8 @@ public class POAHashMap {
     public POAHashMap() {
     }
 
-    public void init(FString oid, org.omg.PortableServer.Servant servant) {
+    public void init(FString oid, Servant servant) 
+    {
         this.value = servant;
         this.key = oid;
     }
@@ -29,7 +33,8 @@ public class POAHashMap {
      * block.
      */
     // Called from within a synchronized block
-    public void incrementActiveRequests() {
+    public void incrementActiveRequests() 
+    {
         ++requests;
     }
 
@@ -53,7 +58,8 @@ public class POAHashMap {
      * 
      * @return boolean true if active, false if not active
      */
-    public boolean isActive() {
+    public boolean isActive() 
+    {
         return this.active;
     }
 

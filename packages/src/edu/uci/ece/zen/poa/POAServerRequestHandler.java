@@ -13,7 +13,7 @@ public class POAServerRequestHandler extends
 
     public POAServerRequestHandler() {
         int numPOAs = Integer.parseInt(ZenProperties.getGlobalProperty(
-                "doc.zen.poa.maxNumPOAs", "1"));
+                "doc.zen.poa.maxNumPOAs", "5")); // Why is it here too?
         demuxTable = new edu.uci.ece.zen.utils.ActiveDemuxTable();
         demuxTable.init(numPOAs);
     }
@@ -44,8 +44,9 @@ public class POAServerRequestHandler extends
      * </p>
      */
     public void handleRequest(RequestMessage req) {
-        if (ZenProperties.dbg) ZenProperties.logger.log("POAServerRequestHandler.handleRequest: Got a request to process: "
-                        + req);
+        if (ZenProperties.dbg) 
+            ZenProperties.logger.log("POAServerRequestHandler.handleRequest: " +
+            						 "Got a request to process: " + req);
 
         // gt the index into the Active Map
         FString objKey = req.getObjectKey();

@@ -2,22 +2,34 @@ package edu.uci.ece.zen.poa.mechanism;
 
 import org.omg.CORBA.IntHolder;
 
+import edu.uci.ece.zen.poa.DualMap;
 import edu.uci.ece.zen.poa.POARunnable;
+import edu.uci.ece.zen.poa.SingleMap;
 import edu.uci.ece.zen.utils.ActiveDemuxTable;
 import edu.uci.ece.zen.utils.FString;
 
+/**
+ * Implements the strategy corresponding to the CORBA retain policy. 
+ */
 public final class RetainStrategy extends ServantRetentionStrategy {
+
+    protected edu.uci.ece.zen.poa.ActiveObjectMap AOM;
+
+    public ActiveDemuxTable activeMap;
+    
     /**
-     * Initialize the Retain Strategy
-     * 
-     * @param uniqueId
-     *            IdUniquenessStrategy
+     * Initialize this strategy
+     * @param uniqueId the ID uniqueness strategy
      */
-    public void initialize(IdUniquenessStrategy uniqueId) {
-        if (uniqueId.validate(IdUniquenessStrategy.UNIQUE_ID)) {
-            this.AOM = new edu.uci.ece.zen.poa.DualMap();
-        } else {
-            this.AOM = new edu.uci.ece.zen.poa.SingleMap();
+    public void initialize(IdUniquenessStrategy uniqueId) 
+    {
+        if (uniqueId.validate(IdUniquenessStrategy.UNIQUE_ID)) 
+        {
+            this.AOM = new DualMap();
+        } 
+        else 
+        {
+            this.AOM = new SingleMap();
         }
 
         // Active Demux Map
@@ -80,9 +92,14 @@ public final class RetainStrategy extends ServantRetentionStrategy {
             FString oid_out, IntHolder exceptionValue) {
         exceptionValue.value = POARunnable.NoException;
         oid_out.reset();
-        if (this.AOM.servantPresent(servant)) this.AOM.getObjectID(servant,
-                oid_out, exceptionValue);
-        else exceptionValue.value = POARunnable.ServantNotActiveException;
+        if (this.AOM.servantPresent(servant))
+        {
+            this.AOM.getObjectID(servant, oid_out, exceptionValue);
+        }
+        else 
+        {
+            exceptionValue.value = POARunnable.ServantNotActiveException;
+        }
     }
 
     /**
@@ -184,8 +201,8 @@ public final class RetainStrategy extends ServantRetentionStrategy {
      * @return int slot where bound
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
-    public int bindDemuxIndex(edu.uci.ece.zen.poa.POAHashMap map,
-            IntHolder exceptionValue) {
+    public int bindDemuxIndex(edu.uci.ece.zen.poa.POAHashMap map, IntHolder exceptionValue) 
+    {
         exceptionValue.value = POARunnable.NoException;
         return this.activeMap.bind(map.objectID(), map);
     }
@@ -229,7 +246,4 @@ public final class RetainStrategy extends ServantRetentionStrategy {
         return activeMap.find(id);
     }
 
-    protected edu.uci.ece.zen.poa.ActiveObjectMap AOM;
-
-    public ActiveDemuxTable activeMap;
 }

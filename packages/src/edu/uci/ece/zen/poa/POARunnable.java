@@ -12,6 +12,7 @@ import org.omg.PortableServer.ServantManager;
 
 import edu.uci.ece.zen.orb.ORB;
 
+//TODO Modify this class to be type safe.
 public class POARunnable implements Runnable {
     public static final int INIT = 0;
 
@@ -76,12 +77,16 @@ public class POARunnable implements Runnable {
     public static final int ForwardRequestException = 9;
 
     public static final int InternalException = 10;
+    
+    public static final int NoServant = 11; // Add by Hojjat & Juan
+    
+    public static final int SERVANT_ALREADY_ACTIVE = 12; // Add by Hojjat & Juan
 
     private int operation;
 
     private Vector args;
 
-    public int exception;
+    public int exception; // add getException();
 
     public Object retVal;
 
@@ -95,8 +100,7 @@ public class POARunnable implements Runnable {
     }
 
     public void run() {
-        Object portal = ((ScopedMemory) RealtimeThread.getCurrentMemoryArea())
-                .getPortal();
+        Object portal = ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
         POAImpl pimpl = null;
         if (portal != null) pimpl = (POAImpl) portal;
 
@@ -106,25 +110,21 @@ public class POARunnable implements Runnable {
                 pimpl.init((ORB) args.elementAt(0), (POA) args.elementAt(1),
                         (Policy[]) args.elementAt(2), (POA) args.elementAt(3),
                         (POAManager) args.elementAt(4), this);
-                ((ScopedMemory) RealtimeThread.getCurrentMemoryArea())
-                        .setPortal(pimpl);
+                ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(pimpl);
                 break;
             case HANDLE_REQUEST:
                 //System.out.println("Inside POARunnable.runa and memarea: " +
                 // RealtimeThread.getCurrentMemoryArea() + " and this: " +
                 // this);
                 pimpl.handleRequest(
-                        (edu.uci.ece.zen.orb.protocol.type.RequestMessage) args
-                                .elementAt(0), this);
+                        (edu.uci.ece.zen.orb.protocol.type.RequestMessage) args.elementAt(0), this);
                 break;
             case SERVANT_TO_ID:
-                pimpl.servant_to_id((Servant) args.elementAt(0),
-                        (MemoryArea) args.elementAt(1), this);
+                pimpl.servant_to_id((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
                 break;
             case SERVANT_TO_REFERENCE:
-                retVal = pimpl.servant_to_reference(
-                        (Servant) args.elementAt(0), (MemoryArea) args
-                                .elementAt(1), this);
+                System.out.println(portal); // delete it
+                retVal = pimpl.servant_to_reference((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
                 break;
             case REFERENCE_TO_SERVANT:
                 pimpl.reference_to_servant((org.omg.CORBA.Object) args
@@ -145,8 +145,9 @@ public class POARunnable implements Runnable {
                         (MemoryArea) args.elementAt(1), this);
                 break;
             case ACTIVATE_OBJECT:
-                pimpl.activate_object((Servant) args.elementAt(0),
-                        (MemoryArea) args.elementAt(1), this);
+                pimpl.activate_object((Servant) args.elementAt(0), 
+                                      (MemoryArea) args.elementAt(1), 
+                                      this);
                 break;
             case ACTIVATE_OBJECT_WITH_ID:
                 pimpl.activate_object_with_id((byte[]) args.elementAt(0),

@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.IOP;
+package edu.uci.ece.zen.orb.protocol.IOP;
 
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;

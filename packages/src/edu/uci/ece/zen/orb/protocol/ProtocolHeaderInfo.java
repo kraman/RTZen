@@ -1,9 +1,5 @@
 package edu.uci.ece.zen.orb.protocol;
 
-import javax.realtime.ImmortalMemory;
-import edu.uci.ece.zen.utils.ZenProperties;
-import edu.uci.ece.zen.utils.Logger;
-
 /**
  * Inner class used to represent the information parsend from a GIOP message
  * header.

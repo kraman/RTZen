@@ -51,7 +51,7 @@ class R1 implements Runnable{
 
             ORB orb = ORB.init((String [])null, null );
 
-            POA rootPOA = POAHelper.unchecked_narrow( orb.resolve_initial_references( "RootPOA" ));
+            POA rootPOA = POAHelper.narrow( orb.resolve_initial_references( "RootPOA" ));
             rootPOA.the_POAManager().activate();
 
             System.out.println("Create and init the NamingService impl");

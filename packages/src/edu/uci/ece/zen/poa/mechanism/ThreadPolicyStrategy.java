@@ -1,29 +1,48 @@
 package edu.uci.ece.zen.poa.mechanism;
 
+import org.omg.CORBA.IntHolder;
+import org.omg.CORBA.Policy;
+
 /**
- * The class <code>ThreadPolicyStrategy</code> is strategy for implementing
- * the Threading-Policy of the POA
+ * Strategy for implementing the Threading-Policy of the POA
  * 
- * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna </a>
+ * @author Arvind S. Krishna.
+ * @author Juan Colmenares
+ * @author Hojjat Jafarpour
  * @version 1.0
  */
-abstract public class ThreadPolicyStrategy {
-    public static ThreadPolicyStrategy init(org.omg.CORBA.Policy[] policy,
-            org.omg.CORBA.IntHolder ih) {
-        if (PolicyUtils.useSingleThreadedPolicy(policy)) {
-            return (ThreadPolicyStrategy) new SingleThreadModelStrategy();
-        } else {
-            return new OrbControlModelStrategy();
+abstract public class ThreadPolicyStrategy
+{
+    public static final ThreadPolicyStrategy ORB_CONTROL_MODEL_STRATEGY =
+        new OrbControlModelStrategy();
+    
+    public static final ThreadPolicyStrategy SINGLE_THREAD_MODEL_STRATEGY =
+        new SingleThreadModelStrategy();
+    
+    public static ThreadPolicyStrategy init(Policy[] policy, IntHolder ih)
+    {
+        if (PolicyUtils.useSingleThreadedPolicy(policy))
+        {
+            return SINGLE_THREAD_MODEL_STRATEGY;
+        } 
+        else
+        {
+            return ORB_CONTROL_MODEL_STRATEGY;            
         }
     }
 
-    public abstract void enter(
-            org.omg.CORBA.portable.InvokeHandler invokeHandler);
-
-    public abstract void enter();
-
-    public abstract void exit(org.omg.CORBA.portable.InvokeHandler invokeHandler);
-
-    public abstract void exit();
+    /**      */
+    public static class SingleThreadModelStrategy extends ThreadPolicyStrategy
+    {
+        private SingleThreadModelStrategy() {}
+    }
+    
+    /**      */
+    public static class OrbControlModelStrategy extends ThreadPolicyStrategy
+    {
+        private OrbControlModelStrategy() {}
+    }
+    
+    
 }
 

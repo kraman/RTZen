@@ -37,7 +37,7 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
             imm = ImmortalMemory.instance();
             //Set up POA Facades
             int numFacades = Integer.parseInt(ZenProperties.getGlobalProperty(
-                    "doc.zen.poa.maxNumPOAManagers", "1"));
+                    "doc.zen.poa.maxNumPOAManagers", "5"));
             unusedFacades = (Queue) imm.newInstance(Queue.class);
             for (int i = 0; i < numFacades; i++)
                 unusedFacades.enqueue(imm

@@ -21,10 +21,8 @@ public class ReplyHeaderHelper {
         ReplyHeader new_one = ReplyHeader.instance();
 
         if (ZenProperties.dbg) ZenProperties.logger.log(" *****ReplyHeader: " + istream.toString());
-
-        new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper
+        new_one.service_context = edu.uci.ece.zen.orb.protocol.IOP.ServiceContextListHelper
                 .read(istream, FString.instance(new_one.service_context));
-
         if (ZenProperties.dbg) ZenProperties.logger.log(" *****ReplyHeader: " + new_one.service_context.decode());
 
         new_one.request_id = istream.read_ulong();

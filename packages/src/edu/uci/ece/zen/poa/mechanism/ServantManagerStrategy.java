@@ -5,6 +5,7 @@
  */
 package edu.uci.ece.zen.poa.mechanism;
 
+// XXX We should eliminate this class.
 public abstract class ServantManagerStrategy extends RequestProcessingStrategy {
     private static final int name = RequestProcessingStrategy.SERVANT_MANAGER;
 }

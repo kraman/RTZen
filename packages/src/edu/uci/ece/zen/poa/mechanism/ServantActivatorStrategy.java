@@ -39,6 +39,8 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
 
     // --Mutual exclusion lock for incarnate/etherealize
     private Object mutex = new byte[0];
+    
+    private Object mutex2 = new byte[0];
 
     /**
      * Initialize Strategy
@@ -213,34 +215,62 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
         ((edu.uci.ece.zen.poa.POACurrent) pimpl.poaCurrent.get()).init(poa, ok,
                 (org.omg.PortableServer.Servant) invokeHandler);
 
-        ResponseHandler responseHandler = new ResponseHandler(poa.getORB(),
-                request);
+        ResponseHandler responseHandler = new ResponseHandler(poa.getORB(), request);
 
-        this.threadPolicyStrategy.enter(invokeHandler);
+
         org.omg.PortableServer.Servant myServant = (org.omg.PortableServer.Servant) invokeHandler;
         CDROutputStream reply;
 
-        if (request.getOperation().equals("_is_a")) {
-            boolean _result = myServant._is_a(request.getCDRInputStream()
-                    .read_string());
-            org.omg.CORBA.portable.OutputStream _output = responseHandler
-                    .createReply();
-            _output.write_boolean(_result);
-            reply = (CDROutputStream) _output;
-        } else if (request.getOperation().equals("_non_existent")) {
-            boolean _result = myServant._non_existent();
-            org.omg.CORBA.portable.OutputStream _output = responseHandler
-                    .createReply();
-            _output.write_boolean(_result);
-            reply = (CDROutputStream) _output;
-        } else {
-            reply = (CDROutputStream) invokeHandler._invoke(request
-                    .getOperation().toString(),
-                    (org.omg.CORBA.portable.InputStream) request
-                            .getCDRInputStream(), responseHandler);
+    
+        // TODO Here we have DUPLICATED code    
+        if (this.threadPolicyStrategy instanceof ThreadPolicyStrategy.SingleThreadModelStrategy)
+        {
+            synchronized(mutex2)
+            {
+                if (request.getOperation().equals("_is_a")) {
+                    boolean _result = myServant._is_a(request.getCDRInputStream()
+                            .read_string());
+                    org.omg.CORBA.portable.OutputStream _output = responseHandler
+                            .createReply();
+                    _output.write_boolean(_result);
+                    reply = (CDROutputStream) _output;
+                } else if (request.getOperation().equals("_non_existent")) {
+                    boolean _result = myServant._non_existent();
+                    org.omg.CORBA.portable.OutputStream _output = responseHandler
+                            .createReply();
+                    _output.write_boolean(_result);
+                    reply = (CDROutputStream) _output;
+                } else {
+                    reply = (CDROutputStream) invokeHandler._invoke(request
+                            .getOperation().toString(),
+                            (org.omg.CORBA.portable.InputStream) request
+                                    .getCDRInputStream(), responseHandler);
+                }
+            }
+        }
+        else
+        {
+            if (request.getOperation().equals("_is_a")) {
+                boolean _result = myServant._is_a(request.getCDRInputStream()
+                        .read_string());
+                org.omg.CORBA.portable.OutputStream _output = responseHandler
+                        .createReply();
+                _output.write_boolean(_result);
+                reply = (CDROutputStream) _output;
+            } else if (request.getOperation().equals("_non_existent")) {
+                boolean _result = myServant._non_existent();
+                org.omg.CORBA.portable.OutputStream _output = responseHandler
+                        .createReply();
+                _output.write_boolean(_result);
+                reply = (CDROutputStream) _output;
+            } else {
+                reply = (CDROutputStream) invokeHandler._invoke(request
+                        .getOperation().toString(),
+                        (org.omg.CORBA.portable.InputStream) request
+                                .getCDRInputStream(), responseHandler);
+            }            
         }
 
-        this.threadPolicyStrategy.exit(invokeHandler);
 
         synchronized (mutex) {
             requests
