@@ -1,5 +1,7 @@
 package edu.uci.ece.zen.orb.giop.IOP;
 
+
+import edu.uci.ece.zen.utils.*;
 /**
  * Helper class for : ServiceContext
  *
@@ -12,17 +14,20 @@ public class ServiceContextHelper
      * @param istream the input stream
      * @return the readed ServiceContext value
      */
-    public static ServiceContext read(org.omg.CORBA.portable.InputStream istream, int pos)
+    public static FString read(org.omg.CORBA.portable.InputStream istream, FString fs)
     {
-        ServiceContext new_one = ServiceContext.instance(pos);
+        //ServiceContext new_one = ServiceContext.instance(pos);
 
-        new_one.context_id = org.omg.IOP.ServiceIdHelper.read(istream);
+        int context_id = org.omg.IOP.ServiceIdHelper.read(istream);
+        fs.append((long)context_id);
 
-        new_one.context_data_length = istream.read_ulong();
+        int context_data_length = istream.read_ulong();
+        fs.append((long)context_data_length);
 
-        istream.read_octet_array(new_one.context_data, 0, new_one.context_data_length);
+        //istream.read_octet_array(new_one.context_data, 0, new_one.context_data_length);
+        fs.read(istream, context_data_length);
 
-        return new_one;
+        return fs;
     }
 
     /**

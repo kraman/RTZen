@@ -26,6 +26,14 @@ public class FString{
         append( data , 0 , data.length );
     }
 
+    public void read( org.omg.CORBA.portable.InputStream istream, int length ){
+        if( currentSize + length < maxSize ){
+            //KLUDGE: ERROR here
+        }
+        istream.read_octet_array(data, currentSize, length);
+        currentSize += length;
+    }
+
     public void append( byte[] data , int offset , int length ){
         if( currentSize + length < maxSize ){
             //KLUDGE: ERROR here

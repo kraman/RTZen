@@ -26,11 +26,31 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity
         return rh;
     }
 
+    private static FString fStringFromImmortal(){
+        FString fs = null;
+        try{
+            fs = (FString) ImmortalMemory.instance().newInstance( FString.class );
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return fs;
+    }
 
     /**
      * Struct member service_context
      */
-    public ServiceContext[] service_context;
+    //public ServiceContext[] service_context;
+    public FString service_context;
+
+    public static FString instance(FString fs){
+        if(fs == null){
+            fs = fStringFromImmortal();
+        } else {
+            fs.reset();
+        }
+
+        return fs;
+    }
 
     /**
      * Struct member request_id
@@ -45,19 +65,25 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity
     /**
      * Struct member object_key
      */
-    public byte[] object_key = new byte[1024];
-    public int object_key_length = 0;
+    //public byte[] object_key = new byte[1024];
+    //public int object_key_length = 0;
+    public FString object_key;
+
+
 
     /**
      * Struct member operation
      */
-    public String operation;
+    public FString operation;
+
+
 
     /**
      * Struct member requesting_principal
      */
-    public byte[] requesting_principal = new byte[1024];
-    public int requesting_principal_length = 0;
+    //public byte[] requesting_principal = new byte[1024];
+    //public int requesting_principal_length = 0;
+    public FString requesting_principal;
 
 
 

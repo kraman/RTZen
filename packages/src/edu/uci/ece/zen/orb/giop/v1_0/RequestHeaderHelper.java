@@ -99,17 +99,31 @@ public class RequestHeaderHelper
     {
         RequestHeader new_one = RequestHeader.instance();
 
-        new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.read(istream);
+        new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.
+                read(istream,RequestHeader.instance(new_one.service_context));
+
         new_one.request_id = istream.read_ulong();
         new_one.response_expected = istream.read_boolean();
 
-        new_one.object_key_length = istream.read_ulong();
-        istream.read_octet_array(new_one.object_key, 0, new_one.object_key_length);
+        new_one.object_key = RequestHeader.instance(new_one.object_key);
+        int object_key_length = istream.read_ulong();
+        new_one.object_key.append(object_key_length);
+        new_one.object_key.read(istream, object_key_length);
 
-        new_one.operation = istream.read_string();// can't use string here -- use FString??
+        new_one.operation =  RequestHeader.instance(new_one.operation);
+        int op_length = istream.read_ulong();
+        new_one.operation.append(op_length);
+        new_one.operation.read(istream, op_length);
 
-        new_one.requesting_principal_length = istream.read_ulong();
-        istream.read_octet_array(new_one.requesting_principal, 0, new_one.requesting_principal_length);
+        //new_one.operation = istream.read_string();
+
+        //new_one.requesting_principal_length = istream.read_ulong();
+        //istream.read_octet_array(new_one.requesting_principal, 0, new_one.requesting_principal_length);
+
+        new_one.requesting_principal =  RequestHeader.instance(new_one.requesting_principal);
+        int rp_length = istream.read_ulong();
+        new_one.requesting_principal.append(rp_length);
+        new_one.requesting_principal.read(istream, rp_length);
 
         return new_one;
     }
@@ -121,6 +135,7 @@ public class RequestHeaderHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, RequestHeader value)
     {
+        /*
         edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
         ostream.write_ulong(value.request_id);
         ostream.write_boolean(value.response_expected);
@@ -130,6 +145,7 @@ public class RequestHeaderHelper
         //org.omg.CORBA.OctetSeqHelper.write(ostream,value.requesting_principal);
         ostream.write_ulong(value.requesting_principal_length);
         ostream.write_octet_array(value.requesting_principal, 0,value.requesting_principal_length);
+        */
     }
 
 }
