@@ -32,11 +32,11 @@
 	</target>    
 
     <target name="server">
-        <demo.java classname="demo.doom.DoomServer"/>
+        <demo.run classname="demo.doom.DoomServer"/>
     </target> 
 
     <target name="client">
-        <demo.java classname="demo.doom.DoomClient"/>
+        <demo.run classname="demo.doom.DoomClient"/>
     </target> 
 
     <target name="clean">
