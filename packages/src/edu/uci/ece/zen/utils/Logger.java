@@ -62,7 +62,7 @@ public abstract class Logger{
     }
 
     public static void printMemStatsImm(int code){
-        printMemStats(code, ImmortalMemory.instance());
+       // printMemStats(code, ImmortalMemory.instance());
     }
 
     public static void printMemStats(int code){

@@ -35,7 +35,7 @@ public final class GIOPMessageFactory {
             throws java.io.IOException {
         ReadBuffer buffer = ReadBuffer.instance();
         buffer.init();
-edu.uci.ece.zen.utils.Logger.printMemStatsImm(77777770);
+//edu.uci.ece.zen.utils.Logger.printMemStatsImm(77777770);
         GIOPHeaderInfo mainMsgHdr = (GIOPHeaderInfo) GIOPHeaderInfoHelper
                 .instance();
 
@@ -186,7 +186,7 @@ edu.uci.ece.zen.utils.Logger.printMemStatsImm(77777770);
         if(ZenProperties.devDbg) {
             ZenProperties.logger.log("parse stream messageId:"+ret.getRequestId());
         }
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(77777771);
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(77777771);
         return ret;
     }
 
