@@ -27,11 +27,11 @@
             <include name="generated/org/omg/CORBA_2_3/**"/>
             <include name="generated/org/omg/IOP/**"/>
             <include name="generated/org/omg/GIOP/**"/>
-            <include name="generated/org/omg/PortableServer/**"/> 
-            <include name="generated/org/omg/Messaging/**"/> 
-            <include name="generated/org/omg/TimeBase/**"/> 
-            <include name="generated/org/omg/CosNaming/**"/> 
-        
+            <include name="generated/org/omg/PortableServer/**"/>
+            <include name="generated/org/omg/Messaging/**"/>
+            <include name="generated/org/omg/TimeBase/**"/>
+            <include name="generated/org/omg/CosNaming/**"/>
+
         <!--*** Doug Lea's Concurrent Package ***-->
             <include name="src/edu/oswego/cs/dl/util/concurrent/**"/>
 
@@ -85,9 +85,9 @@
 
     <target name="compile">
         <echo message="Compiling OMG and Zen sources"/>
-      
-        <javac  
-            destdir="${zen.classdir}"          
+
+        <javac
+            destdir="${zen.classdir}"
             srcdir="${zen.srcdir}"
             failonerror = "true"
             fork = "true"
@@ -96,17 +96,18 @@
             bootclasspath="${zen.rtbootclasspath}"
             includeJavaRuntime="yes"
             >
-            
+
             <patternset refid="sources"/>
             <patternset>
                 <include name="src/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java" if="compiler_jRate"/>
+                <include name="src/edu/uci/ece/zen/utils/ScopeSafeConsoleLogger.java" if="compiler_OVM"/>
                 <include name="src/javax/**" if="compiler_jdk"/>
                 <!--classpath="${basedir}/../fake_rtjava/lib/foundation.jar"
                 -->
             </patternset>
-            
+
             <classpath>
-                <pathelement location="${zen.classpath}"/> 
+                <pathelement location="${zen.classpath}"/>
             </classpath>
         </javac>
     </target>
@@ -127,7 +128,7 @@
             </fileset>
         </jRate>
     </target>
-    
+
     <target name="naming_service" if="zen.naming">
         <ant antfile="${zen.srcdir}/src/edu/uci/ece/zen/services/naming/build.xml"/>
     </target>
@@ -137,14 +138,14 @@
     </target>
 
     <target name="lib">
-        <jar 
-        jarfile="${zen.libdir}/RTZen.jar" 
-        basedir="${zen.classdir}" 
+        <jar
+        jarfile="${zen.libdir}/RTZen.jar"
+        basedir="${zen.classdir}"
         includes="org/omg/**,edu/**"
         />
-        <jar 
-        jarfile="${zen.libdir}/realtime.jar" 
-        basedir="${zen.classdir}" 
+        <jar
+        jarfile="${zen.libdir}/realtime.jar"
+        basedir="${zen.classdir}"
         includes="javax/realtime/**"
         />
     </target>

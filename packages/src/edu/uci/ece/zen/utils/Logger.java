@@ -220,14 +220,6 @@ class ConsoleLogger extends Logger
 	}
 }
 
-class ScopeSafeConsoleLogger extends ConsoleLogger
-{
-	protected ScopeSafeConsoleLogger()
-	{
-		super(new org.ovmj.java.io.ScopeSafePrintStream(System.err));
-	}
-}
-
 class NullLogger extends Logger{
     protected NullLogger(){}
     public void log(String msg) {}
