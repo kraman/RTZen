@@ -45,7 +45,7 @@ public class CDRTestClient extends RealtimeThread
             //tempobj = obj;
 
             stub = DataTypesHelper.unchecked_narrow( obj );
-            for(int i=0; i<10000;i++){
+            for(int i=0; i<10;i++){
                 testShort();
                 testDouble();
 

@@ -101,7 +101,7 @@ public class VersionStamp{
     <target name="ns">
         <property file="zen-build-bootstrap.properties"/>
         <property file="zen-build.properties"/>
-        <java classname="edu.uci.ece.zen.naming.NamingService"
+        <java classname="edu.uci.ece.zen.services.naming.NamingService"
               fork="yes"
               failonerror="yes"
               >

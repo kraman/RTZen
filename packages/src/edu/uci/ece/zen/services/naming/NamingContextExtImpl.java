@@ -145,6 +145,16 @@ public class NamingContextExtImpl extends NamingContextExtPOA {
             if (bindings.containsKey(binding) || bindings.containsKey(bindingContext)) {
                 throw new AlreadyBound();
             }
+            if(ZenProperties.dbg){
+
+                System.out.println("The current memory area in NamingContextExtimpl.bind() is "+javax.realtime.RealtimeThread.getCurrentMemoryArea());
+
+                 System.out.println("The bindings object is in "+javax.realtime.MemoryArea.getMemoryArea(bindings));
+                 
+                System.out.println("The binding object is in "+javax.realtime.MemoryArea.getMemoryArea(binding));
+                System.out.println("The obj object is in "+javax.realtime.MemoryArea.getMemoryArea(obj));
+
+            }          
 
             bindings.put(binding, obj);
         }
