@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2005 by the University of California, Irvine
+ * All Rights Reserved.
+ * 
+ * This software is released under the terms of the RTZen license, which
+ * you should have received along with this software. If not, you may
+ * obtain a copy here: http://zen.ece.uci.edu/rtzen/license.php
+ */
+
 package demo.jpl;
 
 /**
@@ -7,7 +16,7 @@ package demo.jpl;
 
 public class HelloWorldImpl extends HelloWorldPOA
 {
-    //private static int ITER = 100;
+    private static int ITER = 1;
     private int val;
     
     public HelloWorldImpl(int value)
@@ -20,14 +29,14 @@ public class HelloWorldImpl extends HelloWorldPOA
      */
     public int getMessage(int id, int[] array)
     {
+        
         /*
            for (int i = 0; i < this.val * ITER; i++)
            {
            int j = i % array.length; 
            array[j] = id;
            }
-         */
-        /*
+         
         for (int i = 0; i<array.length; i++){
             array[i] = array[i]*array[i]*array[i];
         }
