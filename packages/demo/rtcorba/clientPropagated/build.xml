@@ -1,12 +1,14 @@
-<project name="client propagated Demo from TAO" default="IdlCheck" basedir="../../../..">
+<project name="client propagated Demo from TAO" default="all" basedir="../../../..">
 
-    <property file="zen-build-bootstrap.properties"/>
-    <property file="zen-build.properties"/>
-   
+    <import file="../../../../init.xml"/>
     <property name="demo.name" value="clientPropagated"/>
     
     <property name="package.rel.dir" value="demo/rtcorba/${demo.name}"/>
     <property name="package.dir" value="${zen.srcdir}/${package.rel.dir}"/>
+    
+    
+    <import file="../../demo_tasks.xml"/>
+  
     <property name="idl.src" value="test.idl"/>
     <property name="server.class" value="demo.rtcorba.${demo.name}.Server"/>
     <property name="client.class" value="demo.rtcorba.${demo.name}.Client"/>
@@ -14,45 +16,24 @@
     <property name="ior1" value="${package.dir}/test.ior"/>
 <!--    <property name="ior1" value="C:/ACE_wrappers/TAO/tests/RTCORBA/Client_Propagated/Release/test.ior"/>-->
 
-   <target name="IdlCheck" depends="zen, openorb"/>
-   
-   <target name="zen" if="zen.idl.compiler">
-       <antcall target="compile">
-           <param name="idl.flags" value="-o"/>
-           <param name="gendir" value="${zen.gendir}/"/>
-           <param name="idl.dir" value="${package.dir}"/>
-           <param name="classpath" value="${zen.classpath}"/>
-       </antcall>
-   </target>
-
-   <target name="openorb" if="openorb.idl.compiler">
-       <antcall target="compile">
-           <param name="idl.flags" value="-all -d"/>
-           <param name="gendir" value="${zen.gendir}"/>
-           <param name="classpath" value="${openorb.class.path}"/>
-           <param name="idl.dir" value="${package.dir}"/>
-       </antcall>
-   </target>
+   <target name="all" depends="idl, compile"/>
 
    <target name="idl">
-      <java classpath="${classpath}"
-            dir="${zen.gendir}"
-            classname="${idl2java.compiler}"
-            fork="yes">
-            <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
-      </java>
+      <echo message="compiling ${package.dir}/${idl.src}"/>
+      <idlc file="${package.dir}/${idl.src}"/>
    </target>
 
-   <target name="compile" depends="idl">
+   <target name="compile">
       <javac srcdir="${zen.srcdir}:${zen.gendir}"
              destdir="${zen.classdir}"
-             classpath="${classpath}"
+             bootclasspath="${zen.rtbootclasspath}"
+             classpath="${zen.classpath}"
              debug="${zen.debug}"
              optimize="${zen.optimization}"
              >
              
              <patternset>
-                <include name="src/edu/uci/ece/zen/util/TracerAspect.java" if="zen.aspects.trace"/>
+                <!--include name="src/edu/uci/ece/zen/util/TracerAspect.java" if="zen.aspects.trace"/-->
                 <include name="${package.rel.dir}/**.java"/>
              </patternset> 
       </javac>
@@ -71,6 +52,7 @@
     </target>   
     
     <target name="client">
+        <echo message="using ior: ${ior1}"/>
         <java classname="${client.class}" fork="yes">
             <jvmarg line="${zen.jvm.properties} -Xms200M -Xmx500M"/>
             <arg line="${ior1}"/>
