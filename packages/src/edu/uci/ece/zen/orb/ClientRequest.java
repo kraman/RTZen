@@ -10,6 +10,7 @@ import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 import edu.uci.ece.zen.utils.Queue;
 
@@ -129,7 +130,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
 
         messageId = WaitingStrategy.newMessageId();
         ZenProperties.logger.log("ClientRequest 8");
-        if(ZenProperties.devDbg) {
+        if(ZenBuildProperties.dbgInvocations) {
             System.out.print("ClientRequest messageId:");
             System.out.println(messageId);
         }

@@ -4,6 +4,7 @@ import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.policies.PolicyManagerImpl;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 import java.net.InetAddress;
 
 public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
@@ -24,8 +25,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
             ZenProperties.logger.log("IIOP Transport: Got io streams");
-            if (ZenProperties.dbg) ZenProperties.logger.log("IIOP Transport ready: "
-                    + istream + " " + ostream);
+            if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("IIOP Transport ready: " + istream + " " + ostream);
             //setSockProps(sock, orb);
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
@@ -60,20 +60,13 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             }
 */
             try {
-                if (ZenProperties.dbg) ZenProperties.logger.log("Connecting to "
-                        + host + ":" + port);
-                if (ZenProperties.dbg) ZenProperties.logger.log("Current transport thread is of type "
-                                + javax.realtime.RealtimeThread
-                                        .currentRealtimeThread());
+                if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Connecting to " + host + ":" + port);
+                if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Current transport thread is of type " + javax.realtime.RealtimeThread.currentRealtimeThread());
 
                 if(ZenProperties.CAN_USE_STRINGS)
                     sock = new java.net.Socket(host, port);
                 else{
-                    sock = new java.net.Socket( InetAddress.getByAddress( new byte[]{
-                        ((byte)(128&0xFF)),
-                        ((byte)(195&0xFF)),
-                        ((byte)(174&0xFF)),
-                        ((byte)(20&0xFF))})  , port );
+                    sock = new java.net.Socket( InetAddress.getByAddress( new byte[]{ ((byte)(128&0xFF)), ((byte)(195&0xFF)), ((byte)(174&0xFF)), ((byte)(20&0xFF))})  , port );
                 }
 
 
@@ -82,8 +75,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
                 //             System.err.println( "sock = " + sock );
                 istream = sock.getInputStream();
                 ostream = sock.getOutputStream();
-                if (ZenProperties.dbg) ZenProperties.logger.log("Transport ready: "
-                        + istream + " " + ostream);
+                if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Transport ready: " + istream + " " + ostream);
             } catch (java.net.UnknownHostException ex) {
                 ZenProperties.logger.log(Logger.WARN,
                         getClass(), "<init>",

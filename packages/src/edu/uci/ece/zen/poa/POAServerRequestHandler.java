@@ -6,6 +6,7 @@ import edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 public class POAServerRequestHandler extends
         edu.uci.ece.zen.orb.ServerRequestHandler {
@@ -44,9 +45,7 @@ public class POAServerRequestHandler extends
      * </p>
      */
     public void handleRequest(RequestMessage req) {
-        if (ZenProperties.dbg) 
-            ZenProperties.logger.log("POAServerRequestHandler.handleRequest: " +
-            						 "Got a request to process: " + req);
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("POAServerRequestHandler.handleRequest: " + "Got a request to process: " + req);
 
         // gt the index into the Active Map
         FString objKey = req.getObjectKey();
@@ -58,10 +57,8 @@ public class POAServerRequestHandler extends
 
         POA poa = null;
 
-        if (ZenProperties.dbg) ZenProperties.logger.log("IOR: " + index + ","
-                + genCount);
-        if (ZenProperties.dbg) ZenProperties.logger.log("POA: " + index + ","
-                + demuxTable.getGenCount(index));
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("IOR: " + index + "," + genCount);
+        if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log("POA: " + index + "," + demuxTable.getGenCount(index));
 
         //TODO: Cant throw exception here. marshall and send back
         if (demuxTable.getGenCount(index) == genCount) {

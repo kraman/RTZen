@@ -14,6 +14,7 @@ import edu.uci.ece.zen.orb.transport.Transport;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.utils.Logger;
 import javax.realtime.*;
 import edu.uci.ece.zen.orb.protocol.*;
@@ -77,11 +78,9 @@ public final class GIOPMessageFactory extends MessageFactory{
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
 
 
-            if (ZenProperties.dbg) ZenProperties.logger.log
-                            ("In MessageFactory, the message size is "
-                            + mainMsgHdr.messageSize);
+            if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log ("In MessageFactory, the message size is " + mainMsgHdr.messageSize);
 
-            if (ZenProperties.dbg) ZenProperties.logger.log
+            if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log
                             ("Inside MessageFactory and mainMsgHdr: "
                             + mainMsgHdr.toString() + " and giopMajorVersion: "
                             + mainMsgHdr.majorVersion
@@ -220,7 +219,7 @@ public final class GIOPMessageFactory extends MessageFactory{
  //       edu.uci.ece.zen.utils.Logger.printMemStats(342);
 
         ZenProperties.logger.log("GMF parse stream 2");
-        if(ZenProperties.devDbg) {
+        if(ZenBuildProperties.dbgInvocations) {
             System.out.print("parse stream messageId:");
             System.out.println(ret.getRequestId());
         }
@@ -322,7 +321,7 @@ public final class GIOPMessageFactory extends MessageFactory{
         byte[] header = trans.getGIOPHeader();
         int read = 0;
         ZenProperties.logger.log("parseStreamForHeader: reading");
-        if(ZenProperties.devDbg) {
+        if(ZenBuildProperties.dbgInvocations) {
             System.out.print("parseStreamForHeader: buffer size");
             System.out.println(header.length);
             System.out.println("inputstream: " + in);
@@ -330,7 +329,7 @@ public final class GIOPMessageFactory extends MessageFactory{
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(3341);
         while (read < header.length) {
             int tmp = in.read(header, 0, header.length);
-            //if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
+            //if (ZenBuildProperties.dbgInvocations) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
                 return false;
             }
@@ -427,7 +426,7 @@ public final class GIOPMessageFactory extends MessageFactory{
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
 
-        if(ZenProperties.devDbg) {
+        if(ZenBuildProperties.dbgInvocations) {
             System.out.print("construct reply for messageId:");
             System.out.println(req.getRequestId());
         }

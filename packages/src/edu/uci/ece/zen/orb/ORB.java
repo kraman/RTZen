@@ -39,8 +39,8 @@ import edu.uci.ece.zen.utils.Hashtable;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
-import java.applet.Applet;
 import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
@@ -76,8 +76,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     static {
         try {
             try {
-                if (ZenProperties.dbg) ZenProperties.logger.log("local address"
-                        + java.net.InetAddress.getLocalHost().getHostAddress());
+                if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("local address" + java.net.InetAddress.getLocalHost().getHostAddress());
                 //sockAddr = new
                 // java.net.InetSocketAddress(java.net.InetAddress.getLocalHost().getHostAddress(),0);
                 sockAddr = java.net.InetAddress.getLocalHost();
@@ -163,29 +162,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             return retVal;
         }
     }
-
-    /* (non-Javadoc)
-     * @see org.omg.CORBA.ORB#set_parameters(java.applet.Applet, java.util.Properties)
-     */
-    protected void set_parameters(Applet app, Properties props)
-    {
-        // XXX Unsupported in RTZen because jRate does not support Applets.
-        /*
-         * NOTE: Unsupported in RTZen because jRate does not support Applets /**
-         * Initalizes the ORB and returns a reference to the orb. This method can be
-         * called multiple times and must return the same orb reference. This is a
-         * special method added to support Java Applets.
-         * @param app The applet object to load arguments from.
-         * @param props The properties to be used during ORB initialization.
-         */
-
-         // public static org.omg.CORBA.ORB  init(java.applet.Applet app, java.util.Properties props)
-        // {
-         //     ZenProperties.loadProperties(props); return ORB.init((String[])null,props); }
-
-    }
-
-
 
     public ScopedMemory orbImplRegion;
 
@@ -397,8 +373,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     public org.omg.CORBA.Object resolve_initial_references(String object_name)
             throws org.omg.CORBA.ORBPackage.InvalidName {
-        if (ZenProperties.dbg) ZenProperties.logger.log("======================Getting " + object_name
-                        + "=============================");
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("======================Getting " + object_name + "=============================");
         if (object_name.equals("RTORB")) {
             return getRTORB();
         } else if (object_name.equals("ORBPolicyManager")) {
@@ -473,7 +448,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     public NamingContextExt getNaming(){
         if (cachedNamingReference == null) {
-            if (ZenProperties.dbg){
+            if (ZenBuildProperties.dbgORB){
                 System.out.println("The location for reading naming service is "+ZenProperties.getGlobalProperty("naming.ior_file.for_reading",""));
             }
             String namingIOR = "";
@@ -553,7 +528,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public synchronized org.omg.CORBA.Object string_to_object(String str) {
-        if (ZenProperties.dbg){
+        if (ZenBuildProperties.dbgIOR){
             System.out.println("The String IOR need to changed to Object is...");
             if(str.equals("")){
                 System.out.println("Empty String IOR");
@@ -592,14 +567,14 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     ///////////////////////////////////////////////////////////////////////////
 
     public ScopedMemory getWaiterRegion(int key) {
-        if(ZenProperties.devDbg) {
+        if(ZenBuildProperties.dbgInvocations) {
             ZenProperties.logger.log(getClass()+ " getWaiterRegion() with key: " + key);
         }
         return waiterRegistry.getWaiter(key);
     }
 
     public void registerWaiter(int key) {
-        if(ZenProperties.devDbg) {
+        if(ZenBuildProperties.dbgInvocations) {
             ZenProperties.logger.log(getClass()+ " registerWaiter() with key: " + key);
         }
         try {
@@ -611,7 +586,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public void releaseWaiter(int key) {
-        if(ZenProperties.devDbg) {
+        if(ZenBuildProperties.dbgInvocations) {
             ZenProperties.logger.log(getClass()+ " releaseWaiter() with key: " + key);
         }
         try {
@@ -693,24 +668,31 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     public static Object getQueuedInstance(Class cls, Queue q) {
 
         if(q == null){
-            ZenProperties.logger.log(Logger.FATAL, cls, "getQueuedInstance",
-                    "Queue not created");
+            ZenProperties.logger.log(Logger.FATAL, cls, "getQueuedInstance", "Queue not created");
             return null;
         }
 
-        if(ZenProperties.devDbg) {;
-            System.out.println(cls.toString() + " current queue size: " + q.size());
+        if(ZenBuildProperties.dbgDataStructures) {
+            System.out.write( 'q' );
+            System.out.write( '_' );
+            System.out.write( 'i' );
+            System.out.write( 'n' );
+            System.out.write( 's' );
+            System.out.write( 't' );
+            Logger.writeln( q.size() );
+            //System.out.println(cls.toString() + " current queue size: " + q.size());
         }
 
         Object ret = q.dequeue();
         if( ret == null ){
-        try {
-            ret = ImmortalMemory.instance().newInstance(cls);
-        } catch (Exception e) {
-            ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
+            try {
+                ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", "Creating new instance.");
+                ret = ImmortalMemory.instance().newInstance(cls);
+            } catch (Exception e) {
+                ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
+            }
         }
-    }
-    return ret;
+        return ret;
     }
 
 

@@ -15,8 +15,6 @@ public class ReadBuffer {
     private static int numFree = 0; //just to debug the number of free buffers
     private boolean enableAlignment = true;
 
-    private static Object [] vectorArgTypes;
-    private static java.lang.reflect.Constructor vectorConstructor;
     private static int maxCap = 10;
 
     public void setAlignment( boolean align ){
@@ -25,10 +23,7 @@ public class ReadBuffer {
 
     static {
         try {
-            vectorConstructor = Vector.class.getConstructor(new Class [] {int.class});
-            vectorArgTypes = new Object[1];
             maxCap = Integer.parseInt(ZenProperties.getGlobalProperty( "readbuffer.size" , "20" ));
-            vectorArgTypes[0] = new Integer(maxCap);
             bufferCache = (Queue) ImmortalMemory.instance().newInstance( Queue.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, "static <init>", e);
@@ -43,29 +38,40 @@ public class ReadBuffer {
         try {
             //Thread.dumpStack();
                 numFree--;
-	    ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
-            if (ret == null) {
-                ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
-                rb.id = idgen++;
-                if(ZenProperties.memDbg1) System.out.write('r');
-                if(ZenProperties.memDbg1) System.out.write('n');                
-                if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.write(rb.id);
-                rb.inUse = true;
-                return rb;
-            }else {
-                //Thread.dumpStack();
-                if(ret.inUse)
-                    ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class,
-                        "instance",
-                        "Buffer already in use.");
-                //ret.previd = ret.id;
+                ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
+                if (ret == null) {
+                ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, "instance", "Creating new instance.");
+                    ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
+                    rb.id = idgen++;
+                    if(ZenBuildProperties.dbgDataStructures){
+                        System.out.write('r');
+                        System.out.write('b');
+                        System.out.write('u');
+                        System.out.write('f');
+                        System.out.write('1');
+                        edu.uci.ece.zen.utils.Logger.writeln(rb.id);
+                    }
+                    rb.inUse = true;
+                    return rb;
+                }else {
+                    //Thread.dumpStack();
+                    if(ret.inUse)
+                        ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class,
+                                "instance",
+                                "Buffer already in use.");
+                    //ret.previd = ret.id;
                 //ret.id = idgen++;
                 ret.inUse = true;
                 ret.init();
                 
-                if(ZenProperties.memDbg1) System.out.write('r');
-                if(ZenProperties.memDbg1) System.out.write('u');                 
-                if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(ret.id);                
+                if(ZenBuildProperties.dbgDataStructures){
+                    System.out.write('r');
+                    System.out.write('b');
+                    System.out.write('u');
+                    System.out.write('f');
+                    System.out.write('2');
+                    edu.uci.ece.zen.utils.Logger.writeln(ret.id);                
+                }
                 return ret;
             }
         } catch (Exception e) {
@@ -244,27 +250,30 @@ public class ReadBuffer {
             ba--;
         }
 
+        if(ZenBuildProperties.dbgDataStructures){
+            System.out.write('b');
+            System.out.write('r');
+            edu.uci.ece.zen.utils.Logger.write(ba);
+            System.out.write(',');
+            edu.uci.ece.zen.utils.Logger.write(buffers.size());
+            System.out.write(',');
+            edu.uci.ece.zen.utils.Logger.writeln(bs);
+        }
 
-         if(ZenProperties.memDbg1) System.out.write('b');
-         if(ZenProperties.memDbg1) System.out.write('r');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(ba);
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(buffers.size());
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(bs);
-
-        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(637);
-        //buffers.removeAllElements();
         init();
-        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(638);
         inUse = false;
         
-        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(639);
         numFree++;
-        if(ZenProperties.memDbg1) System.out.write('r');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.write(numFree);
-        if(ZenProperties.memDbg1) System.out.write(',');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(id);        
-       // edu.uci.ece.zen.utils.Logger.writeln(bufferCache.size());
-       ReadBuffer.release(this);
+        if(ZenBuildProperties.dbgDataStructures){
+            System.out.write('r');
+            System.out.write('b');
+            System.out.write('u');
+            System.out.write('f');
+            edu.uci.ece.zen.utils.Logger.write(numFree);
+            System.out.write(',');
+            edu.uci.ece.zen.utils.Logger.writeln(id);
+        }
+        ReadBuffer.release(this);
     }
 
     public void freeWithoutBufferRelease() {
@@ -465,7 +474,6 @@ public class ReadBuffer {
 
     public FString readFString(boolean isString) {
         int len = readLong();
-        if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$FString len" + len);
         if( isString )
             len--;
         FString fs = FString.instance();

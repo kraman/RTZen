@@ -15,8 +15,6 @@ public class WriteBuffer {
     private static int LONG = 4;
     private static int LONGLONG = 8;
 
-    private static Object [] vectorArgTypes;
-    private static java.lang.reflect.Constructor vectorConstructor;
     private static int maxCap = 10;
     private static boolean enableAllignment = true;
 
@@ -26,12 +24,8 @@ public class WriteBuffer {
 
     static {
         try {
-            vectorConstructor = Vector.class
-                    .getConstructor(new Class [] {int.class});
-            vectorArgTypes = new Object[1];
             maxCap = Integer.parseInt(ZenProperties
                 .getGlobalProperty( "writebuffer.size" , "20" ));
-            vectorArgTypes[0] = new Integer(maxCap);
 	    bufferCache = (Queue) ImmortalMemory.instance().newInstance(Queue.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "static <init>", e);
@@ -50,6 +44,7 @@ public class WriteBuffer {
             numFree--;
 	    WriteBuffer wb = (WriteBuffer) bufferCache.dequeue();
             if ( wb == null){
+                ZenProperties.logger.log(Logger.WARN, WriteBuffer.class, "instance", "Creating new instance.");
                 wb = (WriteBuffer) ImmortalMemory.instance().newInstance(WriteBuffer.class);
                 //System.out.println("WWINST:" + idgen);
                 wb.id = idgen;
@@ -115,7 +110,7 @@ public class WriteBuffer {
     public void free() {
 	//System.out.println( "WriteBuffer.free()" );
         if(!inUse){
-	Thread.dumpStack();
+            Thread.dumpStack();
             ZenProperties.logger.log(Logger.WARN, WriteBuffer.class, "free", "Buffer already freed.");
                 //System.exit(-1);
                 //still deciding what to do here
@@ -130,19 +125,30 @@ public class WriteBuffer {
             ba--;
         }
 
-         if(ZenProperties.memDbg1) System.out.write('b');
-         if(ZenProperties.memDbg1) System.out.write('w');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(ba);
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(buffers.size());
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(bs);
+        if(ZenBuildProperties.dbgDataStructures){
+            System.out.write('w');
+            System.out.write('b');
+            System.out.write('u');
+            System.out.write('f');
+            edu.uci.ece.zen.utils.Logger.write(ba);
+            System.out.write(',');
+            edu.uci.ece.zen.utils.Logger.write(buffers.size());
+            System.out.write(',');
+            edu.uci.ece.zen.utils.Logger.writeln(bs);
+        }
 
         buffers.removeAllElements();
         init();
         WriteBuffer.release(this);
         numFree++;
 
-        if(ZenProperties.memDbg1) System.out.write('w');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(numFree);
+        if(ZenBuildProperties.dbgDataStructures){
+            System.out.write('w');
+            System.out.write('b');
+            System.out.write('u');
+            System.out.write('f');
+            edu.uci.ece.zen.utils.Logger.writeln(numFree);
+        }
 
        inUse = false;
     }
@@ -371,7 +377,6 @@ public class WriteBuffer {
 
         pad(WriteBuffer.LONGLONG);
         byte b1 = (byte) ((v >>> 56) & 0xFF);
-        if (ZenProperties.dbg) ZenProperties.logger.log(b1 + "");
         byte b2 = (byte) ((v >>> 48) & 0xFF);
         byte b3 = (byte) ((v >>> 40) & 0xFF);
         byte b4 = (byte) ((v >>> 32) & 0xFF);

@@ -9,6 +9,7 @@ import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.orb.IOR;
@@ -37,6 +38,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
         drawn++;
 	    CDRInputStream cdr = (CDRInputStream) cdrInputStreamCache.dequeue();
             if ( cdr == null ){
+                ZenProperties.logger.log(Logger.WARN, CDRInputStream.class, "instance", "Creating new instance.");
                 cdr = (CDRInputStream) ImmortalMemory.instance().newInstance(CDRInputStream.class);
                 cdr.inUse = true;
                 return cdr;
@@ -88,7 +90,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     public CDRInputStream read_CDRInputStream() {
         int len = this.read_long();
-        ReadBuffer buf = buffer.readBuffer(len);
+        //ReadBuffer buf = buffer.readBuffer(len);
         CDRInputStream str = CDRInputStream.instance();
         str.init(orb, buffer);
         return str;
@@ -548,9 +550,15 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
         CDRInputStream.release(this);
         inUse = false;
         drawn--;
-        if(ZenProperties.memDbg1) System.out.write('c');
-        if(ZenProperties.memDbg1) System.out.write('i');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(drawn);        
+
+        if(ZenBuildProperties.dbgDataStructures){
+            System.out.write('c');
+            System.out.write('d');
+            System.out.write('r');
+            System.out.write('I');
+            System.out.write('s');
+            edu.uci.ece.zen.utils.Logger.writeln(drawn);
+        }
     }
 
     // Needs to be implemented

@@ -7,6 +7,7 @@ import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 
@@ -36,9 +37,17 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.protocol.type.ReplyMessage
     static int drawn = 0;
     public static ReplyMessage getMessage() {
         drawn++;
-        if(ZenProperties.memDbg1) System.out.write('d');
-        if(ZenProperties.memDbg1) System.out.write('r');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(drawn);
+        if(ZenBuildProperties.dbgDataStructures){
+            System.out.write('r');
+            System.out.write('e');
+            System.out.write('p');
+            System.out.write('l');
+            System.out.write('y');
+            System.out.write('m');
+            System.out.write('s');
+            System.out.write('g');
+            edu.uci.ece.zen.utils.Logger.writeln(drawn);
+        }
         return (ReplyMessage)ORB.getQueuedInstance(ReplyMessage.class,queue);
     }
 

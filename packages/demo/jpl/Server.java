@@ -73,11 +73,11 @@ public class Server extends RealtimeThread
             
             RTORB rtorb = RTORBHelper.narrow(orb.resolve_initial_references ("RTORB"));
             
-            System.out.println("Max prio " + PriorityScheduler.MAX_PRIORITY);
-            System.out.println("Min prio " + PriorityScheduler.MIN_PRIORITY);
-            System.out.println("Norm prio " + PriorityScheduler.getNormPriority(RealtimeThread.currentThread()));
+            System.out.println("Max prio " + PriorityScheduler.instance().getMaxPriority());
+            System.out.println("Min prio " + PriorityScheduler.instance().getMinPriority());
+            System.out.println("Norm prio " + PriorityScheduler.instance().getNormPriority());
             //short priority = (short) (30 + (PriorityScheduler.getNormPriority(RealtimeThread.currentThread()))) ;
-            short priority = (short) PriorityScheduler.getMaxPriority(RealtimeThread.currentThread());
+            short priority = (short) PriorityScheduler.instance().getMaxPriority();
             System.out.println("Higher priority is: " + priority);
             
             int threadPoolId = rtorb.create_threadpool(100, 50, 50, priority, false, 10, 10);            

@@ -29,6 +29,7 @@ import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.utils.WriteBuffer;
 
 public class POAImpl {
@@ -390,8 +391,8 @@ public class POAImpl {
 
             statCount++;
 
-            if (statCount % ZenProperties.MEM_STAT_COUNT == 0) edu.uci.ece.zen.utils.Logger
-                .printMemStats(2);
+            if (statCount % ZenBuildProperties.MEM_STAT_COUNT == 0)
+                edu.uci.ece.zen.utils.Logger.printMemStats(ZenBuildProperties.dbgPOAScopeId);
 
             //ExecuteInRunnable eir = (ExecuteInRunnable)
             // requestScope.newInstance( ExecuteInRunnable.class );
@@ -549,9 +550,8 @@ public class POAImpl {
             retFString(okey);
             retFString(oid);
             retIntHolder(ih);
-            if (ZenProperties.dbg) ZenProperties.logger.log("servant_to_reference "
-                    + retVal);
-            if (ZenProperties.dbg) ZenProperties.logger.log("servant_to_reference client area " + clientMemoryArea);
+            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("servant_to_reference " + retVal);
+            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("servant_to_reference client area " + clientMemoryArea);
 
             //p_servant._set_delegate(((org.omg.CORBA.portable.ObjectImpl)retVal)._get_delegate());
 
@@ -813,13 +813,11 @@ public class POAImpl {
         }
 
         public void run() {
-            if (ZenProperties.dbg)
-                ZenProperties.logger.log("getting portal for: " + sm);
-            if (ZenProperties.dbg)
-                ZenProperties.logger.log("inner thread: " + Thread.currentThread().toString());
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("getting portal for: " + sm);
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("inner thread: " + Thread.currentThread().toString());
 
             POAImpl poaImpl = (POAImpl) sm.getPortal();
-            if (ZenProperties.dbg) ZenProperties.logger.log("poa impl is " + poaImpl);
+            if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("poa impl is " + poaImpl);
             synchronized (poaImpl) {
                 try {
                     while (active) {

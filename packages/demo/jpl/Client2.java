@@ -7,6 +7,8 @@ import java.io.FileReader;
 import javax.realtime.ImmortalMemory;
 import javax.realtime.NoHeapRealtimeThread;
 import javax.realtime.RealtimeThread;
+import javax.realtime.PriorityParameters;
+import javax.realtime.PriorityScheduler;
 
 import org.omg.CORBA.ORB;
 
@@ -43,7 +45,9 @@ public class Client2 extends NoHeapRealtimeThread
 
     static int id;
 
-    //public Client2(){}
+    public Client2(){
+        super( new PriorityParameters( PriorityScheduler.instance().getMaxPriority() ) , RealtimeThread.getCurrentMemoryArea() );
+    }
 
     /**
      * Main function.

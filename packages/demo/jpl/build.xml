@@ -13,29 +13,28 @@
         <!--jar
             jarfile="${zen.libdir}/hello_policies.jar"
             basedir="${zen.classdir}"
-            includes="${package.dir}/**"/>
-        <antcall target="compile.jrate"/ -->
+            includes="${package.dir}/**"/-->
+        <antcall target="compile.jrate"/>
     </target>
 
-    <!-- target name="compile.jrate" if="compiler_jRate">
-        <demo.compile.jrate main="demo.hello.Client" out="client">
+    <target name="compile.jrate" if="compiler_jRate">
+        <demo.compile.jrate main="demo.jpl.Client3" out="client">
             <fileset dir="${zen.srcdir}/${package.dir}">
-               <include name="Client.java"/>               
+               <include name="**"/>
             </fileset>
             <fileset dir="${zen.gendir}/${package.dir}">
-                <include name="*.java"/>
+                <include name="**"/>
             </fileset>
         </demo.compile.jrate>
-        <demo.compile.jrate main="demo.hello.Server" out="server">
+        <demo.compile.jrate main="demo.jpl.Server" out="server">
             <fileset dir="${zen.srcdir}/${package.dir}">
-                <include name="Server.java"/>                
-                <include name="HelloWorldImpl.java"/>
+                <include name="**"/>                
             </fileset>
             <fileset dir="${zen.gendir}/${package.dir}">
-                <include name="*.java"/>
+                <include name="**"/>
             </fileset>
          </demo.compile.jrate>
-    </target -->
+    </target >
 
     <target name="server">
         <java classname="demo.jpl.Server" fork="yes">

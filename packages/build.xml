@@ -50,6 +50,7 @@
             <exclude name="src/edu/uci/ece/zen/orb/transport/serial/**"/>
             <exclude name="src/edu/uci/ece/zen/orb/protocol/giop/v1_1/**"/>
             <exclude name="src/edu/uci/ece/zen/orb/protocol/giop/v1_2/**"/>
+            <exclude name="src/edu/uci/ece/zen/orb/protocol/giop_lite/**"/>
 
             <include name="src/edu/uci/ece/zen/orb/portableInterceptor/**"  if="zen.aspects.pi"/>
             <include name="generated/org/omg/PortableInterceptor/**/"  if="zen.aspects.pi"/>
@@ -84,10 +85,7 @@
     <target name="compile">
         <echo message="Compiling OMG and Zen sources with the AspectJ compiler."/>
         <echo message=""/>
-        <echo message="********** New message from mpanahi: Jan. 27, 2005 **********"/>
-        <echo message="Make sure you are using the AspectJ compiler adapter."/>
-        <echo message="To use it, please copy the appropriate line from zen-build_properties to zen-build.properties."/>
-        <echo message=""/>
+
         <!--echo message="Current rt classpath is: ${zen.rtbootclasspath}"/-->
         <!--echo message="Current classpath is: ${zen.classpath}"/-->
         <!--echo message="Current classpath is: ${java.home}"/-->

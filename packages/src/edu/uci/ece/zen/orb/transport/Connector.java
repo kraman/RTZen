@@ -13,9 +13,7 @@ public abstract class Connector {
     public Connector() {
     }
 
-    private int statCount = 0;
     public final ScopedMemory connect(FString host, short port, edu.uci.ece.zen.orb.ORB orb, ORBImpl orbImpl) {
-        //System.err.println( "]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]Connector " );
         ExecuteInRunnable eir = (ExecuteInRunnable) orbImpl.eirCache.dequeue();
         if (eir == null) eir = new ExecuteInRunnable();
         ExecuteInRunnable eir2 = (ExecuteInRunnable) orbImpl.eirCache.dequeue();
@@ -36,10 +34,6 @@ public abstract class Connector {
         orbImpl.eirCache.enqueue(eir);
         orbImpl.eirCache.enqueue(eir2);
         orbImpl.crCache.enqueue(connRunnable);
-        if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
-            edu.uci.ece.zen.utils.Logger.printMemStats(5);
-        }
-        statCount++;
         if( !connRunnable.getReturnStatus() ){
             ORB.freeScopedRegion( transportMem );
             return null;

@@ -12,6 +12,7 @@ import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.poa.POARunnable;
 import edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo;
 
@@ -69,8 +70,7 @@ public abstract class Transport implements Runnable {
         waitObj = new Integer(0);
         objectTable = new Object[4];
         objectTable[2] = new byte[12];
-        if (ZenProperties.dbg) ZenProperties.logger.log("Transport being created "
-                + RealtimeThread.getCurrentMemoryArea());
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("Transport being created " + RealtimeThread.getCurrentMemoryArea());
     }
 
     public byte[] getGIOPHeader() {
@@ -86,22 +86,22 @@ public abstract class Transport implements Runnable {
 
         messageProcessor = new MessageProcessor(this, orb);
 
-        if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(RealtimeThread
                 .getCurrentMemoryArea().toString());
-        if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(MemoryArea
                 .getMemoryArea(messageProcessor).toString());
-        if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(MemoryArea
                 .getMemoryArea(this).toString());
 
-        RealtimeThread messageProcessorThr = new RealtimeThread(null,
+        RealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,
                 null, null, RealtimeThread.getCurrentMemoryArea(), null,
                 messageProcessor);
         messageProcessorThr.setDaemon(true);
 
 
-        if (ZenProperties.dbg) ZenProperties.logger.log(javax.realtime.RealtimeThread
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(javax.realtime.RealtimeThread
                     .getCurrentMemoryArea().toString());
-        if (ZenProperties.dbg) ZenProperties.logger.log(javax.realtime.MemoryArea
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(javax.realtime.MemoryArea
                     .getMemoryArea(messageProcessorThr).toString());
         messageProcessorThr.start();
         try {
@@ -179,7 +179,7 @@ class MessageProcessor implements Runnable {
     private boolean isActive;
 
     public MessageProcessor(Transport trans, edu.uci.ece.zen.orb.ORB orb) {
-        if (ZenProperties.dbg) ZenProperties.logger.log("Transport.java/MessageProcessor, the current memory scope is: "
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("Transport.java/MessageProcessor, the current memory scope is: "
                         + RealtimeThread.getCurrentMemoryArea());
         this.trans = trans;
         this.orb = orb;
@@ -187,7 +187,7 @@ class MessageProcessor implements Runnable {
 
     public void run() {
         isActive = true;
-        if (ZenProperties.dbg) ZenProperties.logger.log(javax.realtime.RealtimeThread.getCurrentMemoryArea().toString());
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(javax.realtime.RealtimeThread.getCurrentMemoryArea().toString());
         GIOPMessageRunnable gmr = new GIOPMessageRunnable(orb, trans);
 
         //ExecuteInRunnable eir = new ExecuteInRunnable();
@@ -270,14 +270,14 @@ class GIOPMessageRunnable implements Runnable {
             statCount++;
  //         edu.uci.ece.zen.utils.Logger.printMemStats(304);
 
-            if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
+            if (statCount % ZenBuildProperties.MEM_STAT_COUNT == 0) {
                 //System.out.print(name);
-                edu.uci.ece.zen.utils.Logger.printMemStats(3);
+                edu.uci.ece.zen.utils.Logger.printMemStats(ZenBuildProperties.dbgORBScopeId);
                 edu.uci.ece.zen.utils.Logger.printMemStats(orb);
             }
 
             ZenProperties.logger.log("Inside GMR run");
-            if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread.getCurrentMemoryArea().toString());
+            if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(RealtimeThread.getCurrentMemoryArea().toString());
           
             message = edu.uci.ece.zen.orb.protocol.MessageFactory.parseStream(orb, trans);
             if( message == null )   //connection closed
@@ -328,9 +328,6 @@ class GIOPMessageRunnable implements Runnable {
             }
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(2223);
         } catch (java.io.IOException ioex) {
-            //TODO: do something here
-            if(ZenProperties.devDbg)
-                System.out.println("Exception");
             try{
                 Thread.currentThread().sleep(1000);
             }catch(Exception e){

@@ -32,6 +32,7 @@ import edu.uci.ece.zen.utils.Hashtable;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 /**
  * See section 11.3.9 in the CORBA Sepecification.
@@ -373,7 +374,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         r.addParam(p_servant);
         r.addParam(RealtimeThread.getCurrentMemoryArea());
      
-        if (ZenProperties.dbg) ZenProperties.logger.log("POA.servant_to_reference cur mem area: " + RealtimeThread.getCurrentMemoryArea());
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("POA.servant_to_reference cur mem area: " + RealtimeThread.getCurrentMemoryArea());
         ExecuteInRunnable eir1 = new ExecuteInRunnable(); //XXX This is a memory leak;
         eir1.init(r, this.poaMemoryArea);
         ExecuteInRunnable eir2 = new ExecuteInRunnable(); //XXX This is a memory leak;
@@ -391,7 +392,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             case POARunnable.WrongPolicyException:
                 throw new WrongPolicy();
         }
-        if (ZenProperties.dbg) ZenProperties.logger.log("POA.servant_to_reference " + r.retVal);
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("POA.servant_to_reference " + r.retVal);
         return (org.omg.CORBA.Object) r.retVal;
     }
 
@@ -749,10 +750,10 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         	case POARunnable.WrongPolicyException:
         	    throw new WrongPolicy();
         	default:
-        	    if (ZenProperties.dbg) ZenProperties.logger.log("Unexpected exception in " + getClass() +".get_servant.");
+        	    if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("Unexpected exception in " + getClass() +".get_servant.");
         }
        
-       if (ZenProperties.dbg) ZenProperties.logger.log("POA.get_servant" + r.retVal);
+       if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("POA.get_servant" + r.retVal);
        return (Servant) r.retVal;
     }
 
@@ -789,7 +790,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         }
         else if (r.exception != POARunnable.NoException)
         {
-    	    if (ZenProperties.dbg) ZenProperties.logger.log("Unexpected exception in " + getClass() +".set_servant.");
+    	    if (ZenBuildProperties.dbgPOA) ZenProperties.logger.log("Unexpected exception in " + getClass() +".set_servant.");
         }
     }
 

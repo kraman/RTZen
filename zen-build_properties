@@ -31,7 +31,7 @@ jRate_install = /home/jay/jRate/
 jRate_classpath = /home/jay/jRate-gcc/share/java/libgcj-3.3.3.jar:/home/jay/jRate/classes/
 OVM_install = /home/kraman/OpenVM/OpenVM_bin/
 JamaicaVM_install = /usr/local/jamaica-2.4-10
-Mackinac_install = /opt/mackinac
+Mackinac_install = /opt/mackinac-beta-1
 
 
 #Set up the tag if you need to compile the naming service
@@ -39,6 +39,37 @@ Mackinac_install = /opt/mackinac
 
 #Portable Interceptors
 #zen.aspects.pi
+
+#Debug Settings
+zen.debug.memory.immortal = false
+zen.debug.memory.scoped.application = false
+zen.debug.memory.scoped.orb = false
+zen.debug.memory.scoped.poa = false
+zen.debug.memory.scoped.transport = false
+zen.debug.memory.scoped.threadpool = false
+
+zen.debug.memory.immortal.id = 9
+zen.debug.memory.scoped.application.id = 0
+zen.debug.memory.scoped.orb.id = 1
+zen.debug.memory.scoped.poa.id = 2
+zen.debug.memory.scoped.transport.id = 3
+zen.debug.memory.scoped.threadpool.id = 4
+
+zen.debug.memory.mem_stat_count = 100
+#basic idea is that if there is no memory leak in the last x% of the data then
+#it is safe to assume that there is no memory leak at all
+zen.debug.memory.observe_last_x_percent = 50
+
+zen.debug.invocations = false
+zen.debug.ior = false
+zen.debug.poa = false
+zen.debug.orb = false
+zen.debug.tp = false
+zen.debug.zenproperties = false
+zen.debug.datastructures = false
+zen.debug.threadstack = false
+
+
 
 ###############################################################################
 ###############################################################################

@@ -16,6 +16,7 @@ import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
 
@@ -57,39 +58,26 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN
         edu.uci.ece.zen.utils.Logger.printThreadStack();
-        if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor version " + version);
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Acceptor version " + version);
         switch (iiopMinorVersion) {
             case 0:
-                if (ZenProperties.devDbg) {
-
-                    if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor, the current memoery is :"
-                                    + javax.realtime.RealtimeThread
-                                            .getCurrentMemoryArea());
-                    if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor, the memory of ssock is "
-                                    + javax.realtime.MemoryArea
-                                            .getMemoryArea(ssock));
-                    if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor getHostAddress"
-                            + ssock.getInetAddress().getHostAddress());
-                    if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor getLocalPort()"
-                            + (short) ssock.getLocalPort());
-                    if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor objKey" + objKey);
+                if (ZenBuildProperties.dbgIOR) {
+                    ZenProperties.logger.log("Acceptor, the current memoery is :" + javax.realtime.RealtimeThread .getCurrentMemoryArea());
+                    ZenProperties.logger.log("Acceptor, the memory of ssock is " + javax.realtime.MemoryArea .getMemoryArea(ssock));
+                    ZenProperties.logger.log("Acceptor getHostAddress" + ssock.getInetAddress().getHostAddress());
+                    ZenProperties.logger.log("Acceptor getLocalPort()" + (short) ssock.getLocalPort());
+                    ZenProperties.logger.log("Acceptor objKey" + objKey);
                 }
-                ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock
-                        .getInetAddress().getHostAddress(), (short) ssock
-                        .getLocalPort(), objKey);
+                ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock.getInetAddress().getHostAddress(), (short) ssock.getLocalPort(), objKey);
                 ProfileBody_1_0Helper.write(out, pb10);
-
                 break;
             case 1:
             case 2:
                 //org.omg.IOP.TaggedComponent[] components = new
                 // org.omg.IOP.TaggedComponent[0];
                 //TODO: insert rt policy info and other tagged components
-                ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock
-                        .getInetAddress().getHostAddress(), (short) ssock
-                        .getLocalPort(), objKey, getComponents());
+                ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock.getInetAddress().getHostAddress(), (short) ssock.getLocalPort(), objKey, getComponents());
                 ProfileBody_1_1Helper.write(out, pb11);
-
                 break;
         }
 

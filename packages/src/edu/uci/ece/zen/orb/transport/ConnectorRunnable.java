@@ -3,12 +3,14 @@ package edu.uci.ece.zen.orb.transport;
 import javax.realtime.NoHeapRealtimeThread;
 import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
+import javax.realtime.*;
 
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.ORBImpl;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 public class ConnectorRunnable implements Runnable {
     public ConnectorRunnable() {
@@ -45,8 +47,8 @@ public class ConnectorRunnable implements Runnable {
     public void run() {
         try{
             statCount++;
-            if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
-                edu.uci.ece.zen.utils.Logger.printMemStats(5);
+            if (statCount % ZenBuildProperties.MEM_STAT_COUNT == 0) {
+                edu.uci.ece.zen.utils.Logger.printMemStats(ZenBuildProperties.dbgTransportScopeId);
             }
 
             int iport = 0;
@@ -61,8 +63,7 @@ public class ConnectorRunnable implements Runnable {
             Transport trans = conn.internalConnect(host2, iport, orb,
                     (ORBImpl) orb.orbImplRegion.getPortal());
             if( trans != null ){
-                RealtimeThread transportThread = new NoHeapRealtimeThread(null, null,
-                        null, RealtimeThread.getCurrentMemoryArea(), null, trans);
+                RealtimeThread transportThread = new NoHeapRealtimeThread( new PriorityParameters( PriorityScheduler.instance().getMaxPriority() ) , null, null, RealtimeThread.getCurrentMemoryArea(), null, trans);
                 //RealtimeThread transportThread = new
                 // RealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);
                 transportThread.start();

@@ -8,6 +8,7 @@ import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 public class IOR {
     private static final char[] intToHex = {
@@ -16,22 +17,29 @@ public class IOR {
     };
 
     private static ReadBuffer stringToByteBuffer(String s) {
-        int line = 1;
-        ReadBuffer buffer = ReadBuffer.instance();
-        byte[] tmpBuffer = ByteArrayCache.instance().getByteArray();
-        int len = 0;
+        try{
+            int line = 1;
+            ReadBuffer buffer = ReadBuffer.instance();
+            byte[] tmpBuffer = ByteArrayCache.instance().getByteArray();
+            int len = 0;
 
-        int readPos = 4;
-        while (readPos < s.length()) {
-            char first = s.charAt(readPos++);
-            char second = s.charAt(readPos++);
-            byte combined = (byte) (((hexToInt(first) & 0xF) << 4) | (hexToInt(second) & 0xF));
-            tmpBuffer[len++] = combined;
+            int readPos = 4;
+            while (readPos < s.length()) {
+                char first = s.charAt(readPos++);
+                char second = s.charAt(readPos++);
+                byte combined = (byte) (((hexToInt(first) & 0xF) << 4) | (hexToInt(second) & 0xF));
+                tmpBuffer[len++] = combined;
+            }
+
+            buffer.writeByteArray(tmpBuffer, 0, len);
+            ByteArrayCache.instance().returnByteArray(tmpBuffer);
+            return buffer;
         }
-
-        buffer.writeByteArray(tmpBuffer, 0, len);
-        ByteArrayCache.instance().returnByteArray(tmpBuffer);
-        return buffer;
+        catch(Throwable ex){
+            System.out.println("Catched in IOR:"+ex);
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     private static byte hexToInt(char c) {
@@ -95,7 +103,7 @@ public class IOR {
             int threadPoolId)
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
-        if (ZenProperties.dbg) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea
                 .newInstance(org.omg.IOP.IOR.class);
         ior.type_id = typeID;

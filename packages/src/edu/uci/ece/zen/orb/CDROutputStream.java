@@ -32,6 +32,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         try {
             CDROutputStream cdr = (CDROutputStream) cdrCache.dequeue();
             if ( cdr == null ){
+                ZenProperties.logger.log(Logger.WARN, CDROutputStream.class, "instance", "Creating new instance.");
                 cdr = (CDROutputStream) ImmortalMemory.instance().newInstance(CDROutputStream.class);
                 cdr.inUse = true;
                 return cdr;

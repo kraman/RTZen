@@ -77,7 +77,7 @@ public class Client1 extends RealtimeThread
     private Object tmp;
     public void allocHeap(){
         try{
-            tmp = HeapMemory.instance().newArray( byte.class , 100 );
+            tmp = HeapMemory.instance().newArray( byte.class , 10000 );
         }catch(Exception e){
             e.printStackTrace();
         }

@@ -70,13 +70,19 @@ public class ByteArrayCache {
             byte[] ret = (byte[]) byteBuffers.dequeue();
             num++;
             //Thread.dumpStack();
-            if(ZenProperties.memDbg1) System.out.write('d');
-            if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(num);
-            if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln();
+            if(ZenBuildProperties.dbgDataStructures){
+                System.out.write('b');
+                System.out.write('a');
+                System.out.write('_');
+                System.out.write('c');
+                System.out.write('a');
+                System.out.write('c');
+                System.out.write('h');
+                System.out.write('e');
+                edu.uci.ece.zen.utils.Logger.writeln(num);
+            }
 
             if (ret == null) {
-                if(ZenProperties.memDbg1) System.out.write('g');
-                if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(byteBuffers.size());
                 return (byte[]) imm.newArray(byte.class, 1024);
             } else {
                 return ret;
@@ -95,10 +101,18 @@ public class ByteArrayCache {
      *            The byte buffer to return to the cache.
      */
     public void returnByteArray(byte[] buf) {
-        byteBuffers.enqueue(buf);
         num--;
-        if(ZenProperties.memDbg1) System.out.write('e');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(num);
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(byteBuffers.size());
+        if(ZenBuildProperties.dbgDataStructures){
+            System.out.write('b');
+            System.out.write('a');
+            System.out.write('_');
+            System.out.write('c');
+            System.out.write('a');
+            System.out.write('c');
+            System.out.write('h');
+            System.out.write('e');
+            edu.uci.ece.zen.utils.Logger.writeln(num);
+        }
+        byteBuffers.enqueue(buf);
   }
 }
