@@ -21,7 +21,6 @@ class RMISerialPortClient implements SerialPort
         {
             System.out.println("looking up " + address);
             rmiSerialPort = (RMISerialPort) Naming.lookup(address);
-            System.out.println("got rmi address");
         }
         catch (NotBoundException e)
         {

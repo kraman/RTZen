@@ -1,8 +1,9 @@
 package edu.uci.ece.zen.orb.transport.serial;
 
 import java.io.*;
-import java.net.*;
 import java.util.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 interface SerialPort
 {
@@ -121,11 +122,12 @@ class SerialPortProtocol
         return message;
     }
 
-    static void decodeSocketData(byte[] message, List inputBuffer)
+    static void decodeSocketData(byte[] message, edu.oswego.cs.dl.util.concurrent.BoundedBuffer inputBuffer)
+        throws InterruptedException
     {
         for (int i = 2; i < message.length; i++)
         {
-            inputBuffer.add(new Integer(message[i]));
+            inputBuffer.put(new Integer(message[i]));
         }
     }
 
