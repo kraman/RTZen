@@ -11,7 +11,9 @@ public abstract class Transport implements Runnable{
     protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
     private MessageProcessor messageProcessor;
 
-    public Object objectTable;         //used to store misc objects with 1instance per transport
+    public Object objectTable[];    //used to store misc objects with 1instance per transport
+                                    // 0 = POARunnable for POA.handleRequest
+                                    // 1 = ExecuteInRunnable for POA.handleRequest
 
     /**
      * <p>

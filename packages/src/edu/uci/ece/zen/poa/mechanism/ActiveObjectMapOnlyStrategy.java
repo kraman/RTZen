@@ -103,8 +103,8 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
      * @return int
      */
 
-    //TODO: Peter, get rid of new calls over here. this will be executed from POA Impl region
     public void handleRequest( edu.uci.ece.zen.orb.giop.type.RequestMessage request, POA poa, SynchronizedInt requests , IntHolder exceptionValue ) {
+        System.out.println( RealtimeThread.getCurrentMemoryArea().memoryConsumed() );
         exceptionValue.value = POARunnable.NoException;
         FString okey = request.getObjectKey();
 
@@ -152,13 +152,11 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         }
         this.threadPolicyStrategy.enter(invokeHandler);
 
-        //TODO: Peter, get a ScopedRegion from the orb and all the actual invocations need to happen
-        //inside this region. At the end...free the region.
-
         ScopedMemory sm = poa.getORB().getScopedRegion();
         MSGRunnable msgr = getMSGR();
         msgr.init(request, myServant , reply, poa.getORB());
         sm.enter(msgr);
+        retMSGR( msgr );
         poa.getORB().freeScopedRegion(sm);
 
         /*if (request.getOperation().equals("_is_a") )
@@ -206,22 +204,23 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
             e.printStackTrace();
         }*/
         //return edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_HANDLED;
+        System.out.println( RealtimeThread.getCurrentMemoryArea().memoryConsumed() );
+        System.out.println();
     }
 
-    //TODO: Cache this in a queue
-    private MSGRunnable msgr;
+    private Queue msgrQueue;
     private MSGRunnable getMSGR()
     {
-        try
-        {
-            if (msgr == null)
-                msgr = new MSGRunnable();
-            return msgr;
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-    }
+        if( msgrQueue == null )
+            msgrQueue = new Queue();
 
+        Object msgr = msgrQueue.dequeue();
+        if( msgr == null )
+            return new MSGRunnable();
+        else
+            return (MSGRunnable) msgr;
+    }
+    private void retMSGR( MSGRunnable msgr ){
+        msgrQueue.enqueue( msgr );
+    }
 }

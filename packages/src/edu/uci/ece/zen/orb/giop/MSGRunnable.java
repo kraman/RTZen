@@ -57,6 +57,7 @@ public class MSGRunnable implements Runnable{
         }catch( Exception e ){
             e.printStackTrace();
         }
+        reply.free();
         //((Transport)( rm.getTransport() ).getPortal()).send(wb);
     }
 }

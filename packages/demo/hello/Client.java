@@ -28,6 +28,8 @@ public class Client extends RealtimeThread
         //super(null,new LTMemory(3000,300000));
     }
 
+    public static final int runNum = 5000;
+
     public void run()
     {
         try
@@ -46,7 +48,7 @@ public class Client extends RealtimeThread
             System.out.println( server.getMessage() );
 	
             System.out.println( "====================== Performance warmup =================================" );
-            for( int i=0;i<10000;i++ ){
+            for( int i=0;i<runNum;i++ )
                 server.getMessage();
                 if(i % 250 == 0)
                     System.out.println(i);
@@ -54,14 +56,14 @@ public class Client extends RealtimeThread
 
             System.out.println( "====================== Performance benchmark ==============================" );
             long start = System.currentTimeMillis();
-            for( int i=0;i<10000;i++ ){
+            for( int i=0;i<runNum;i++ )
                 server.getMessage();
                 if(i % 500 == 0)
                     System.out.println(i);
             }
             long end = System.currentTimeMillis();
 
-            System.err.println( 10000/((end-start)/1000.0) );
+            System.err.println( runNum/((end-start)/((double)runNum)) );
             System.exit(0);
 	}
 	catch (Exception e)

@@ -170,16 +170,20 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
 
         edu.uci.ece.zen.orb.transport.Transport transport = (edu.uci.ece.zen.orb.transport.Transport) sreq.getTransport().getPortal();
     
-        //TODO: Peter, cant do a new here....
-        POARunnable r = new POARunnable( POARunnable.HANDLE_REQUEST );
+        if( transport.objectTable[0] == null )
+            transport.objectTable[0] = new POARunnable( POARunnable.HANDLE_REQUEST );
+
+        POARunnable r = (POARunnable) transport.objectTable[0];
         r.addParam( sreq );
         r.addParam( RealtimeThread.getCurrentMemoryArea() );
         //System.out.println("Inside POAServerRequestHandler.handleRequest() and memoryArea: " + RealtimeThread.getCurrentMemoryArea());
 
         //edu.uci.ece.zen.utils.Logger.printThreadStack();
         
-        //TODO: Peter, cant do a new here....
-        ExecuteInRunnable eir1 = new ExecuteInRunnable();
+        if( transport.objectTable[1] == null )
+            transport.objectTable[1] = new ExecuteInRunnable();
+
+        ExecuteInRunnable eir1 = (ExecuteInRunnable) transport.objectTable[1];
         eir1.init( r , poaMemoryArea );
         try{
             orb.orbImplRegion.executeInArea( eir1 );
