@@ -14,7 +14,7 @@ public class FString{
     int currentSize;
     byte[] data;
 
-    public void init( int maxSize ) throws InstantiationException,IllegalAccessException{
+    public void init( int maxSize ) throws InstantiationException,IllegalAccessException,InaccessibleAreaException{
         this.maxSize = maxSize;
         this.currentSize = 0;
         this.data = (byte[]) MemoryArea.getMemoryArea(this).newArray( byte.class , maxSize );
@@ -78,14 +78,7 @@ public class FString{
             byte[] ret = (byte[]) mem.newArray( byte.class , currentSize );
             System.arraycopy( data , 0 , ret , 0 , currentSize );
             return ret;
-        }catch( InstantiationException e1 ){
-             ZenProperties.logger.log(
-                Logger.SEVERE,
-                "edu.uci.ece.zen.utils.FString",
-                "getTrimdata",
-                "Could not initialize String due to exception: " + e1.toString()
-                );
-        }catch( IllegalAccessException e2 ){
+        }catch( Exception e2 ){
              ZenProperties.logger.log(
                 Logger.SEVERE,
                 "edu.uci.ece.zen.utils.FString",

@@ -158,15 +158,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         orbRunningLock = new Integer(0);
         try{
             orbId.init(25);
-        }catch( InstantiationException e1 ){
-             ZenProperties.logger.log(
-                Logger.FATAL,
-                "edu.uci.ece.zen.orb.ORB",
-                "<init>",
-                "Could not initialize ORB facade due to exception: " + e1.toString()
-                );
-             System.exit(-1);
-        }catch( IllegalAccessException e2 ){
+        }catch( Exception e2 ){
              ZenProperties.logger.log(
                 Logger.FATAL,
                 "edu.uci.ece.zen.orb.ORB",

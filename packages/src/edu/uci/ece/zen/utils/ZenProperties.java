@@ -13,7 +13,7 @@ public final class ZenProperties{
      */
     public static final String installDir="";
     public static final boolean dbg=true;
-    public static final boolean devDbg=false;
+    public static final boolean devDbg=true;
     public static final ImmortalMemory immortalMem = ImmortalMemory.instance();
     public static final HeapMemory heapMem = HeapMemory.instance();
     public static final Logger logger = Logger.instance();

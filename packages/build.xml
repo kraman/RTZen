@@ -126,7 +126,7 @@
             <patternset refid="sources"/>
             <patternset>
                 <include name="src/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java"/>
-                <include name="src/javax/**"/>
+                <exclude name="src/javax/**"/>
             </patternset>
             
             <classpath>

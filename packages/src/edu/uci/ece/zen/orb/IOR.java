@@ -76,7 +76,7 @@ public class IOR
      * @return The CORBA object.
      */
     public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID, FString objKey, MemoryArea clientArea)
-            throws IllegalAccessException,InstantiationException
+            throws IllegalAccessException,InstantiationException,InaccessibleAreaException
     {
         if(ZenProperties.devDbg) System.out.println( "makeCORBAObject 1 -- client area: " + clientArea);
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea.newInstance(org.omg.IOP.IOR.class);

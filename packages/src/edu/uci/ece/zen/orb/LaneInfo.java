@@ -8,14 +8,7 @@ class LaneInfo{
         try{
             objectKey = new FString();
             objectKey.init(1024);
-        }catch( InstantiationException e1 ){
-             ZenProperties.logger.log(
-                Logger.SEVERE,
-                "edu.uci.ece.zen.orb.LaneInfo",
-                "<init>",
-                "Could not initialize Lane due to exception: " + e1.toString()
-                );
-        }catch( IllegalAccessException e2 ){
+        }catch( Exception e2 ){
              ZenProperties.logger.log(
                 Logger.SEVERE,
                 "edu.uci.ece.zen.orb.LaneInfo",

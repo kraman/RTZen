@@ -9,14 +9,7 @@ public class ConnectorRunnable implements Runnable{
         host = new FString();
         try{
             host.init(1024);
-        }catch( InstantiationException e1 ){
-             ZenProperties.logger.log(
-                Logger.SEVERE,
-                "edu.uci.ece.zen.orb.ConnectorRunnable",
-                "<init>",
-                "Could not initialize Connector due to exception: " + e1.toString()
-                );
-        }catch( IllegalAccessException e2 ){
+        }catch( Exception e2 ){
              ZenProperties.logger.log(
                 Logger.SEVERE,
                 "edu.uci.ece.zen.orb.ConnectorRunnable",

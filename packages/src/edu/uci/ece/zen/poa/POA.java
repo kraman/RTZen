@@ -141,15 +141,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         try{
             poaName.init( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.MaxPOANameLen" , "32" ) ) );
             poaPath.init( ( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.MaxPOAPathLen" , "255" ) ) ) );
-        }catch( InstantiationException e1 ){
-             ZenProperties.logger.log(
-                Logger.FATAL,
-                "edu.uci.ece.zen.orb.POA",
-                "<init>",
-                "Could not initialize POA facade due to exception: " + e1.toString()
-                );
-             System.exit(-1);
-        }catch( IllegalAccessException e2 ){
+        }catch( Exception e2 ){
              ZenProperties.logger.log(
                 Logger.FATAL,
                 "edu.uci.ece.zen.orb.POA",

@@ -11,7 +11,7 @@ public class AcceptorRegistry{
     private Vector list = new Vector();
 
     public TaggedProfile[] getProfiles( FString objKey, MemoryArea clientArea)
-            throws IllegalAccessException,InstantiationException
+            throws IllegalAccessException,InstantiationException,InaccessibleAreaException
     {
         TaggedProfile[] tpList = (TaggedProfile[]) clientArea.newArray(org.omg.IOP.TaggedProfile.class, list.size());
         byte[] tempOKey = objKey.getTrimData( clientArea );
@@ -52,7 +52,3 @@ class ARRunnable implements Runnable{
         tpList[index] = acc.getProfile((byte)1, (byte)0, objKey, ma);
     }
 }
-
-
-
-
