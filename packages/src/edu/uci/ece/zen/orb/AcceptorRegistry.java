@@ -12,37 +12,43 @@ public class AcceptorRegistry{
 
     public TaggedProfile[] getProfiles( FString objKey, MemoryArea clientArea) 
             throws IllegalAccessException,InstantiationException
-        {
+    {
         TaggedProfile[] tpList = (TaggedProfile[]) clientArea.newArray(org.omg.IOP.TaggedProfile.class, list.size());
-        byte [] tempOKey = objKey.getTrimData( clientArea );
+        byte[] tempOKey = objKey.getTrimData( clientArea );
+        ARRunnable ar = new ARRunnable();
 
         for(int i = 0; i < list.size(); ++i){
             ScopedMemory sm = (ScopedMemory)(list.get(i));
-            sm.enter(new ARRunnable(i, tempOKey, clientArea));
+            ar.init( i, tempOKey, clientArea , tpList );
+            sm.enter( ar );
         }
 
         return tpList;
     }
-    //
-    class ARRunnable implements Runnable{
+}
 
-        private int index;
-        MemoryArea ma;
-        byte[] objKey;
+class ARRunnable implements Runnable{
 
-        public ARRunnable(int ind, byte [] objKey, MemoryArea clientArea){
-            index = ind;
-            this.ma = ma;
-            this.objKey = objKey;
-        }
+    private int index;
+    MemoryArea ma;
+    byte[] objKey;
+    TaggedProfile[] tpList;
 
-        public void run(){
-            Acceptor acc = (Acceptor) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
-            tpList[index] = acc.getProfile((byte)1, (byte)0, objKey, ma);
-        }
+    public ARRunnable(){}
+
+    public void init(int ind, byte [] objKey, MemoryArea clientArea , TaggedProfile[] tpList ){
+        index = ind;
+        this.ma = ma;
+        this.objKey = objKey;
+        this.tpList = tpList;
     }
 
+    public void run(){
+        Acceptor acc = (Acceptor) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
+        tpList[index] = acc.getProfile((byte)1, (byte)0, objKey, ma);
+    }
 }
+
 
 
 

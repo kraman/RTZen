@@ -134,7 +134,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private Queue executeInRunnableCache;
     //public RTORB rtorb;
     //public PolicyManager policyManager;
-    public MemoryArea [] threadpoolList;
+    public ScopedMemory[] threadpoolList;
     public edu.uci.ece.zen.poa.POA rootPOA;
     public Object orbRunningLock;
 
@@ -150,7 +150,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         executeInRunnableCache = new Queue();
         //rtorb = new RTORBImpl(this);
         //policyManager = new PolicyManagerImpl(this);
-        threadpoolList = new MemoryArea[10];//KLUDGE: need to set up property for max TPs
+        threadpoolList = new ScopedMemory[10];//KLUDGE: need to set up property for max TPs
         orbId = new FString();
         orbRunningLock = new Integer(0);
         try{
