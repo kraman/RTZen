@@ -5,7 +5,9 @@ import org.omg.CORBA.portable.*;
 import edu.uci.ece.zen.utils.*;
 import java.io.*;
 import javax.realtime.*;
+import org.omg.RTCORBA.*;
 import java.util.Properties;
+import edu.uci.ece.zen.orb.policies.*;
 
 public class ORB extends org.omg.CORBA_2_3.ORB{
     private static Queue unusedFacades;
@@ -173,7 +175,32 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public org.omg.CORBA.Policy create_policy(int type, org.omg.CORBA.Any val)
         throws org.omg.CORBA.PolicyError {
-        throw new org.omg.CORBA.NO_IMPLEMENT();
+/*
+        switch(type){
+            case PRIORITY_MODEL_POLICY_TYPE.value:
+                return new PriorityModelPolicyImpl();
+            //break;
+
+            case THREADPOOL_POLICY_TYPE.value:
+            //break;
+
+            case SERVER_PROTOCOL_POLICY_TYPE.value:
+            //break;
+
+            case CLIENT_PROTOCOL_POLICY_TYPE.value:
+            //break;
+
+            case PRIORITY_BANDED_CONNECTION_POLICY_TYPE.value:
+            //break;
+
+            default:
+                throw new PolicyError(UNSUPPORTED_POLICY.value);
+
+
+        }
+*/
+        throw new PolicyError(UNSUPPORTED_POLICY.value);
+        //throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     public String id() {

@@ -37,10 +37,6 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
     protected void internalShutdown(){
     }
 
-    //public org.omg.CORBA.portable.IDLEntity getProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey ){
-    //    return null;
-    //}
-
     protected TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey){
 
         Version version = new Version(iiopMajorVersion, iiopMinorVersion);
