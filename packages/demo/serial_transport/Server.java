@@ -23,7 +23,7 @@ public class Server extends RealtimeThread
             POA rootPOA = POAHelper.narrow(zen.resolve_initial_references("RootPOA"));
             rootPOA.the_POAManager().activate();
 
-            AirplaneImpl impl = new AirplaneImpl();
+            GroundStationImpl impl = new GroundStationImpl();
             org.omg.CORBA.Object obj = rootPOA.servant_to_reference(impl);
             String ior = zen.object_to_string(obj);
 

@@ -9,9 +9,11 @@ module demo
             short altitude;
         };
 
-		interface Airplane
+        typedef WayPoint NoFlyZone[4];
+
+		interface GroundStation
 		{
-            oneway void sendWayPoint(in short id, in WayPoint waypoint);
+            oneway void sendWayPoint(in short id, in NoFlyZone noFlyZone);
         };
 	};
 };

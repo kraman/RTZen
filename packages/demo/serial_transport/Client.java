@@ -30,11 +30,22 @@ public class Client extends RealtimeThread
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
             String ior = br.readLine();
             org.omg.CORBA.Object object = orb.string_to_object(ior);
-            Airplane server = AirplaneHelper.unchecked_narrow(object);
+            GroundStation server = GroundStationHelper.unchecked_narrow(object);
 
-            WayPoint waypoint = new WayPoint();
+            WayPoint[] noFlyZone = new WayPoint[4];
 
-            server.sendWayPoint((short)1, waypoint);
+            for (int i = 0; i < noFlyZone.length; i++)
+            {
+                noFlyZone[i] = new WayPoint();
+                noFlyZone[i].altitude = (byte) (41 + i);
+                noFlyZone[i].latitude = 80000 + i;
+                noFlyZone[i].longitude = -90000 - i;
+            }
+
+            for (int i = 1; i <= 10; i++)
+            {
+                server.sendWayPoint((short)i, noFlyZone);
+            }
 
             System.exit(0);
         }
