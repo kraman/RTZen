@@ -101,6 +101,7 @@ public final class ActiveObjectMapOnlyStrategy extends
     public int handleRequest(ServerRequest request,
             edu.uci.ece.zen.poa.POA poa,
             edu.uci.ece.zen.poa.SynchronizedInt requests) {
+
         byte[] okey = request.getObjectKey();
         // edu.uci.ece.zen.poa.ObjectID  oid  = new ObjectID(okey.getId());
         int locIndex= ObjectKey.servDemuxIndex(okey);

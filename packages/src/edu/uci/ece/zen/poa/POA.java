@@ -80,6 +80,10 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         this.init( orb , rootPoaString , null , null , null , null , null );
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    ////////////////////////// BASIC POA METHODS //////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
     public void init( final edu.uci.ece.zen.orb.ORB orb , String poaName , org.omg.CORBA.Policy[] policies ,
             org.omg.PortableServer.POA parent, org.omg.PortableServer.POAManager manager ){
         poaState = POA.CREATING;
@@ -138,9 +142,25 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         poaPath = new byte[( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.MaxPOAPathLen" , "255" ) ) )];
     }
 
+    /**
+     * Call scoped region graph:
+     * <p>
+     *      Transport thread:<br/>
+     *      <p>
+     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; <b>Message</b> --ex in--&gt; ORBImpl scope --&gt; 
+     *              POAImpl region --ex in--&gt; ORBImpl scope --&gt; TP Region 
+     *      </p>
+     *      TP Thread:<br/>
+     *      <p>
+     *          <b>TP Region</b> --ex in--&gt; ORBImpl scope --&gt; Message Region --ex in--&gt; ORBImpl region --&gt; Transport Scope
+     *      </p>
+     * </p>
+     */
     public void handleRequest(final ServerRequest req) {
         POARunnable r = new POARunnable( POARunnable.HANDLE_REQUEST );
         r.addParam( req );
+        r.addParam( RealtimeThread.getCurrentMemoryArea() );
+
         ExecuteInRunnable eir1 = new ExecuteInRunnable();
         eir1.init( poaMemoryArea , r );
         try{
@@ -170,6 +190,35 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         }
     }
 
+    public org.omg.CORBA.Object servant_to_reference( final org.omg.PortableServer.Servant p_servant ) throws ServantNotActive, WrongPolicy {
+        POARunnable r = new POARunnable(POARunnable.SERVANT_TO_REFERENCE);
+        r.addParam( p_servant );
+        r.addParam( RealtimeThread.getCurrentMemoryArea() );
+        ExecuteInRunnable eir1 = new ExecuteInRunnable();
+        eir1.init( poaMemoryArea , r );
+        ExecuteInRunnable eir2 = new ExecuteInRunnable();
+        eir2.init( orb.orbImplRegion , eir1 );
+        try{
+            orb.parentMemoryArea.executeInArea( eir2 );
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
+        switch( r.exception ){
+            case -1: //no exception
+                break;
+            case 1:
+                throw new ServantNotActive();
+            case 2:
+                throw new WrongPolicy();
+        }
+        return (org.omg.CORBA.Object)r.retVal;
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    ////////////////////////// OTHER POA METHODS //////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
     public byte[] servant_to_id(final org.omg.PortableServer.Servant p_servant) throws ServantNotActive, WrongPolicy {
         /*
         POARunnable r = new POARunnable(POARunnable.SERVANT_TO_ID);
@@ -197,29 +246,6 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         throws new org.omg.CORBA.NO_IMPLEMENT(); 
     }
 
-    public org.omg.CORBA.Object servant_to_reference( final org.omg.PortableServer.Servant p_servant ) throws ServantNotActive, WrongPolicy {
-        POARunnable r = new POARunnable(POARunnable.SERVANT_TO_REFERENCE);
-        r.addParam( p_servant );
-        r.addParam( RealtimeThread.getCurrentMemoryArea() );
-        ExecuteInRunnable eir1 = new ExecuteInRunnable();
-        eir1.init( poaMemoryArea , r );
-        ExecuteInRunnable eir2 = new ExecuteInRunnable();
-        eir2.init( orb.orbImplRegion , eir1 );
-        try{
-            orb.parentMemoryArea.executeInArea( eir2 );
-        }catch( Exception e ){
-            e.printStackTrace();
-        }
-        switch( r.exception ){
-            case -1: //no exception
-                break;
-            case 1:
-                throw new ServantNotActive();
-            case 2:
-                throw new WrongPolicy();
-        }
-        return (org.omg.CORBA.Object)r.retVal;
-    }
 
     public org.omg.PortableServer.Servant reference_to_servant( final org.omg.CORBA.Object reference ) throws ObjectNotActive,WrongPolicy,WrongAdapter {
         /*

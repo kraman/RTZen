@@ -14,12 +14,14 @@ public class POAImpl{
     Policy[] policies;
     POA parent;
     POAManager manager;
+    int tpId;
     
     public void init( ORB orb , POA self , Policy[] policies , POA parent , POAManager manager , POARunnable prun ){
         this.orb = orb;
         this.self = self;
         this.parent = parent;
         this.manager = manager;
+        this.tpId = 0;
 
         //make a local copy of the policies
         this.policies = new Policy[policies.length];
@@ -34,7 +36,7 @@ public class POAImpl{
             this.retentionStrategy = edu.uci.ece.zen.poa.mechanism.ServantRetentionStrategy.init(policies, this.uniquenessStrategy);
             this.lifespanStrategy = edu.uci.ece.zen.poa.mechanism.LifespanStrategy.init(this.policies);
             this.activationStrategy = edu.uci.ece.zen.poa.mechanism.ActivationStrategy.init(this.policies, this.idAssignmentStrategy, this.retentionStrategy);
-            this.requestProcessingStrategy = edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy.init(this.policies, 
+            this.requestProcessingStrategy = edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy.init(this.policies,
                 this.retentionStrategy, this.uniquenessStrategy, this.threadPolicyStrategy); 
         }
         catch( Exception e) {
@@ -42,8 +44,21 @@ public class POAImpl{
         }
     }
 
-    public void handleRequest( ServerRequest req , POARunnable prun ){
-        prun.exception = -1;
+    /**
+     * Call scoped region graph:
+     * <p>
+     *      Transport thread:<br/>
+     *      <p>
+     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; <b>Message</b> --ex in--&gt; ORBImpl scope --&gt; 
+     *              POAImpl region --ex in--&gt; ORBImpl scope --&gt; TP Region 
+     *      </p>
+     *      TP Thread:<br/>
+     *      <p>
+     *          <b>TP Region</b> --ex in--&gt; ORBImpl scope --&gt; Message Region --ex in--&gt; ORBImpl region --&gt; Transport Scope
+     *      </p>
+     * </p>
+     */
+    public void handleRequest( ServerRequest req , POARunnable prun , ScopedRegion messageScope ){
         prun.exception = validateProcessingState(); // check for the state of the poa? if it is discarding then throw the transient exception...
         if( prun.exception != -1 )
             return;
@@ -65,7 +80,12 @@ public class POAImpl{
         req.setHandlers(this, numberOfCurrentRequests, this.requestProcessingStrategy);
 
         try {
-            this.orb.getTPHandler(poaId).execute(req);
+            ScopedRegion tpRegion = this.orb.getTPRegion(tpId);
+            ExecuteInRunnable eir = messageScope.newInstance( ExecuteInRunnable.class );
+            TPRunnable tpr = messageScope.newInstance( TPRunnable.class );
+            eir.init( tpr , tpRegion );
+            tpr.init( req );
+            orb.orbImplRegion.executeInArea( eir );
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here
             // -- Throw a transient exception
