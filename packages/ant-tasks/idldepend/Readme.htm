@@ -15,10 +15,10 @@
 			<td width="150" align="left" valign="top" bgcolor="#BBBBFF">
 			<center><br>
 			<p><font color="#4444ff"><b>idldepend</b></font><br></p>
-		<font color="#4444ff"><a href="http://grasia.fdi.ucm.es/~luismi/idldepend">Home page</a></font>
+		<font color="#4444ff"><a href="http://grasia.fdi.ucm.es/~luismi/idldepend">Luismi Pena Home page</a></font>
 		<hr size="1" color="#7777FF" width="80%">
 		<a href="mailto:java_lmp@yahoo.co.uk?subject=webpage"><font size="-1">java_lmp@yahoo.co.uk</font></a><br><br>
-		<font size="-1"><b><i><font color="#4444ff">Last Updated:<br> 29th June 2004</font></i></b></font>
+		<font size="-1"><b><i><font color="#4444ff">Last Updated:<br> 6th October 2004</font></i></b></font>
 		<hr size="1" color="#7777FF" width="80%">
 			</center>
 		</td>
@@ -32,7 +32,7 @@
 		<hr size="2" color="#663366" width="600">
 		 <ul type="disc">
 					<li><a href="#Description">Description</a></li>
-					<li><a href="#Version">Version and CORBA compliance</a> (<b>new version</b> 0.61 the 29th June 2004)</li>
+					<li><a href="#Version">Version and CORBA compliance</a> (<b>new version</b> 0.63 the 6th October 2004)</li>
 					<li><a href="#LicenseAndDownload">License and download</a></li>
 					<li><a href="#Attributes">Attributes</a></li>
 					<li><a href="#NestedElements">Nested elements</a></li>
@@ -78,8 +78,7 @@
 		<hr size="1" color="#333399">
 		<table border="0"><tr><td width="5"></td><td>
 		<a name="Version"><h2><font color="#333399">Version and CORBA compliance</font></h2></a>
-		<p>Current version, since the 29th June 2004 is <b><i>0.61</i></b>. It has been developed for Ant 1.4, and it has no problems
-		running under the newer 1.6 version (updates are in fact done using Ant 1.6). </p>
+		<p>Current version, since the 6th October2004 is <b><i>0.63</i></b>. It is written using Ant 1.6, and I do not check usually whether it would compile or work under previous Ant versions (note that it was initially developed using Ant 1.4).</p>
       <p>Idldepend is compliant with the IDL to Java mapping defined for CORBA 2.4. Support for the mapping 1.2 -CORBA 3.0 compliant- is
       under work (note as well that the current IDL to Java mapping is only CORBA 2.4 compliant!).<br>In particular, the following keywords
       are not supported:
@@ -104,24 +103,34 @@
       Note that all these keywords have been added with CORBA 3.0, and, by now, I have not knowledge of any ORB with Java mapping
       supporting them.
       </p>
-		<p>When a compiler desviates from the standard mapping, the result is therefore incorrect. Nevertheless,
-			 I have not tuned this program to include those compiler desviations, as they are usually harmless.</p>
+		<p>When a compiler deviates from the standard mapping, the result is therefore incorrect. Nevertheless,
+			 I have not tuned this program to include those compiler deviations, as they are usually harmless (some exception applies,
+			 as described below).</p>
 		<p>Following are the incompatibilities that I have detected so far (perhaps some have been solved after I checked them,
 		I do not verify periodically the correctness of the compilers):</p>
 		<ul type="disc">
 	    <li>JDK: it generates some extra files in case of valuetypes, to handle them more easily.</li>
 	    <li>Jacorb: it does not handle correctly valuetypes: it does not define a specific scope for them.</li>
 	    <li>Orbacus: if a preprocessor directive is commented out, it still treats the directive.</li>
-	    <li>OpenORB: the use of the parameter <i>side</i> is problematic. Define it as <i>client</i> is translated into
-		   <i>-nostub</i>, but the compiler treats it y disabling the generation of just the stub file, not the other
-		   files only used by the clients (like the helper and holder classes)</li>
+	    <li>OpenORB: 
+	    		<ul>
+				<li>the use of the parameter <i>side</i> is problematic. Define it as <i>client</i> is translated into
+		   		<i>-nostub</i>, but the compiler treats it by disabling the generation of just the stub file, not the other
+		   		files only used by the clients (like the helper and holder classes)</li>
+				<li>the generation of files for <b>local interfaces</b> is incomplete. A local interface with name X should
+				produce, among others, two files called _XLocalBase.java and XLocalTie.java, but these are not generated
+				when OpenORB 1.3.1 is used (and the documentation for OpenORB 1.4.x does not mention it). <p>
+				IDLDepend is currently tuned to handle this bug -if the compiler is OpenORB, it does not expect the two
+				missing files-.
+				</li>
+		   	</ul></li>
 	    <li>Orbix: No incompatibilities detected so far.</li>
  		</ul>
 		</td></tr></table>
 		<hr size="1" color="#333399">
 		<table border="0"><tr><td width="5"></td><td>
 		<a name="LicenseAndDownload"><h2><font color="#333399">License and download</font></h2></a>
-		<p><i>idldepend</i> is delivered as it, without any responsabilities on the author. It is open source, it can be used
+		<p><i>idldepend</i> is delivered as it, without any responsabilities on the author (<i>Luismi Pena</i>, aka <i>Luic Pend</i>). It is open source, it can be used
 		or modified without any limitations. Although the task is beta, it has completely covered my needs, and I consider the
 		source to have the quality enough to be distributed. Reported bugs have been solved and some extensions have been as well
 		included after the first version (look at the <a href="#History">history changes</a> section).</p>
@@ -131,11 +140,13 @@
 		own any changes.</p>
 		<p>Following are the downloadable files:
 		<ul type="square">
-      <li>Version 0.61. Latest version.
+      <li>Version 0.63. Latest version, (06/10/04):
 		<ul type="disc">
-				<li>Source code (.zip format, 137.000 bytes), to be built using ant: <a href="idldepend-0-6-1.zip">idldepend-0-6-1.zip</a></li>
-				<li>Binary code (.jar file, 219.126 bytes): <a href="idldepend-0-6-1.jar">idldepend-0-6-1.jar</a></li>
+				<li>Source code (.zip format, 138.888 bytes), to be built using ant: <a href="idldepend-0-6-3.zip">idldepend-0-6-3.zip</a></li>
+				<li>Binary code (.jar file, 220.379 bytes): <a href="idldepend-0-6-3.jar">idldepend-0-6-3.jar</a></li>
 		</ul>
+      </li><li>Version 0.62 (01/10/04). <a href="idldepend-0-6-2.zip">idldepend-0-6-2.zip</a> and <a href="idldepend-0-6-2.jar">idldepend-0-6-2.jar</a>
+      </li><li>Version 0.61 (29/06/04). <a href="idldepend-0-6-1.zip">idldepend-0-6-1.zip</a> and <a href="idldepend-0-6-1.jar">idldepend-0-6-1.jar</a>
       </li><li>Version 0.60 (30/05/04). <a href="idldepend-0-6-0.zip">idldepend-0-6-0.zip</a> and <a href="idldepend-0-6-0.jar">idldepend-0-6-0.jar</a>
       </li><li>Version 0.54 (27/05/04). <a href="idldepend-0-5-4.zip">idldepend-0-5-4.zip</a> and <a href="idldepend-0-5-4.jar">idldepend-0-5-4.jar</a>
       </li><li>Version 0.53 (24/05/04). <a href="idldepend-0-5-3.zip">idldepend-0-5-3.zip</a> and <a href="idldepend-0-5-3.jar">idldepend-0-5-3.jar</a>
@@ -1112,6 +1123,30 @@
 	<a name="History"><h2><font color="#333399">History changes</font></h2></a>
 	<p>
 	<table border="1" width="95%" align="center" bordercolor="#333399">
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.63</br>6th October 2004</b>
+		</td></tr>		
+		<tr><td>
+		Minor bug corrected: preprocessing <code>#endif</code> lines were not allowed to have associated definitions. That is,
+		<code>#endif _MY_SYMBOL_</code> would be considered invalid, only <code>#endif</code> would be accepted.
+		</td></tr>		
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.62</br>1st October 2004</b>
+		</td></tr>		
+		<tr><td>
+		Corrected a bug that produced incorrect line number reports in case of errors. This bug only appeared when using
+		IDL files requiring preprocessing.
+		</td></tr>		
+		<tr><td>
+		Updated the grammar to support forward declarations of <i><b>abstract valuetypes</b></i>. (the grammar already supported
+		it, but incorrectly, and no testcase had been run on it)
+		</td></tr>		
+		<tr><td>
+		Included support to cover a <b>bug in OpenORB</b> (v1.3.1). Its idl compiler does not generate all the java files that the
+		standard IDL-to-java mapping require. More specifically, a local interface with name X should produce, among others, 
+		two files called _XLocalBase.java and XLocalTie.java, but these are not generated when OpenORB 1.3.1 is used 
+		(and the documentation for OpenORB 1.4.x does not mention it).
+		</td></tr>		
 		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
 		<b></br>Version 0.61</br>29th June 2004</b>
 		</td></tr>		
