@@ -28,7 +28,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
         }
     }
 
-    public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl , InetAddress host , int port ){
+    public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl , String host , int port ){
         super( orb , orbImpl );
         try{
             if(ZenProperties.devDbg) System.out.println( "Connecting to " + host + ":" + port );
