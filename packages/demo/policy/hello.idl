@@ -1,0 +1,11 @@
+module demo
+{
+	module policy
+	{
+		interface HelloWorld
+		{
+			string getMessage();
+		};
+	};
+};
+
