@@ -15,7 +15,7 @@
             basedir="${zen.classdir}"
             includes="${package.dir}/**"/>
         <antcall target="compile.jrate"/>
-        <antcall target="setup_oldzen"/>
+        <!--antcall target="setup_oldzen"/-->
     </target>
 
     <target name="compile.jrate" if="compiler_jRate">
