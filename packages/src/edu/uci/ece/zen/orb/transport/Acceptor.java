@@ -29,7 +29,7 @@ public abstract class Acceptor{
 
     protected final void registerTransport( Transport t ){
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( t );
-        NoHeapRealtimeThread transportThread = new NoHeapRealtimeThread(t);
+        NoHeapRealtimeThread transportThread = new NoHeapRealtimeThread(null,null,null,null,null,t);
         transportThread.start();
     }
 
@@ -38,16 +38,16 @@ public abstract class Acceptor{
 
     public TaggedProfile getProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion ){
         try{
-
             ProfileRunnable runnable = (ProfileRunnable)(clientRegion.newInstance( ProfileRunnable.class ));
             runnable.init( iiopMajorVersion , iiopMinorVersion , objKey, this );
             clientRegion.executeInArea( runnable );
             return runnable.getRetVal();
-
         }catch(IllegalAccessException iae){
             iae.printStackTrace();
         }catch(InstantiationException ie){
             ie.printStackTrace();
+        }catch( InaccessibleAreaException iae2 ){
+            iae2.printStackTrace();
         }
 
         return null;

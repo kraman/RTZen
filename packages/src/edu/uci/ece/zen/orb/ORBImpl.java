@@ -18,7 +18,7 @@ public class ORBImpl{
         this.orbFacade = orbFacade;
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( this );
         orbImplRunnable = new ORBImplRunnable();
-        NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( orbImplRunnable );
+        NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,null,null,null,null,orbImplRunnable );
         nhrt.start();
 
         cachedObjects = new Hashtable();

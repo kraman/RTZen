@@ -17,7 +17,7 @@ public class Client implements Runnable
 {
     public static void main(String[] args)
     {
-        RealtimeThread rt = new RealtimeThread(new Client());
+        RealtimeThread rt = new RealtimeThread(null,null,null,null,null,new Client());
         rt.start();
     }
 

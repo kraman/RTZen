@@ -58,7 +58,7 @@ public class POAImpl{
      *      </p>
      * </p>
      */
-    public void handleRequest( ServerRequest req , POARunnable prun , ScopedRegion messageScope ){
+    public void handleRequest( ServerRequest req , POARunnable prun ){
         prun.exception = validateProcessingState(); // check for the state of the poa? if it is discarding then throw the transient exception...
         if( prun.exception != -1 )
             return;
@@ -81,8 +81,8 @@ public class POAImpl{
 
         try {
             ScopedRegion tpRegion = this.orb.getTPRegion(tpId);
-            ExecuteInRunnable eir = messageScope.newInstance( ExecuteInRunnable.class );
-            TPRunnable tpr = messageScope.newInstance( TPRunnable.class );
+            ExecuteInRunnable eir = req.messageScope.newInstance( ExecuteInRunnable.class );
+            TPRunnable tpr = req.messageScope.newInstance( TPRunnable.class );
             eir.init( tpr , tpRegion );
             tpr.init( req );
             orb.orbImplRegion.executeInArea( eir );

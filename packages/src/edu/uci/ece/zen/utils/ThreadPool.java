@@ -38,13 +38,13 @@ public class ThreadPool{
             this.lanes[i].setLaneId( i );
     }
 
-    public boolean borrowThreadAndExecute( Runnable task , int laneId ){
+    public boolean borrowThreadAndExecute( ScopedMemory task , int laneId ){
         if( laneId != 0 )
             return lanes[laneId-1].getLeaderAndExecute( task , true );
         return false;
     }
 
-    public void execute( Runnable task , short minPriority , short maxPriority ){
+    public void execute( ScopedMemory task , short minPriority , short maxPriority ){
         //TODO: Have to improve performance here
         for( int i=0;i<lanes.length;i++ ){
             if( lanes[i].getPriority() > minPriority && lanes[i].getPriority() < maxPriority )
@@ -96,7 +96,7 @@ class Lane{
 
     private void newThread(){
         ThreadSleepRunnable r = new ThreadSleepRunnable( this );
-        NoHeapRealtimeThread thr = new NoHeapRealtimeThread( r );
+        NoHeapRealtimeThread thr = new NoHeapRealtimeThread(null,null,null,null,null,r);
         thr.setPriority( priority );
         r.setThread( thr );
         r.setNativePriority( priority );
@@ -104,7 +104,7 @@ class Lane{
         thr.start();
     }
 
-    public synchronized boolean getLeaderAndExecute( Runnable task , boolean forBorrowing ){
+    public synchronized boolean getLeaderAndExecute( ScopedMemory task , boolean forBorrowing ){
         if( threads.isEmpty() ){
             if( numThreads < maxStaticThreads + maxDynamicThreads - 1 ){
                 //already at max thread limit, try borrowing
@@ -129,7 +129,7 @@ class Lane{
         return ((ThreadSleepRunnable) threads.dequeue()).execute( task );
     }
 
-    public boolean execute( Runnable task ){
+    public boolean execute( ScopedMemory task ){
         return getLeaderAndExecute( task , false );
     }
 
@@ -170,7 +170,7 @@ class Lane{
 
 class ThreadSleepRunnable implements Runnable{
     private boolean isActive;
-    private Runnable task;
+    private ScopedMemory task;
     private EventVariable taskAvailableEvent;
 
     private Thread myThread;
@@ -191,7 +191,7 @@ class ThreadSleepRunnable implements Runnable{
         this.lane = lane;
     }
     
-    public boolean execute( Runnable task ){
+    public boolean execute( ScopedMemory task ){
         if( !isActive ) return false;
         this.task = task;
         taskAvailableEvent.signal();
@@ -200,12 +200,19 @@ class ThreadSleepRunnable implements Runnable{
 
     public void run(){
         isActive = true;
+        ExecuteInRunnable eir = new ExecuteInRunnable();
+        InvokeRunnable ir = new InvokeRunnable();
 
         try{
             while( isActive ){
                 lane.returnToPool( this );
                 taskAvailableEvent.stall();
-                task.run();
+
+                //process the task in the portal of the scoped region
+                eir.init( ir , task );
+                try{
+                }catch( Exception e ){
+                }
                 task = null;
             }
         }catch( InterruptedException e ){
@@ -219,5 +226,15 @@ class ThreadSleepRunnable implements Runnable{
             isActive = false;
         else
             myThread.interrupt();
+    }
+}
+
+class InvokeRunnable implements Runnable{
+    InvokeRunnable(){
+    }
+
+    public void run(){
+        Runnable r = (Runnable) ((ScopedMemory) RealtimeThread.getCurrentMemoryArea() ).getPortal();
+        r.run();
     }
 }

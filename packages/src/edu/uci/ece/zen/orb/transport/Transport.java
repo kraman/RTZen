@@ -29,7 +29,7 @@ public abstract class Transport implements Runnable{
      */
     public final void run(){
         messageProcessor = new MessageProcessor( this , orb );
-        NoHeapRealtimeThread messageProcessorThr = new NoHeapRealtimeThread( messageProcessor );
+        NoHeapRealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,null,null,null,null,messageProcessor );
         messageProcessorThr.setDaemon( true );
         messageProcessorThr.start();
         try{
