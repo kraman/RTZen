@@ -4,7 +4,8 @@ module demo
 	{
 		interface HelloWorld
 		{
-			long getMessage();
+			long getMessage1();
+                        long getMessage2();
 		};
 	};
 };

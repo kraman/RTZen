@@ -70,7 +70,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
 			((byte)(128&0xFF)),
 			((byte)(195&0xFF)),
 			((byte)(174&0xFF)),
-			((byte)(34&0xFF))})  , port );
+			((byte)(20&0xFF))})  , port );
                 ZenProperties.logger.log("Connected");
                 //setSockProps(sock, orb);
                 //             System.err.println( "sock = " + sock );

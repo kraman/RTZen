@@ -39,6 +39,7 @@ public class ThreadPool {
 
         this.lanes = new Lane[1];
         acceptorRunnable.init( orb , defaultPriority , threadPoolId );
+        orb.setUpORBChildRegion( acceptorRunnable );
         this.lanes[0] = new Lane(stackSize, staticThreads, dynamicThreads,
                 defaultPriority, this, allowBorrowing, allowRequestBuffering,
                 maxBufferedRequests, acceptorRunnable.acceptorArea);
@@ -61,6 +62,7 @@ public class ThreadPool {
         this.lanes = new Lane[lanes.length];
         for (int i = 0; i < lanes.length; i++){
             acceptorRunnable.init( orb , lanes[i].lane_priority , threadPoolId );
+            orb.setUpORBChildRegion( acceptorRunnable );
             this.lanes[i] = new Lane(stackSize, lanes[i].static_threads,
                     lanes[i].dynamic_threads, lanes[i].lane_priority, this,
                     allowBorrowing, allowRequestBuffering, maxBufferedRequests,

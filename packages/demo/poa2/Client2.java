@@ -14,7 +14,7 @@ import edu.uci.ece.zen.utils.Logger;
  * @version 1.0
  */
 
-public class Client extends RealtimeThread
+public class Client2 extends RealtimeThread
 {
  
     static String fileName; 
@@ -23,14 +23,14 @@ public class Client extends RealtimeThread
     public static void main(String[] args) throws Exception
     {
         //if(args.length > 0) 
-        fileName = args[0];
+        //fileName = args[0];
         System.out.println( "=====================Creating RT Thread in client==========================" );
-        RealtimeThread rt = (Client) ImmortalMemory.instance().newInstance( Client.class );
+        RealtimeThread rt = (Client2) ImmortalMemory.instance().newInstance( Client2.class );
         System.out.println( "=====================Starting RT Thread in client==========================" );
         rt.start();
     }
 
-    public Client(){
+    public Client2(){
         //super(null,new LTMemory(3000,300000));
     }
 
@@ -45,29 +45,30 @@ public class Client extends RealtimeThread
             ORB orb = ORB.init((String[])null, null);
             System.out.println( "=====================ORB Init complete in client===========================" );
             String ior = "";
-            File iorfile = new File(fileName);
+            //File iorfile = new File(fileName);
+            File iorfile = new File("ior2.txt");
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
             ior = br.readLine();
             System.out.println( "===========================IOR read========================================" );
             org.omg.CORBA.Object object = orb.string_to_object(ior);
             System.out.println( "===================Trying to establish connection==========================" );
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
-            System.out.println( server.getMessage() );
+            System.out.println( server.getMessage2() );
 
 /*
             // Create a scope for running requests in, so that we don't waste the scope we are in.
             ScopedMemory sm = new LTMemory(32000, 100000);
             Runnable r = new Runnable() {
                 public void run() {
-                    server.getMessage();
+                    server.getMessage2();
                 }
             };
 */
 //            System.out.println( "====================== Performance warmup =================================" );
 //            for( int i=0;i<warmupNum;i++ ){
 //                
-//                server.getMessage();
-//                sleep(1000);
+//                server.getMessage2();
+//                //sleep(1000);
 //                
 //                //sm.enter(r);
 //                if(i % 100 == 0){        
@@ -81,9 +82,9 @@ public class Client extends RealtimeThread
             System.out.println( "====================== Performance benchmark ==============================" );
             long start = System.currentTimeMillis();
             for( int i=0;i<runNum;i++ ){
-                server.getMessage();
-                System.out.println(System.currentTimeMillis());
-                sleep(10);
+                server.getMessage2();
+                //System.out.println(System.currentTimeMillis());
+                //sleep(10);
                 
                 //sm.enter(r);
                 if(i % 500 == 0){

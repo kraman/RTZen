@@ -59,8 +59,8 @@ public class MemoryDebug{
                 StringTokenizer st = new StringTokenizer(oneLine, ",");
                 StringTokenizer stBackup = new StringTokenizer(oneLine, ",");
                 if(st.countTokens()!=4 && st.countTokens()!=3){
-                    System.err.println("The format of line "+oneLine+" is wrong.");
-                    System.err.println("It's should be 3 or 4 numbers separated by \",\"");
+                    //System.err.println("The format of line "+oneLine+" is wrong.");
+                    //System.err.println("It's should be 3 or 4 numbers separated by \",\"");
                     //System.exit(-1);
                     continue; //Now we just omit this format wrong thing, may need to change later
                 }           
@@ -69,8 +69,8 @@ public class MemoryDebug{
                 while(stBackup.hasMoreTokens()){
                     String judgeLength = stBackup.nextToken();
                     if(judgeLength.length()!=11){
-                        System.err.println("The format of line "+oneLine+" is wrong.");
-                        System.err.println("Each number should be 11 digits long");
+                        //System.err.println("The format of line "+oneLine+" is wrong.");
+                        //System.err.println("Each number should be 11 digits long");
                         //System.exit(-1);
                         judge = false;
                         break; //Now we just omit this format wrong thing, may need to change later

@@ -61,7 +61,7 @@ public class Server extends RealtimeThread
             System.out.println("Running Hello World Example... ");
             System.out.println( "[Server] " + ior );
 
-            BufferedWriter bw = new BufferedWriter( new FileWriter("ior.txt") );
+            BufferedWriter bw = new BufferedWriter( new FileWriter("ior1.txt") );
             bw.write(ior);
             bw.close();
 
@@ -69,11 +69,11 @@ public class Server extends RealtimeThread
             
             RTORB rtorb = RTORBHelper.narrow(orb.resolve_initial_references ("RTORB"));
             
-            System.out.println("Max prio " + PriorityScheduler.MAX_PRIORITY);
-            System.out.println("Min prio " + PriorityScheduler.MIN_PRIORITY);
-            System.out.println("Norm prio " + PriorityScheduler.getNormPriority(RealtimeThread.currentThread()));
+            System.out.println("Max prio " + PriorityScheduler.instance().getMaxPriority());
+            System.out.println("Min prio " + PriorityScheduler.instance().getMinPriority());
+            System.out.println("Norm prio " + PriorityScheduler.instance().getNormPriority(RealtimeThread.currentThread()));
             short priority = (short) (10 + (PriorityScheduler.getNormPriority(RealtimeThread.currentThread()))) ;
-            priority = (short) PriorityScheduler.MAX_PRIORITY;
+            priority = (short) PriorityScheduler.instance().getMaxPriority();
             
             int threadPoolId = rtorb.create_threadpool(100, 50, 50, priority, false, 10, 10);            
             Policy[] policy = new Policy[1];
