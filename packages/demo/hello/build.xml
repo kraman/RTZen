@@ -26,7 +26,7 @@
                 <include name="*.java"/>
             </fileset>
         </demo.compile.jrate>
-	    <demo.compile.jrate main="demo.hello.Server" out="server">
+        <demo.compile.jrate main="demo.hello.Server" out="server">
             <fileset dir="${zen.srcdir}/${package.dir}">
                 <include name="Server.java"/>                
                 <include name="HelloWorldImpl.java"/>
@@ -40,7 +40,7 @@
     <target name="server">
         <java classname="demo.hello.Server" fork="yes">
             <jvmarg line="${zen.jvm.properties}"/>
-            <arg line="-ORBListenEndpoints"/>
+            <!--arg line="-ORBListenEndpoints"/-->
         </java>
     </target>
     
