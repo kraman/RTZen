@@ -1,5 +1,6 @@
 #!/bin/sh
 PROGNAME=$0
+SLEEPTIME=10
 
 function printUsage() {
 	echo "ERROR: $1"
@@ -139,6 +140,9 @@ function startServer(){
         echo "Exec cmd:"
         echo $EXEC_CMD
         $EXEC_CMD&
+        sleep $SLEEPTIME
+        EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+        $EXEC_CMD2&
         #echo $! > $STOPFNAME
     
     elif [ $1 -eq 3 ]; then
@@ -155,6 +159,10 @@ function startServer(){
 		echo "Exec cmd:"
 		echo $EXEC_CMD
 		$EXEC_CMD&
+                sleep $SLEEPTIME
+                EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+                $EXEC_CMD2&
+
 		#echo $! > $STOPFNAME	
 	elif [ $1 -eq 2 ]; then
 		# TimeSys JVM
@@ -170,7 +178,10 @@ function startServer(){
 		EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 2 $1"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
-        $EXEC_CMD&
+                $EXEC_CMD&
+                sleep $SLEEPTIME
+                EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+                $EXEC_CMD2&
         #echo $! > $STOPFNAME
         elif [ $1 -eq 4 ]; then
                 EXEC_CMD="sh run_server_int.sh $1"
@@ -185,6 +196,10 @@ function startServer(){
                 echo $EXEC_CMD
                 $EXEC_CMD&
                 echo $! > $STOPFNAME
+                sleep $SLEEPTIME
+                EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+                $EXEC_CMD2&
+
         elif [ $1 -eq 5 ]; then
                 # start ZEN server in OVM ahead_of_time compiler
                 EXEC_CMD="sh run_server_nat.sh $1"
@@ -199,6 +214,10 @@ function startServer(){
                 echo $EXEC_CMD
                 $EXEC_CMD&
                 echo $! > $STOPFNAME
+                sleep $SLEEPTIME
+                EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+                $EXEC_CMD2&
+
 
 		elif [ $1 -eq 6 ]; then
 # start ZEN server in regular JVM
@@ -214,6 +233,10 @@ function startServer(){
 		echo "Exec cmd:"
 		echo $EXEC_CMD
 		$EXEC_CMD&
+                sleep $SLEEPTIME
+                EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+                $EXEC_CMD2&
+
 #echo $! > $STOPFNAME
 
 		elif [ $1 -eq 7 ]; then
@@ -230,6 +253,10 @@ function startServer(){
 		echo "Exec cmd:"
 		echo $EXEC_CMD
 		$EXEC_CMD&
+                sleep $SLEEPTIME
+                EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+                $EXEC_CMD2&
+
 #echo $! > $STOPFNAME
                 elif [ $1 -eq 8 ]; then
 # start RTZen server on jRate 
@@ -245,6 +272,9 @@ function startServer(){
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD&
+                sleep $SLEEPTIME
+                EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+                $EXEC_CMD2&   
                 echo $! > $STOPFNAME
 
 	else
@@ -436,7 +466,7 @@ if [ $OPERATION == "both" -o $OPERATION == "client" ]; then
 			startServer $SERVERTYPE
 			
 			# delay a bit to give the server a chance
-			sleep 10
+			sleep $SLEEPTIME
 		fi
 
 		# startup the client (will terminate automatically after finishing)
