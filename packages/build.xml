@@ -62,6 +62,8 @@
             <exclude name="src/edu/oswego/cs/dl/util/concurrent/PropertyChangeMulticaster.java"/>
             <exclude name="src/edu/oswego/cs/dl/util/concurrent/CopyOnWriteArraySet.java"/>
             <exclude name="src/edu/oswego/cs/dl/util/concurrent/ObservableSync.java"/>
+            <exclude name="src/edu/oswego/cs/dl/util/concurrent/FJTask**"/>
+            <exclude name="src/edu/oswego/cs/dl/util/concurrent/ObservableSync.java"/>
             <include name="src/edu/uci/ece/zen/utils/Logger.java"/>
     </patternset>
 
@@ -104,6 +106,8 @@
             sharedLib="true"
             destdir="${zen.libdir}"
             out="${zen.libdir}/libZen.so"
+            bootclasspath="${zen.rtbootclasspath}"
+            classpath="${jRate_classpath}:${zen.classdir}"
             debug="true"
             >
             <fileset dir="${zen.srcdir}">

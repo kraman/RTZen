@@ -34,7 +34,7 @@
             <equals arg1="${zen.build.runtime}" arg2="timesys_ri"/>
         </condition>
 
-        <condition property="zen.rtbootclasspath" value="${jRate_install}/classes/">
+        <condition property="zen.rtbootclasspath" value="${jRate_install}/classes/:${jRate_classpath}">
             <equals arg1="${zen.build.runtime}" arg2="jRate"/>
         </condition>
         <condition property="zen.jRateLibDir" value="${jRate_install}/lib/">
