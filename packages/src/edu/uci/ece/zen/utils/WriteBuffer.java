@@ -281,7 +281,7 @@ public class WriteBuffer {
 
         pad(WriteBuffer.LONGLONG);
         byte b1 = (byte) ((v >>> 56) & 0xFF);
-        ZenProperties.logger.log(b1 + "");
+        if (ZenProperties.dbg) ZenProperties.logger.log(b1 + "");
         byte b2 = (byte) ((v >>> 48) & 0xFF);
         byte b3 = (byte) ((v >>> 40) & 0xFF);
         byte b4 = (byte) ((v >>> 32) & 0xFF);

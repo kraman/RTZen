@@ -67,15 +67,6 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         this.responseExpected = responseExpected;
         out = CDROutputStream.instance();
 
-        ZenProperties.logger.log
-                        ("1ClientRequest: cur ORBImpl mem (cons, remaining)= "
-                        + orb.orbImplRegion.memoryConsumed() + " "
-                        + orb.orbImplRegion.memoryRemaining());
-        ZenProperties.logger.log
-                        ("1ClientRequest: cur Client mem (cons, remaining)= "
-                        + orb.parentMemoryArea.memoryConsumed() + " "
-                        + orb.parentMemoryArea.memoryRemaining());
-
         ZenProperties.logger.log("ClientRequest 1");
         out.init(orb);
         ZenProperties.logger.log("ClientRequest 2");
@@ -90,15 +81,6 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         ZenProperties.logger.log("ClientRequest 7");
 
         //TODO:Assemble and write message header and policies here
-
-        ZenProperties.logger.log
-                        ("2ClientRequest: cur ORBImpl mem (cons, remaining)= "
-                        + orb.orbImplRegion.memoryConsumed() + " "
-                        + orb.orbImplRegion.memoryRemaining());
-        ZenProperties.logger.log
-                        ("2ClientRequest: cur Client mem (cons, remaining)= "
-                        + orb.parentMemoryArea.memoryConsumed() + " "
-                        + orb.parentMemoryArea.memoryRemaining());
 
         contexts = ServiceContext.instance();
 
@@ -163,14 +145,6 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructMessage(this,
                 messageId, out);
         ZenProperties.logger.log("ClientRequest 9");
-        ZenProperties.logger.log
-                        ("3ClientRequest: cur ORBImpl mem (cons, remaining)= "
-                        + orb.orbImplRegion.memoryConsumed() + " "
-                        + orb.orbImplRegion.memoryRemaining());
-        ZenProperties.logger.log
-                        ("3ClientRequest: cur Client mem (cons, remaining)= "
-                        + orb.parentMemoryArea.memoryConsumed() + " "
-                        + orb.parentMemoryArea.memoryRemaining());
         //edu.uci.ece.zen.utils.Logger.printMemStats(311);
     }
 
@@ -184,6 +158,9 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     public CDRInputStream invoke() {
         //out.printWriteBuffer(); This will printout every byte in the
         // OutputStream
+
+        //edu.uci.ece.zen.utils.Logger.printMemStats(310);
+
         ZenProperties.logger.log("ClientRequest invoke 1");
         out.updateLength();
         MessageComposerRunnable mcr = MessageComposerRunnable.instance();
@@ -211,6 +188,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         ORB.freeScopedRegion(messageScope);
         orb.freeEIR( erOrbMem );
         orb.freeEIR( erMsgMem );
+        //edu.uci.ece.zen.utils.Logger.printMemStats(311);
         if (mcr.success) return mcr.getReply();
         else throw new org.omg.CORBA.TRANSIENT();
     }

@@ -66,7 +66,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     static {
         try {
             try {
-                ZenProperties.logger.log("local address"
+                if (ZenProperties.dbg) ZenProperties.logger.log("local address"
                         + java.net.InetAddress.getLocalHost().getHostAddress());
                 //sockAddr = new
                 // java.net.InetSocketAddress(java.net.InetAddress.getLocalHost().getHostAddress(),0);
@@ -75,8 +75,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                 ZenProperties.logger.log(Logger.WARN, ORB.class, "static <init>", e);
             }
 
-            //if(edu.uci.ece.zen.utils.ZenProperties.memDbg)
-            // perf.cPrint.nativePrinter.print(0,0,0);
+            if(edu.uci.ece.zen.utils.ZenProperties.memDbg)
+                perf.cPrint.nativePrinter.print(0,0,0);
 
             imm = ImmortalMemory.instance();
             //Set up ORB Facades
@@ -368,7 +368,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     public org.omg.CORBA.Object resolve_initial_references(String object_name)
             throws org.omg.CORBA.ORBPackage.InvalidName {
-        ZenProperties.logger.log("======================Getting " + object_name
+        if (ZenProperties.dbg) ZenProperties.logger.log("======================Getting " + object_name
                         + "=============================");
         if (object_name.equals("RTORB")) {
             return getRTORB();

@@ -64,7 +64,7 @@ public final class GIOPMessageFactory
             }
             nextMessageIsFragment=false;
             ZenProperties.logger.log("----GIOP Message Header ----");
-            ZenProperties.logger.log(new String(header, 0, 12));
+            if (ZenProperties.dbg) ZenProperties.logger.log(new String(header, 0, 12));
             ZenProperties.logger.log("---- ----");
 
             

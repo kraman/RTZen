@@ -94,7 +94,7 @@ public class IOR {
             FString objKey, MemoryArea clientArea)
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
-        ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
+        if (ZenProperties.dbg) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea
                 .newInstance(org.omg.IOP.IOR.class);
         ior.type_id = typeID;

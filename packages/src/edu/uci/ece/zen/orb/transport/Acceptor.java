@@ -66,7 +66,7 @@ public abstract class Acceptor {
     public synchronized TaggedProfile getProfile(byte iiopMajorVersion,
             byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion) {
         try {
-            ZenProperties.logger.log("Acceptor client region: " + clientRegion);
+            if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor client region: " + clientRegion);
             edu.uci.ece.zen.utils.Logger.printThreadStack();
             if (prunnable == null) prunnable = new ProfileRunnable();
             prunnable.init(iiopMajorVersion, iiopMinorVersion, objKey, this);

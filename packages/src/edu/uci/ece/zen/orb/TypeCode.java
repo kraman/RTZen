@@ -805,7 +805,7 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
             | (1L << org.omg.CORBA.TCKind._tk_except);
 
         if ( (kindMask & acceptedKinds) == 0) {
-            ZenProperties.logger.log("TypeCode#id() kind " + kind + " kindMask " + kindMask + " acceptedKinds " + acceptedKinds);
+            if (ZenProperties.dbg) ZenProperties.logger.log("TypeCode#id() kind " + kind + " kindMask " + kindMask + " acceptedKinds " + acceptedKinds);
             throw new org.omg.CORBA.TypeCodePackage.BadKind("TypeCode#id() called on invalid TypeCode of " + kind);
         }
         return id;

@@ -25,7 +25,7 @@ public class PriorityMappingImpl extends PriorityMapping {
 
         native_priority.value = (short) ((corba_priority * (RealtimeThread.MAX_PRIORITY - RealtimeThread.MIN_PRIORITY)) / 32767.0 + RealtimeThread.MIN_PRIORITY);
 
-        ZenProperties.logger.log(/* "range: " + range + " fract: " + fract + */" native_priority.value: "
+        if (ZenProperties.dbg) ZenProperties.logger.log(/* "range: " + range + " fract: " + fract + */" native_priority.value: "
                         + native_priority.value);
         return true;
     }
@@ -41,7 +41,7 @@ public class PriorityMappingImpl extends PriorityMapping {
 
         corba_priority.value = (short) (((double) (native_priority - RealtimeThread.MIN_PRIORITY) / (RealtimeThread.MAX_PRIORITY - RealtimeThread.MIN_PRIORITY)) * 32767);
 
-        ZenProperties.logger.log(/* "range: " + range + " fract: " + fract + */" corba_priority.value: "
+        if (ZenProperties.dbg) ZenProperties.logger.log(/* "range: " + range + " fract: " + fract + */" corba_priority.value: "
                         + corba_priority.value);
 
         return true;

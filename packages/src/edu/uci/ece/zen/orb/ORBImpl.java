@@ -47,15 +47,15 @@ public class ORBImpl {
         orbFacade.orbImplRegion.setPortal(this);
         orbImplRunnable = new ORBImplRunnable(orbFacade.orbImplRegion);
         ZenProperties.logger.log("======================Creating nhrt sleeper thread=========================");
-        ZenProperties.logger.log(orbFacade.orbImplRegion.toString());
-        ZenProperties.logger.log(MemoryArea
+        if (ZenProperties.dbg) ZenProperties.logger.log(orbFacade.orbImplRegion.toString());
+        if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
                 .getMemoryArea(orbImplRunnable).toString());
-        ZenProperties.logger.log(NoHeapRealtimeThread
+        if (ZenProperties.dbg) ZenProperties.logger.log(NoHeapRealtimeThread
                 .getCurrentMemoryArea().toString());
         //NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,
         // null,null,(ScopedMemory)orbFacade.orbImplRegion,null,(java.lang.Runnable
         // )orbImplRunnable );
-        ZenProperties.logger.log(MemoryArea
+        if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
                 .getMemoryArea(new Integer(42)).toString());
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread(null, null, null,
                 orbFacade.orbImplRegion, null, orbImplRunnable);
@@ -173,13 +173,13 @@ class ORBImplRunnable implements Runnable {
     }
 
     public void run() {
-        ZenProperties.logger.log("getting portal for: "
+        if (ZenProperties.dbg) ZenProperties.logger.log("getting portal for: "
                 + sm);
-        ZenProperties.logger.log("inner thread: "
+        if (ZenProperties.dbg) ZenProperties.logger.log("inner thread: "
                 + Thread.currentThread().toString());
 
         ORBImpl orbImpl = (ORBImpl) sm.getPortal();
-        ZenProperties.logger.log("orb impl is " + orbImpl);
+        if (ZenProperties.dbg) ZenProperties.logger.log("orb impl is " + orbImpl);
         synchronized (orbImpl) {
             try {
                 while (active) {

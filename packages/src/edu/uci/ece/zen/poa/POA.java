@@ -269,8 +269,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
         POARunnable r = new POARunnable(POARunnable.SERVANT_TO_REFERENCE);
         r.addParam(p_servant);
         r.addParam(RealtimeThread.getCurrentMemoryArea());
-        ZenProperties.logger.log("POA.servant_to_reference cur mem area: "
-                        + RealtimeThread.getCurrentMemoryArea());
+        if (ZenProperties.dbg) ZenProperties.logger.log("POA.servant_to_reference cur mem area: " + RealtimeThread.getCurrentMemoryArea());
         ExecuteInRunnable eir1 = new ExecuteInRunnable();
         eir1.init(r, poaMemoryArea);
         ExecuteInRunnable eir2 = new ExecuteInRunnable();
@@ -288,7 +287,7 @@ public class POA extends org.omg.CORBA.LocalObject implements
             case POARunnable.WrongPolicyException:
                 throw new WrongPolicy();
         }
-        ZenProperties.logger.log("POA.servant_to_reference " + r.retVal);
+        if (ZenProperties.dbg) ZenProperties.logger.log("POA.servant_to_reference " + r.retVal);
         return (org.omg.CORBA.Object) r.retVal;
     }
 

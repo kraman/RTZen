@@ -47,11 +47,11 @@ public final class GIOPMessageFactory {
             // into the variable "buffer"
             buffer.setEndian(mainMsgHdr.isLittleEndian);
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
-            ZenProperties.logger.log
+            if (ZenProperties.dbg) ZenProperties.logger.log
                             ("In GIOPMessageFactory, the message size is "
                             + mainMsgHdr.messageSize);
 
-            ZenProperties.logger.log
+            if (ZenProperties.dbg) ZenProperties.logger.log
                             ("Inside GIOPMessageFactory and mainMsgHdr: "
                             + mainMsgHdr.toString() + " and giopMajorVersion: "
                             + mainMsgHdr.giopMajorVersion
@@ -270,7 +270,7 @@ public final class GIOPMessageFactory {
         int read = 0;
         while (read < 12) {
             int tmp = in.read(header, 0, 12);
-            ZenProperties.logger.log(tmp + "");
+            if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
                 ZenProperties.logger.log(Logger.FATAL, GIOPMessageFactory.class, "parseStreamForHeader(InputStream, GIOPHeaderInfo, Transport)", "RTZen doesnt support closing connection yet :-P ... shutting down");
                 System.exit(0);

@@ -482,9 +482,10 @@ public class POAImpl {
         retFString(okey);
         retFString(oid);
         retIntHolder(ih);
-        ZenProperties.logger.log("servant_to_reference "
+        if (ZenProperties.dbg) ZenProperties.logger.log("servant_to_reference "
                 + retVal);
-        ZenProperties.logger.log("servant_to_reference client area " + clientMemoryArea);
+        if (ZenProperties.dbg) ZenProperties.logger.log("servant_to_reference client area " + clientMemoryArea);
+    
         return retVal;
     }
 
@@ -638,13 +639,13 @@ class POAImplRunnable implements Runnable {
     }
 
     public void run() {
-        ZenProperties.logger.log("getting portal for: "
+        if (ZenProperties.dbg) ZenProperties.logger.log("getting portal for: "
                 + sm);
-        ZenProperties.logger.log("inner thread: "
+        if (ZenProperties.dbg) ZenProperties.logger.log("inner thread: "
                 + Thread.currentThread().toString());
 
         POAImpl poaImpl = (POAImpl) sm.getPortal();
-        ZenProperties.logger.log("poa impl is " + poaImpl);
+        if (ZenProperties.dbg) ZenProperties.logger.log("poa impl is " + poaImpl);
         synchronized (poaImpl) {
             try {
                 while (active) {

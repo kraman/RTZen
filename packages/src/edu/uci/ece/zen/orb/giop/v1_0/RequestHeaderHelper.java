@@ -133,8 +133,8 @@ public class RequestHeaderHelper {
         //System.out.println("writing request header");
         //edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
         value.service_context.write(ostream);
-        ZenProperties.logger.log("sc len: " + value.service_context.length());
-        ZenProperties.logger.log("sc: " + value.service_context.decode());
+        if (ZenProperties.dbg) ZenProperties.logger.log("sc len: " + value.service_context.length());
+        if (ZenProperties.dbg) ZenProperties.logger.log("sc: " + value.service_context.decode());
         //ostream.write_ulong(0);
 
         ostream.write_ulong(value.request_id);

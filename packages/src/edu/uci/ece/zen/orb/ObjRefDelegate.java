@@ -93,7 +93,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     public synchronized void addLaneData(int min, int max,
             ScopedMemory transport, byte[] objectKey) {
-        ZenProperties.logger.log(RealtimeThread
+        if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread
                 .currentThread()
                 + " "
                 + RealtimeThread.getCurrentMemoryArea()
@@ -111,7 +111,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         int priority = RealtimeThread.currentThread().getPriority();
         for (int i = 0; i < priorityLanes.length; i++) {
             LaneInfo ln = (LaneInfo) priorityLanes[i];
-            ZenProperties.logger.log("Checking if "
+            if (ZenProperties.dbg) ZenProperties.logger.log("Checking if "
                     + priority + " is within " + ln.minPri + " <--> "
                     + ln.maxPri);
             if (ln.minPri <= priority && ln.maxPri >= priority) return ln;
@@ -122,7 +122,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     private void processTaggedProfile(TaggedProfile profile, ObjectImpl obj,
             ORBImpl orbImpl) {
         int tag = profile.tag;
-        ZenProperties.logger.log("processTaggedProfile " + tag);
+        if (ZenProperties.dbg) ZenProperties.logger.log("processTaggedProfile " + tag);
 
         switch (tag) {
             case TAG_INTERNET_IOP.value: //establish appropriate connections
@@ -138,7 +138,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                  * in.setEndian( in.read_boolean() );
                  */
                 byte iiopMinor = data[2];
-                ZenProperties.logger.log("iiop minor " + iiopMinor);
+                if (ZenProperties.dbg) ZenProperties.logger.log("iiop minor " + iiopMinor);
                 switch (iiopMinor) {
                     case 0: {
                         org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper
@@ -181,11 +181,11 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                     connectionKey, transportScope);
                         }
 
-                        ZenProperties.logger.log("number of components: " + profilebody.components.length);
+                        if (ZenProperties.dbg) ZenProperties.logger.log("number of components: " + profilebody.components.length);
 
                         for (int i = 0; i < profilebody.components.length; ++i) {
                             TaggedComponent tc = profilebody.components[i];
-                            ZenProperties.logger.log("found tag: " + tc.tag);
+                            if (ZenProperties.dbg) ZenProperties.logger.log("found tag: " + tc.tag);
 
                             if (tc.tag == org.omg.IOP.TAG_POLICIES.value) {
 
@@ -196,11 +196,11 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                         .read(in1);
                                 in1.free();
 
-                                ZenProperties.logger.log("number of policies: " + pvarr.length);
+                                if (ZenProperties.dbg) ZenProperties.logger.log("number of policies: " + pvarr.length);
 
                                 for (int j = 0; j < pvarr.length; ++j) {
 
-                                    ZenProperties.logger.log("found policy value: " + pvarr[j].ptype);
+                                    if (ZenProperties.dbg) ZenProperties.logger.log("found policy value: " + pvarr[j].ptype);
 
                                     CDRInputStream in2 = CDRInputStream
                                             .fromOctetSeq(pvarr[j].pvalue, orb);
@@ -213,8 +213,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                             ZenProperties.logger.log("\tPRIORITY_MODEL_POLICY_TYPE");
                                             priorityModel = in2.read_long();
                                             serverPriority = in2.read_short();
-                                            ZenProperties.logger.log("\tpriority model: " + priorityModel);
-                                            ZenProperties.logger.log("\tpriority: " + serverPriority);
+                                            if (ZenProperties.dbg) ZenProperties.logger.log("\tpriority model: " + priorityModel);
+                                            if (ZenProperties.dbg) ZenProperties.logger.log("\tpriority: " + serverPriority);
                                             break;
 
                                         case THREADPOOL_POLICY_TYPE.value:

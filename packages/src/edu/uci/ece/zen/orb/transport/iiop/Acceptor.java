@@ -58,18 +58,18 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
             case 0:
                 if (ZenProperties.devDbg) {
                     ZenProperties.logger.log("yuez in Acceptor 2.1");
-                    ZenProperties.logger.log("yuez in Acceptor version " + version);
-                    ZenProperties.logger.log("yuez in Acceptor, the current memoery is :"
+                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor version " + version);
+                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor, the current memoery is :"
                                     + javax.realtime.RealtimeThread
                                             .getCurrentMemoryArea());
-                    ZenProperties.logger.log("yuez in Acceptor, the memory of ssock is "
+                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor, the memory of ssock is "
                                     + javax.realtime.MemoryArea
                                             .getMemoryArea(ssock));
-                    ZenProperties.logger.log("yuez in Acceptor getHostAddress"
+                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor getHostAddress"
                             + ssock.getInetAddress().getHostAddress());
-                    ZenProperties.logger.log("yuez in Acceptor getLocalPort()"
+                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor getLocalPort()"
                             + (short) ssock.getLocalPort());
-                    ZenProperties.logger.log("yuez in Acceptor objKey" + objKey);
+                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor objKey" + objKey);
                 }
                 ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock
                         .getInetAddress().getHostAddress(), (short) ssock

@@ -39,7 +39,7 @@ public class ServantRetentionPolicy extends org.omg.CORBA.LocalObject implements
     public ServantRetentionPolicy(
             org.omg.PortableServer.ServantRetentionPolicyValue _value) {
         this.value = _value;
-        ZenProperties.logger.log("Created RT-policy with value " + _value.value());
+        if (ZenProperties.dbg) ZenProperties.logger.log("Created RT-policy with value " + _value.value());
     }
 
     /**

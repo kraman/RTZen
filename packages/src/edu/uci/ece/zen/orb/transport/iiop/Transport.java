@@ -20,7 +20,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             sock = sock;
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
-            ZenProperties.logger.log("Transport ready: "
+            if (ZenProperties.dbg) ZenProperties.logger.log("Transport ready: "
                     + istream + " " + ostream);
             setSockProps(sock, orb);
         } catch (Exception ex) {
@@ -35,9 +35,9 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             edu.uci.ece.zen.orb.ORBImpl orbImpl, String host, int port) {
         super(orb, orbImpl);
         try {
-            ZenProperties.logger.log("Connecting to "
+            if (ZenProperties.dbg) ZenProperties.logger.log("Connecting to "
                     + host + ":" + port);
-            ZenProperties.logger.log("Current transport thread is of type "
+            if (ZenProperties.dbg) ZenProperties.logger.log("Current transport thread is of type "
                             + javax.realtime.RealtimeThread
                                     .currentRealtimeThread());
 
@@ -47,7 +47,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             //             System.err.println( "sock = " + sock );
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
-            ZenProperties.logger.log("Transport ready: "
+            if (ZenProperties.dbg) ZenProperties.logger.log("Transport ready: "
                     + istream + " " + ostream);
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
