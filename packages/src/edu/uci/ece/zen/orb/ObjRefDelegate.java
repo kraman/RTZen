@@ -492,20 +492,6 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      */
     public boolean is_a(org.omg.CORBA.Object self, String repository_id) {
         //TODO: Send _is_a message
-        /*
-         * String[] ids = ((org.omg.CORBA.portable.ObjectImpl)self)._ids(); for(
-         * int i=0;i <ids.length;i++ ) if( ids[i].equals( repository_id ) )
-         * return true; //send _is_a GIOP message
-         * org.omg.CORBA.portable.OutputStream _output = null;
-         * org.omg.CORBA.portable.InputStream _input = null; try{ _output =
-         * request( self , "_is_a" , true ); _output.write_string( repository_id );
-         * _input = invoke( self , _output); boolean ret =
-         * _input.read_boolean(); return ret; }catch(
-         * org.omg.CORBA.portable.RemarshalException _exception){ }catch(
-         * org.omg.CORBA.portable.ApplicationException ae ){ }finally{
-         * releaseReply( self , _input); } //if still not found
-         */
-
         return false;
     }
 
@@ -538,15 +524,6 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     public boolean non_existent(org.omg.CORBA.Object self) {
         //TODO:send _non_existent GIOP message
-        /*
-         * org.omg.CORBA.portable.OutputStream _output = null;
-         * org.omg.CORBA.portable.InputStream _input = null; try{ _output =
-         * request( self , "_non_existent", true ); _input = invoke( self ,
-         * _output ); boolean ret = _input.read_boolean(); return ret; }catch(
-         * org.omg.CORBA.portable.RemarshalException _exception){ }catch(
-         * org.omg.CORBA.portable.ApplicationException ae ){ }finally{
-         * releaseReply( self,_input ); }
-         */
         return false;
     }
 
@@ -606,8 +583,6 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     public org.omg.CORBA.portable.OutputStream request(
             org.omg.CORBA.Object self, String operation,
             boolean responseExpected) {
-        //return new ClientRequest( operation , responseExpected , (byte)1 ,
-        // (byte)0 , orb , this );
         ClientRequest cr = ClientRequest.instance();
         cr.init(operation, responseExpected, (byte) 1, (byte) 0, orb, this);
         return cr;
@@ -623,11 +598,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     public org.omg.CORBA.portable.OutputStream request(
             org.omg.CORBA.Object self, String operation,
             boolean responseExpected, byte majorVersion, byte minorVersion) {
-        //return new ClientRequest( operation , responseExpected , majorVersion
-        // , minorVersion , orb , this );
         ClientRequest cr = ClientRequest.instance();
-        cr.init(operation, responseExpected, majorVersion, minorVersion, orb,
-                this);
+        cr.init(operation, responseExpected, majorVersion, minorVersion, orb, this);
         return cr;
     }
 
@@ -638,25 +610,27 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      * --&gt; Message scope/Waiter region --&gt; Transport scope
      * </p>
      */
-    public org.omg.CORBA.portable.InputStream invoke(org.omg.CORBA.Object self,
-            org.omg.CORBA.portable.OutputStream os)
+    public org.omg.CORBA.portable.InputStream invoke(org.omg.CORBA.Object self, org.omg.CORBA.portable.OutputStream os)
             throws org.omg.CORBA.portable.ApplicationException,
             org.omg.CORBA.portable.RemarshalException {
-        //        edu.uci.ece.zen.utils.Logger.printMemStats(302);
-        org.omg.CORBA.portable.InputStream ret = ((ClientRequest) os).invoke();
-        //      edu.uci.ece.zen.utils.Logger.printMemStats(303);
-        ((ClientRequest) os).free();
-        return ret;
+        try{
+            //        edu.uci.ece.zen.utils.Logger.printMemStats(302);
+            org.omg.CORBA.portable.InputStream ret = ((ClientRequest) os).invoke();
+            //      edu.uci.ece.zen.utils.Logger.printMemStats(303);
+            ((ClientRequest) os).free();
+            return ret;
+        }catch( NullPointerException npe ){
+            npe.printStackTrace();
+            return null;
+        }
     }
 
-    public void releaseReply(org.omg.CORBA.Object self,
-            org.omg.CORBA.portable.InputStream is) {
+    public void releaseReply(org.omg.CORBA.Object self, org.omg.CORBA.portable.InputStream is) {
         if (is != null) ((CDRInputStream) is).free();
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////DII
-    // Stuff///////////////////////////////////
+    ///////////////////////////////////DII // Stuff////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
 
     public org.omg.CORBA.Request request(org.omg.CORBA.Object self,

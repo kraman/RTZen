@@ -17,59 +17,32 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
 
     private static TwoWayWaitingStrategy inst;
 
-    public static TwoWayWaitingStrategy instance() {
-        if (inst == null) {
-            try {
-                inst = (TwoWayWaitingStrategy) ImmortalMemory.instance()
-                        .newInstance(TwoWayWaitingStrategy.class);
-            } catch (Exception e) {
-                ZenProperties.logger.log(Logger.WARN, TwoWayWaitingStrategy.class, "instance", e);
-            }
-        }
-        return inst;
-    }
-
     TwoWayWaitingStrategy() {
         clientSem = new Semaphore(0);
     }
 
     public void replyReceived(Message reply) {
         this.replyMsg = reply.getCDRInputStream();
-        //reply.free();
-        //TODO:handle service contexts here ... fix this... you can demarshall
-        // stuff here
+        if( replyMsg == null )
+            System.out.println ( "---------------------------------" );
 
         FString contexts = ((ReplyMessage)reply).getServiceContexts();
-
         if (ZenProperties.dbg) System.out.println("REPLY SC: " + contexts.decode());
-
         ReadBuffer rb = contexts.toReadBuffer();
-
         //if (ZenProperties.dbg) System.out.println("#############REPLY RB: " + rb.toString());
-
         int size = rb.readLong();
-
         if(ZenProperties.devDbg) System.out.println("REPLY CONTEXT size: " + size);
-
         for(int i = 0; i < size; ++i){
-
             int id = rb.readLong();
             if(ZenProperties.devDbg) System.out.println("REPLY CONTEXT id: " + id);
-
             if(id == org.omg.IOP.RTCorbaPriority.value){
                 if(ZenProperties.devDbg) System.out.println("REPLY CONTEXT id:RTCorbaPriority");
                 if(ZenProperties.devDbg) System.out.println("CUR thread priority: " + replyMsg.orb.getRTCurrent().the_priority());
-
                 rb.readLong(); //eat length
-
                 short priority = (short)rb.readLong();
-
                 if(ZenProperties.devDbg) System.out.println("RECEIVED thread priority: " + priority);
-
                 replyMsg.orb.getRTCurrent().the_priority(priority);
-
                 if(ZenProperties.devDbg) System.out.println("NEW thread priority: " + replyMsg.orb.getRTCurrent().the_priority());
-
             } else{ // just eat
                 if(ZenProperties.devDbg) System.out.println("Skipping unknown service context " + id);
                 int byteLen = rb.readLong();
@@ -77,9 +50,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
                     rb.readByte();
             }
         }
-
         rb.free();
-
         /*
          ServiceContext[] contexts =((ReplyMessage)reply).getServiceContexts();
          for(int i = 0; i < contexts.length; ++i){

@@ -33,18 +33,6 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     public static ClientRequest instance() {
         ClientRequest cr = (ClientRequest)ORB.getQueuedInstance(ClientRequest.class,queue);
         return cr;
-/*
-        if (inst == null) {
-            try {
-                inst = (ClientRequest) ImmortalMemory.instance().newInstance(
-                        ClientRequest.class);
-            } catch (Exception e) {
-                ZenProperties.logger.log(Logger.WARN, ClientRequest.class, "instance", e);
-            }
-        }
-        return inst;
-*/
-        //return new ClientRequest();
     }
 
     /**
@@ -159,8 +147,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
      * </p>
      */
     public CDRInputStream invoke() {
-        //out.printWriteBuffer(); This will printout every byte in the
-        // OutputStream
+        //out.printWriteBuffer(); This will printout every byte in the OutputStream
 
         ZenProperties.logger.log("ClientRequest invoke 1");
         out.updateLength();
@@ -189,8 +176,15 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         ORB.freeScopedRegion(messageScope);
         orb.freeEIR( erOrbMem );
         orb.freeEIR( erMsgMem );
-        if (mcr.success) return mcr.getReply();
-        else throw new org.omg.CORBA.TRANSIENT();
+        CDRInputStream reply = null;
+        if (mcr.success){
+            reply = mcr.getReply();
+            mcr.release();
+        }else{
+            mcr.release();
+            throw new org.omg.CORBA.TRANSIENT();
+        }
+        return null;
     }
 
     public void registerWaiter() {

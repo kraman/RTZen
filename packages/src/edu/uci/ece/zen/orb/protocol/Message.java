@@ -68,6 +68,14 @@ public abstract class Message {
         //messageBody.free();
     }
 
+    public final void freeWithoutBufferRelease(){
+        transport = null;
+        istream = null;
+        scope = null;
+        internalFree();
+        //messageBody.free();
+    }
+
     public abstract void internalFree();
 
     private Class protocolFactory;

@@ -34,17 +34,14 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     public static CDRInputStream instance() {
         try {
-            if (cdrInputStreamCache.isEmpty()){
-                CDRInputStream cdr = (CDRInputStream) ImmortalMemory
-                    .instance().newInstance(CDRInputStream.class);
+	    CDRInputStream cdr = (CDRInputStream) cdrInputStreamCache.dequeue();
+            if ( cdr == null ){
+                cdr = (CDRInputStream) ImmortalMemory.instance().newInstance(CDRInputStream.class);
                 cdr.inUse = true;
                 return cdr;
             } else {
-                CDRInputStream cdr = (CDRInputStream) cdrInputStreamCache.dequeue();
                 if(cdr.inUse)
-                    ZenProperties.logger.log(Logger.FATAL, CDRInputStream.class,
-                        "instance",
-                        "Stream already in use.");
+                    ZenProperties.logger.log(Logger.FATAL, CDRInputStream.class, "instance", "Stream already in use.");
                 cdr.inUse = true;
                 return cdr;
             }

@@ -67,6 +67,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     }
 
     public void init(edu.uci.ece.zen.orb.ORB orb ) {
+	System.out.println( "CDROutputStream.init( edu.uci.ece.zen.orb.ORB )" );
         buffer = WriteBuffer.instance();
         buffer.init();
         buffer.setEndian(false);
@@ -273,6 +274,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     /** Releases all resources. */
     public void free() {
         if(!inUse){
+	    Thread.dumpStack();
             ZenProperties.logger.log(Logger.WARN, CDROutputStream.class,
                 "free",
                 "Stream already freed.");

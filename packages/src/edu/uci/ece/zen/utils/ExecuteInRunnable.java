@@ -31,7 +31,7 @@ public class ExecuteInRunnable implements Runnable {
 	try{
             //System.out.println( "utils.ExecuteInRunnable, the current" + " memory region is " + javax.realtime.RealtimeThread.getCurrentMemoryArea());
 	    area.enter(runnable);
-	}catch(Exception ex){
+	}catch(Throwable ex){
             System.out.println( "jumping to area " + area + " and running " + runnable );
 	    System.err.println("Exception occured");
 	    ex.printStackTrace();
