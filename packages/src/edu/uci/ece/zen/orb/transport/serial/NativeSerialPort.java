@@ -1,8 +1,10 @@
 package edu.uci.ece.zen.orb.transport.serial;
 
 import java.io.*;
+import javax.realtime.*;
+import edu.oswego.cs.dl.util.concurrent.Mutex;
 
-class NativeSerialPort implements SerialPort
+class NativeSerialPort
 {
     public static NativeSerialPort _instance;
 
@@ -14,23 +16,29 @@ class NativeSerialPort implements SerialPort
 
     public synchronized static NativeSerialPort instance(){
         if( _instance == null )
-            _instance = ImmortalMemory.newInstance( NativeSerialPort.class );
+            _instance = (NativeSerialPort) ImmortalMemory.instance().newInstance( NativeSerialPort.class );
         return _instance;
     }
 
     byte[] tmpBuffer;
+    public Mutex lock;
     private NativeSerialPort(){
-        tmpBuffer = byte[4];
+        tmpBuffer = new byte[4];
     }
 
     public synchronized NativeSerialPort accept(){
-        while( true ){
-            getMessage( tmpBuffer );
-            if( tmpBuffer[0] == 0 && tmpBuffer[1] = 1 && tmpBuffer[2] == 7 && tmpBuffer[3] == 7 ){
-                return this;
-            }else{
-                System.out.println( "Synchronization lost. port reset" );
+        try{
+            lock.acquire();
+            while( true ){
+                getMessage( tmpBuffer );
+                if( tmpBuffer[0] == 0 && tmpBuffer[1] == 1 && tmpBuffer[2] == 7 && tmpBuffer[3] == 7 ){
+                    return this;
+                }else{
+                    System.out.println( "Synchronization lost. port reset" );
+                }
             }
+        }catch( Exception e ){
+            e.printStackTrace();
         }
     }
 
@@ -48,7 +56,7 @@ class SerialPortInputStream extends InputStream{
         return 0;
     }
 
-    public abstract int read() throws java.io.IOException{
+    public int read() throws java.io.IOException{
         NativeSerialPort.instance().getMessage( tmpBuffer );
         return tmpBuffer[0];
     }
@@ -63,25 +71,41 @@ class SerialPortInputStream extends InputStream{
         return false;
     }
 
-    public synchronized void mark(int){
+    public synchronized void mark(int m){
     }
 
     public long skip(long l) throws java.io.IOException{
+        long ls = l;
         while( l > 0 ){
             read();
             l--;
         }
+        return ls;
     }
 
     public int read(byte[] buf) throws java.io.IOException{
         return NativeSerialPort.instance().getMessage( buf );
     }
 
-    public int read(byte[],int,int) throws java.io.IOException{
-
+    public int read(byte[] buf,int start,int len) throws java.io.IOException{
+        return 0;
     }
 
 }
 
 class SerialPortOutputStream extends OutputStream{
+    public void close() throws java.io.IOException{
+    }
+
+    public void flush() throws java.io.IOException{
+    }
+
+    public void write(int i) throws java.io.IOException{
+    }
+
+    public void write(byte[] buf) throws java.io.IOException{
+    }
+
+    public void write(byte[] buf,int start,int len) throws java.io.IOException{
+    }
 }

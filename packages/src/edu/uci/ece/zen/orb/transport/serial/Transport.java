@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.transport.iiop;
+package edu.uci.ece.zen.orb.transport.serial;
 
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.policies.PolicyManagerImpl;
@@ -28,9 +28,9 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     }
 
     //Connector
-    public Transport(edu.uci.ece.zen.orb.ORB orb,
-            edu.uci.ece.zen.orb.ORBImpl orbImpl) {
+    public Transport(edu.uci.ece.zen.orb.ORB orb, edu.uci.ece.zen.orb.ORBImpl orbImpl) {
         this( orb , orbImpl , NativeSerialPort.instance() );
+        NativeSerialPort.instance().lock.acquire();
     }
 
     public java.io.InputStream getInputStream() {
@@ -60,6 +60,10 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
         } catch (java.net.SocketException se) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "setSockProps", se);
         }
+    }
+
+    public void finalize(){
+        NativeSerialPort.instance().lock.release();
     }
 }
 

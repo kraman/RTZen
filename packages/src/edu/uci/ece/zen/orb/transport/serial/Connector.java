@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.transport.iiop;
+package edu.uci.ece.zen.orb.transport.serial;
 
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
@@ -10,6 +10,8 @@ public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
     protected edu.uci.ece.zen.orb.transport.Transport internalConnect(
             String host, int port, edu.uci.ece.zen.orb.ORB orb,
             edu.uci.ece.zen.orb.ORBImpl orbImpl) {
+        if( !NativeSerialPort.instance().lock.attempt(0) )
+            return null;
         return new Transport(orb, orbImpl);
     }
 

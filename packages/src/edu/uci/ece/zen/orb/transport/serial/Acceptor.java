@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.transport.iiop;
+package edu.uci.ece.zen.orb.transport.serial;
 
 import org.omg.IIOP.ProfileBody_1_0;
 import org.omg.IIOP.ProfileBody_1_0Helper;
