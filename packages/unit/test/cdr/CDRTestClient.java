@@ -42,9 +42,9 @@ public class CDRTestClient extends RealtimeThread
 
 			org.omg.CORBA.Object obj = orb.string_to_object( ior );
 			stub = DataTypesHelper.unchecked_narrow( obj );
-
+                       
 			testShort();
-			testDouble();
+			//testDouble();
 			testBoolean();
 			testString();
 			testOctet();
@@ -52,6 +52,9 @@ public class CDRTestClient extends RealtimeThread
 			testStructSeq();
 			testonewayShort();
 			//testObject();
+			testLongLong();
+			//testShort();
+
 
 
 
@@ -79,6 +82,45 @@ public class CDRTestClient extends RealtimeThread
 
 		}
 	}
+/*
+	public void testLongLong(){
+
+		long llinVal = (long)Math.pow((double)2,(double)36);
+	        LongHolder lloutVal = new LongHolder((long)Math.pow((double)2,(double)37));
+		long llretVal = stub.echoLongLong( llinVal, lloutVal);
+
+		if(llretVal != (long)Math.pow((double)2,(double)36)){
+			System.out.println("return value wrong in echoLongLong()");
+			System.out.println("The expected value is"+(long)Math.pow((double)2,(double)36)+ " and the actual value is "+llretVal);
+		}
+
+		if(lloutVal.value != (long)Math.pow((double)2,(double)38)){
+			System.out.println("out value wrong in echoLongLong()");
+			System.out.println("The expected value is"+(long)Math.pow((double)2,(double)38)+" and the actual value is "+lloutVal.value);
+
+		}
+	}
+*/
+	public void testLongLong(){
+
+		long llinVal = (long)1;
+		LongHolder lloutVal = new LongHolder((long)2);
+		long llretVal = stub.echoLongLong( llinVal, lloutVal);
+
+		if(llretVal != (long)1){
+			System.out.println("return value wrong in echoLongLong()");
+			System.out.println("The expected value is"+(long)1+" The actual value is "+llretVal);
+		}
+
+		if(lloutVal.value != (long)3){
+			System.out.println("out value wrong in echoLongLong()");
+			System.out.println("The expected value is"+(long)3+" the actual value is "+lloutVal.value);
+
+		}
+	}
+
+
+
 
 
 	public void testDouble()

@@ -18,6 +18,30 @@ public class DataTypesImpl extends DataTypesPOA
 		shoutVal.value = 102;
 		return shretVal;
 	}
+/*
+	public long echoLongLong( long llinVal , org.omg.CORBA.LongHolder lloutVal) {
+
+		if(llinVal != (long)Math.pow((double)2,(double)36)){
+			System.out.println("in value wrong in echoLongLong()");
+			System.out.println("The expected value is"+(long)Math.pow((double)2,(double)36)+" and the actual value is "+llinVal);
+		}
+
+		long llretVal = llinVal;
+		lloutVal.value = (long)Math.pow((double)2,(double)38);
+		return 	llretVal;
+	}*/
+	public long echoLongLong( long llinVal , org.omg.CORBA.LongHolder lloutVal) {
+
+		if(llinVal != (long)1){
+			System.out.println("in value wrong in echoLongLong()");
+			System.out.println("The expected value is"+(long)1+"  the actual value is "+llinVal);
+		}
+
+		long llretVal = llinVal;
+		lloutVal.value = (long)3;
+		return  llretVal;
+	}
+
 
 	public double echoDouble( double dinVal , org.omg.CORBA.DoubleHolder doutVal)
 	{

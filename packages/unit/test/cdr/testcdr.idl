@@ -44,6 +44,10 @@ module unit{
 
 				oneway void onewayShort( in short inVal);
 
+                                
+                                long long echoLongLong( in long long inVal ,  out long long  outVal);
+                                
+
 
 
 
