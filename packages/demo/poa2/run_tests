@@ -1,0 +1,347 @@
+#!/bin/sh2
+PROGNAME=$0
+SLEEPTIME=10
+
+function printUsage() {
+	echo "ERROR: $1"
+
+	echo "$PROGNAME {both|startServer|stopServer|client} <serverType> [clientType]"
+	echo "    both        starts client and server"
+    echo "    startServer start only the server" 
+    echo "    stopServer  only stop the server"
+    echo "    startClient run muliple tests on the client side"
+    echo ""
+    echo "    serverType  1  RTZen servant on Mackinac VM"
+    echo "                10 RTZen servant remote on Mackinac VM" 
+    echo "                2  RTZen servant on Mackinac VM"
+    echo "                20 RTZen servant remote on Mackinac VM "
+    echo "                3  RTZen servant on JDK"
+    echo "                30 RTZen servant remote on JDK"
+    echo "                4  RTZen servant on JDK"
+    echo "                40 RTZen servant remote on JDK"
+    echo "    clientType  1  RTZen high priority client on Mackinac JVM"
+    echo "                2  RTZen low priority client on Mackinac JVM"
+    echo "                3  RTZen high client on JDK "
+    echo "                4  RTZen low client on JDK "
+    exit -1;
+
+}
+
+
+# stoptoken filename (contains the PID)
+STOPFNAME=$PROGNAME.stopToken
+
+
+# startup types 
+#TESTSIZES="4 32 64 128 256 512"
+TESTSIZES="128"
+SERVERTYPE=1
+CLIENTTYPE=1
+TESTTYPE=1
+
+#Give the info about where the remote machine is
+REMNODE="doriath.ece.uci.edu" 
+
+#Give the info about where this test is running on. Only needed for the test on TAO
+HOST="bilbo.ece.uci.edu"
+
+# used by startServer and stopServer 
+STOPTOKEN=0
+
+# make a good guess about the project home directory
+# get the absolute path to current script name
+if echo $PROGNAME | egrep '^\/' > /dev/null ; then
+	# program started with absolute path name
+	ABSPROGNAME="$PROGNAME"
+else
+	# program started with relative path name
+	ABSPROGNAME="`pwd`/$PROGNAME"
+fi
+# cut off everything after packages
+# assume that sed is greedy, so we can handle something like
+#  /packages/RTZen/packages/...
+PROJECT_HOME="`echo $ABSPROGNAME | sed 's/\(.*\)\/packages.*/\1/'`"
+
+
+# guess in which directory to execute (needed for the file names)
+PROGDIR=`dirname $ABSPROGNAME`
+
+# check if LD_PATH is set to include own lib directory
+if echo $LD_LIBRARY_PATH | grep $PROJECT_HOME >> /dev/null; then
+	# path is set correctly nothing to be done
+	true
+else
+	export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PROJECT_HOME/lib"
+fi
+
+
+#set up the SUN JDK start script
+JAVA_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$PROJECT_HOME/classes:$CLASSPATH -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton -Xms200M -Xmx500M"
+
+#set up the SUN Mackinac RTSJ vm start script
+MACKINAC_START="java -Xbootclasspath/p:/$PROJECT_HOME/lib/RTZen.jar:/opt/mackinac/binaries/jre/lib/rt2.jar -Dorg.omg.CORBA.ORB=edu.uci.ece.zen.ORB -Dorg.omg.CORBA.ORBSingleton=edu.uci.ece.zen.ORBSingleton -XX:ImmortalSize=100M -XX:ScopedSize=100M -classpath $PROJECT_HOME/classes"
+
+#set the test name
+TEST_NAME="demo.poa2"
+
+
+#change to program dir, all filenames are relative
+cd $PROGDIR
+
+# startup function for the server
+# parameters 
+#   type of rt system to start  ( 1 Mackinac, 2 Mackinac, 3 JDK, 4 JDK )
+function startServer(){
+	echo "start server "
+    
+    if [ $1 -eq 1 ]; then
+        # MACKINAC JVM
+        # start RTZen server in Mackinac VM
+        EXEC_CMD="$MACKINAC_START $TEST_NAME.Server $1"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD&
+        echo $! > $STOPFNAME
+
+    elif [ $1 -eq 10 ]; then
+        # start RTZen server in Mackinac VM
+        EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 1 $1"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD&
+        sleep $SLEEPTIME
+        EXEC_CMD2="scp $REMNODE:`pwd`/ior1.txt ."
+        EXEC_CMD2="scp $REMNODE:`pwd`/ior2.txt ."
+        $EXEC_CMD2&
+        #echo $! > $STOPFNAME
+
+    elif [ $1 -eq 2 ]; then
+        # MACKINAC JVM
+        # start RTZen server in Mackinac VM
+        EXEC_CMD="$MACKINAC_START $TEST_NAME.Server $1"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD&
+        echo $! > $STOPFNAME
+    elif [ $1 -eq 20 ]; then
+        # start RTZen server in Mackinac VM
+        EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 2 $1"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD&
+        sleep $SLEEPTIME
+        EXEC_CMD2="scp $REMNODE:`pwd`/ior1.txt ."
+        EXEC_CMD2="scp $REMNODE:`pwd`/ior2.txt ."
+        $EXEC_CMD2&
+        #echo $! > $STOPFNAME
+
+     
+	elif [ $1 -eq 3 ]; then
+		# start RTZen server in SUN JDK
+		EXEC_CMD="$JAVA_START $TEST_NAME.Server $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+        $EXEC_CMD&
+        echo $! > $STOPFNAME
+
+    elif [ $1 -eq 30 ]; then
+        # start RTZen server remote in SUN JDK
+        EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 3 $1"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD&
+        sleep $SLEEPTIME
+        EXEC_CMD2="scp $REMNODE:`pwd`/ior1.txt ."
+        $EXEC_CMD2&
+        EXEC_CMD3="scp $REMNODE:`pwd`/ior2.txt ."
+        $EXEC_CMD3&
+        #echo $! > $STOPFNAME
+    
+	elif [ $1 -eq 4 ]; then
+        # start RTZen server in SUN JDK
+        EXEC_CMD="$JAVA_START $TEST_NAME.Server $1"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD&
+        echo $! > $STOPFNAME
+
+     elif [ $1 -eq 40 ]; then
+        # start RTZen server remote in SUN JDK
+        EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 4 $1"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD&
+        sleep $SLEEPTIME
+        EXEC_CMD2="scp $REMNODE:`pwd`/ior1.txt ."
+        $EXEC_CMD2&
+        EXEC_CMD3="scp $REMNODE:`pwd`/ior2.txt ."
+        $EXEC_CMD3&
+        #echo $! > $STOPFNAME
+
+	else
+        printUsage "startServer, unknown server type '$1'"
+            fi
+}
+
+
+# stop a previously started server
+# type of rt system to stop  ( 1 high priority task on Mackinac, 2 low priority task on Mackinac, 3 high priority task on JDK, 4 low priority task on JDK)
+function stopServer(){
+	echo "stop server "
+
+	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 -o $1 -eq 4 ]; then
+	
+		if [ -f $STOPFNAME ]; then
+		
+			# stop for simulated real time
+			# start RTZen server in simulated RT
+			EXEC_CMD="kill `cat $STOPFNAME`"
+			echo "Exec cmd:"
+			echo $EXEC_CMD
+			$EXEC_CMD
+			rm -f $STOPFNAME
+        else
+            printUsage "server was not stoped, can not find file '$STOPFNAME'"
+        fi
+        elif [ $1 -eq 10 ]; then
+        # Mackinac JVM on node 0
+        # Stop RTZen server in simulated RT
+             EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 1 $1"
+             echo "Exec cmd:"
+             echo $EXEC_CMD
+             $EXEC_CMD
+        #echo $! > $STOPFNAME
+
+    elif [ $1 -eq 20 ]; then
+		# Mackinac JVM on node 0
+		# stop ZEN server in simulated RT
+		EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 2 $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD
+		#echo $! > $STOPFNAME	
+    elif [ $1 -eq 30 ]; then
+		# Normal SUN jvm on node 0
+		# stop ZEN server in simulated RT
+		EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 3 $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD
+		#echo $! > $STOPFNAME	
+
+    elif [ $1 -eq 40 ]; then
+        # Normal SUN jvm on node 0
+        # stop ZEN server in simulated RT
+        EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 4 $1"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD
+        #echo $! > $STOPFNAME
+
+
+    else
+        printUsage "unknown server type"
+	fi
+}
+
+# startup function for the client
+# parameters 
+#   type of rt system to start  
+#   type of test (see client.java)
+#   number of elements in sequence to be tested 
+function startClient(){
+	echo "start client "
+	if [ $1 -eq 1 ]; then
+		EXEC_CMD="$MACKINAC_START $TEST_NAME.Client1 $2 $3"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD
+	elif [ $1 -eq 2 ]; then
+		EXEC_CMD="$MACKINAC_START $TEST_NAME.Client2 $2 $3"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD
+    elif [ $1 -eq 3 ]; then
+        EXEC_CMD="$JAVA_START $TEST_NAME.Client1 $2 $3"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD
+    elif [ $1 -eq 4 ]; then
+        EXEC_CMD="$JAVA_START $TEST_NAME.Client2 $2 $3"
+        echo "Exec cmd:"
+        echo $EXEC_CMD
+        $EXEC_CMD
+	else 
+		printUsage "unknown client type '$1'"
+	fi
+}
+
+
+
+###################### MAIN 
+
+# check parameters
+if [ $# -eq 0 ]; then
+	OPERATION="both"
+else
+	OPERATION=$1
+	if [ $# -eq 1 ]; then
+		SERVERTYPE=1
+	else
+		SERVERTYPE=$2
+		if [ $# -eq 2 ]; then
+			CLIENTTYPE=1
+		else
+			CLIENTTYPE=$3
+		
+		fi
+	fi
+fi
+
+#printUsage $OPERATION
+
+
+# either client only or both
+if [ $OPERATION == "both" -o $OPERATION == "startClient" ]; then
+	for CURSIZE in $TESTSIZES; do
+
+		# start server only if we should 
+		if [ $OPERATION == "both" ]; then
+			# startup the server
+			startServer $SERVERTYPE
+			
+			# delay a bit to give the server a chance
+			sleep $SLEEPTIME
+		fi
+
+		# startup the client (will terminate automatically after finishing)
+		startClient $CLIENTTYPE $TESTTYPE $CURSIZE
+		
+		
+		if [ $OPERATION == "both" ]; then
+			# stop the server
+			stopServer $SERVERTYPE
+		fi
+
+		# rename the file
+		mv timeRecords.txt timeRecords.$TESTTYPE.$SERVERTYPE.$CLIENTTYPE.$CURSIZE.txt
+	
+	done
+else 
+	if [ $OPERATION == "startServer" ]; then
+		# check if a server is already started, if so stop the server first 
+		#if [ -f $STOPFNAME ]; then
+		#	stopServer $SERVERTYPE
+		#	sleep 2
+		#fi
+		startServer $SERVERTYPE
+	else
+		if [ $OPERATION == "stopServer" ]; then
+			stopServer $SERVERTYPE
+		else
+			printUsage "unknown operation '$OPERATION'"
+		fi
+	fi
+fi
+
+exit
