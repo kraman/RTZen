@@ -15,7 +15,7 @@ public final class ZenProperties {
      */
     public static final String installDir = "";
 
-    public static final boolean dbg = false;
+    public static final boolean dbg = true;
 
     public static final boolean devDbg = false;
 
