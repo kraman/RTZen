@@ -46,9 +46,9 @@ public class Client extends RealtimeThread
             System.out.println( "===================Trying to establish connection==========================" );
             HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
             System.out.println( server.getMessage() );
-	
+
             System.out.println( "====================== Performance warmup =================================" );
-            for( int i=0;i<runNum;i++ )
+            for( int i=0;i<runNum;i++ ){
                 server.getMessage();
                 if(i % 250 == 0)
                     System.out.println(i);
@@ -56,7 +56,7 @@ public class Client extends RealtimeThread
 
             System.out.println( "====================== Performance benchmark ==============================" );
             long start = System.currentTimeMillis();
-            for( int i=0;i<runNum;i++ )
+            for( int i=0;i<runNum;i++ ){
                 server.getMessage();
                 if(i % 500 == 0)
                     System.out.println(i);
@@ -65,11 +65,11 @@ public class Client extends RealtimeThread
 
             System.err.println( runNum/((end-start)/((double)runNum)) );
             System.exit(0);
-	}
-	catch (Exception e)
-	{
-		e.printStackTrace();
-		System.exit(-1);
-	}
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(-1);
+        }
     }
 }
