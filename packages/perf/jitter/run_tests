@@ -75,6 +75,7 @@ fi
 # assume that sed is greedy, so we can handle something like
 #  /packages/RTZen/packages/...
 PROJECT_HOME="`echo $ABSPROGNAME | sed 's/\(.*\)\/packages.*/\1/'`"
+#HOST="amras.ece.uci.edu"
 
 # guess in which directory to execute (needed for the file names)
 PROGDIR=`dirname $ABSPROGNAME`
