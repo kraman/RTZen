@@ -71,6 +71,9 @@
             <exclude name="src/edu/oswego/cs/dl/util/concurrent/FJTask**"/>
             <exclude name="src/edu/oswego/cs/dl/util/concurrent/ObservableSync.java"/>
             <include name="src/edu/uci/ece/zen/utils/Logger.java"/>
+            
+            <exclude name="src/edu/uci/ece/zen/orb/transport/serial/RMISerialPort.java"/>
+            <exclude name="src/edu/uci/ece/zen/orb/transport/serial/CommAPISerialPort.java"/>
     </patternset>
 
     <!--target name="all" depends="idl, compile, lib, jRate, naming_service, compile_perf"/-->

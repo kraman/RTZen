@@ -25,7 +25,7 @@
 
    <target name="packages">
       <ant antfile="${zen.srcdir}/build.xml"/>
-      <rmic base="${zen.classdir}" classname="edu.uci.ece.zen.orb.transport.serial.RMISerialPortServer"/>
+      <!--<rmic base="${zen.classdir}" classname="edu.uci.ece.zen.orb.transport.serial.RMISerialPortServer"/>-->
       <antcall target="track_size"/>
    </target>
 

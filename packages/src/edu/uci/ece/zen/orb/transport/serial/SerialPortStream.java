@@ -202,7 +202,8 @@ class RemoteSerialPortStream implements SerialPortStream
                 // System.out.println("RemoteSerialPortStream: OutputStream.flush: flushing " + bufferSize + " bytes to serial port (includes socket data header)");
                 SerialPortSocketProtocol.encodeSocketData(socket, buffer);
                 System.out.println("Zen serial port: sending " + bufferSize + "-byte message");
-                serialPort.sendMessage(buffer, bufferSize);
+                serialPort.setMessage(buffer, bufferSize);
+                // System.out.println("Zen serial port: done flushing.");
                 bufferSize = SerialPortSocketProtocol.SOCKET_DATA_HEADER_LENGTH;
             }
         }

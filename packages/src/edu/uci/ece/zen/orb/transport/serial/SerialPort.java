@@ -4,20 +4,20 @@ import java.io.*;
 import java.util.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import javax.comm.*;
+//import javax.comm.*;
 
 /**
 Provides a simplified, universal serial port interface.
 */
 interface SerialPort
 {
-    static final int MAX_MESSAGE_LENGTH = 255;
+    static final int MAX_MESSAGE_LENGTH = 1024;
 
     /**
     Sends the buffer through the serial port and blocks until all bytes
     in the buffer have been sent.
     */
-    void sendMessage(byte[] buffer, int messageLength) throws IOException;
+    void setMessage(byte[] buffer, int messageLength) throws IOException;
 
     /**
     Retrieves a message from the serial port, blocking until one is available.
@@ -35,6 +35,19 @@ Factory methods for simplifying the creation of serial port drivers.
 */
 class SerialPortFactory
 {
+    private static SerialPort serialPort;
+    
+    static SerialPort createNativeSerialPort() throws IOException
+    {
+        if (serialPort == null)
+        {
+            serialPort = new NativeSerialPort();
+        }
+
+        return serialPort;
+    }
+    
+    /*
     static SerialPort createRMISerialPort() throws IOException
     {
         return new RMISerialPortClient(
@@ -50,4 +63,5 @@ class SerialPortFactory
                 "serial-transport.port",
                 "/dev/ttyS0"));
     }
+    */
 }

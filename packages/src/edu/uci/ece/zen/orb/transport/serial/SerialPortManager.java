@@ -32,7 +32,7 @@ public class SerialPortManager
     {
         try
         {
-            serialPort = SerialPortFactory.createCommAPISerialPort();
+            serialPort = SerialPortFactory.createNativeSerialPort();
         }
         catch (IOException e)
         {
@@ -106,8 +106,12 @@ public class SerialPortManager
                 {
                     int messageLength = SerialPortSocketProtocol.encodeConnectionRequested(requestedConnection, buffer);
                     // System.out.println("SerialPortManager: connect: couldn't find local listener, sending request to remote host...");
-                    System.out.println("Zen serial port: sending " + messageLength + "-byte message");
-                    serialPort.sendMessage(buffer, messageLength);
+                    System.out.println("Zen serial port: sending " + messageLength + "-byte message:");
+                    // for (int i = 0; i < messageLength; i++)
+                    // {
+                        // System.out.println("0x" + Integer.toHexString(buffer[i]));
+                    // }
+                    serialPort.setMessage(buffer, messageLength);
                 }
 
                 // System.out.println("SerialPortManager: connect: waiting for response from remote host...");
@@ -164,7 +168,7 @@ public class SerialPortManager
                                     requestedConnection, socket, buffer);
                                 // System.out.println("SerialPortListener: run: sending connection accept message back to caller");
                                 System.out.println("Zen serial port: sending " + messageLength + "-byte message");
-                                serialPort.sendMessage(buffer, messageLength);
+                                serialPort.setMessage(buffer, messageLength);
                             }
                             else
                             {
@@ -172,7 +176,7 @@ public class SerialPortManager
                                     requestedConnection, socket, buffer);
                                 // System.out.println("SerialPortListener: run: sending connection denied message back to caller");
                                 System.out.println("Zen serial port: sending " + messageLength + "-byte message");
-                                serialPort.sendMessage(buffer, messageLength);
+                                serialPort.setMessage(buffer, messageLength);
                             }
 
                             break;
@@ -256,9 +260,8 @@ public class SerialPortManager
                             // System.out.println("SerialPortListener: run: unknown message! message="+Integer.toHexString(SerialPortSocketProtocol.getMessageType(message)));
                             // for (int i = 0; i < messageLength; i++)
                             // {
-                            //     System.out.print(message[i] + " ");
+                                // System.out.println("0x" + Integer.toHexString(message[i]));
                             // }
-                            // System.out.println();
                             edu.uci.ece.zen.utils.ZenProperties.logger.log(
                                 edu.uci.ece.zen.utils.Logger.WARN,
                                 getClass(), "run",
