@@ -1,4 +1,4 @@
-<project name="ZEN ORB" basedir="./..">
+<project name="Zen Source Package Conditions" basedir="./..">
     <condition property="zen.rtbootclasspath" value="${timesys_ri_install}/lib/foundation.jar">
         <equals arg1="${zen.build.runtime}" arg2="timesys_ri"/>
     </condition>
