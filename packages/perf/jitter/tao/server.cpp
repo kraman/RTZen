@@ -4,7 +4,7 @@
 
 
 /* servant operation implementation */
-void HelloWorld_impl::putOctetSeq (const perf::jitter::OctetSeq & inSeq ) 
+void HelloWorld_impl::putOctetSeq (const perf::jitter::OctetSeq & inSeq , CORBA::Environment& ) 
   ACE_THROW_SPEC ( (CORBA::SystemException)) {
   /* don't do anything, just consume the message */
   return;
@@ -12,7 +12,7 @@ void HelloWorld_impl::putOctetSeq (const perf::jitter::OctetSeq & inSeq )
 
 
 /* servant operation implementation */
-void HelloWorld_impl::putShortSeq (const perf::jitter::ShortSeq & inSeq ) 
+void HelloWorld_impl::putShortSeq (const perf::jitter::ShortSeq & inSeq, CORBA::Environment& ) 
   ACE_THROW_SPEC (( CORBA::SystemException )) {
   /* don't do anything, just consume the message */
   return;

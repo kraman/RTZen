@@ -1,0 +1,22 @@
+project(*Client): taoclient {
+  idlflags += -GA
+  exename =client 
+    Source_Files {
+	client.cpp
+	jitterC.cpp
+	NativeTimeStamp.cpp
+    }
+}
+
+
+project(*Server): taoserver {
+  idlflags += -GA
+  exename = server
+    Source_Files {
+        server.cpp
+	jitterS.cpp
+	jitterC.cpp
+        NativeTimeStamp.cpp
+    }
+}
+
