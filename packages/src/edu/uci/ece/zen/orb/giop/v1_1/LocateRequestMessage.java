@@ -21,7 +21,6 @@ public class LocateRequestMessage extends  edu.uci.ece.zen.orb.giop.type.LocateR
 
     public int getRequestId() { return header.request_id; }
 
-    public int getReplyStatus() { return -1; }
 
     /**
      * @see edu.uci.ece.zen.orb.giop.GIOPMessage#marshal(edu.uci.ece.zen.orb.CDROutputStream)

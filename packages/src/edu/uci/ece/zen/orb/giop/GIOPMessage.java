@@ -7,6 +7,15 @@ import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.ReadBuffer;
 
+/**
+ * Parent of all GIOP Message types.  Put functionality to be common
+ * to all types of GIOP Messages here.  However, functionality for any
+ * particular message type goes in edu.uci.ece.zen.ocb.giop.types.*
+ * classes.  functionality for each type.
+ *
+ * @author Bruce Miller
+ */
+
 public abstract class GIOPMessage{
     protected CDRInputStream istream;
     protected ScopedMemory scope;

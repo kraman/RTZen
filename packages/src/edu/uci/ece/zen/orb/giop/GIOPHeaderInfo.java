@@ -2,6 +2,8 @@ package edu.uci.ece.zen.orb.giop;
 
 /** Inner class used to represent the information parsend from a
  * GIOP message header.
+ *
+ * @author Bruce Miller
  */
 public class GIOPHeaderInfo {
     boolean nextMessageIsFragment = false;

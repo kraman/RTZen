@@ -4,6 +4,9 @@ import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.orb.*;
 
+/**
+ * @author Bruce Miller
+ */
 public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage {
     private RequestHeader_1_1 header;
     
@@ -29,7 +32,6 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
 
     public int getRequestId() { return header.request_id; }
 
-    public int getReplyStatus() { return -1; }
     public org.omg.IOP.ServiceContext[] getServiceContexts() { return header.service_context; }
 
     public void marshal( CDROutputStream out ) {

@@ -29,8 +29,6 @@ public class LocateReplyMessage extends edu.uci.ece.zen.orb.giop.type.LocateRepl
         LocateReplyHeader_1_1Helper.write(out, header);
     }
 
-    public int getReplyStatus() { return -1; }
-
     public int getLocateStatusValue() {
         return header.locate_status.value();
     }
