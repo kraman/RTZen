@@ -535,9 +535,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
     public synchronized org.omg.CORBA.Object string_to_object(String str) {
         if (ZenProperties.dbg){
-            System.out.println("The IOR for naming service is...");
+            System.out.println("The String IOR need to changed to Object is...");
             if(str.equals("")){
-                System.out.println("Empty naming service string");
+                System.out.println("Empty String IOR");
             }else
                 System.out.println(str);
         }
