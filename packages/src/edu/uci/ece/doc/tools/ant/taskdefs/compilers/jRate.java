@@ -258,6 +258,7 @@ public class jRate extends MatchingTask {
         Execute procs[] = new Execute[vfiles.size()];
         log( "Starting compilation of files using jrate..." );
         int percentDrawn=0;
+        File destdirFile = new File( destdir.toString() ); 
         for( int i=0;i<vfiles.size();i++ ){
             String file = vfiles.elementAt(i).toString();
             String objFileName = file.substring(0, file.lastIndexOf("java")).replace(
@@ -275,7 +276,8 @@ public class jRate extends MatchingTask {
 
             procs[i] = new Execute();
             procs[i].setCommandline( cmd.getCommandline() );
-            procs[i].setWorkingDirectory( new File( destdir.toString() ) );
+            procs[i].setWorkingDirectory(destdirFile);
+            //procs[i].setWorkingDirectory( new File( destdir.toString() ) );
             try{
                 /*
                 String[] cmdline = cmd.getCommandline();
