@@ -19,7 +19,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     public edu.uci.ece.zen.orb.ORB orb;
 
     private static edu.uci.ece.zen.utils.Queue cdrInputStreamCache;
-    
+
     private boolean inUse = false;
 
     static {
@@ -41,8 +41,12 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
                 return cdr;
             } else {
                 CDRInputStream cdr = (CDRInputStream) cdrInputStreamCache.dequeue();
+                if(cdr.inUse)
+                    ZenProperties.logger.log(Logger.FATAL, CDRInputStream.class,
+                        "instance",
+                        "Stream already in use.");
                 cdr.inUse = true;
-                return cdr;                
+                return cdr;
             }
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, CDRInputStream.class, "instance", e);
@@ -172,7 +176,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     public String read_string() {
         return buffer.readString();
     }
-    
+
     /**
      * Read an FString from CDR Encapsulation.
      *
@@ -180,7 +184,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
      */
     public FString read_fstring() {
         return buffer.readFString(true);
-    }    
+    }
 
     // Read a string without advancing nextByteToRead.
     // This is needed by the Delegate.
@@ -529,13 +533,13 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     /** Free all allocated buffers and resources. */
     public void free() {
         if(!inUse){
-            ZenProperties.logger.log(Logger.WARN, CDRInputStream.class, 
+            ZenProperties.logger.log(Logger.WARN, CDRInputStream.class,
                 "free",
-                "Stream already freed.");   
+                "Stream already freed.");
                 //System.exit(-1);
-                //still deciding what to do here  
+                //still deciding what to do here
             return;
-        }        
+        }
         buffer.free();
         CDRInputStream.release(this);
         inUse = false;

@@ -18,7 +18,7 @@ public class RequestMessage extends
         edu.uci.ece.zen.orb.giop.type.RequestMessage {
     private RequestHeader header;
 
-    private static RequestMessage rm;
+    //private static RequestMessage rm;
 
     private byte[] reqPrin = new byte[0];
 
@@ -37,12 +37,15 @@ public class RequestMessage extends
                 clr.objectKey, clr.operation, reqPrin);
     }
     static int drawn = 0;
-    public static RequestMessage getMessage() {
+    //private boolean inUse = false;
+    public static synchronized RequestMessage getMessage() {
         drawn++;
         //if(ZenProperties.memDbg1) System.out.write('d');
         //if(ZenProperties.memDbg1) System.out.write('r');
         //if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(drawn);
-        return (RequestMessage)ORB.getQueuedInstance(RequestMessage.class,queue);
+        RequestMessage rm = (RequestMessage)ORB.getQueuedInstance(RequestMessage.class,queue);
+        //rm.inUse = true;
+        return rm;
 /*
         try {
             if (rm == null) rm = (RequestMessage) ImmortalMemory.instance()
@@ -52,7 +55,7 @@ public class RequestMessage extends
             ZenProperties.logger.log(Logger.WARN, RequestMessage.class, "getMessage", e);
         }
         return null;
-*/        
+*/
     }
 /*
     public RequestMessage(ORB orb, ReadBuffer stream) {
@@ -98,9 +101,12 @@ public class RequestMessage extends
     }
 
     public void free(){
+        //if(!inUse)
+        //    System.out.println("____________________________RM already freed.");
         super.free();
         drawn--;
         header.reset();
         queue.enqueue(this);
+        //inUse = false;
     }
 }
