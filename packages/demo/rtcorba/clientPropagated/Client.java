@@ -16,11 +16,11 @@ import org.omg.Messaging.*;
  * @version 1.0
  */
 
-public class Client implements Runnable
+public class Client extends RealtimeThread 
 {
     String [] args;
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         if(args.length < 1){
             System.out.println("need to pass in an ior");
@@ -28,13 +28,17 @@ public class Client implements Runnable
         }
 
         System.out.println( "[client] =====================Creating RT Thread in client==========================" );
-        RealtimeThread rt = new RealtimeThread((java.lang.Object)null,(java.lang.Object)null,(java.lang.Object)null,
-                            new LTMemory(3000,30000),(java.lang.Object)null,new Client(args));
+        Client rt = (Client) ImmortalMemory.instance().newInstance( Client.class );
+        rt.init(args);
+        //RealtimeThread rt = new RealtimeThread(null,null,null,
+          //                  new LTMemory(300000,300000),null,new Client());
+//        RealtimeThread rt = new RealtimeThread((java.lang.Object)null,(java.lang.Object)null,(java.lang.Object)null,
+//                            new LTMemory(3000,30000),(java.lang.Object)null,new Client(args));
         System.out.println( "[client] =====================Starting RT Thread in client==========================" );
         rt.start();
     }
 
-    public Client(String [] args){
+    public void init(String [] args){
         this.args = args;
     }
 
@@ -44,15 +48,27 @@ public class Client implements Runnable
         {
             System.out.println( "[client] =====================Calling ORB Init in client============================" );
             ORB orb = ORB.init((String[])null, null);
+            System.out.println("[client] test 1");
 
             File iorfile = new File(args[0]);
+            //File iorfile = new File("/project/workarea02/mpanahi/RTZen/packages/demo/rtcorba/clientPropagated/test.ior");
+            System.out.println("[client] test 2");
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
+            System.out.println("[client] test 2.1");
             String ior = br.readLine();
+            System.out.println("[client] test 2.2");
 
-            Test server = TestHelper.unchecked_narrow(orb.string_to_object(ior));
+            org.omg.CORBA.Object obj = orb.string_to_object(ior);
+            System.out.println("[client] test 2.3");
+
+            //try{Thread.currentThread().sleep(2000);}catch(Exception e){}
+
+            Test server = TestHelper.unchecked_narrow(obj);
+            System.out.println("[client] test 3");
 
             PriorityModelPolicy pmp = PriorityModelPolicyHelper.narrow(server._get_policy(PRIORITY_MODEL_POLICY_TYPE.value));
             PriorityModel pm = pmp.priority_model();
+            System.out.println("[client] test 4");
 
             if(pm.value() != PriorityModel._CLIENT_PROPAGATED)
                 System.out.println("[client] ERROR: priority_model != RTCORBA::CLIENT_PROPAGATED!");
@@ -82,6 +98,7 @@ public class Client implements Runnable
 
                 desired_priority.value++;
             }
+            
             System.exit(0);
         }
         catch (Exception e)
