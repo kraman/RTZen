@@ -119,6 +119,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private void internalInit( ScopedMemory mem , String orbId , String[] args , Properties props ){
         this.orbId = orbId;
         orbInitRunnable.init( args , props , this );
+        rootPOA = null;
+        requestHandler = null;
         mem.enter( orbInitRunnable );
         orbImplRegion = mem;
     }
@@ -163,6 +165,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public void destroy() {
         isNotDestroyed();
+        if( rootPOA != null ){
+            rootPOA.free();
+            requestHandler.free();
+        }
     }
 
     public boolean get_service_information(short service_type, ServiceInformationHolder service_info) {
@@ -187,13 +193,11 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }*/
 
     public String[] list_initial_services() {
-        //return Resolver.getResolverStrings();
-        return null;
+        return Resolver.getResolverStrings();
     }
 
     public org.omg.CORBA.Object resolve_initial_references(String object_name) throws org.omg.CORBA.ORBPackage.InvalidName {
-        //return Resolver.resolve( object_name );
-        return null;
+        return Resolver.resolve( object_name );
     }
 
     public String object_to_string(org.omg.CORBA.Object obj) {
@@ -219,7 +223,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     ///////////////////////////////////////////////////////////////////////////
 
     public ScopedMemory getTPHandler( int tpId ){
-        //TODO: return thread pool memory region here
         return null;
     }
 
@@ -241,8 +244,17 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         return connectionRegistry;
     }
 
-    public org.omg.CORBA.Object resolveRootPOA(){
-        return null;
+    private org.omg.PortableServer.POA rootPOA;
+    private RequestHandler requestHandler;
+    public void setRootPOA( org.omg.PortableServer.POA rp , RequestHandler rh ){
+        rootPOA = rp;
+        requestHandler = rh;
+    }
+    public org.omg.PortableServer.POA getRootPOA(){
+        return rootPOA;
+    }
+    public RequestHandler getRequestHandler(){
+        return requestHandler;
     }
 
     ///////////////////////////////////////////////////////////////////////////

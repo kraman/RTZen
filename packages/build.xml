@@ -52,7 +52,6 @@
             <include name="src/edu/uci/ece/zen/orb/giop/v1_0/**.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ServerRequest.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
-            <exclude name="src/edu/uci/ece/zen/orb/Resolver.java"/>
     </patternset>
 
     <target name="all" depends="idl, compile"/>

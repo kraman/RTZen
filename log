@@ -63,6 +63,9 @@ all:
 
 compile:
      [echo] Compiling OMG and Zen sources with the AspectJ compiler
+     [iajc] /home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/TracerAspect.java:162 no match for this type name: edu$uci$ece$zen$orb$any$pluggable$Any [Xlint:invalidAbsoluteTypeName]
+
+     [iajc] 1 warning
 
 
 
@@ -71,4 +74,4 @@ all:
 all:
 
 BUILD SUCCESSFUL
-Total time: 34 seconds
+Total time: 2 minutes 17 seconds
