@@ -52,10 +52,9 @@ public class CDRTestClient extends RealtimeThread
 			testOctetSeq();
 			testStructSeq();
 			testonewayShort();
+			testShort();                        
 			//testObject();*/
 			testLongLong();
-			//testShort();
-
 
 
 
@@ -83,25 +82,25 @@ public class CDRTestClient extends RealtimeThread
 
 		}
 	}
-/*
-	public void testLongLong(){
+	/*
+	   public void testLongLong(){
 
-		long llinVal = (long)Math.pow((double)2,(double)36);
-	        LongHolder lloutVal = new LongHolder((long)Math.pow((double)2,(double)37));
-		long llretVal = stub.echoLongLong( llinVal, lloutVal);
+	   long llinVal = (long)Math.pow((double)2,(double)36);
+	   LongHolder lloutVal = new LongHolder((long)Math.pow((double)2,(double)37));
+	   long llretVal = stub.echoLongLong( llinVal, lloutVal);
 
-		if(llretVal != (long)Math.pow((double)2,(double)36)){
-			System.out.println("return value wrong in echoLongLong()");
-			System.out.println("The expected value is"+(long)Math.pow((double)2,(double)36)+ " and the actual value is "+llretVal);
-		}
+	   if(llretVal != (long)Math.pow((double)2,(double)36)){
+	   System.out.println("return value wrong in echoLongLong()");
+	   System.out.println("The expected value is"+(long)Math.pow((double)2,(double)36)+ " and the actual value is "+llretVal);
+	   }
 
-		if(lloutVal.value != (long)Math.pow((double)2,(double)38)){
-			System.out.println("out value wrong in echoLongLong()");
-			System.out.println("The expected value is"+(long)Math.pow((double)2,(double)38)+" and the actual value is "+lloutVal.value);
+	   if(lloutVal.value != (long)Math.pow((double)2,(double)38)){
+	   System.out.println("out value wrong in echoLongLong()");
+	   System.out.println("The expected value is"+(long)Math.pow((double)2,(double)38)+" and the actual value is "+lloutVal.value);
 
-		}
-	}
-*/
+	   }
+	   }
+	 */
 	public void testLongLong(){
 
 		long llinVal = (long)1;
