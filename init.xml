@@ -1,0 +1,27 @@
+<project name="init">
+
+	<dirname property="basedir.init" file="${ant.file.init}"/>
+
+    <property file="${basedir.init}/zen-build-bootstrap.properties"/>
+    <property file="${basedir.init}/zen-build.properties"/>
+
+	<!-- Set onError="ignore" to fix problems when doing "clean" targets. -->
+	<taskdef name="idlcheck" classname="idldepend.IDLCheckerTask" onError="ignore">
+		<classpath>
+			<pathelement path="${zen.classdir}"/>
+		</classpath>
+	</taskdef>
+
+	<presetdef name="idlc">
+		<!-- Unfortunately we cannot set failOnError="yes" here. Doing so causes
+		problems with the deprecated IDL files that we currently use. -->
+		<idlcheck compiler="${idl.compiler}" targetdir="${zen.gendir}">
+			<classpath>
+				<pathelement path="${idl.classpath}"/>
+			</classpath>
+			<package auto="yes"/>
+		</idlcheck>
+	</presetdef>
+	
+</project>
+
