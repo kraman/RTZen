@@ -57,7 +57,7 @@ CLIENTTYPE=1
 TESTTYPE=1
 
 
-REMNODE="node0.rtzen.pces.emulab.net" 
+REMNODE="sirion.ece.uci.edu" 
 # used by startServer and stopServer 
 STOPTOKEN=0
 
