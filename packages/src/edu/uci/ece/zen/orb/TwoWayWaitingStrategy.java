@@ -19,13 +19,11 @@ public class TwoWayWaitingStrategy extends WaitingStrategy{
     public void replyReceived( GIOPMessage reply ){
         this.replyMsg = reply.getCDRInputStream();
 
-        //handle service contexts here
+        //TODO:handle service contexts here ... fix this... you can demarshall stuff here
         ServiceContext[] contexts = ((ReplyMessage)reply).getServiceContexts();
 
         for(int i = 0; i < contexts.length; ++i){
-
             if(ZenProperties.devDbg) System.out.println("REPLY CONTEXT id: " + contexts[0].context_id);
-
             if(contexts[0].context_id == RTCorbaPriority.value){
                 if(ZenProperties.devDbg) System.out.println("REPLY CONTEXT id: RTCorbaPriority");
                 if(ZenProperties.devDbg) System.out.println("CUR thread priority: " + replyMsg.orb.getRTCurrent().the_priority());
@@ -37,6 +35,8 @@ public class TwoWayWaitingStrategy extends WaitingStrategy{
                 in1.free();
             }
         }
+
+        //TODO:remember to release the message....u only have 1
 
         clientSem.release();
     }

@@ -221,12 +221,11 @@ class GIOPMessageRunnable implements Runnable{
         try{
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
             if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
-               
-
                 trans.orbImpl.getServerRequestHandler().handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) message );
             }
             if( message instanceof edu.uci.ece.zen.orb.giop.type.ReplyMessage ){
                 ScopedMemory waiterRegion = orb.getWaiterRegion( message.getRequestId() );
+                //TODO: cache the runnables, cant 'new' things here...
                 WaitingStratergyNotifyRunnable wsnr = new WaitingStratergyNotifyRunnable( message , waiterRegion );
                 ExecuteInRunnable eir = new ExecuteInRunnable();
                 eir.init( wsnr , waiterRegion );

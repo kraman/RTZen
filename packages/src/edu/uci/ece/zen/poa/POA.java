@@ -180,6 +180,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         }catch( Exception e ){
             e.printStackTrace();
         }
+        //TODO: Cant throw exceptions here....marchall the exception into a reply message and send back
+        //Look at ResponseHandler
         switch( r.exception ){
             case POARunnable.NoException:
                 break;

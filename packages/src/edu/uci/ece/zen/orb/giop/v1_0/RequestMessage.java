@@ -44,7 +44,8 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
         header = RequestHeaderHelper.read( istream );
         messageBody = stream;
     }
- public void init( ORB orb , ReadBuffer stream ){
+
+    public void init( ORB orb , ReadBuffer stream ){
         super.init( orb , stream );
         header = RequestHeaderHelper.read( istream );
         messageBody = stream;
