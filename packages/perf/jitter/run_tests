@@ -10,14 +10,18 @@ function printUsage() {
 	echo "    stopServer  only stop the server"
 	echo "    client      run muliple tests on the client side"
 	echo ""
-	echo "    serverType  1  simulated RT Zen server"
-	echo "                2  RTZen servant          "
-	echo "                20 RTZen servant remote  "
+	echo "    serverType  1  Regular Zen server"
+    echo "                10 Regular Zen servant remote" 
+	echo "                2  RTZen servant on TimeSys         "
+	echo "                20 RTZen servant remote on TimeSys "
 	echo "                3  TAO servant            "
 	echo "                30 TAO servant remote     "
+    echo "                4  RT Zen server on OVM interpreter"
+    echo "                40 Simulated RT Zen server remote"
 	echo "    clientType  1  simulated RT Zen client"
 	echo "                2  TimeSys RTZen client"
 	echo "                3  TAO Client             "
+    echo "                4  RT Zen client on OVM interpreter"
 
 	exit -1;
 
@@ -84,11 +88,11 @@ JAVA_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$PROJECT_HOME/classes:$CLA
 
 TJVM_START="/opt/timesys/rtsj-ri/bin/tjvm -Xverify:all -Ximmortal400M -Xms200M -Djava.class.path=$PROJECT_HOME/classes/ -Djava.library.path=$LD_LIBRARY_PATH -Xbootclasspath=/opt/timesys/rtsj-ri/lib/foundation.jar"
 
-export OVMHOME="/groups/pces/uav_oep/exp/RTZEN/tools/OpenVM"
+#export OVMHOME="/groups/pces/uav_oep/exp/RTZEN/tools/OpenVM"
 
-OVM_INT_START="$OVMHOME/OpenVM_bin/bin/gen-ovm -engine=interpreter -threads=RealtimeJVM -model=MostlyCopyingRegions-B_M_F_H  -app-methods-live -classpath=$PROJECT_HOME/lib/RTZen.jar"
+#OVM_INT_START="$OVMHOME/OpenVM_bin/bin/gen-ovm -engine=interpreter -threads=RealtimeJVM -model=MostlyCopyingRegions-B_M_F_H  -app-methods-live -classpath=$PROJECT_HOME/lib/RTZen.jar"
 
-OVM_NAT_START="$OVMHOME/OpenVM_bin/bin/gen-ovm -engine=j2c -threads=RealtimeJVM -model=MostlyCopyingRegions-B_M_F_H  -app-methods-live -classpath=$PROJECT_HOME/lib/RTZen.jar"
+#OVM_NAT_START="$OVMHOME/OpenVM_bin/bin/gen-ovm -engine=j2c -threads=RealtimeJVM -model=MostlyCopyingRegions-B_M_F_H  -app-methods-live -classpath=$PROJECT_HOME/lib/RTZen.jar"
  
 
 #change to program dir, all filenames are relative
@@ -138,12 +142,13 @@ function startServer(){
         $EXEC_CMD&
         #echo $! > $STOPFNAME
         elif [ $1 -eq 4 ]; then
-        # OVM JVM Interpreter
-        EXEC_CMD="$OVM_INT_START perf.jitter.Server $1"
+        # start ZEN server in OVM interpreter
+        EXEC_CMD="sh ./OVMServer_INT/run.sh $1"
         echo "Exec cmd:"
         echo $EXEC_CMD
         $EXEC_CMD&
         echo $! > $STOPFNAME
+
     else
         printUsage "startServer, unknown server type '$1'"
             fi
