@@ -76,25 +76,25 @@ public class CDRTestClient extends RealtimeThread
 
 
 	public void testDouble()
-	    {
+	{
 
-	        double dinVal = 1.0e10;
-	        org.omg.CORBA.DoubleHolder doutVal =
-	                                new org.omg.CORBA.DoubleHolder( 1.0e11);
-	        double dretVal = datatypes.echoDouble( dinVal, doutVal);
+		double dinVal = 1.0e10;
+		org.omg.CORBA.DoubleHolder doutVal =
+			new org.omg.CORBA.DoubleHolder( 1.0e11);
+		double dretVal = stub.echoDouble( dinVal, doutVal);
 
 
-	        if(dretVal != 1.0e10){
-				System.out.println("return value wrong in echoDouble()");
-					    System.out.println("The expected value is 1.0e10 and the actual value is "+dretVal);
-				    }
+		if(dretVal != 1.0e10){
+			System.out.println("return value wrong in echoDouble()");
+			System.out.println("The expected value is 1.0e10 and the actual value is "+dretVal);
+		}
 
-				    if(shoutVal.value != 102){
-					    System.out.println("out value wrong in echoDouble()");
-					    System.out.println("The expected value is 1.0e12 and the actual value is "+doutVal);
+		if(doutVal.value != 1.0e12){
+			System.out.println("out value wrong in echoDouble()");
+			System.out.println("The expected value is 1.0e12 and the actual value is "+doutVal);
 
-	    }
-    }
+		}
+	}
 
 
 	/*
