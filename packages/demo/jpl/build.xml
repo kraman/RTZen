@@ -59,7 +59,7 @@
     </target>    
     
     <target name="client2">
-        <java fork="yes" classname="demo.jpl.Client2">
+        <java fork="yes" classname="demo.jpl.Client2" >
             <jvmarg line="${zen.jvm.properties}"/>
             <arg line="${zen.srcdir}/${package.dir}/ior2.txt 2"/>
         </java> 
@@ -67,7 +67,7 @@
     
     <target name="client3">
         <java fork="yes" classname="demo.jpl.Client3">
-            <jvmarg line="${zen.jvm.properties}"/>
+            <jvmarg line="${zen.jvm.properties} -Xmx256m"/>
         </java> 
     </target>     
     
