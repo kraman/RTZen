@@ -25,6 +25,7 @@
 
    <target name="packages">
       <ant antfile="${zen.srcdir}/build.xml"/>
+      <rmic base="${zen.classdir}" classname="edu.uci.ece.zen.orb.transport.serial.RMISerialPortServer"/>
       <antcall target="track_size"/>
    </target>
 
@@ -98,6 +99,14 @@ public class VersionStamp{
               >
          <jvmarg line="${zen.jvm.properties}"/>
         </java>
+    </target>
+
+    <target name="rmiserialportserver">
+        <property file="zen-build-bootstrap.properties"/>
+        <java
+            classname="edu.uci.ece.zen.orb.transport.serial.RMISerialPortServer"
+            classpath="${zen.classpath}"
+            fork="yes"/>
     </target>
 
     <target name="clean" depends="init">

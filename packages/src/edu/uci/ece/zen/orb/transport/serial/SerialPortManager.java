@@ -40,10 +40,12 @@ public class SerialPortManager
     {
         // Synchronize on the connection list so that we don't modify it while we are
         // iterating over it
+        System.out.println("Manager: adding waiting connection...");
         synchronized (waitingConnections)
         {
             waitingConnections.add(connection);
         }
+        System.out.println("Manager: adding waiting connection. waiting=" + waitingConnections.size());
     }
 
     SerialPortConnection connect(int port, String host, Socket socket) throws UnknownHostException, IOException
@@ -53,15 +55,14 @@ public class SerialPortManager
 
         // Synchronize on the connection list so that it doesn't get modified while we are
         // iterating over it
-        System.out.println("getting connection mutex...");
         synchronized (waitingConnections)
         {
-            System.out.println("searching for existing connections...");
+            System.out.println("searching for existing connections, waiting count=" + waitingConnections.size() + "...");
             // Search for a waiting connection for the requested host and port
             for (Iterator i = waitingConnections.iterator(); i.hasNext(); )
             {
                 SerialPortConnection waitingConnection = (SerialPortConnection) i.next();
-
+System.out.println("found waiting connection: " + waitingConnection);
                 if (waitingConnection.equals(requestedConnection))
                 {
                     System.out.println("found one!");
@@ -147,7 +148,9 @@ class SerialPortConnection
     // This function needs to be synchronized for wait/notify
     synchronized void waitForConnection() throws InterruptedException
     {
+        System.out.println("Connection: waitForConnection");
         SerialPortManager.instance().addWaitingConnection(this);
+        System.out.println("Connection: added waiting connection");
         wait();
     }
 
