@@ -2,10 +2,11 @@ package edu.uci.ece.zen.orb;
 
 import java.util.Properties;
 
-import javax.realtime.MemoryArea;
-import javax.realtime.NoHeapRealtimeThread;
-import javax.realtime.RealtimeThread;
-import javax.realtime.ScopedMemory;
+//import javax.realtime.MemoryArea;
+//import javax.realtime.NoHeapRealtimeThread;
+//import javax.realtime.RealtimeThread;
+//import javax.realtime.ScopedMemory;
+import javax.realtime.*;
 
 import org.omg.CORBA.PolicyCurrent;
 
@@ -58,8 +59,10 @@ public class ORBImpl {
         // )orbImplRunnable );
         if (ZenProperties.dbg) ZenProperties.logger.log(MemoryArea
                 .getMemoryArea(new Integer(42)).toString());
-        NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread(null, null, null,
-                orbFacade.orbImplRegion, null, orbImplRunnable);
+        SchedulingParameters sp = null;
+        ReleaseParameters rp = null;
+        NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread(sp, rp, (MemoryParameters)null,
+                orbFacade.orbImplRegion, (ProcessingGroupParameters)null, orbImplRunnable);
         ZenProperties.logger.log("======================starting nhrt in orb impl region=====================");
 
         nhrt.start();

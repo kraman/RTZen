@@ -8,7 +8,7 @@ import edu.uci.ece.zen.utils.Logger;
 
 /**
  * Struct definition : RequestHeader_1_0
- * 
+ *
  * @author OpenORB Compiler
  */
 public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
@@ -16,7 +16,7 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
     public static RequestHeader instance(RequestHeader rh) {
 
         try {
-            if (rh == null) 
+            if (rh == null)
                 rh = (RequestHeader) ImmortalMemory.instance()
                     .newInstance(RequestHeader.class);
         } catch (Exception e) {
@@ -75,7 +75,7 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
 
     /**
      * Constructor with fields initialization
-     * 
+     *
      * @param service_context
      *            service_context struct member
      * @param request_id
@@ -111,10 +111,10 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
     }
 
     public void reset(){
-        service_context.reset();
+        if(service_context != null) service_context.reset();
         object_key.reset();
         operation.reset();
-        requesting_principal.reset();
+        if(requesting_principal != null) requesting_principal.reset();
     }
 
 }

@@ -147,6 +147,17 @@ public class WriteBuffer {
        inUse = false;
     }
 
+    public String toString(){
+
+        byte [] newarr = new byte[(int)position];
+        byte [] buf = (byte[]) buffers.elementAt((int) (position / 1024));
+
+        for(int i = 0; i < position; ++i)
+            newarr[i] = buf[i];
+
+        return FString.byteArrayToString(newarr) + "\n\nposition: " + position;
+    }
+
     public void setEndian(boolean isLittleEndian) {
         this.isLittleEndian = isLittleEndian;
     }
@@ -205,11 +216,6 @@ public class WriteBuffer {
     public void setLimit(long limit) {
         this.limit = limit;
         ensureCapacity((int) (capacity - limit));
-    }
-
-    public String toString(){
-
-        return FString.byteArrayToString((byte[]) buffers.elementAt((int) (position / 1024)));
     }
 
     public void writeByte(byte v) {

@@ -25,6 +25,10 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         }
     }
 
+    public String toString(){
+        return getBuffer().toString();
+    }
+
     public static CDROutputStream instance() {
         try {
             if (cdrCache.isEmpty()){
@@ -272,6 +276,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             return;
         }
         buffer.free();
+        buffer = null;
         CDROutputStream.release(this);
         inUse = false;
     }

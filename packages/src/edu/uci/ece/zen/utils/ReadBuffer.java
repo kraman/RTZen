@@ -95,7 +95,16 @@ public class ReadBuffer {
             System.exit(-1);
         }
     }
+    public String toString(){
 
+        byte [] newarr = new byte[(int)limit];
+        byte [] buf = (byte[]) buffers.elementAt((int) (limit / 1024));
+
+        for(int i = 0; i < limit; ++i)
+            newarr[i] = buf[i];
+
+        return FString.byteArrayToString(newarr) + "\n\nlimit: " + limit;
+    }
     public void init() {
         position = capacity = limit = 0;
         peekString = null;
@@ -460,8 +469,9 @@ public class ReadBuffer {
 
     public FString readFString(boolean isString) {
         int len = readLong();
-if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$FString len" + len);        
-        len--;
+        if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$FString len" + len);
+        if( isString )
+            len--;
         FString fs = FString.instance();
         for(int i = 0; i < len; ++i)
             fs.append(readByte());

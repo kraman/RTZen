@@ -79,6 +79,11 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
         this.buffer = b;
     }
 
+
+    public String toString(){
+        return getBuffer().toString();
+    }
+
     public ReadBuffer getBuffer() {
         return buffer;
     }
