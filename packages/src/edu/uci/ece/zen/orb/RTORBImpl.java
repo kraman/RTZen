@@ -19,7 +19,15 @@ public class RTORBImpl
 
     public void init(ORB orb){
         this.orb = orb;
-        tpr = new ThreadPoolRunnable();
+
+        //tpr = new ThreadPoolRunnable();
+
+        try{
+            tpr = (ThreadPoolRunnable)(orb.parentMemoryArea.newInstance( ThreadPoolRunnable.class ));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -40,7 +48,7 @@ public class RTORBImpl
      * Operation create_threadpool
      */
     public int create_threadpool(int stacksize, int static_threads, int dynamic_threads, short default_priority, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
-        tpr.init(stacksize, static_threads, dynamic_threads, default_priority, allow_request_buffering, max_buffered_requests, max_request_buffer_size);
+        tpr.init(this, orb, stacksize, static_threads, dynamic_threads, default_priority, allow_request_buffering, max_buffered_requests, max_request_buffer_size);
         return setUpThreadPool();
     }
 
@@ -48,7 +56,7 @@ public class RTORBImpl
      * Operation create_threadpool_with_lanes
      */
     public int create_threadpool_with_lanes(int stacksize, org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allow_borrowing, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
-        tpr.init(stacksize, lanes, allow_borrowing, allow_request_buffering, max_buffered_requests, max_request_buffer_size );
+        tpr.init(this, orb, stacksize, lanes, allow_borrowing, allow_request_buffering, max_buffered_requests, max_request_buffer_size );
         return setUpThreadPool();
     }
 
@@ -173,62 +181,10 @@ public class RTORBImpl
         }
     }
 
-
-
-    class ThreadPoolRunnable implements Runnable{
-
-        int stacksize;
-        org.omg.RTCORBA.ThreadpoolLane[] lanes;
-        boolean allowBorrowing;
-        boolean allowRequestBuffering;
-        int maxBufferedRequests;
-        int maxRequestBufferSize;
-        int staticThreads;
-        int dynamicThreads;
-        short defaultPriority;
-
-        public ThreadPoolRunnable(){
-            stacksize = -1;
-        }
-
-        public void init(int stacksize, int static_threads, int dynamic_threads, short default_priority, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
-            this.stacksize = stacksize;
-            this.staticThreads = static_threads;
-            this.dynamicThreads = dynamic_threads;
-            this.defaultPriority = default_priority;
-            this.allowRequestBuffering = allow_request_buffering;
-            this.maxBufferedRequests = max_buffered_requests;
-            this.maxRequestBufferSize = max_request_buffer_size;
-            this.lanes = null;
-        }
-
-        public void init(int stacksize, org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allow_borrowing, boolean allow_request_buffering, int max_buffered_requests, int max_request_buffer_size){
-            this.stacksize = stacksize;
-            this.lanes = lanes;
-            this.allowBorrowing = allow_borrowing;
-            this.allowRequestBuffering = allow_request_buffering;
-            this.maxBufferedRequests = max_buffered_requests;
-            this.maxRequestBufferSize = max_request_buffer_size;
-        }
-
-        public void run(){
-            //make sure this has been initialized
-            if(stacksize >= 0){
-                ThreadPool tp;
-                if(lanes == null)
-                    tp = new ThreadPool(stacksize, staticThreads, dynamicThreads, defaultPriority, allowRequestBuffering, maxBufferedRequests, maxRequestBufferSize);
-                else
-                    tp = new ThreadPool(stacksize, allowRequestBuffering, maxBufferedRequests, maxRequestBufferSize, lanes, allowBorrowing );
-
-                orb.threadpoolList[tpID] = RealtimeThread.getCurrentMemoryArea();
-
-                ((ScopedMemory)orb.threadpoolList[tpID]).setPortal(tp);
-
-                stacksize = -1;
-            }
-        }
-    }
 }
+
+
+
 
 /*
 privilieged aspect TCPProtocolPropertiesAspect{
