@@ -1,13 +1,12 @@
-moduel unit{
-	module test
+module test
+{
+	module nameservice
 	{
-		module naming
+		interface HelloWorld
 		{
-			interface HelloWorld
-			{
-				attribute long id;
-				string getHelloMessage();
-			};
+            attribute long id;
+			string getHelloMessage();
 		};
 	};
 };
+
