@@ -85,7 +85,7 @@
       <copy todir="${oldzen.home}/classes">
         <fileset dir="${zen.classdir}">
          <include name="javax/**/*.class"/>
-         <include name="demo/**/*.class"/>
+         <include name="perf/**/*.class"/>
          <include name="edu/uci/ece/zen/utils/**/*.class"/>
         </fileset>
       </copy>
