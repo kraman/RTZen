@@ -34,7 +34,7 @@ public abstract class Logger{
             try{
                 Class loggerClass = Class.forName( "edu.uci.ece.zen.utils."+loggerType+"Logger" );
                 instance = (Logger) loggerClass.newInstance();
-		System.out.println( "Using " + loggerClass + " at level " + level );
+        System.out.println( "Using " + loggerClass + " at level " + level );
             }catch( Exception e ){
 
                 System.err.println("Logger.instance(): " +
@@ -107,6 +107,8 @@ public abstract class Logger{
 
     private static long memAreaSizes[];
     synchronized public static void printMemStats(int code, MemoryArea ma){
+        if( !ZenBuildProperties.dbgImmortal )
+            return;
         /*
         if( !ZenBuildProperties.dbgMap[code] )
             return;
