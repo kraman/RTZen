@@ -113,6 +113,12 @@ public abstract class Transport implements Runnable {
         try {
             java.io.OutputStream out = getOutputStream();
             msg.dumpBuffer(out);
+        
+        if (ZenProperties.dbg) ZenProperties.logger.log("\n\n\n\n\n\n\n\n");
+        if (ZenProperties.dbg) ZenProperties.logger.log(msg.toString());
+        if (ZenProperties.dbg) ZenProperties.logger.log("\n\n\n\n\n\n\n\n");
+
+
             out.flush();
         } catch (java.io.IOException ioex) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "send", ioex);

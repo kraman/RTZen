@@ -169,11 +169,7 @@ public class RequestHeaderHelper {
         ostream.write_ulong(value.requesting_principal.length());
         value.requesting_principal.write(ostream);
 
-        if (ZenProperties.dbg) ZenProperties.logger.log("\n\n\n\n\n\n\n\n");
-        if (ZenProperties.dbg) ZenProperties.logger.log(ostream.toString());
-        if (ZenProperties.dbg) ZenProperties.logger.log("\n\n\n\n\n\n\n\n");
-
-
+        
         //org.omg.CORBA.OctetSeqHelper.write(ostream,value.requesting_principal1);
         //ostream.write_ulong(value.requesting_principal_length);
         //ostream.write_octet_array(value.requesting_principal,

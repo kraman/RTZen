@@ -504,7 +504,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     }
 
     public void updateLength() {
-        buffer.writeLongAtLocationMemento((int) buffer.getPosition() - 12);
+        buffer.writeLongAtLocationMemento((int) buffer.getPosition() - 4);
     }
 
     /**
