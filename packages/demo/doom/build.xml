@@ -1,7 +1,7 @@
 <project name="RTZen Doom Demo" default="compile">
 
 	<!--property name="package.dir" value="demo/doom"/-->
-	<!--property name="idl.src" value="doom.idl"/-->
+	<property name="idl.src" value="doom.idl"/>
 
 	<!--import file="../../../init.xml"/-->
 	<!--import file="../demo_tasks.xml"/-->
@@ -16,10 +16,10 @@
         <property name="idl.src" value="object.idl"/>
 
 	<target name="compile">
-		<copy todir="${zen.classdir}/${package.dir}/images">
-			<fileset dir="${zen.srcdir}/${package.dir}/images"/>
+		<copy todir="${package.dir}/images">
+			<fileset dir="${package.dir}/images"/>
 		</copy>
-    	<idlc file="${zen.srcdir}/${package.dir}/${idl.src}"/>
+    	<idlc file="${package.dir}/${idl.src}"/>
 		<demo.javac/>
 	</target>
 
