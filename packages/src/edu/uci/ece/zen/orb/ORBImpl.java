@@ -64,14 +64,15 @@ public class ORBImpl {
                 orbFacade.orbImplRegion, (ProcessingGroupParameters)null, orbImplRunnable);
         if (ZenBuildProperties.dbgORB)
             ZenProperties.logger.log("======================starting nhrt in orb impl region=====================");
-
+        nhrt.setName("ORB Scope");
         nhrt.start();
         try {
-
             //rtCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
 
-/*            //rtCurrent = new ThreadLocal();
-            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
+            //rtCurrent = new ThreadLocal();
+
+/*            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
+
             policyManager = (PolicyManagerImpl) (orbFacade.parentMemoryArea.newInstance(PolicyManagerImpl.class));
             policyManager.init(orbFacade);
 */
@@ -127,6 +128,7 @@ public class ORBImpl {
     }
 
     public RTCurrent getRTCurrent() {
+        /*
         RTCurrent ret = (RTCurrent) (rtCurrent.get());
 
         if (ret == null) {
@@ -142,6 +144,8 @@ public class ORBImpl {
         }
 
         return ret;
+        */
+        return null;
     }
 
     protected void handleInvocation() {

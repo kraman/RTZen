@@ -75,6 +75,7 @@ public class MSGRunnable implements Runnable {
                     short priority = (short)rb.readLong();
 
                     if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable RECEIVED thread priority: " + priority);
+
                     rm.setPriority(priority);
                     //orb.getRTCurrent().the_priority(priority);
 
