@@ -8,17 +8,18 @@ public abstract class Acceptor{
     protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
     protected boolean isActive;
 
+    protected AcceptorLogic acceptorLogic;
+    protected RealtimeThread acceptorLogicThread;
+
     public Acceptor( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl ){
         this.orb = orb;
         this.orbImpl = orbImpl;
     }
 
     public final void startAccepting(){
-        AcceptorRunnable runnable = new AcceptorRunnable( this );
-        while( isActive ){
-            ScopedMemory transportMem = orb.getScopedRegion();
-            transportMem.enter( runnable );
-        }
+        acceptorLogic = new AcceptorLogic( this );
+        acceptorLogicThread = new NoHeapRealtimeThread(null,null,null,null,null,acceptorLogic);
+        acceptorLogicThread.start();
     }
 
     public final void shutdown( boolean waitForCompletion ){
@@ -56,6 +57,22 @@ public abstract class Acceptor{
     protected abstract TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey);
 }
 
+class AcceptorLogic implements Runnable{
+    Acceptor acc;
+    
+    public AcceptorLogic( Acceptor acc ){
+        this.acc=acc;
+    }
+
+    public void run(){
+        AcceptRunnable runnable = new AcceptRunnable( acc );
+        while( acc.isActive ){
+            ScopedMemory transportMem = acc.orb.getScopedRegion();
+            transportMem.enter( runnable );
+        }
+    }
+}
+
 class ProfileRunnable implements Runnable{
     private byte major;
     private byte minor;
@@ -82,10 +99,9 @@ class ProfileRunnable implements Runnable{
     }
 }
 
-class AcceptorRunnable implements Runnable{
+class AcceptRunnable implements Runnable{
     private Acceptor acc;
-    public AcceptorRunnable( Acceptor acc ){ this.acc=acc; }
-
+    public AcceptRunnable( Acceptor acc ){ this.acc=acc; }
     public void run(){
         acc.accept();
     }
