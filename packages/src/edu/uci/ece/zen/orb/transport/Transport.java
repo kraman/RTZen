@@ -30,24 +30,20 @@ public abstract class Transport implements Runnable{
      */
     public final void run(){
         messageProcessor = new MessageProcessor( this , orb );
-        if(ZenProperties.devDbg) System.out.println("Transport.run() 1");
 
         if(ZenProperties.devDbg) System.out.println( RealtimeThread.getCurrentMemoryArea() );
         if(ZenProperties.devDbg) System.out.println( MemoryArea.getMemoryArea(messageProcessor) );
         if(ZenProperties.devDbg) System.out.println( MemoryArea.getMemoryArea(this) );
         
         RealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,messageProcessor );
-        if(ZenProperties.devDbg) System.out.println("Transport.run() 2");
         
         messageProcessorThr.setDaemon( true );
-        if(ZenProperties.devDbg) System.out.println("Transport.run() yue 3");
-        
+        System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea());
+        System.out.println(javax.realtime.MemoryArea.getMemoryArea(messageProcessorThr) );
         messageProcessorThr.start();
-        if(ZenProperties.devDbg) System.out.println("Transport.run() 4");
         
         try{
             synchronized( waitObj ){
-                if(ZenProperties.devDbg) System.out.println("Transport.run() 5");
                 waitObj.wait();
             }
         }catch( InterruptedException ie ){
@@ -104,37 +100,28 @@ class MessageProcessor implements Runnable{
     private boolean isActive;
 
     public MessageProcessor( Transport trans , edu.uci.ece.zen.orb.ORB orb ){
-        if(ZenProperties.devDbg) System.out.println( "MessageProcessor Kr 1: " + RealtimeThread.getCurrentMemoryArea() );
+        if(ZenProperties.devDbg) System.out.println( "Transport.java/MessageProcessor, the current memory scope is: " + RealtimeThread.getCurrentMemoryArea() );
         this.trans = trans;
         this.orb = orb;
     }
 
     public void run(){
-        if(ZenProperties.devDbg) System.out.println("Krishna noodle 0");
         isActive = true;
-        if(ZenProperties.devDbg) System.out.println("Krishna noodle 1");
+        System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
         GIOPMessageRunnable gmr = new GIOPMessageRunnable( orb , trans );
-        if(ZenProperties.devDbg) System.out.println("Krishna noodle 2");
          
         ExecuteInRunnable eir = new ExecuteInRunnable();
-        if(ZenProperties.devDbg) System.out.println("Krishna noodle 3");
          
 
         while( isActive ){
-            if(ZenProperties.devDbg) System.out.println("Krishna noodle 4");
              
             ScopedMemory messageScope = ORB.getScopedRegion();
-            if(ZenProperties.devDbg) System.out.println("Krishna noodle 5");
              
             gmr.setRequestScope( messageScope );
-            if(ZenProperties.devDbg) System.out.println("Krishna noodle 6");
-             
 
             eir.init( gmr , messageScope );
-            if(ZenProperties.devDbg) System.out.println("Krishna noodle 7");
              
             try{
-                if(ZenProperties.devDbg) System.out.println("Krishna noodle 8");
              
                 orb.orbImplRegion.executeInArea( eir );
             }catch( Exception e ){
@@ -221,22 +208,17 @@ class GIOPMessageRunnable implements Runnable{
      */
     public void run(){
         try{
-            if(ZenProperties.devDbg) System.out.println( "GIOPMessageRunnable.run 1" );
-            
+            System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
             edu.uci.ece.zen.utils.Logger.printThreadStack();
-            
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
-            if(ZenProperties.devDbg) System.out.println( "GIOPMessageRunnable.run 2" );
             if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
                
-                if(ZenProperties.devDbg) System.out.println( "GIOPMessageRunnable.run 3" );
                 if(ZenProperties.devDbg) System.out.println( trans );
                 if(ZenProperties.devDbg) System.out.println( trans.orbImpl );
                 if(ZenProperties.devDbg) System.out.println( trans.orbImpl.getServerRequestHandler() );
                 if(ZenProperties.devDbg) System.out.println( message );
 
                 trans.orbImpl.getServerRequestHandler().handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) message );
-                if(ZenProperties.devDbg) System.out.println( "GIOPMessageRunnable.run 4" );
             }
             if( message instanceof edu.uci.ece.zen.orb.giop.type.ReplyMessage ){
                 ScopedMemory waiterRegion = orb.getWaiterRegion( message.getRequestId() );
