@@ -20,8 +20,16 @@
     <target name="compile.jrate" if="compiler_jRate">
         <demo.compile.jrate main="demo.hello.Client" out="client">
             <fileset dir="${zen.srcdir}/${package.dir}">
-                <include name="Client.java"/>
-                <exclude name="Server.java"/>
+               <include name="Client.java"/>               
+            </fileset>
+            <fileset dir="${zen.gendir}/${package.dir}">
+                <include name="*.java"/>
+            </fileset>
+        </demo.compile.jrate>
+	    <demo.compile.jrate main="demo.hello.Server" out="server">
+            <fileset dir="${zen.srcdir}/${package.dir}">
+                <include name="Server.java"/>                
+                <include name="HelloWorldImpl.java"/>
             </fileset>
             <fileset dir="${zen.gendir}/${package.dir}">
                 <include name="*.java"/>
@@ -38,7 +46,7 @@
     </target>    
     
     <!-- set "jacorb.home" properly to use jacorb examples -->
-    <property name="jacorb.home" value="/home/yuez/JacORB_2_2"/>
+    <property name="jacorb.home" value="/project/workarea02/mpanahi/JacORB_2_2"/>
     
     <property name="jacorb.jvmarg" value="-Xbootclasspath/p:${jacorb.home}/lib/jacorb.jar${path.separator}${zen.classdir}${path.separator}${jacorb.home}/lib/logkit-1.2.jar${path.separator}${jacorb.home}/lib/avalon-framework-4.1.5.jar -Djacorb.home=${jacorb.home} -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=orb.jacorb.orb.ORBSingleton"/>    
     
@@ -65,9 +73,9 @@
             - now you can run the targets below: server_oldzen and client_oldzen
     -->    
 
-    <property name="oldzen.home" value="c:/Zen/Zen"/>
+    <property name="oldzen.home" value="/project/workarea02/mpanahi/Zen"/>
     
-    <property name="oldzen.jvmarg" value="-Xbootclasspath/p:${oldzen.home}/classes; -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"/>    
+    <property name="oldzen.jvmarg" value="-Xbootclasspath/p:${oldzen.home}/classes -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"/>    
         
     <target name="setup_oldzen">
       <copy todir="${oldzen.home}/classes">
