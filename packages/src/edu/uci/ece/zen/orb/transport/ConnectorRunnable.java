@@ -39,5 +39,6 @@ public class ConnectorRunnable implements Runnable{
         NoHeapRealtimeThread transportThread = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);
         System.out.println("Yuez in ConnectorRunnable 3");        
         transportThread.start();
+        ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( trans );
     }
 }
