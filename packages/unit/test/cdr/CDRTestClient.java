@@ -1,6 +1,6 @@
 package test.cdr;
 
-import omg.org.CORBA.*;
+import org.omg.CORBA.*;
 import javax.realtime.RealtimeThread;
 import javax.realtime.LTMemory;
 import java.io.BufferedReader;

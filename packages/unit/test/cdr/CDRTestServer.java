@@ -1,7 +1,7 @@
 package test.cdr;
 
-import omg.org.CORBA.ORB;
-import omg.org.PortableServer.*;
+import org.omg.CORBA.ORB;
+import org.omg.PortableServer.*;
 import javax.realtime.RealtimeThread;
 import javax.realtime.LTMemory;
 import java.io.BufferedWriter;
