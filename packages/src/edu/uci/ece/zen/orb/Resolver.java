@@ -28,7 +28,7 @@ public abstract class Resolver{
         return ret;
     }
 
-    public static Object resolve( ORB orb , String str ){
+    public static org.omg.CORBA.Object resolve( ORB orb , String str ){
         for( int i=0;i<resolverList.size();i++ ){
             Resolver res = ((Resolver)resolverList.elementAt(i));
             if( res.toString().equals( str ) )

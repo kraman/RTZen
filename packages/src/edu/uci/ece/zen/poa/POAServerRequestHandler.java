@@ -1,6 +1,3 @@
-/* --------------------------------------------------------------------------*
- * $Id: POAServerRequestHandler.java,v 1.12 2003/09/03 20:39:01 spart Exp $
- *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa;
 
 import org.omg.CORBA.CompletionStatus;
@@ -13,8 +10,7 @@ import edu.uci.ece.zen.utils.*;
 public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHandler {
     edu.uci.ece.zen.utils.ActiveDemuxTable demuxTable;
     
-    public POAServerRequestHandler(ORB orb) {
-        super(orb);
+    public POAServerRequestHandler() {
         int numPOAs = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.maxNumPOAs" , "1" ) );
         demuxTable = new edu.uci.ece.zen.utils.ActiveDemuxTable();
         demuxTable.init( numPOAs );

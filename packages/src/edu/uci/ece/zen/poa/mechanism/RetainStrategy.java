@@ -16,6 +16,7 @@ public final class RetainStrategy extends ServantRetentionStrategy {
         } else {
             this.AOM = new edu.uci.ece.zen.poa.SingleMap();
         }
+
         // Active Demux Map
         this.activeMap = new ActiveDemuxTable();
         this.activeMap.init( 100 );
@@ -69,8 +70,10 @@ public final class RetainStrategy extends ServantRetentionStrategy {
     public void getObjectID( org.omg.PortableServer.Servant servant, FString oid_out , IntHolder exceptionValue) {
         exceptionValue.value = POARunnable.NoException;
         oid_out.reset();
-        this.AOM.servantPresent(servant);
-        this.AOM.getObjectID( servant , oid_out , exceptionValue );
+        if( this.AOM.servantPresent(servant) )
+            this.AOM.getObjectID( servant , oid_out , exceptionValue );
+        else
+            exceptionValue.value = POARunnable.ServantNotActiveException;
     }
 
    /**

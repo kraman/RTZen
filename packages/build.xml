@@ -65,6 +65,7 @@
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TracerAspect.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TypeCodeAspect.java"/>
+            <exclude name="src/edu/uci/ece/zen/orb/resolvers/**"/>
             <include name="src/edu/uci/ece/zen/poa/**"/>
             <exclude name="src/edu/uci/ece/zen/poa/mechanism/ServantLocatorStrategy.java"/>
 

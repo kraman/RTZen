@@ -78,18 +78,21 @@ public class IOR
     public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID, FString objKey, MemoryArea clientArea)
             throws IllegalAccessException,InstantiationException
     {
+        System.out.println( "makeCORBAObject 1" );
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea.newInstance(org.omg.IOP.IOR.class);
         ior.type_id = typeID;
         ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, clientArea);
+        System.out.println( "makeCORBAObject 2" );
 
         ObjectImpl objectImpl = (ObjectImpl) clientArea.newInstance(edu.uci.ece.zen.orb.ObjectImpl.class);
         objectImpl.init(ior);
         ObjRefDelegate delegate = ObjRefDelegate.instance();
         objectImpl._set_delegate(delegate);
+        System.out.println( "makeCORBAObject 3" );
 
         ORBImpl orbImpl = (ORBImpl) orb.orbImplRegion.getPortal();
         delegate.init( ior, objectImpl, orb , orbImpl );
-
+        System.out.println( "makeCORBAObject 4" );
         return objectImpl;
     }
 

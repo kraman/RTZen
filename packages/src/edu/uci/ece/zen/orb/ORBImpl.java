@@ -129,10 +129,11 @@ class ORBImplRunnable implements Runnable{
     }
 
     public void run(){
-        //System.out.println("getting portal for: " + NoHeapRealtimeThread.getCurrentMemoryArea().getClass().getName());
-        //System.out.println("inner thread: " + Thread.currentThread().toString());
-        //ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)NoHeapRealtimeThread.getCurrentMemoryArea()).getPortal();
+        System.out.println("getting portal for: " + sm );
+        System.out.println("inner thread: " + Thread.currentThread().toString());
+
         ORBImpl orbImpl = (ORBImpl) sm.getPortal();
+        System.out.println( "orb impl is " + orbImpl );
         synchronized( orbImpl ){
             try{
                 while( active ){
@@ -147,6 +148,29 @@ class ORBImplRunnable implements Runnable{
             }
             active=false;
         }
+        synchronized( orbImpl.orbFacade.orbRunningLock ){
+            orbImpl.orbFacade.orbRunningLock.notifyAll();
+        }
+    }
+}
+
+class AcceptorCreatorRunnable implements Runnable{
+    ORB orb;
+    ORBImpl orbImpl;
+    short acceptorPriority;
+
+    ScopedMemory retVal;
+
+    public AcceptorCreatorRunnable( ORB orb , ORBImpl orbImpl ){
+        this.orb = orb;
+        this.orbImpl = orbImpl;
     }
 
+    public void init( short acceptorPriority ){
+        this.acceptorPriority = acceptorPriority;
+    }
+
+    public void run(){
+
+    }
 }

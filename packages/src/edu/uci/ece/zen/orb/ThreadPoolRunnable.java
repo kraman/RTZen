@@ -57,7 +57,6 @@ public class ThreadPoolRunnable implements Runnable{
             orb.threadpoolList[rtorb.tpID] = RealtimeThread.getCurrentMemoryArea();
 
             ((ScopedMemory)orb.threadpoolList[rtorb.tpID]).setPortal(tp);
-
             stacksize = -1;
         }
     }

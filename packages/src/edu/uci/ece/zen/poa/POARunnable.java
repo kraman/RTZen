@@ -82,7 +82,7 @@ public class POARunnable implements Runnable{
                     this );
                 break;
             case SERVANT_TO_REFERENCE:
-                pimpl.servant_to_reference( (Servant) args.elementAt(0) , 
+                retVal = pimpl.servant_to_reference( (Servant) args.elementAt(0) , 
                     (MemoryArea) args.elementAt(1) ,
                     this );
                 break;

@@ -43,7 +43,7 @@ public class POAManager extends org.omg.CORBA.LocalObject implements org.omg.Por
         edu.uci.ece.zen.poa.POAManager retVal;
         retVal = (edu.uci.ece.zen.poa.POAManager) unusedFacades.dequeue();
         retVal.numRegisteredPOAs = 0;
-        retVal.state = State.INACTIVE;
+        retVal.state = State.HOLDING;
         return retVal;
     }
 

@@ -31,8 +31,8 @@ public class POAImpl{
     private org.omg.PortableServer.ServantManager   theServantManager;
     private org.omg.PortableServer.Servant          theServant = null;
     private POAServerRequestHandler                 serverRequestHandler;
-    private int                                     poaDemuxIndex;
     private int                                     poaDemuxCount;
+    private POAImplRunnable                         poaImplRunnable;
 
     // ---  Current Number of request executing in the POA ---
     protected SynchronizedInt numberOfCurrentRequests;
@@ -136,40 +136,73 @@ public class POAImpl{
      * @throws InvalidPolicyException
      */
     public void init( ORB orb , POA self , Policy[] policies , POA parent , POAManager manager , POARunnable prun ){
+        System.out.println( "POAImpl init 1" );
         this.orb = orb;
         this.self = self;
         this.parent = parent;
         this.manager = manager;
         this.tpId = 0;
+        System.out.println( "POAImpl init 2" );
+
+        try{
+            serverRequestHandler = (POAServerRequestHandler) ((ORBImpl)((ScopedMemory)orb.orbImplRegion).getPortal()).getServerRequestHandler();
+            if( serverRequestHandler == null ){
+                serverRequestHandler =  (POAServerRequestHandler) orb.orbImplRegion.newInstance( POAServerRequestHandler.class  );
+            }
+        }catch( Exception e1 ){
+            e1.printStackTrace();
+        }
+        System.out.println( "POAImpl init 3" );
+        self.poaDemuxIndex = serverRequestHandler.addPOA( self.poaPath , self );
+        System.out.println( "POAImpl init 4" );
+
 
         //make a local copy of the policies
-        this.policyList = new Policy[policies.length];
-        for( int i=0;i<policies.length;i++ )
+        if( policies != null )
+            this.policyList = new Policy[policies.length];
+        else
+            this.policyList = new Policy[0];
+
+        for( int i=0;i<policyList.length;i++ )
             this.policyList[i] = policies[i].copy();
+        System.out.println( "POAImpl init 5" );
 
         //init the stratergies
         IntHolder ih = getIntHolder();
         this.threadPolicyStrategy = edu.uci.ece.zen.poa.mechanism.ThreadPolicyStrategy.init(policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
+        System.out.println( "POAImpl init 6" );
 
         this.idAssignmentStrategy = edu.uci.ece.zen.poa.mechanism.IdAssignmentStrategy.init(policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
+        System.out.println( "POAImpl init 7" );
         
         this.uniquenessStrategy = edu.uci.ece.zen.poa.mechanism.IdUniquenessStrategy.init(policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
+        System.out.println( "POAImpl init 8" );
         
         this.retentionStrategy = edu.uci.ece.zen.poa.mechanism.ServantRetentionStrategy.init(policyList, this.uniquenessStrategy,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
+        System.out.println( "POAImpl init 9" );
         
         this.lifespanStrategy = edu.uci.ece.zen.poa.mechanism.LifespanStrategy.init(this.policyList,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
+        System.out.println( "POAImpl init 10" );
         
         this.activationStrategy = edu.uci.ece.zen.poa.mechanism.ActivationStrategy.init(this.policyList, this.idAssignmentStrategy, this.retentionStrategy,ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
+        System.out.println( "POAImpl init 11" );
         
         this.requestProcessingStrategy = edu.uci.ece.zen.poa.mechanism.RequestProcessingStrategy.init(this.policyList, 
                 this.retentionStrategy, this.uniquenessStrategy, this.threadPolicyStrategy, this , ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
+        System.out.println( "POAImpl init 12" );
+        
+        poaImplRunnable = new POAImplRunnable( self.poaMemoryArea );
+        self.poaMemoryArea.setPortal( this );
+        NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,null,null,self.poaMemoryArea,null,poaImplRunnable );
+        System.out.println( "======================starting nhrt in poa impl region=====================" );
+        nhrt.start();
     }
 
     /**
@@ -276,14 +309,15 @@ public class POAImpl{
 
                     this.retentionStrategy.add( oid, map , ih);
                     if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retPOAHashMap( map ); break; }
-                    orb.set_delegate ( p_servant );
+                    //Dont do this right now. will do it later when IOR is being created
+                    //orb.set_delegate ( p_servant );
 
                     int index = this.retentionStrategy.bindDemuxIndex( map , ih );
                     if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retPOAHashMap( map ); break; }
                     int genCount = this.retentionStrategy.getGenCount( index , ih );
                     if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; retPOAHashMap( map ); break; }
 
-                    this.lifespanStrategy.create( self.poaPath , oid, this.poaDemuxIndex , this.poaDemuxCount , index , genCount , okey ); 
+                    this.lifespanStrategy.create( self.poaPath , oid, self.poaDemuxIndex , this.poaDemuxCount , index , genCount , okey ); 
                     retVal = this.create_reference_with_object_key(okey, p_servant._all_interfaces(self, null)[0] , clientMemoryArea );
                     break;
                 }
@@ -302,7 +336,7 @@ public class POAImpl{
                 if( ih.value != POARunnable.NoException ){ prun.exception = ih.value; break; }
 
                 // Create the Object Key using the IdHint Strategy
-                this.lifespanStrategy.create(self.poaPath, oid, this.poaDemuxIndex , this.poaDemuxCount , index, count, okey );
+                this.lifespanStrategy.create(self.poaPath, oid, self.poaDemuxIndex , this.poaDemuxCount , index, count, okey );
                 
                 retVal = this.create_reference_with_object_key (okey, p_servant._all_interfaces(self, null)[0] , clientMemoryArea);
             }
@@ -310,6 +344,7 @@ public class POAImpl{
         retFString( okey );
         retFString( oid );
         retIntHolder( ih );
+        System.out.println( "servant_to_reference " + retVal );
         return retVal;
     }
 
@@ -377,12 +412,17 @@ public class POAImpl{
         ih.value = POARunnable.NoException;
     }
 
+    private CreateReferenceWithObjectRunnable crwor;
     public synchronized org.omg.CORBA.Object create_reference_with_object_key( FString ok, final String intf, MemoryArea clientArea ) {
-        CreateReferenceWithObjectRunnable r = CreateReferenceWithObjectRunnable.instance();       
-        r.init( ok, intf, clientArea, orb);
+        System.out.println( "create_reference_with_object_key 1" );
+        if( crwor == null )
+            crwor = new CreateReferenceWithObjectRunnable();
+        System.out.println( "create_reference_with_object_key 2" );
+        crwor.init( ok, intf, clientArea, orb);
+        System.out.println( "create_reference_with_object_key 3" );
         try{
-            orb.orbImplRegion.executeInArea(r);
-            return r.retVal; 
+            orb.orbImplRegion.executeInArea(crwor);
+            return crwor.retVal; 
         }catch( Exception e ){
             e.printStackTrace();
             return null;
@@ -399,23 +439,20 @@ public class POAImpl{
         return numberOfCurrentRequests;
     }
 
+    public void finalize(){
+        System.out.println( "POAImpl GC'd" );
+    }
+
 }
 
 class CreateReferenceWithObjectRunnable implements Runnable{
-
-    public static CreateReferenceWithObjectRunnable _instance;
-
-    public static CreateReferenceWithObjectRunnable instance(){
-        if( _instance == null )
-            _instance = new CreateReferenceWithObjectRunnable();
-        return _instance;
-    }
-
     public org.omg.CORBA.Object retVal;
     public FString ok;
     public String intf;
     public MemoryArea ma;
     public ORB orb;
+
+    public CreateReferenceWithObjectRunnable(){}
 
     public void init( FString ok , String intf, MemoryArea ma, ORB orb){
         this.ok = ok;
@@ -453,4 +490,45 @@ class HandleRequestRunnable implements Runnable{
             e.printStackTrace();
         }
     }
+}
+
+class POAImplRunnable implements Runnable{
+    private boolean active;
+    private ScopedMemory sm;
+
+    public POAImplRunnable(ScopedMemory sm){
+        active = true;
+        this.sm = sm;
+    }
+
+    public boolean isActive(){
+        return this.active;
+    }
+
+    public void setActive( boolean val ){
+        this.active = val;
+    }
+
+    public void run(){
+        System.out.println("getting portal for: " + sm );
+        System.out.println("inner thread: " + Thread.currentThread().toString());
+
+        POAImpl poaImpl = (POAImpl) sm.getPortal();
+        System.out.println( "poa impl is " + poaImpl );
+        synchronized( poaImpl ){
+            try{
+                while( active ){
+                    poaImpl.wait();
+                }
+            }catch( InterruptedException ie ){
+                ZenProperties.logger.log(
+                        Logger.INFO ,
+                        "edu.uci.ece.zen.poa.POAImplRunnable" ,
+                        "run()" ,
+                        "ORB is shutting down.");
+            }
+            active=false;
+        }
+    }
+
 }

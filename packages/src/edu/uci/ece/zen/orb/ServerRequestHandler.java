@@ -4,7 +4,9 @@ import edu.uci.ece.zen.utils.*;
 
 public abstract class ServerRequestHandler {
     protected ORB orb;
-    public ServerRequestHandler(ORB orb) {
+    public ServerRequestHandler() {}
+
+    public void init( ORB orb ){
         this.orb = orb;
     }
 

@@ -135,7 +135,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     //public RTORB rtorb;
     //public PolicyManager policyManager;
     public MemoryArea [] threadpoolList;
-    public org.omg.PortableServer.POA rootPOA;
+    public edu.uci.ece.zen.poa.POA rootPOA;
+    public Object orbRunningLock;
 
     private FString orbId;
 
@@ -151,6 +152,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         //policyManager = new PolicyManagerImpl(this);
         threadpoolList = new MemoryArea[10];//KLUDGE: need to set up property for max TPs
         orbId = new FString();
+        orbRunningLock = new Integer(0);
         try{
             orbId.init(25);
         }catch( InstantiationException e1 ){
@@ -250,21 +252,13 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     //For Multithreaded ORB's
     public void run(){
         isActive();
-
-        ExecuteInRunnable r = getEIR();
-        r.init( orbImplRunnable , this.orbImplRegion );
-        try{
-            parentMemoryArea.executeInArea( r );
-        }catch( Exception e ){
-            ZenProperties.logger.log(
-                Logger.FATAL,
-                "edu.uci.ece.zen.orb.ORB",
-                "set_parameters",
-                "Could not run in ORB due to exception: " + e.toString()
-                );
-            System.exit(-1);
+        synchronized( orbRunningLock ){
+            try{
+                orbRunningLock.wait();
+            }catch( InterruptedException ie ){
+                ie.printStackTrace();
+            }
         }
-        freeEIR( r );
     }
 
     public void shutdown(boolean wait_for_completion) {
@@ -326,7 +320,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     }
 
     public org.omg.CORBA.Object resolve_initial_references(String object_name) throws org.omg.CORBA.ORBPackage.InvalidName {
-        //return Resolver.resolve( object_name );
         System.out.println( "======================Getting " + object_name + "=============================" );
         if(object_name.equals("RTORB")){
             return getRTORB();
@@ -338,12 +331,19 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             return prun.val;
         }else if(object_name.equals("RTCurrent")){
             return getRTCurrent();
+        }else if(object_name.equals("RootPOA")){
+            if( rootPOA == null ){
+                rootPOA = edu.uci.ece.zen.poa.POA.instance();
+                rootPOA.initAsRootPOA( this );
+            }
+            return rootPOA;
         }
-
+        //org.omg.CORBA.Object ret = Resolver.resolve( this , object_name );
+        //if( ret == null )
+            throw new org.omg.CORBA.ORBPackage.InvalidName(object_name + " resolver not implemented");
+        //return ret;
         //else if(object_name.equals("RTCurrent"))
             //return policyManager;
-
-        throw new org.omg.CORBA.ORBPackage.InvalidName(object_name + " resolver not implemented");
     }
 
     private void internalResolve(Runnable runnable){
@@ -486,11 +486,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     ///////////////////////////////////////////////////////////////////////////
     ////////////////// Internal helper methods ////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-
-    public ScopedMemory getTPHandler( int tpId ){
-        //TODO: return thread pool memory region here
-        return null;
-    }
 
     public ScopedMemory getWaiterRegion( int key ){
         return waiterRegistry.getWaiter( key );
@@ -724,7 +719,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
      * associated with that thread pool.
      */
     public ScopedMemory getThreadPoolRegion( int tpId ){
-        return null;
+        return threadpoolList[tpId];
     }
 }
 

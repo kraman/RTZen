@@ -4,6 +4,7 @@ import java.io.*;
 
 import org.omg.CORBA.ORB;
 import javax.realtime.*;
+import org.omg.PortableServer.*;
 
 /**
  * This class implements a simple Client for the Hello World CORBA

@@ -22,7 +22,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     private Hashtable theChildren;
     private SynchronizedInt numberOfCurrentRequests;
     public  int poaState;
-    private int poaDemuxIndex;
+    protected int poaDemuxIndex;
     public int processingState = POA.ACTIVE;
     private AdapterActivator adapterActivator;
     
@@ -106,8 +106,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             manager = POAManager.instance();
         this.poaManager = manager;
         ((POAManager)poaManager).register( (org.omg.PortableServer.POA) this );
-        serverRequestHandler = ((ORBImpl)((ScopedMemory)orb.orbImplRegion).getPortal()).getServerRequestHandler();
-        poaDemuxIndex = serverRequestHandler.addPOA( poaPath , this );
+
         theChildren.removeAll();
         numberOfCurrentRequests.reset();
         
@@ -123,14 +122,14 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         eir2.init( eir1 , orb.orbImplRegion );
         try{
             orb.parentMemoryArea.executeInArea( eir2 );
-        }catch( Exception e ){
-            e.printStackTrace();
+        }catch( Exception e2 ){
+            e2.printStackTrace();
         }
 
         poaState = POA.CREATION_COMPLETE;
     }
     
-	private POA(){
+	public POA(){
         theChildren = new Hashtable();
         theChildren.init( Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.maxNumPOAs" , "1" ) ) );
         numberOfCurrentRequests = new SynchronizedInt();
@@ -218,6 +217,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
             case POARunnable.WrongPolicyException:
                 throw new WrongPolicy();
         }
+        System.out.println( "POA.servant_to_reference " + r.retVal );
         return (org.omg.CORBA.Object) r.retVal;
     }
 
@@ -670,10 +670,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
     }
 
     public org.omg.PortableServer.POAManager the_POAManager() {
-        /*
         return this.poaManager;
-        */
-        throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
     public org.omg.PortableServer.AdapterActivator the_activator() {

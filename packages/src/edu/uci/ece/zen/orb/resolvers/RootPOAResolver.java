@@ -16,8 +16,10 @@ public class RootPOAResolver extends Resolver{
     }
 
     public org.omg.CORBA.Object resolve( ORB orb ){
+        POA rootPoa = edu.uci.ece.zen.poa.POA.instance();
+        rootPoa.initAsRootPOA( orb );
         if( orb.getRootPOA() == null )
-            orb.setRootPOA( edu.uci.ece.zen.poa.POA.instance( orb ) );
+            orb.setRootPOA(  );
         return orb.getRootPOA();
     }
 }

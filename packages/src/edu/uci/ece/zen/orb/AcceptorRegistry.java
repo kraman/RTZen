@@ -9,12 +9,11 @@ import edu.uci.ece.zen.utils.*;
 public class AcceptorRegistry{
 
     private Vector list = new Vector();
-    private TaggedProfile[] tpList;
 
     public TaggedProfile[] getProfiles( FString objKey, MemoryArea clientArea) 
             throws IllegalAccessException,InstantiationException
         {
-        tpList = (TaggedProfile[]) clientArea.newArray(org.omg.IOP.TaggedProfile.class, list.size());
+        TaggedProfile[] tpList = (TaggedProfile[]) clientArea.newArray(org.omg.IOP.TaggedProfile.class, list.size());
         byte [] tempOKey = objKey.getTrimData( clientArea );
 
         for(int i = 0; i < list.size(); ++i){

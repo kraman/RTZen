@@ -26,11 +26,10 @@ public abstract class IdUniquenessStrategy {
     public static IdUniquenessStrategy init(org.omg.CORBA.Policy[] policy, IntHolder exceptionValue ) {
         exceptionValue.value = POARunnable.NoException;
         if (PolicyUtils.useUniqueIdPolicy(policy)) {
-//            return new UniqueIdStrategy();
+            return new UniqueIdStrategy();
         } else {
-//            return new MultipleIdStrategy();
+            return new MultipleIdStrategy();
         }
-        return null;
     }
 
     public abstract boolean validate(int policyName);
