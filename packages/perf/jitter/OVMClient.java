@@ -18,7 +18,7 @@ import java.io.FileWriter;
  * @version 1.0
  */
 
-public class Client extends RealtimeThread
+public class OVMClient extends RealtimeThread
 {
 	public static final int warmUpIterations =   1000;
 	public static final int iterations       = 10000;
@@ -42,7 +42,7 @@ public class Client extends RealtimeThread
         rt.start();
     }
 
-    public Client(){
+    public OVMClient(){
         //super(null,new LTMemory(3000,300000));
     }
 
@@ -66,11 +66,11 @@ public class Client extends RealtimeThread
 
                 AbsoluteTime[] timeStampsArray = new AbsoluteTime[iterations];                         
                 javax.realtime.Clock clock = javax.realtime.Clock.getRealtimeClock();			
-                RationalTime frequency = clock.getResolution();
+                RelativeTime frequency = clock.getResolution();
+                
 
-                System.out.println("The time frequency is "+frequency);
+                System.out.println("The time frequency is "+((RationalTime)frequency).getFrequency());
 
-                AbsoluteTime[] timeStampsArray = new AbsoluteTime[iterations];
         
 		
 				int i, j, k;
@@ -179,9 +179,9 @@ public class Client extends RealtimeThread
 				}
 
 				//NativeTimeStamp.OutputLogRecords();
-                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("timeRecords.txt"));
-                for(int k = 0; k<timeStampsArray.length; k++){
-                    out.println(k+","+"21,"+timeStampsArray[k]);
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("timeRecords.txt")));
+                for(int m = 0; m<timeStampsArray.length; m++){
+                    out.println(m+","+"21,"+timeStampsArray[m]);
                 }
                 out.flush();
                 out.close();     

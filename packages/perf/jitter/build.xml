@@ -15,6 +15,7 @@
             basedir="${zen.classdir}"
             includes="${package.dir}/**"/>
         <antcall target="compile.jrate"/>
+        <antcall target="setup_oldzen"/>
     </target>
 
     <target name="compile.jrate" if="compiler_jRate">
@@ -66,6 +67,30 @@
             <jvmarg line="${zen.jvm.properties} -Djava.library.path=/home/hschirne/RTZen/packages/perf/TimeStamp -Xms200M -Xmx500M"/>
         </java>
     </target> 
+
+    <!-- Running this example on old Zen -->
+    <!--
+    - build old Zen
+    - build RTZen with jvm option
+    - build this example
+    - set "oldzen.home" property below
+    - run "setup_oldzen" target, i.e. type "ant setup_oldzen"
+    - now you can run the targets below: server_oldzen and client_oldzen
+    -->
+
+    <property name="oldzen.home" value="/users/kraman/RTZEN/Zen"/>   
+
+    <target name="setup_oldzen">
+    <echo message="antcall setup_oldzen"/>    
+      <copy todir="${oldzen.home}/classes">
+        <fileset dir="${zen.classdir}">
+         <include name="javax/**/*.class"/>
+         <include name="perf/**/*.class"/>
+         <include name="edu/uci/ece/zen/utils/**/*.class"/>
+        </fileset>
+      </copy>
+    </target>
+
 
     <target name="clean">
       <delete dir="${zen.gendir}/${package.dir}"/>
