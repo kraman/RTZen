@@ -60,7 +60,7 @@ public class DataTypesImpl extends DataTypesPOA
     }
 
 
-    public short echoOctet( octet oinVal , org.omg.CORBA.OctetHolder ooutVal) {
+    public short echoOctet( byte oinVal , org.omg.CORBA.ByteHolder ooutVal) {
 
 			if(oinVal != 100){
 				System.out.println("in value wrong in echoOctet()");

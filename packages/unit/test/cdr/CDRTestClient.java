@@ -145,9 +145,9 @@ public class CDRTestClient extends RealtimeThread
 
     public void testOctet(){
 
-			octet oinVal = 100;
-			OctetHolder ooutVal = new OctetHolder((octet)101);
-		    octet oretVal = stub.echoOctet( oinVal, ooutVal);
+			byte oinVal = 100;
+			ByteHolder ooutVal = new ByteHolder((byte)101);
+		    byte oretVal = stub.echoOctet( oinVal, ooutVal);
 
 		    if(oretVal != 100){
 			    System.out.println("return value wrong in echoOctet()");
