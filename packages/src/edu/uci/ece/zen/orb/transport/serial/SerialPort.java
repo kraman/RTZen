@@ -5,29 +5,50 @@ import java.rmi.registry.*;
 import java.io.*;
 import java.net.*;
 
-class SerialPort
+interface SerialPort
 {
-    static RMISerialPort rmiSerialPort;
+   void sendMessage(byte[] buffer) throws IOException;
+   byte[] getMessage() throws IOException;
+}
 
-    static
+class SerialPortFactory
+{
+    static SerialPort createRMISerialPort() throws IOException
+    {
+        return new RMISerialPortImpl("rmi://dhcp-211219.mobile.uci.edu/SerialPort");
+    }
+/*
+    static SerialPort createCommAPISerialPort() throws IOException
+    {
+    }
+*/
+}
+
+class RMISerialPortImpl implements SerialPort
+{
+    private RMISerialPort rmiSerialPort;
+
+    RMISerialPortImpl(String address) throws IOException
     {
         try
         {
-            rmiSerialPort =
-                (RMISerialPort) Naming.lookup("rmi://dhcp-211219.mobile.uci.edu/SerialPort");
+            System.out.println("looking up " + address);
+            rmiSerialPort = (RMISerialPort) Naming.lookup(address);
+            System.out.println("got rmi address");
         }
-        catch (Exception e)
+        catch (NotBoundException e)
         {
-            System.err.println("ERROR: Cannot connect to serial port server");
-            e.printStackTrace();
+            IOException ioex = new IOException();
+            ioex.initCause(e);
+            throw ioex;
         }
     }
 
-    static void SendMessage(byte[] buffer) throws IOException
+    public void sendMessage(byte[] buffer) throws IOException
     {
         try
         {
-            rmiSerialPort.SendMessage(buffer, InetAddress.getLocalHost().getHostAddress());
+            rmiSerialPort.sendMessage(buffer, InetAddress.getLocalHost().getHostAddress());
         }
         catch (Exception e)
         {
@@ -37,11 +58,11 @@ class SerialPort
         }
     }
 
-    static byte[] GetMessage() throws IOException
+    public byte[] getMessage() throws IOException
     {
         try
         {
-            return rmiSerialPort.GetMessage(InetAddress.getLocalHost().getHostAddress());
+            return rmiSerialPort.getMessage(InetAddress.getLocalHost().getHostAddress());
         }
         catch (Exception e)
         {

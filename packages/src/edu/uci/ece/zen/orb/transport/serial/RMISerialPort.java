@@ -4,6 +4,6 @@ import java.rmi.*;
 
 public interface RMISerialPort extends Remote
 {
-    public void SendMessage(byte[] buffer, String id) throws RemoteException;
-    public byte[] GetMessage(String id) throws RemoteException;
+    void sendMessage(byte[] buffer, String id) throws RemoteException;
+    byte[] getMessage(String id) throws RemoteException;
 }
