@@ -85,8 +85,9 @@
     </target> 
 
     <target name="clean">
-      <delete dir="${zen.gendir}/${package.dir}"/>
-      <delete dir="${zen.classdir}/${package.dir}"/>
+      <delete file="${zen.libdir}/object_usuage.jar"/>
+      <delete dir="${zen.gendir}/demo/object"/>
+      <delete dir="${zen.classdir}/demo/object"/>
       <delete file="${package.dir}/client"/>
       <delete file="${package.dir}/server"/>
       <delete quiet="true"> 

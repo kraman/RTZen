@@ -30,7 +30,6 @@ public class Client extends RealtimeThread
         //super(null,new LTMemory(3000,300000));
     }
 */
-    public static int warmUp = 10000;
     public static int runNum = 10000;
 
     public void run()
@@ -50,7 +49,7 @@ public class Client extends RealtimeThread
             final org.omg.CORBA.Object object1 = orb.string_to_object(ior);
             System.out.println( "===================Connect to TestObject Server1" );
             final TestObject server1 = TestObjectHelper.unchecked_narrow(object1);
-            String name1 = server1.getName(); //name1 should be "Mary"
+            final String name1 = server1.getName(); //name1 should be "Mary"
             br.close();
 
             ior ="";
@@ -74,53 +73,61 @@ public class Client extends RealtimeThread
             System.out.println( "===================Connect to HandleObject server==========================" );
             final HandleObject server3 = HandleObjectHelper.unchecked_narrow(object3);
             br.close();
-             org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(object2); //objoutVal will be changed to object1 after the echoObject call
+
+            
              
             System.out.println("======Begin the warmUp loop to test on passing org.omg.CORBA.Object as the parameter======");
 
-            for (int i = 0; i<warmUp; i++){
 
-                //System.out.println("Begin to test on passing org.omg.CORBA.Object as the parameter...");
-                org.omg.CORBA.Object objinVal = object1;
-                objoutVal.value = object2; //objoutVal will be changed to object1 after the echoObject call
-                org.omg.CORBA.Object objretVal = server3.echoObject(objinVal, objoutVal); //objretVal should also be object1 after the echoObject call
 
-                TestObject server4 = TestObjectHelper.unchecked_narrow( objretVal );
-                TestObject server5 = TestObjectHelper.unchecked_narrow(objoutVal.value);                    if(server4.getName().equals(name1) && server5.getName().equals(name1)){ //Check if objoutVal and objretVal are set to correct value
-                    //System.out.println("Pass the test");
-                }
-                if(!server4.getName().equals(name1)){ //objretVal is not correct
+            // Create a scope for running requests in, so that we don't waste the scope we are in.
+            final int maxIter = 100;
+            ScopedMemory sm = new LTMemory(1024*1024, 1024*1024 );
+            Runnable r = new Runnable() {
+                public void run() {
+                    org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(object2); //objoutVal will be changed to object1 after the echoObject call
+                    int run = runNum < maxIter ? runNum : maxIter;
+                    for (int i = 0; i<run; i++){
 
-                    System.out.println("objretVal String Should be "+name1+" but get "+server4.getName());
+                        //System.out.println("Begin to test on passing org.omg.CORBA.Object as the parameter...");
+                        //System.out.println(i);
+
+                        org.omg.CORBA.Object objinVal = object1;
+                        objoutVal.value = object2; //objoutVal will be changed to object1 after the echoObject call
+                        org.omg.CORBA.Object objretVal = server3.echoObject(objinVal, objoutVal); //objretVal should also be object1 after the echoObject call
+
+                        //edu.uci.ece.zen.utils.Logger.printMemStats(7770);
+                        TestObject server4 = TestObjectHelper.unchecked_narrow( objretVal );
+                        //edu.uci.ece.zen.utils.Logger.printMemStats(7771);
+                        TestObject server5 = TestObjectHelper.unchecked_narrow(objoutVal.value);
+
+                        if(server4.getName().equals(name1) && server5.getName().equals(name1)){ //Check if objoutVal and objretVal are set to correct value
+                            //System.out.println("Pass the test");
+                        }
+                        if(!server4.getName().equals(name1)){ //objretVal is not correct
+
+                            // System.out.println("objretVal String Should be "+name1+" but get "+server4.getName());
+                        }
+                        if(!server5.getName().equals(name1)){ //objoutVal is not correct
+                            // System.out.println("objoutVal String Should be "+name1+" but get "+server5.getName());
+                        }
+                        //sleep(1000);
+                        //System.out.println("server4 release");
+                        server4._release();
+                        server5._release();
+                        //server3.releaseObjects();
+                        objoutVal.value = object2; //objoutVal will be changed to object1 after the echoObject call
+                    }
+
+
                 }
-                if(!server5.getName().equals(name1)){ //objoutVal is not correct
-                    System.out.println("objoutVal String Should be "+name1+" but get "+server5.getName());
-                }
-                objoutVal.value = object2; //objoutVal will be changed to object1 after the echoObject call
+            };
+            int repeat = runNum / maxIter;
+            for(int i = 0; i < repeat; ++i){
+                System.out.println(i);
+                sm.enter(r);
             }
 
-            System.out.println("======Begin the benchmark loop to test on passing org.omg.CORBA.Object as the parameter======");
-
-            for (int i = 0; i<runNum; i++){
-
-                //System.out.println("Begin to test on passing org.omg.CORBA.Object as the parameter...");
-                org.omg.CORBA.Object objinVal = object1;
-                objoutVal.value = object2; //objoutVal will be changed to object1 after the echoObject call
-                org.omg.CORBA.Object objretVal = server3.echoObject(objinVal, objoutVal); //objretVal should also be object1 after the echoObject call
-
-                TestObject server4 = TestObjectHelper.unchecked_narrow( objretVal );
-                TestObject server5 = TestObjectHelper.unchecked_narrow(objoutVal.value);                    if(server4.getName().equals(name1) && server5.getName().equals(name1)){ //Check if objoutVal and objretVal are set to correct value
-                    //System.out.println("Pass the test");
-                }
-                if(!server4.getName().equals(name1)){ //objretVal is not correct
-
-                    System.out.println("objretVal String Should be "+name1+" but get "+server4.getName());
-                }
-                if(!server5.getName().equals(name1)){ //objoutVal is not correct
-                    System.out.println("objoutVal String Should be "+name1+" but get "+server5.getName());
-                }
-                objoutVal.value = object2; //objoutVal will be changed to object1 after the echoObject call
-            }
             System.exit(0); //shutdown() hasn't been implemented yet
         }
         catch (Exception e)
