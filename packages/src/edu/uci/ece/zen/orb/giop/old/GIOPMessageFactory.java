@@ -63,9 +63,9 @@ public final class GIOPMessageFactory
                 messageSize += ((short)(header[8] & 0xFF)) << 0;
             }
             nextMessageIsFragment=false;
-            System.err.println( "----GIOP Message Header ----" );
-            System.err.write( header , 0 , 12 );
-            System.err.println( "---- ----" );
+            ZenProperties.logger.log("----GIOP Message Header ----");
+            ZenProperties.logger.log(new String(header, 0, 12));
+            ZenProperties.logger.log("---- ----");
 
             
             buffer.appendFromStream( in , messageSize );

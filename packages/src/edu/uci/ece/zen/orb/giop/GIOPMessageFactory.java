@@ -36,9 +36,10 @@ public final class GIOPMessageFactory
             // Read the GIOP message (including any request/reply/etc headers) into the variable "buffer"
             buffer.setEndian( mainMsgHdr.isLittleEndian );
             buffer.appendFromStream( in , mainMsgHdr.messageSize );
-            if(ZenProperties.devDbg) System.out.println("In GIOPMessageFactory, the message size is "+mainMsgHdr.messageSize);
 
-            if(ZenProperties.devDbg) System.err.println("Inside GIOPMessageFactory and mainMsgHdr: " + mainMsgHdr.toString() + " and giopMajorVersion: " + mainMsgHdr.giopMajorVersion + " and minorversion: " + mainMsgHdr.giopMinorVersion + " and messageType: " + mainMsgHdr.messageType);
+			ZenProperties.logger.log("GIOPMessageFactory", "The message size is " + mainMsgHdr.messageSize);
+
+            ZenProperties.logger.log("GIOPMessageFactory", "mainMsgHdr: " + mainMsgHdr.toString() + " and giopMajorVersion: " + mainMsgHdr.giopMajorVersion + " and minorversion: " + mainMsgHdr.giopMinorVersion + " and messageType: " + mainMsgHdr.messageType);
             switch( mainMsgHdr.giopMajorVersion ){                   //GIOP major version (byte 4)
                 case 1:
                     switch( mainMsgHdr.giopMinorVersion ){           //GIOP minor version (byte 5)

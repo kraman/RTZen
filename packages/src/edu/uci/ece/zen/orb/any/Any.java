@@ -6,6 +6,7 @@ package edu.uci.ece.zen.orb.any;
 
 //import org.omg.CORBA.*;
 import edu.uci.ece.zen.orb.*; 
+import edu.uci.ece.zen.utils.*; 
 
 /**
  * Implement the CORBA Any class, proxying off to strategies that
@@ -73,13 +74,20 @@ public class Any
             anyStrategy.setOrb((edu.uci.ece.zen.orb.ORB) _orb);
         }
         catch (InstantiationException ie) {
-            System.err.println("edu.uci.ece.zen.orb.any.Any had instantiation exception while instantiating the class set in the zen.properties file for the property name \"zen.any.anyStrategy\".  That property led to the strategy class being set to \"" + currentAnyStrategyClass + "\"");
-            System.err.println(ie);
-            ie.printStackTrace();
+			ZenProperties.logger.log(
+				Logger.WARN,
+				getClass(),
+				"<init>",
+				"InstantiationException while instantiating the class set in the zen.properties file for the property name \"zen.any.anyStrategy\". That property led to the strategy class being set to \"" + currentAnyStrategyClass + "\"",
+				ie);
         }
         catch (IllegalAccessException iae) {
-            System.err.println("edu.uci.ece.zen.orb.any.Any had IllegalAccessException while instantiating the class set in the zen.properties file for the property name \"zen.any.anyStrategy\".  That property led to the strategy class being set to \"" + currentAnyStrategyClass + "\"");
-            iae.printStackTrace();
+			ZenProperties.logger.log(
+				Logger.WARN,
+				getClass(),
+				"<init>",
+				"IllegalAccessException while instantiating the class set in the zen.properties file for the property name \"zen.any.anyStrategy\". That property led to the strategy class being set to \"" + currentAnyStrategyClass + "\"",
+				iae);
         }
 
     }
@@ -106,8 +114,12 @@ public class Any
             currentAnyStrategyClass = Class.forName(desiredClassName);
         }
         catch (ClassNotFoundException cnfe) {
-            System.err.println("edu.uci.ece.zen.orb.any.Any could not find the any strategy set in the zen.properties file for the property name \"zen.any.anyStrategy\".  That property was found to be set to \"" + _newStrategy + "\"");
-            cnfe.printStackTrace();
+			ZenProperties.logger.log(
+			Logger.SEVERE,
+			Any.class,
+			"setStrategy(String)",
+			"Could not find the Any strategy set in the zen.properties file for the property name \"zen.any.anyStrategy\". That property was found to be set to \"" + _newStrategy + "\"",
+			cnfe);
         }
 
         // Next two lines were just for debugging

@@ -4,8 +4,8 @@
 
 package edu.uci.ece.zen.orb;
 
-
 import org.omg.CORBA.TCKind;
+import edu.uci.ece.zen.utils.*;
 
 /**
  * ZEN implementation of CORBA TypeCodes.
@@ -1170,8 +1170,11 @@ public class TypeCode extends org.omg.CORBA.TypeCode {
         }
         catch (org.omg.CORBA.TypeCodePackage.BadKind bk) {
             // Does not happen according to JacORB's org.jacorb.orb.TypeCode#originalType() method
-            System.err.println("TypeCode#originalType BadKind exception occurred");
-            bk.printStackTrace();
+			ZenProperties.logger.log(
+				Logger.WARN,
+				TypeCode.class,
+				"originalType(org.omg.CORBA.TypeCode)",
+				bk);
         }
         return tc_temp;
     }

@@ -563,7 +563,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             default:
                 ZenProperties.logger.log(
                     Logger.WARN,
-                    "edu.uci.ece.zen.orb.CDROutputStream",
+                    getClass(),
                     "write_Typecode()",
                     "Unwritten method in CDROutputStream for TypeCode");
                 /*
@@ -587,12 +587,18 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             } // end of: switch(value_kind)
         }
         catch (org.omg.CORBA.TypeCodePackage.BadKind bk) {
-            System.err.println("CDROutputStream#write_TypeCode threw BadKind exception");
-            bk.printStackTrace();
+			ZenProperties.logger.log(
+				Logger.WARN,
+				getClass(),
+				"write_TypeCode(org.omg.CORBA.TypeCode)",
+				bk);
         }
         catch (org.omg.CORBA.TypeCodePackage.Bounds b) {
-            System.err.println("CDROutputStream#write_TypeCode threw BadKind exception");
-            b.printStackTrace();
+			ZenProperties.logger.log(
+				Logger.WARN,
+				getClass(),
+				"write_TypeCode(org.omg.CORBA.TypeCode)",
+				b);
         }
     }
 
@@ -697,10 +703,18 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         // These exceptions should never really happen, but are
         // required for the union's accessor methods
         catch (org.omg.CORBA.TypeCodePackage.BadKind bk) {
-            System.err.println("BadKind exception occurred in CDROutputStream.write_value_union");
+			ZenProperties.logger.log(
+				Logger.WARN,
+				CDROutputStream.class,
+				"transcribe_union(org.omg.CORBA.TypeCode, org.omg.CORBA.portable.InputStream, org.omg.CORBA.portable.OutputStream)",
+				bk);
         }
         catch (org.omg.CORBA.TypeCodePackage.Bounds b) {
-            System.err.println("Bounds exception occurred in CDROutputStream.write_value_union");
+			ZenProperties.logger.log(
+				Logger.WARN,
+				CDROutputStream.class,
+				"transcribe_union(org.omg.CORBA.TypeCode, org.omg.CORBA.portable.InputStream, org.omg.CORBA.portable.OutputStream)",
+				b);
         }
     }
 
@@ -936,8 +950,12 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
                 for (int i = 0; i < length; i++)
                     write_value(tc.content_type(), in);
             } catch (org.omg.CORBA.TypeCodePackage.BadKind b) {
-                System.err.println("CDRInputStream#write_value threw BadKind exception for array");
-                b.printStackTrace();
+				ZenProperties.logger.log(
+					Logger.WARN,
+					getClass(),
+					"write_value(org.omg.CORBA.TypeCode, org.omg.CORBA.portable.InputStream)",
+					"BadKind exception for array",
+					b);
            }
             break;
 
@@ -950,8 +968,12 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
                     write_value(tck, in);
                 }
             } catch (org.omg.CORBA.TypeCodePackage.BadKind b) {
-                System.err.println("CDROutputStream#write_value: Unable to write sequence");
-                b.printStackTrace();
+				ZenProperties.logger.log(
+					Logger.WARN,
+					getClass(),
+					"write_value(org.omg.CORBA.TypeCode, org.omg.CORBA.portable.InputStream)",
+					"Unable to write sequence",
+					b);
             }
             break;
 
@@ -965,11 +987,19 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
                 for (int i = 0; i < tc.member_count(); i++)
                     write_value(tc.member_type(i), in);
             } catch (org.omg.CORBA.TypeCodePackage.BadKind b) {
-                System.err.println("CDROutputStream#write_value: Unable to write struct");
-                b.printStackTrace();
+				ZenProperties.logger.log(
+					Logger.WARN,
+					getClass(),
+					"write_value(org.omg.CORBA.TypeCode, org.omg.CORBA.portable.InputStream)",
+					"Unable to write struct",
+					b);
             } catch (org.omg.CORBA.TypeCodePackage.Bounds b) {
-                System.err.println("CDROutputStream#write_value: Unable to write struct");
-                b.printStackTrace();
+				ZenProperties.logger.log(
+					Logger.WARN,
+					getClass(),
+					"write_value(org.omg.CORBA.TypeCode, org.omg.CORBA.portable.InputStream)",
+					"Unable to write struct",
+					b);
             }
             // recursiveTCStack.pop();
             break;
@@ -991,7 +1021,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
         default:
             ZenProperties.logger.log(
                 Logger.WARN,
-                "edu.uci.ece.zen.orb.CDROutputStream",
+                getClass(),
                 "write_value()",
                 "Unwritten method in CDROutputStream for Valuetype");
             break;
