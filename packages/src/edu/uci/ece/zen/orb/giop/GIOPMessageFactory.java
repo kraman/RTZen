@@ -15,6 +15,7 @@ import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
+import javax.realtime.*;
 
 /**
  * This class is a factory for creating GIOP messages for marshalling or
@@ -171,9 +172,9 @@ public final class GIOPMessageFactory {
             }
         } while (false);
         ZenProperties.logger.log("GMF parse stream 1");
-        ret
-                .setTransport((javax.realtime.ScopedMemory) javax.realtime.MemoryArea
-                        .getMemoryArea(trans));
+        ScopedMemory transportScope = (ScopedMemory) javax.realtime.MemoryArea.getMemoryArea(trans);
+        transportScope.setPortal( trans );
+        ret.setTransport( transportScope );
         ZenProperties.logger.log("GMF parse stream 2");
         return ret;
     }

@@ -76,7 +76,7 @@
             <include name="src/edu/uci/ece/zen/utils/Logger.java"/>
     </patternset>
 
-    <target name="all" depends="idl, compile, lib, jRate, naming_service"/>
+    <target name="all" depends="idl, compile, lib, jRate, naming_service, compile_perf"/>
 
     <target name="idl">
         <echo message="Compiling IDL files"/>
@@ -150,6 +150,10 @@
         />
     </target>
 
+    <target name="compile_perf" unless="compiler_jdk">
+        <ant antfile="${zen.srcdir}/perf/cPrint/build.xml"/>
+    </target>
+   
     <target name="clean">
         <echo message="Removing generated directory all its contents"/>
         <delete failonerror="false" dir="${zen.srcdir}/generated"/>

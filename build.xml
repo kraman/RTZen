@@ -29,10 +29,9 @@
 
    <target name="packages">
       <ant antfile="${zen.srcdir}/build.xml"/>
-      <ant antfile="${zen.srcdir}/perf/cPrint/build.xml"/>
       <antcall target="track_size"/>
    </target>
-   
+
    <target name="clover" depends="init">
       <ant antfile="${zen.srcdir}/build.xml" target="clover"/>
    </target>   
@@ -66,7 +65,7 @@ public class VersionStamp{
 }
         </echo>
         <!--Override if on a unix system and svn is present-->
-        <exec executable="./composeVersion.sh">
+        <exec executable="./composeVersion.sh" os="Linux">
             <arg line="${zen.build.runtime}"/>
         </exec>
     </target>
