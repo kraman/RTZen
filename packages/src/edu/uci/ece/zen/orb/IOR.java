@@ -3,6 +3,9 @@ package edu.uci.ece.zen.orb;
 import javax.realtime.InaccessibleAreaException;
 import javax.realtime.MemoryArea;
 
+import org.omg.CORBA.Policy;
+
+import edu.uci.ece.zen.poa.POA;
 import edu.uci.ece.zen.utils.ByteArrayCache;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
@@ -99,15 +102,16 @@ public class IOR {
      * @return The CORBA object.
      */
     public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID,
-            FString objKey, MemoryArea clientArea, WriteBuffer taggedComponents, int tcLen,
-            int threadPoolId)
+            FString objKey, MemoryArea clientArea, POA poa, int threadPoolId)
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea
                 .newInstance(org.omg.IOP.IOR.class);
         ior.type_id = typeID;
-        ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, clientArea, taggedComponents, tcLen, threadPoolId);
+        
+        // *** Start modifying here.
+        ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, clientArea, clientExposedPolicies, threadPoolId);  
         ZenProperties.logger.log("makeCORBAObject 2");
 
         ObjectImpl objectImpl = (ObjectImpl) clientArea

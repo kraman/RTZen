@@ -83,7 +83,8 @@ public class ThreadPool {
     }
 
     private int statCount = 0;
-
+    
+    // TODO this method should indicate if we have an error.     
     public void execute(RequestMessage task, short minPriority, short maxPriority) {
         statCount++;
         if (statCount % ZenBuildProperties.MEM_STAT_COUNT == 0) {
@@ -91,9 +92,22 @@ public class ThreadPool {
         }
 
         //TODO: Have to improve performance here
-        for (int i = 0; i < lanes.length; i++) {
-            if (lanes[i].getPriority() >= minPriority && lanes[i].getPriority() <= maxPriority) 
-		lanes[i].execute(task);
+        boolean laneFound = false;
+        int i = 0;
+        for (; i < lanes.length; i++) {
+            short lanePriority = lanes[i].getPriority(); 
+            if ( lanePriority >= minPriority && lanePriority <= maxPriority) {
+                laneFound = true;
+            }
+        }
+        
+        if (laneFound) {
+            lanes[i].execute(task);    
+        }
+        else {
+            ZenProperties.logger.log(Logger.WARN, getClass(), "execute(...)", 
+                                     "No lane matched the request priority.");
+            lanes[0].execute(task);
         }
     }
 }

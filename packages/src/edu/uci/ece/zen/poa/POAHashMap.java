@@ -16,15 +16,18 @@ public class POAHashMap {
 
     private FString key;
 
-    private org.omg.PortableServer.Servant value;
+    private Servant value;
 
-    public POAHashMap() {
-    }
+     /** the priority of the servant */
+    private int priority; 
 
-    public void init(FString oid, Servant servant) 
-    {
+    public POAHashMap() {}
+
+    public void init(FString oid, Servant servant, int priority) 
+    {        
         this.value = servant;
         this.key = oid;
+        this.priority = priority;
     }
 
     /**
@@ -118,5 +121,14 @@ public class POAHashMap {
      */
     public FString objectID() {
         return this.key;
+    }
+    
+    /**
+     * Returns the priority of the servant.
+     * @return the priority.
+     */
+    public int getPriority() 
+    {
+        return priority;
     }
 }
