@@ -16,12 +16,29 @@
    <target name="all" depends="init, packages"/>
    <target name="cleanBuild" depends="clean, all"/>
    <target name="init">
+   
+      <condition property="zbp" value=" ">
+        <not>
+          <available file="zen-build.properties"/>
+        </not>
+      </condition>  
+      
+      <antcall target="check_zbp"/>
       <ant antfile="configure.xml"/>
       <property file="zen-build-bootstrap.properties"/>
       <property file="zen-build.properties"/>
       <available file="TrackSize.class" property="track_size_prop" />
       <antcall target="version_update"/>
    </target>
+   
+   <target name="check_zbp" if="zbp">
+        <fail>
+            *************************************** NOTICE ******************************************
+            You need to create the file zen-build.properties. Copy it from to zen-build_properties.
+            Also make sure that the correct properties are set in that file.
+            *****************************************************************************************
+        </fail>
+   </target>   
 
    <target name="packages">
       <ant antfile="${zen.srcdir}/build.xml"/>
