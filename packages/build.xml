@@ -75,7 +75,7 @@
             <include name="src/edu/uci/ece/zen/utils/Logger.java"/>
     </patternset>
 
-    <target name="all" depends="idl, compile, lib, jRate"/>
+    <target name="all" depends="idl, compile, lib, jRate, naming_service"/>
 
     <target name="idl">
         <echo message="Compiling IDL files"/>
@@ -125,6 +125,10 @@
                <patternset refid="sources"/>
             </fileset>
         </jRate>
+    </target>
+    
+    <target name="naming_service" if="zen.naming">
+        <ant antfile="${zen.srcdir}/src/edu/uci/ece/zen/services/naming/build.xml"/>
     </target>
 
     <target name="lib">
