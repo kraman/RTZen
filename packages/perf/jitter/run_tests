@@ -168,8 +168,7 @@ function startServer(){
         $EXEC_CMD&
         #echo $! > $STOPFNAME
         elif [ $1 -eq 4 ]; then
-                # start ZEN server in OVM interpreter
-                EXEC_CMD="sh ./OVMServer_INT/run.sh $1"
+                EXEC_CMD="sh run_server_int.sh $1"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD&
@@ -190,7 +189,7 @@ function startServer(){
                  echo $! > $STOPFNAME
          elif [ $1 -eq 50 ]; then
                 # start ZEN server remote in OVM ahead-of-time compiler
-                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 5$1"
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 5 $1"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD&
@@ -344,12 +343,12 @@ function startClient(){
                 echo $EXEC_CMD
                 $EXEC_CMD
         elif [ $1 -eq 4 ]; then
-                EXEC_CMD="sh ./OVMClient_INT/run_client.sh $2 $3"
+                EXEC_CMD="sh run_client_int.sh $2 $3"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD
         elif [ $1 -eq 5 ]; then
-                EXEC_CMD="sh ./OVMClient_NAT/run_client.sh $2 $3"
+                EXEC_CMD="sh ./OVMClient_NAT/run.sh $2 $3"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD
@@ -410,7 +409,7 @@ if [ $OPERATION == "both" -o $OPERATION == "client" ]; then
 			startServer $SERVERTYPE
 			
 			# delay a bit to give the server a chance
-			sleep 5
+			sleep 100 
 		fi
 
 		# startup the client (will terminate automatically after finishing)

@@ -21,7 +21,7 @@ import java.io.FileWriter;
 public class OVMClient extends RealtimeThread
 {
 	public static final int warmUpIterations =   1000;
-	public static final int iterations       = 10000;
+	public static final int iterations       = 1000;
 
 	public static int seqSize = 4; //default value of seqSize, can change by arguments
     
@@ -69,47 +69,47 @@ public class OVMClient extends RealtimeThread
                 RelativeTime frequency = clock.getResolution();
                 
 
-                System.out.println("The time frequency is "+((RationalTime)frequency).getFrequency());
+		//  System.out.println("The time frequency is "+((RationalTime)frequency).getFrequency());
 
-        
-		
-				int i, j, k;
-				long start, end;
-				if ( testType == 0) {
-					// calibration loop for the time stamp measurement itself
-					System.out.println( "====================== Performance warmup =================================" );
-					for( i=0;i<warmUpIterations;i++ )
-						//NativeTimeStamp.RecordTime(21);
 
-					System.out.println( "====================== Performance benchmark Check Overhead  ====================" );
-					// repeat the call 
-					start = System.currentTimeMillis();
 
-					// run the time stamp taker in the loop to measure
-					// loop and time stamp taker overhead
-					//NativeTimeStamp.RecordTime(22);
-					for(j=0; j<iterations;j++ ) {
-						//NativeTimeStamp.RecordTime(20);
-						timeStampsArray[j] = clock.getTime();
-                        //NativeTimeStamp.RecordTime(21);
-					}
-					//NativeTimeStamp.RecordTime(22);
-					end = System.currentTimeMillis();
+		int i, j, k;
+		long start, end;
+		if ( testType == 0) {
+			// calibration loop for the time stamp measurement itself
+			System.out.println( "====================== Performance warmup =================================" );
+			for( i=0;i<warmUpIterations;i++ )
+				//NativeTimeStamp.RecordTime(21);
 
-					// keep the old style measurements so we can cross verify the numbers
-					System.err.println("Avg latency [ms]: " + ((end-start)/ ((float) iterations)) );
-					
-				} else if ( testType == 1 ) {
+				System.out.println( "====================== Performance benchmark Check Overhead  ====================" );
+			// repeat the call 
+			start = System.currentTimeMillis();
 
-					byte inOctetSeq[] = new byte[seqSize];
-				
-					/* preinit the array */
-					for ( j = 0; j < seqSize; j++ ) {
-						inOctetSeq[j] = (byte) (j % 256);
-					}
+			// run the time stamp taker in the loop to measure
+			// loop and time stamp taker overhead
+			//NativeTimeStamp.RecordTime(22);
+			for(j=0; j<iterations;j++ ) {
+				//NativeTimeStamp.RecordTime(20);
+				timeStampsArray[j] = clock.getTime();
+				//NativeTimeStamp.RecordTime(21);
+			}
+			//NativeTimeStamp.RecordTime(22);
+			end = System.currentTimeMillis();
 
-					
-					System.out.println( "====================== Performance warmup =================================" );
+			// keep the old style measurements so we can cross verify the numbers
+			System.err.println("Avg latency [ms]: " + ((end-start)/ ((float) iterations)) );
+
+		} else if ( testType == 1 ) {
+
+			byte inOctetSeq[] = new byte[seqSize];
+
+			/* preinit the array */
+			for ( j = 0; j < seqSize; j++ ) {
+				inOctetSeq[j] = (byte) (j % 256);
+			}
+
+
+			System.out.println( "====================== Performance warmup =================================" );
 					for( i=0;i<warmUpIterations;i++ ) {
 						server.putOctetSeq(inOctetSeq);
 						//NativeTimeStamp.RecordTime(20);
