@@ -1,5 +1,3 @@
-package demo.serial_transport;
-
 public class GroundStationImpl extends GroundStationPOA
 {
     public void sendWayPoint(short id, WayPoint[] noFlyZone)

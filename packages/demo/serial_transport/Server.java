@@ -1,5 +1,3 @@
-package demo.serial_transport;
-
 import java.io.*;
 import javax.realtime.*;
 

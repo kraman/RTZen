@@ -12,11 +12,11 @@
     </target>
 
     <target name="server">
-        <demo.run classname="demo.serial_transport.Server"/>
+        <demo.run classname="Server"/>
     </target>
 
     <target name="client">
-        <demo.run classname="demo.serial_transport.Client"/>
+        <demo.run classname="Client"/>
     </target>
 
     <target name="clean">

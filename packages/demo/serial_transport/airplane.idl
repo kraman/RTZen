@@ -1,19 +1,13 @@
-module demo
+struct WayPoint
 {
-	module serial_transport
-	{
-        struct WayPoint
-        {
-            long latitude;
-            long longitude;
-            short altitude;
-        };
+    long latitude;
+    long longitude;
+    short altitude;
+};
 
-        typedef WayPoint NoFlyZone[4];
+typedef WayPoint NoFlyZone[4];
 
-		interface GroundStation
-		{
-            oneway void sendWayPoint(in short id, in NoFlyZone noFlyZone);
-        };
-	};
+interface GroundStation
+{
+    oneway void sendWayPoint(in short id, in NoFlyZone noFlyZone);
 };
