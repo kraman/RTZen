@@ -1,4 +1,4 @@
-package test.cdr;
+package unit.test.cdr;
 
 import org.omg.CORBA.*;
 

@@ -1,4 +1,4 @@
-package test.cdr;
+package unit.test.cdr;
 
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.*;
@@ -18,7 +18,7 @@ import java.io.FileWriter;
 public class CDRTestServer extends RealtimeThread{
 
 	public static void main( String[] args){
-		RealtimeThread rt = (CDRTestServer) (new RealtimeThread(null,null,null,new LTMemory(3000,300000),null,null) );
+		CDRTestServer rt = (CDRTestServer) (new RealtimeThread(null,null,null,new LTMemory(3000,300000),null,null) );
 		rt.start();
 	}
 
