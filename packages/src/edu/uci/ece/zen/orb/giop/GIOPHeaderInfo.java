@@ -12,31 +12,16 @@ import edu.uci.ece.zen.utils.Logger;
  * @author Bruce Miller
  */
 public class GIOPHeaderInfo {
-    boolean nextMessageIsFragment = false;
+    public boolean nextMessageIsFragment = false;
 
-    int messageSize = 0;
+    public int messageSize = 0;
 
-    boolean isLittleEndian;
+    public boolean isLittleEndian;
 
-    byte giopMajorVersion;
+    public byte giopMajorVersion;
 
-    byte giopMinorVersion;
+    public byte giopMinorVersion;
 
-    byte messageType;
+    public byte messageType;
 
-}
-
-class GIOPHeaderInfoHelper {
-    private static GIOPHeaderInfo ghi;
-
-    public static GIOPHeaderInfo instance() {
-        try {
-            if (ghi == null) ghi = (GIOPHeaderInfo) ImmortalMemory.instance()
-                    .newInstance(GIOPHeaderInfo.class);
-            return ghi;
-        } catch (Exception e) {
-            ZenProperties.logger.log(Logger.WARN, GIOPHeaderInfoHelper.class, "instance", e);
-        }
-        return null;
-    }
 }

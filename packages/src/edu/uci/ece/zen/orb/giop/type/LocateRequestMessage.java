@@ -11,7 +11,7 @@ import edu.uci.ece.zen.utils.ReadBuffer;
  * 
  * @author bmiller
  */
-public abstract class LocateRequestMessage extends GIOPMessage {
+public abstract class LocateRequestMessage extends RequestMessage {
     public LocateRequestMessage() {
     }
 

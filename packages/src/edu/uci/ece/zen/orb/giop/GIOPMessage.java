@@ -41,6 +41,8 @@ public abstract class GIOPMessage {
     public abstract void marshal(CDROutputStream out);
 
     public abstract int getGiopVersion();
+    
+    public abstract int getGiopType();
 
     public CDRInputStream getCDRInputStream() {
         return istream;

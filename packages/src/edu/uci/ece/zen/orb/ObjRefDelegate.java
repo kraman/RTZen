@@ -27,6 +27,8 @@ import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.FString;
 
 public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
+    
+    public int giopType;
 
     private static Queue objRefDelegateCache;
     static {

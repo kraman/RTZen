@@ -36,6 +36,7 @@ public final class GIOPMessageFactory {
         if( trans.giopType == edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE ){
             return edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.parseStream( orb , trans );
         }
+        return null;
     }
 
     /**
@@ -72,7 +73,7 @@ public final class GIOPMessageFactory {
      */
     private static void collectFragmentsv1_2(Transport trans, GIOPHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer, int requestId) throws java.io.IOException {
         if( trans.giopType == edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE ){
-            edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.collectFragmentsv1_2( trans , headerInfo , firstFragmentBuffer );
+            edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.collectFragmentsv1_2( trans , headerInfo , firstFragmentBuffer , requestId );
         }
     }
 
@@ -98,27 +99,30 @@ public final class GIOPMessageFactory {
      * </p>
      */
     public static void constructMessage(ClientRequest req, int messageId, CDROutputStream out) {
-        if( trans.giopType == edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE ){
+        if( req.del.giopType == edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE ){
             edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.constructMessage( req , messageId , out );
         }
     }
 
     public static CDROutputStream constructReplyMessage(ORB orb, RequestMessage req) {
-        if( trans.giopType == edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE ){
+        if( req.getGiopType() == edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE ){
             return edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.constructReplyMessage( orb , req );
         }
+        return null;
     }
      
     public static CDROutputStream constructLocateReplyMessage(ORB orb, edu.uci.ece.zen.orb.giop.type.LocateRequestMessage req)
     {
-        if( trans.giopType == edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE ){
+        if( req.getGiopType() == edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE ){
             return edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.constructLocateReplyMessage( orb , req );
         }
+        return null;
     }
     
     public static CDROutputStream constructExceptionMessage(ORB orb, RequestMessage req) {
-        if( trans.giopType == edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE ){
+        if( req.getGiopType() == edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE ){
             return edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.constructExceptionMessage( orb , req );
         }
+        return null;
     }
 }

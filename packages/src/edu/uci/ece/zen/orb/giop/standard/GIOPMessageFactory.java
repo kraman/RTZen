@@ -203,7 +203,7 @@ public final class GIOPMessageFactory {
      *            ReadBuffer of the first fragment in set of fragments from a
      *            v1_1 Request or Reply
      */
-    private static void collectFragmentsv1_1(Transport trans,
+    public static void collectFragmentsv1_1(Transport trans,
             GIOPHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer)
             throws java.io.IOException {
 
@@ -237,7 +237,7 @@ public final class GIOPMessageFactory {
      *            ReadBuffer of the first fragment in set of fragments from a
      *            v1_2 Request or Reply
      */
-    private static void collectFragmentsv1_2(Transport trans,
+    public static void collectFragmentsv1_2(Transport trans,
             GIOPHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer,
             int requestId) throws java.io.IOException {
         // Read the fragment header

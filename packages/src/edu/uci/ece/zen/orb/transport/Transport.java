@@ -21,10 +21,10 @@ public abstract class Transport implements Runnable {
 
     private MessageProcessor messageProcessor;
     
-    public int giopType;
-
     public Object objectTable[]; //used to store misc
 
+    public int giopType;
+    
     // objects with
     // 1instance
 
@@ -49,6 +49,10 @@ public abstract class Transport implements Runnable {
         if (ZenProperties.dbg) ZenProperties.logger.log("Transport being created "
                 + RealtimeThread.getCurrentMemoryArea());
         giopType = edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE;
+    }
+    
+    public void setGIOPType( int type ){
+        this.giopType = type;
     }
 
     public byte[] getGIOPHeader() {
