@@ -139,7 +139,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
     }
 
     public void initAsRootPOA(final edu.uci.ece.zen.orb.ORB orb) {
-        
+
         this.init(orb, rootPoaString, null, null, null);
     }
 
@@ -966,9 +966,10 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
      * To store this references may cause IllegalAccessError. They come from POAImpl scope.
      * @return policies exposed to the client.
      */
-    public /*Policy[]*/ CDROutputStream getClientExposedPolicies()
+    public /*Policy[]*/ CDROutputStream getClientExposedPolicies(short priority)
     {
         POARunnable r = new POARunnable(POARunnable.GET_CLIENT_EXPOSED_POLICIES);
+        r.setPriority(priority);
         executeInPOAMemoryArea(r);
         //return (Policy[]) r.retVal;
         return (CDROutputStream)r.retVal;

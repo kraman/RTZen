@@ -62,9 +62,9 @@ public class POARunnable implements Runnable {
     public static final int ID_TO_REFERENCE = 20;
 
     public static final int ACTIVATE_OBJECT_WITH_PRIORITY = 21;
-    
+
     public static final int GET_CLIENT_EXPOSED_POLICIES = 22;
-    
+
     public static final int NoException = 0;
 
     public static final int InvalidPolicyException = 1;
@@ -86,9 +86,9 @@ public class POARunnable implements Runnable {
     public static final int ForwardRequestException = 9;
 
     public static final int InternalException = 10;
-    
+
     public static final int NoServant = 11;
-    
+
     public static final int SERVANT_ALREADY_ACTIVE = 12;
 
     private int operation;
@@ -98,21 +98,26 @@ public class POARunnable implements Runnable {
     public int exception; // add getException();
 
     public Object retVal;
-    
+
     private ORB orb;
+    private short priority; //kludge: this is an arg, but don't want to create short holder
 
     public POARunnable(int op) {
         operation = op;
         args = new Vector();
     }
-    
+
     public POARunnable(int op, ORB orb) {
         this(op);
         this.orb = orb;
-    }    
+    }
 
     public void addParam(Object arg) {
         args.addElement(arg);
+    }
+
+    public void setPriority(short pr) {
+        priority = pr;
     }
 
     public void run() {
@@ -156,8 +161,8 @@ public class POARunnable implements Runnable {
                             (MemoryArea) args.elementAt(1), this);
                     break;
                 case ACTIVATE_OBJECT:
-                    pimpl.activate_object((Servant) args.elementAt(0), 
-                            (MemoryArea) args.elementAt(1), 
+                    pimpl.activate_object((Servant) args.elementAt(0),
+                            (MemoryArea) args.elementAt(1),
                             this);
                     break;
                 case ACTIVATE_OBJECT_WITH_ID:
@@ -166,8 +171,8 @@ public class POARunnable implements Runnable {
                             .elementAt(2), this);
                     break;
                 case ACTIVATE_OBJECT_WITH_PRIORITY:
-                    pimpl.activate_object_with_priority((Servant) args.elementAt(0), 
-                            ((Short) args.elementAt(1)).intValue(), (MemoryArea) args.elementAt(2), 
+                    pimpl.activate_object_with_priority((Servant) args.elementAt(0),
+                            ((Short) args.elementAt(1)).intValue(), (MemoryArea) args.elementAt(2),
                             this);
                     break;
                 case DEACTIVATE_OBJECT:
@@ -207,33 +212,33 @@ public class POARunnable implements Runnable {
                 case GET_POLICY_LIST:
                     pimpl.policy_list((MemoryArea) args.elementAt(0), this);
                     break;
-                    
+
                 case GET_CLIENT_EXPOSED_POLICIES:
                     if(pimpl.getClientExposedPolicies().length == 0){
                         //System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
-                    
+
                     }else{
                         CDROutputStream out = CDROutputStream.instance();
-                        out.init(orb);   
-                        out.write_boolean(false); //BIGENDIAN       
+                        out.init(orb);
+                        out.write_boolean(false); //BIGENDIAN
                         Policy[] policies = pimpl.getClientExposedPolicies();
                         int length = policies.length;
                         out.write_ulong(length);
                         for(int i = 0; i < length; ++i){
                             if(policies[i] instanceof
                                     org.omg.RTCORBA.PriorityModelPolicy){
-                                
+
                                 edu.uci.ece.zen.orb.transport.Acceptor.
                                         marshalPriorityModelValue(
                                         (org.omg.RTCORBA.PriorityModelPolicy)
-                                        policies[i], orb, out);
-                                        
+                                        policies[i], orb, out, priority);
+
                             }else{
-                                ZenProperties.logger.log(Logger.FATAL, getClass(), 
+                                ZenProperties.logger.log(Logger.FATAL, getClass(),
                                         "run()", "Unsupported client-exposed policy" );
                             }
                         }
-                        
+
                         //PolicyListHelper.write(out, pimpl.getClientExposedPolicies());
                         retVal = out;
                     }

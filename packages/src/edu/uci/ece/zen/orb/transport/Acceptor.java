@@ -145,12 +145,12 @@ public abstract class Acceptor {
         //holder._write(out);
 
         //org.omg.CORBA.PolicyListHelper.write(out, policies);
-        
-        CDROutputStream out = poa.getClientExposedPolicies();
-        
+
+        CDROutputStream out = poa.getClientExposedPolicies((short)priority);
+
         if(out == null)
             return null;
-        
+
         TaggedComponent tc = new TaggedComponent();
         tc.tag = org.omg.IOP.TAG_POLICIES.value;
         tc.component_data = new byte[(int) out.getBuffer().getLimit()];
@@ -201,7 +201,8 @@ public abstract class Acceptor {
     }
 
     public static PolicyValue marshalPriorityModelValue(
-            org.omg.RTCORBA.PriorityModelPolicy pol, ORB orb, CDROutputStream outRet) {
+            org.omg.RTCORBA.PriorityModelPolicy pol, ORB orb, CDROutputStream outRet,
+            short priority) {
         ZenProperties.logger.log("createPriorityModelValue()");
         PolicyValue pv = new PolicyValue();
         pv.ptype = priorityModel;
@@ -211,7 +212,10 @@ public abstract class Acceptor {
         out.write_boolean(false); //BIGENDIAN
 
         out.write_long(pol.priority_model().value());
-        out.write_short(pol.server_priority());
+        //out.write_short(pol.server_priority());
+        //override to the acceptor's priority
+        out.write_short((short)priority);
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("createPriorityModelValue() -- Priority: " + priority);
 
         pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
         pv.ptype = PRIORITY_MODEL_POLICY_TYPE.value;
@@ -220,12 +224,12 @@ public abstract class Acceptor {
                 (int)out.getBuffer().getLimit());
 
         out.free();
-        
+
         PolicyValueHelper.write(outRet, pv);
 
         return pv;
     }
-    
+
     private PolicyValue createPriorityModelValue() {
         ZenProperties.logger.log("createPriorityModelValue()");
         PolicyValue pv = new PolicyValue();

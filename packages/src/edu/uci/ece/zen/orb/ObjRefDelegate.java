@@ -102,7 +102,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         out.getBuffer().dumpBuffer(this.ior);
         out.free();
         ZenProperties.logger.log("ObjRefDel init 1");
-        if( ZenBuildProperties.dbgIOR ) 
+        if( ZenBuildProperties.dbgIOR )
             System.out.println("++++++++++++++++++++++++++++++++++ObjRefDel no of prof:" + ior.profiles.length);
         //process all the tagged profiles
         for (int i = 0; i < ior.profiles.length; i++) { //go through each
@@ -129,7 +129,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     public LaneInfo getLane() {
-        int priority = RealtimeThread.currentThread().getPriority();
+        int priority = orb.getRTCurrent().the_priority();//RealtimeThread.currentThread().getPriority();
         for (int i = 0; i < priorityLanes.length; i++) {
             LaneInfo ln = (LaneInfo) priorityLanes[i];
             if (ZenBuildProperties.dbgTP) ZenProperties.logger.log("Checking if "
@@ -409,7 +409,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 //TODO: Currently ignored because they are of no immediate use
                 ZenProperties.logger.log("TAG_MULTIPLE_COMPONENTS ignored");
                 break;
-            case TAG_SERIAL.value: //process serial 
+            case TAG_SERIAL.value: //process serial
 /*
                 System.out.println( "Serial transport profile found" );
 
@@ -448,7 +448,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
                 if (transportScope != null) {
                     System.out.println( "Serial connection succesful" );
-		    addLaneData( javax.realtime.PriorityScheduler.instance().getMinPriority(),
+            addLaneData( javax.realtime.PriorityScheduler.instance().getMinPriority(),
                         javax.realtime.PriorityScheduler.instance().getMaxPriority(),
                         transportScope, object_key,
                     edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );

@@ -59,6 +59,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         this.giopMinor = giopMinor;
         ZenProperties.logger.log("ClientRequest 3");
         LaneInfo ln = del.getLane();
+        //TODO: throw appropriate error
         ZenProperties.logger.log("ClientRequest 5");
         transportScope = ln.transpScope;
         ZenProperties.logger.log("ClientRequest 6");
