@@ -352,7 +352,7 @@ public class ReadBuffer {
         try{
          curBuf = (byte[]) buffers.elementAt((int) (position / 1024));
         }catch(Exception e){
-            e.printStackTrace();   
+            e.printStackTrace();
         }*/
         byte ret = curBuf[(int) (position % 1024)];
         position++;
@@ -483,9 +483,9 @@ public class ReadBuffer {
 
     public FString readFString(boolean isString) {
         int len = readLong();
-    if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$FString len" + len);
-    if( isString )
-        len--;
+        if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$FString len" + len);
+        if( isString )
+            len--;
         FString fs = FString.instance();
         for(int i = 0; i < len; ++i)
             fs.append(readByte());
