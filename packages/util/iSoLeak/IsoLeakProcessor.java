@@ -254,7 +254,7 @@ public class IsoLeakProcessor{
                     memory.setPortal( portalObject );
                     thread.pop();
                 }
-                if( line.startsWith( "ISoBeginLeakDetect" ) ){
+                if( line.startsWith( "ISoLBeginLeakDetect" ) ){
                     leakDetect = true;
                     Enumeration keys = memoryMap.keys();
                     while( keys.hasMoreElements() ){

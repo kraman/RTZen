@@ -24,6 +24,7 @@ public class IsoLeakHelper
             out.write( 'I' );
             out.write( 'S' );
             out.write( 'o' );
+            out.write( 'L' );
             out.write( 'B' );
             out.write( 'e' );
             out.write( 'g' );
