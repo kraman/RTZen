@@ -189,6 +189,9 @@ function startServer(){
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD&
+                sleep $SLEEPTIME
+                EXEC_CMD2="cp `pwd`/OVMServer_INT/ior.txt OVMClient_INT/ior.txt"
+                $EXEC_CMD2&
                 echo $! > $STOPFNAME
          elif [ $1 -eq 40 ]; then
                 # start ZEN server remote in OVM interpreter
@@ -198,7 +201,7 @@ function startServer(){
                 $EXEC_CMD&
                 echo $! > $STOPFNAME
                 sleep $SLEEPTIME
-                EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+                EXEC_CMD2="scp $REMNODE:`pwd`/OVMServer_INT/ior.txt OVMClient_INT/ior.txt"
                 $EXEC_CMD2&
 
         elif [ $1 -eq 5 ]; then
@@ -207,6 +210,10 @@ function startServer(){
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD&
+                sleep $SLEEPTIME
+                EXEC_CMD2="cp `pwd`/OVMServer_NAT/ior.txt OVMClient_NAT/ior.txt"
+                $EXEC_CMD2&
+
                  echo $! > $STOPFNAME
          elif [ $1 -eq 50 ]; then
                 # start ZEN server remote in OVM ahead-of-time compiler
@@ -216,7 +223,7 @@ function startServer(){
                 $EXEC_CMD&
                 echo $! > $STOPFNAME
                 sleep $SLEEPTIME
-                EXEC_CMD2="scp $REMNODE:`pwd`/OVMServer_NAT/ior.txt OVMServer_NAT/ior.txt"
+                EXEC_CMD2="scp $REMNODE:`pwd`/OVMServer_NAT/ior.txt OVMClient_NAT/ior.txt"
                 $EXEC_CMD2&
 
 		elif [ $1 -eq 6 ]; then
