@@ -7,9 +7,7 @@ import edu.uci.ece.zen.utils.ReadBuffer;
 /**
  * @author bmiller
  *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
+  */
 public abstract class ReplyMessage extends GIOPMessage {
 	public ReplyMessage(ORB orb, ReadBuffer stream) {
 		super(orb, stream);

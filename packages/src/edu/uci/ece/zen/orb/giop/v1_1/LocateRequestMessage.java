@@ -10,7 +10,7 @@ import edu.uci.ece.zen.orb.*;
  * 
  * @author bmiller
 */
-public class LocateRequestMessage extends  edu.uci.ece.zen.orb.giop.GIOPMessage {
+public class LocateRequestMessage extends  edu.uci.ece.zen.orb.giop.parent.LocateRequestMessage {
     protected LocateRequestHeader_1_0 header;
     
     public LocateRequestMessage(ORB orb, ReadBuffer stream) {
@@ -19,9 +19,9 @@ public class LocateRequestMessage extends  edu.uci.ece.zen.orb.giop.GIOPMessage 
         messageBody = null;
     }
 
-    public boolean isRequest() { return true; }
-    public boolean isReply() { return false; }
     public int getRequestId() { return header.request_id; }
+
+    public int getReplyStatus() { return -1; }
 
     /**
      * @see edu.uci.ece.zen.orb.giop.GIOPMessage#marshal(edu.uci.ece.zen.orb.CDROutputStream)

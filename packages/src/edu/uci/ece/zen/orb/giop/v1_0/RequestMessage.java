@@ -30,6 +30,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.parent.RequestMessa
     public org.omg.IOP.ServiceContext[] getServiceContexts() { return header.service_context; }
 
     public void marshal( CDROutputStream out ){
+        // LocateRequest messages contain only a GIOP header then the LocateRequestHeader
         RequestHeader_1_0Helper.write( out , header );
     }
 }
