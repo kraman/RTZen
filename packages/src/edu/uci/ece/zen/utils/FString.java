@@ -329,6 +329,15 @@ public class FString {
         return ret;
     }
 
+    public char[] getTrimDataAsChar() {
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(328);
+        char[] ret = new char[currentSize];
+        for( int i=0;i<currentSize;i++ )
+            ret[i] = (char)data[i];
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(329);
+        return ret;
+    }
+
     /**
      * Returns a new byte array allocated in the specified memory region with a
      * copy of the data present in this FString.

@@ -14,15 +14,6 @@ import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 public class ConnectorRunnable implements Runnable {
     public ConnectorRunnable() {
-        /*
-        host = new FString();
-        try {
-            host.init(1024);
-        } catch (Exception e2) {
-            ZenProperties.logger.log(Logger.SEVERE,
-                    getClass(), "<init>",
-                    "Could not initialize Connector", e2);
-        }*/
     }
 
     private FString host;
@@ -55,8 +46,7 @@ public class ConnectorRunnable implements Runnable {
             iport |= port & 0xffff;
             String host2=null;
             if( host != null ){
-                if(ZenProperties.CAN_USE_STRINGS)
-                    host2 = new String(this.host.getTrimData());
+                host2 = new String(this.host.getTrimDataAsChar());
                 FString.free(host);
             }
 

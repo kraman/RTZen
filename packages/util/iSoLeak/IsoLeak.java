@@ -1,3 +1,5 @@
+package iSoLeak;
+
 import org.apache.bcel.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
@@ -30,7 +32,7 @@ public class IsoLeak {
     static long methodId = 0;
     static long classId = 0;
     static void changeMethods( JavaClass cls , String name ){
-        if( name.indexOf("uci") > -1 && !cls.isNative() ){
+        if( !cls.isNative() ){
             Type[] parameters = new Type[]{Type.INT};
             String methodSignature = Type.getMethodSignature(Type.VOID, parameters);
             ConstantPoolGen pool = new ConstantPoolGen( cls.getConstantPool() );
@@ -52,7 +54,7 @@ public class IsoLeak {
             if( !cls.isAbstract() ){
                 ClassGen thisClass = new ClassGen( cls );
                 pool = thisClass.getConstantPool();
-                thisClass.addInterface( (Repository.lookupClass("IsoLeakAnotated")).getClassName() );
+                thisClass.addInterface( (Repository.lookupClass("iSoLeak.IsoLeakAnotated")).getClassName() );
                 InstructionFactory factory = new InstructionFactory(pool);
                 InstructionList classIdInstrutions = new InstructionList();
                 MethodGen classIdMethod = new MethodGen( Constants.ACC_PUBLIC, Type.LONG, Type.NO_ARGS, new String[] {  }, "__isoLeak_classId",
@@ -124,9 +126,9 @@ public class IsoLeak {
         LocalVariableGen varGenImm = method.addLocalVariable( "__isoLeak_immMemAlloc" , Type.LONG , null , null );
         Type[] invokeMethodParams = new Type[]{};
         InstructionList newList = new InstructionList();
-        newList.append( factory.createInvoke( "IsoLeakHelper" , "__isoLeak_recordScopedSize" , Type.LONG , invokeMethodParams , Constants.INVOKESTATIC ) );
+        newList.append( factory.createInvoke( "iSoLeak.IsoLeakHelper" , "__isoLeak_recordScopedSize" , Type.LONG , invokeMethodParams , Constants.INVOKESTATIC ) );
         newList.append( factory.createStore( Type.LONG , varGen.getIndex() ) );
-        newList.append( factory.createInvoke( "IsoLeakHelper" , "__isoLeak_recordImmortal" , Type.LONG , invokeMethodParams , Constants.INVOKESTATIC ) );
+        newList.append( factory.createInvoke( "iSoLeak.IsoLeakHelper" , "__isoLeak_recordImmortal" , Type.LONG , invokeMethodParams , Constants.INVOKESTATIC ) );
         newList.append( factory.createStore( Type.LONG , varGenImm.getIndex() ) );
         InstructionHandle IStartTry = newList.append( new NOP() );
         if( startInstructionHandle == null ){
@@ -153,7 +155,7 @@ public class IsoLeak {
         oldList.append(new PUSH(pool , (long)methodId ));
         oldList.append( factory.createLoad( Type.LONG , varGen.getIndex() ) );
         oldList.append( factory.createLoad( Type.LONG , varGenImm.getIndex() ) );
-        oldList.append( factory.createInvoke( "IsoLeakHelper" , "__isoLeak_checkMemStats" , Type.VOID , invokeMethodParams , Constants.INVOKESTATIC ) );
+        oldList.append( factory.createInvoke( "iSoLeak.IsoLeakHelper" , "__isoLeak_checkMemStats" , Type.VOID , invokeMethodParams , Constants.INVOKESTATIC ) );
         //oldList.append( factory.createStore( Type.LONG , varGen.getIndex() ) );
 
         oldList.append( new RET(varGenTmp.getIndex()) );
