@@ -5,7 +5,7 @@ import org.omg.CORBA.portable.*;
 import java.io.*;
 import javax.realtime.*;
 import org.omg.RTCORBA.*;
-import org.omg.messaging.*;
+import org.omg.Messaging.*;
 import java.util.Properties;
 import edu.uci.ece.zen.orb.policies.*;
 import org.omg.CORBA.ServiceInformationHolder;
