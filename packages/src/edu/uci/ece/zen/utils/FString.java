@@ -3,6 +3,28 @@ package edu.uci.ece.zen.utils;
 import javax.realtime.*;
 
 public class FString{
+
+    private static FString fromImmortal(){
+        FString fs = null;
+        try{
+            fs = (FString) ImmortalMemory.instance().newInstance( FString.class );
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return fs;
+    }
+
+    public static FString instance(FString fs){
+        if(fs == null){
+            fs = fromImmortal();
+        } else {
+            fs.reset();
+        }
+
+        return fs;
+    }
+
+
     public FString(){}
     public FString( int maxSize ){
         this.maxSize = maxSize;

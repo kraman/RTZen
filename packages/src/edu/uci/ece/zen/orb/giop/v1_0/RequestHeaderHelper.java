@@ -1,5 +1,7 @@
 package edu.uci.ece.zen.orb.giop.v1_0;
 
+
+import edu.uci.ece.zen.utils.*;
 /**
  * Helper class for : RequestHeader_1_0
  *
@@ -100,17 +102,17 @@ public class RequestHeaderHelper
         RequestHeader new_one = RequestHeader.instance();
 
         new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.
-                read(istream,RequestHeader.instance(new_one.service_context));
+                read(istream,FString.instance(new_one.service_context));
 
         new_one.request_id = istream.read_ulong();
         new_one.response_expected = istream.read_boolean();
 
-        new_one.object_key = RequestHeader.instance(new_one.object_key);
+        new_one.object_key = FString.instance(new_one.object_key);
         int object_key_length = istream.read_ulong();
         new_one.object_key.append(object_key_length);
         new_one.object_key.read(istream, object_key_length);
 
-        new_one.operation =  RequestHeader.instance(new_one.operation);
+        new_one.operation =  FString.instance(new_one.operation);
         int op_length = istream.read_ulong() - 1;
         new_one.operation.append(op_length);
         new_one.operation.read(istream, op_length);
@@ -121,7 +123,7 @@ public class RequestHeaderHelper
         //new_one.requesting_principal_length = istream.read_ulong();
         //istream.read_octet_array(new_one.requesting_principal, 0, new_one.requesting_principal_length);
 
-        new_one.requesting_principal =  RequestHeader.instance(new_one.requesting_principal);
+        new_one.requesting_principal =  FString.instance(new_one.requesting_principal);
         int rp_length = istream.read_ulong();
         new_one.requesting_principal.append(rp_length);
         new_one.requesting_principal.read(istream, rp_length);

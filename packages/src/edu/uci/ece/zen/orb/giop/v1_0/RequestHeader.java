@@ -26,31 +26,11 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity
         return rh;
     }
 
-    private static FString fStringFromImmortal(){
-        FString fs = null;
-        try{
-            fs = (FString) ImmortalMemory.instance().newInstance( FString.class );
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return fs;
-    }
-
     /**
      * Struct member service_context
      */
     //public ServiceContext[] service_context;
     public FString service_context;
-
-    public static FString instance(FString fs){
-        if(fs == null){
-            fs = fStringFromImmortal();
-        } else {
-            fs.reset();
-        }
-
-        return fs;
-    }
 
     /**
      * Struct member request_id
