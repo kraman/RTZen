@@ -98,7 +98,7 @@ public class Client1 extends RealtimeThread
 
             System.out.println("==============Performance benchmark==============");
             long start = System.currentTimeMillis();
-            for (int i = 0; RUN_TIME; i++)
+            for (int i = 0; i< RUN_NUM; i++)
             {
                 
                 //System.out.print("# ");
