@@ -48,9 +48,11 @@ class NativeSerialPort
             ZenProperties.logger.log( "++++++++++++Serial port: accept called(); lock acquired" );
             while( true ){
                 int size = getMessage( tmpBuffer );
-		for( int i=0;i<89;i++ )
-			System.out.print( tmpBuffer[i] + " " );
-		System.out.println("");
+                if (ZenProperties.dbg) {
+                    for( int i=0;i<89;i++ )
+                        System.out.print( tmpBuffer[i] + " " );
+                    System.out.println("");
+                }
                 if( tmpBuffer[0] == 2 && tmpBuffer[1] == 1 && tmpBuffer[2] == 7 && tmpBuffer[3] == 7 ){
                     ZenProperties.logger.log( "Serial port: accept called(); lock acquired; magic recieved" );
                     return this;

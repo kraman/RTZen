@@ -24,6 +24,7 @@ public final class ZenProperties {
     /* set to true to allow printing about memory usage */
     public static final boolean memDbg = false;
     public static final boolean memDbg1 = false;
+    public static final int MEM_STAT_COUNT = 1;
 
     public static final ImmortalMemory immortalMem = ImmortalMemory.instance();
 

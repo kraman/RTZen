@@ -112,9 +112,8 @@ public abstract class Transport implements Runnable {
         ZenProperties.logger.log("Transport send 1");
         try {
             java.io.OutputStream out = getOutputStream();
-	    //System.out.println( "send msg size is " + msg.getPosition() );
             msg.dumpBuffer(out);
-	    out.flush();
+            out.flush();
         } catch (java.io.IOException ioex) {
             ZenProperties.logger.log(Logger.WARN, getClass(), "send", ioex);
         }
@@ -229,7 +228,7 @@ class GIOPMessageRunnable implements Runnable {
         try {
 
             statCount++;
-            if (statCount % 100 == 0) {
+            if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
                 //System.out.print(name);
                 edu.uci.ece.zen.utils.Logger.printMemStats(3);
                 edu.uci.ece.zen.utils.Logger.printMemStats(orb);

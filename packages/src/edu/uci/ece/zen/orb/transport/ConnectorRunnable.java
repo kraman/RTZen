@@ -44,7 +44,7 @@ public class ConnectorRunnable implements Runnable {
     public boolean getReturnStatus(){ return retVal; }
     public void run() {
         statCount++;
-        if (statCount % 100 == 0) {
+        if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
             edu.uci.ece.zen.utils.Logger.printMemStats(5);
         }
 

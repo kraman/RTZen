@@ -35,7 +35,7 @@ public abstract class Connector {
         orbImpl.eirCache.enqueue(eir);
         orbImpl.eirCache.enqueue(eir2);
         orbImpl.crCache.enqueue(connRunnable);
-        if (statCount % 100 == 0) {
+        if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
             edu.uci.ece.zen.utils.Logger.printMemStats(5);
         }
         statCount++;

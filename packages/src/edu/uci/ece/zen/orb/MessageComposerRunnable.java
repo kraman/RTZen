@@ -46,7 +46,7 @@ public class MessageComposerRunnable implements Runnable {
      */
     private int statCount = 0;
     public void run() {
-            if (statCount % 100 == 0) {
+            if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
                 edu.uci.ece.zen.utils.Logger.printMemStats(6);
             }
             statCount++;

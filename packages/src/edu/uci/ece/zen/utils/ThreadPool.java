@@ -69,7 +69,7 @@ public class ThreadPool {
     public void execute(RequestMessage task, short minPriority,
             short maxPriority) {
         statCount++;
-        if (statCount % 100 == 0) {
+        if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
             edu.uci.ece.zen.utils.Logger.printMemStats(4);
         }
 
