@@ -14,9 +14,9 @@ class LocalSerialPortStream implements SerialPortStream
 {
     private IS inputStream = new IS();
     private OS outputStream = new OS();
-    private byte[] buffer = new byte[SerialPort.MAX_MESSAGE_LENGTH];
-    private Semaphore bufferSize = new Semaphore(0);
-    private Semaphore bufferLock = new Semaphore(1);
+    private int data;
+    private Semaphore dataEmpty = new Semaphore(1);
+    private Semaphore dataAvailable = new Semaphore(0);
 
     public InputStream getInputStream()
     {
@@ -36,17 +36,15 @@ class LocalSerialPortStream implements SerialPortStream
             try
             {
                 System.out.println("LocalSerialPortStream: InputStream.read: blocking until data available");
-                bufferSize.acquire();
-                System.out.println("LocalSerialPortStream: InputStream.read: data available, trying to lock");
-                bufferLock.acquire();
+                dataAvailable.acquire();
 
-                byte b = buffer[0];
-                System.arraycopy(buffer, 1, buffer, 0, buffer.length - 1);
+                int b = data;
 
-                bufferLock.release();
-                System.out.println("LocalSerialPortStream: InputStream.read: got lock, read byte: " + Integer.toHexString(b));
+                dataEmpty.release();
 
-                return b;
+                System.out.println("LocalSerialPortStream: InputStream.read: got lock, read byte: " + Integer.toHexString(b&0xFF));
+
+                return b & 0xFF;
             }
             catch (InterruptedException e)
             {
@@ -58,7 +56,7 @@ class LocalSerialPortStream implements SerialPortStream
 
         public int available() throws IOException
         {
-            return (int) bufferSize.permits();
+            return (int) dataAvailable.permits();
         }
     }
 
@@ -69,23 +67,12 @@ class LocalSerialPortStream implements SerialPortStream
             try
             {
                 System.out.println("LocalSerialPortStream: OutputStream.write: trying to write to buffer");
-                bufferLock.acquire();
+                dataEmpty.acquire();
 
-                int size = (int) bufferSize.permits();
+                data = b;
 
-                if (size == buffer.length)
-                {
-                    // It would probably be nice to block here until the buffer becomes free, but
-                    // we're assuming that SerialPort.MAX_MESSAGE_LENGTH holds true, so it shouldn't
-                    // be necessary.
-                    bufferLock.release();
-                    throw new IOException("Buffer is full");
-                }
-
-
-                bufferSize.release();
-                bufferLock.release();
-                System.out.println("LocalSerialPortStream: OutputStream.write: wrote " + size + " bytes");
+                dataAvailable.release();
+                System.out.println("LocalSerialPortStream: OutputStream.write: wrote byte: " + (b & 0xFF));
             }
             catch (InterruptedException e)
             {
@@ -103,9 +90,9 @@ class RemoteSerialPortStream implements SerialPortStream
     private OS outputStream;
     private SerialPort serialPort;
     private Socket socket;
-    private byte[] inputBuffer = new byte[SerialPort.MAX_MESSAGE_LENGTH];
-    private Semaphore inputBufferSize = new Semaphore(0);
-    private Semaphore inputBufferLock = new Semaphore(1);
+    private int input;
+    private Semaphore inputEmpty = new Semaphore(1);
+    private Semaphore inputAvailable = new Semaphore(0);
 
     RemoteSerialPortStream(Socket socket, SerialPort serialPort)
     {
@@ -126,32 +113,16 @@ class RemoteSerialPortStream implements SerialPortStream
         return outputStream;
     }
 
-    void addToInputStream(byte[] buffer, int offset, int length) throws InterruptedException, IOException
+    void addToInputStream(int b) throws InterruptedException, IOException
     {
-        System.out.println("RemoteSerialPortStream: addToInputStream: trying to write to buffer");
+        System.out.println("RemoteSerialPortStream: addToInputStream: trying to write to byte");
 
-        inputBufferLock.acquire();
+        inputEmpty.acquire();
 
-        int bufferSize = (int) inputBufferSize.permits();
+        input = b;
 
-        if (bufferSize == inputBuffer.length)
-        {
-            // It would probably be nice to block here until the input buffer becomes free, but
-            // we're assuming that SerialPort.MAX_MESSAGE_LENGTH holds true, so it shouldn't
-            // be necessary.
-            inputBufferLock.release();
-            throw new IOException("Input buffer is full");
-        }
-
-        System.out.println("RemoteSerialPortStream: addToInputStream: writing to buffer");
-        for (int i = 0; i < length; i++)
-        {
-            inputBuffer[bufferSize + i] = buffer[offset + i];
-        }
-
-        inputBufferSize.release(length);
-        inputBufferLock.release();
-        System.out.println("RemoteSerialPortStream: addToInputStream: done writing to buffer");
+        inputAvailable.release();
+        System.out.println("RemoteSerialPortStream: addToInputStream: done writing to input byte" + Integer.toHexString(b&0xFF));
     }
 
     class IS extends InputStream
@@ -161,16 +132,11 @@ class RemoteSerialPortStream implements SerialPortStream
         {
             try
             {
-//                System.out.println("RemoteSerialPortStream: InputStream.read: waiting until stream has data");
-                inputBufferSize.acquire();
-                inputBufferLock.acquire();
+                inputAvailable.acquire();
 
-//                System.out.println("RemoteSerialPortStream: InputStream.read: data available, reading");
+                int b = input;
 
-                byte b = inputBuffer[0];
-                System.arraycopy(inputBuffer, 1, inputBuffer, 0, inputBuffer.length - 1);
-
-                inputBufferLock.release();
+                inputEmpty.release();
 
                 System.out.println("RemoteSerialPortStream: InputStream.read: read byte: " + Integer.toHexString(b&0xFF));
 
@@ -193,14 +159,14 @@ return bytesRead;
 
         public int available() throws IOException
         {
-            return (int) inputBufferSize.permits();
+            return (int) inputAvailable.permits();
         }
     }
 
     class OS extends OutputStream
     {
-        private byte[] buffer = new byte[SerialPortProtocol.SOCKET_DATA_HEADER_LENGTH + SerialPort.MAX_MESSAGE_LENGTH];
-        private int bufferSize = SerialPortProtocol.SOCKET_DATA_HEADER_LENGTH;
+        private byte[] buffer = new byte[SerialPortSocketProtocol.SOCKET_DATA_HEADER_LENGTH + SerialPort.MAX_MESSAGE_LENGTH];
+        private int bufferSize = SerialPortSocketProtocol.SOCKET_DATA_HEADER_LENGTH;
 
         public void write(int b) throws IOException
         {
@@ -217,7 +183,7 @@ return bytesRead;
 
                 System.out.println("RemoteSerialPortStream: OutputStream.write: writing byte: " + Integer.toHexString(b & 0xFF));
 
-                buffer[bufferSize++] = (byte)(b & 0xFF);
+                buffer[bufferSize++] = (byte) b;
             }
         }
 
@@ -232,9 +198,9 @@ return bytesRead;
             synchronized (buffer)
             {
                 System.out.println("RemoteSerialPortStream: OutputStream.flush: flushing " + bufferSize + " bytes to serial port (includes socket data header)");
-                SerialPortProtocol.encodeSocketData(socket, buffer);
+                SerialPortSocketProtocol.encodeSocketData(socket, buffer);
                 serialPort.sendMessage(buffer, bufferSize);
-                bufferSize = SerialPortProtocol.SOCKET_DATA_HEADER_LENGTH;
+                bufferSize = SerialPortSocketProtocol.SOCKET_DATA_HEADER_LENGTH;
             }
         }
     }

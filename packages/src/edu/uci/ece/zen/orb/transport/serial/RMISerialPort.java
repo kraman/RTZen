@@ -119,7 +119,7 @@ class RMISerialPortServer extends UnicastRemoteObject implements RMISerialPort
         {
             try
             {
-                Thread.currentThread().sleep(3000);
+                Thread.currentThread().sleep(1000);
             }
             catch (InterruptedException e)
             {
