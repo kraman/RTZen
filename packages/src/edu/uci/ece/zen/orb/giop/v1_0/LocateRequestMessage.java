@@ -8,6 +8,8 @@ import org.omg.GIOP.LocateRequestHeader_1_0Helper;
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.ReadBuffer;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
 
 /**
  * GIOP v1.0 LocateRequest Message as discussed in section 15.4.6 of the CORBA
@@ -55,7 +57,7 @@ public class LocateRequestMessage extends
                     .instance().newInstance(LocateRequestMessage.class);
             return lrm;
         } catch (Exception e) {
-            e.printStackTrace();
+            ZenProperties.logger.log(Logger.WARN, LocateRequestMessage.class, "getMessage", e);
         }
         return null;
     }
