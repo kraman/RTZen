@@ -1,9 +1,12 @@
-/* --------------------------------------------------------------------------*
- * $Id: LifespanStrategy.java,v 1.6 2003/09/03 20:44:19 spart Exp $
- *--------------------------------------------------------------------------*/
-
 package edu.uci.ece.zen.poa.mechanism;
 
+
+// --- ZEN Imports ---
+import edu.uci.ece.zen.utils.*;
+import edu.uci.ece.zen.poa.*;
+
+// --- OMG Imports ---
+import org.omg.CORBA.IntHolder;
 
 /**
  * The class <code>LifespanStrategy</code> creates a Persistent or
@@ -14,10 +17,6 @@ package edu.uci.ece.zen.poa.mechanism;
  */
 
 
-// --- ZEN Imports ---
-import edu.uci.ece.zen.utils.*;
-import edu.uci.ece.zen.poa.*;
-
 abstract public class LifespanStrategy {
     /**
      * <code> init </code> creates either a Persistent/Transient Strategy
@@ -25,8 +24,8 @@ abstract public class LifespanStrategy {
      * @param policy specifies the Policy of the POA.
      *
      */
-    public static LifespanStrategy init(org.omg.CORBA.Policy[] policy , org.omg.CORBA.IntHolder ih ) {
-        ih = POARunnable.NoException;
+    public static LifespanStrategy init(org.omg.CORBA.Policy[] policy , IntHolder excetpionValue ) {
+        excetpionValue.value = POARunnable.NoException;
 
         if (PolicyUtils.usetransientpolicy(policy)) { 
 //            return new TransientStrategy(); 
@@ -59,6 +58,6 @@ abstract public class LifespanStrategy {
      * @param objectKey is the Object Key who's freshness is checked.
      * @exception org.omg.CORBA.OBJECT_NOT_EXISTS if the test fails.
      */
-    abstract public void validate( FString objKey , org.omg.CORBA.IntHolder ih );
+    abstract public void validate( FString objKey , IntHolder excetpionValue );
 }
 
