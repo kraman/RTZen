@@ -72,7 +72,7 @@ public class CDRTestClient extends RealtimeThread
 
 	    if(shoutVal.value != 102){
 		    System.out.println("out value wrong in echoShort()");
-		    System.out.println("The expected value is 102 and the actual value is "+shoutVal);
+		    System.out.println("The expected value is 102 and the actual value is "+shoutVal.value);
 
 	    }
 	}
@@ -81,20 +81,20 @@ public class CDRTestClient extends RealtimeThread
 	public void testDouble()
 	{
 
-		double dinVal = 1.0e10;
+		double dinVal = 1.123456789;
 		org.omg.CORBA.DoubleHolder doutVal =
-			new org.omg.CORBA.DoubleHolder( 1.0e11);
+			new org.omg.CORBA.DoubleHolder( 2.123456789);
 		double dretVal = stub.echoDouble( dinVal, doutVal);
 
 
-		if(dretVal != 1.0e10){
+		if(dretVal != 1.123456789){
 			System.out.println("return value wrong in echoDouble()");
-			System.out.println("The expected value is 1.0e10 and the actual value is "+dretVal);
+			System.out.println("The expected value is 1.123456789 and the actual value is "+dretVal);
 		}
 
-		if(doutVal.value != 1.0e12){
+		if(doutVal.value != 3.123456789){
 			System.out.println("out value wrong in echoDouble()");
-			System.out.println("The expected value is 1.0e12 and the actual value is "+doutVal);
+			System.out.println("The expected value is 3.123456789 and the actual value is "+doutVal.value);
 
 		}
 	}
@@ -112,7 +112,7 @@ public class CDRTestClient extends RealtimeThread
 
 					if(boutVal.value != false){
 						System.out.println("out value wrong in echoBoolean()");
-						System.out.println("The expected value is false and the actual value is "+boutVal);
+						System.out.println("The expected value is false and the actual value is "+boutVal.value);
 
 		}
 
@@ -127,14 +127,14 @@ public class CDRTestClient extends RealtimeThread
 	        String sretVal = stub.echoString( sinVal, soutVal);
 
 
-	        if(sretVal != "in String"){
+	        if(!sretVal.equals("in String")){
 									System.out.println("return value wrong in echoString()");
 									System.out.println("The expected value is \"in String\" and the actual value is "+sretVal);
 								}
 
-								if(soutVal.value != "After"){
+								if(!soutVal.value.equals("After")){
 									System.out.println("out value wrong in echoString()");
-									System.out.println("The expected value is \"After\" and the actual value is "+soutVal);
+									System.out.println("The expected value is \"After\" and the actual value is "+soutVal.value);
 
 		}
 
@@ -156,7 +156,7 @@ public class CDRTestClient extends RealtimeThread
 
 		    if(ooutVal.value != 102){
 			    System.out.println("out value wrong in echoOctet()");
-			    System.out.println("The expected value is 102 and the actual value is "+ooutVal);
+			    System.out.println("The expected value is 102 and the actual value is "+ooutVal.value);
 
 		    }
 	}
