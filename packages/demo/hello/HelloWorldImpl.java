@@ -13,7 +13,7 @@ public class HelloWorldImpl extends HelloWorldPOA
      */
     public String getMessage()
     {
-        System.out.println( "******************  WOOHOO! Request got here....now sending back. ********************" );
+        //System.out.println( "******************  WOOHOO! Request got here....now sending back. ********************" );
         return "Hello To the Zen World!!!";
     }
 }

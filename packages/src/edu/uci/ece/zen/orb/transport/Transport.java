@@ -11,6 +11,8 @@ public abstract class Transport implements Runnable{
     protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
     private MessageProcessor messageProcessor;
 
+    public Object objectTable;         //used to store misc objects with 1instance per transport
+
     /**
      * <p>
      *     ORBImpl region --&gt; <b>Transport scope</b>
@@ -20,6 +22,7 @@ public abstract class Transport implements Runnable{
         this.orb = orb;
         this.orbImpl = orbImpl;
         waitObj = new Integer(0);
+        objectTable = new Object[3];
         if(ZenProperties.devDbg) System.out.println( "Transport being created " + RealtimeThread.getCurrentMemoryArea() );
     }
 
@@ -166,70 +169,31 @@ class GIOPMessageRunnable implements Runnable{
     edu.uci.ece.zen.orb.ORB orb;
     Transport trans;
     ScopedMemory requestScope;
+    WaitingStratergyNotifyRunnable wsnr;
+    ExecuteInRunnable eir;
 
-    /**
-     * Call scoped region graph:
-     * <p>
-     *      Transport thread:<br/>
-     *      <p>
-     *          <b>Transport scope</b> --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt; Waiter region
-     *      </p>
-     *      Client Thread:<br/>
-     *      <p>
-     *          Client scope --ex in --&gt; ORB parent scope --&gt; ORBImpl scope --&gt; <b>Message scope/Waiter region</b> --&gt; Transport scope
-     *      </p>
-     *  </p>
-     */
     public GIOPMessageRunnable( edu.uci.ece.zen.orb.ORB orb , Transport trans ){
         this.orb = orb;
         this.trans = trans;
+        eir = new ExecuteInRunnable();
+        wsnr = new WaitingStratergyNotifyRunnable();
     }
 
-    /**
-     * Call scoped region graph:
-     * <p>
-     *      Transport thread:<br/>
-     *      <p>
-     *          <b>Transport scope</b> --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt; Waiter region
-     *      </p>
-     *      Client Thread:<br/>
-     *      <p>
-     *          Client scope --ex in --&gt; ORB parent scope --&gt; ORBImpl scope --&gt; <b>Message scope/Waiter region</b> --&gt; Transport scope
-     *      </p>
-     *  </p>
-     */
     public void setRequestScope( ScopedMemory requestScope ){
         this.requestScope = requestScope;
     }
 
-
-
-
-    /**
-     * Call scoped region graph:
-     * <p>
-     *      Transport thread:<br/>
-     *      <p>
-     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; <b>Message</b> --ex in--&gt; ORBImpl scope --&gt; Waiter region
-     *      </p>
-     *      Client Thread:<br/>
-     *      <p>
-     *          Client scope --ex in --&gt; ORB parent scope --&gt; ORBImpl scope --&gt; <b>Message scope/Waiter region</b> --&gt; Transport scope
-     *      </p>
-     *  </p>
-     */
     public void run(){
         try{
-            System.out.println("Inside Transport and mem area: " + RealtimeThread.getCurrentMemoryArea());
+            if( ZenProperties.dbg )
+                System.out.println("Inside Transport and mem area: " + RealtimeThread.getCurrentMemoryArea());
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
             if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
                 trans.orbImpl.getServerRequestHandler().handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) message );
             }
             if( message instanceof edu.uci.ece.zen.orb.giop.type.ReplyMessage ){
                 ScopedMemory waiterRegion = orb.getWaiterRegion( message.getRequestId() );
-                //TODO: cache the runnables, cant 'new' things here...
-                WaitingStratergyNotifyRunnable wsnr = new WaitingStratergyNotifyRunnable( message , waiterRegion );
-                ExecuteInRunnable eir = new ExecuteInRunnable();
+                wsnr.init( message , waiterRegion );
                 eir.init( wsnr , waiterRegion );
                 try{
                     orb.orbImplRegion.executeInArea( eir );
@@ -265,7 +229,9 @@ class WaitingStratergyNotifyRunnable implements Runnable{
      *      </p>
      *  </p>
      */
-    WaitingStratergyNotifyRunnable( edu.uci.ece.zen.orb.giop.GIOPMessage message , ScopedMemory waiterRegion ){
+    public WaitingStratergyNotifyRunnable(){}
+    
+    public void init( edu.uci.ece.zen.orb.giop.GIOPMessage message , ScopedMemory waiterRegion ){
         this.message = message;
         this.waiterRegion = waiterRegion;
     }

@@ -12,13 +12,10 @@ public final class ZenProperties{
      * private static String installDir = null;
      */
     public static final String installDir="";
-    //public static final boolean dbg=false;
-    //public static final boolean devDbg=false;
-    public static final boolean dbg=true;
-    public static final boolean devDbg=true;
-
+    public static final boolean dbg=false;
+    public static final boolean devDbg=false;
 	/* set to true to allow printing about memory usage */
-    public static final boolean memDbg=false;
+    public static final boolean memDbg=true;
 
     public static final ImmortalMemory immortalMem = ImmortalMemory.instance();
     public static final HeapMemory heapMem = HeapMemory.instance();
@@ -42,7 +39,9 @@ public final class ZenProperties{
     private static boolean isInit = false;
 
     private static synchronized void init(){
-        System.out.println("The current memory region in ZenProperties.init() is "+ javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
+        if( ZenProperties.dbg )
+            System.out.println("The current memory region in ZenProperties.init() is "+
+                javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
         if( isInit )
             return;
         isInit = true;
@@ -158,7 +157,6 @@ public final class ZenProperties{
     }
 
     public void addProperties( Properties props ){
-        System.out.println( "entering addProperties" );
         if( props != null ){
             Enumeration keys = props.keys();
             while( keys.hasMoreElements() ){
@@ -166,11 +164,9 @@ public final class ZenProperties{
                 orbProperties.put( element , props.getProperty( element ) + "" );
             }
         }
-        System.out.println( "exiting addProperties" );
     }
 
     public void addPropertiesFromArgs( String args[] ){
-        System.out.println( "entering addPropertiesFromArgs" );
         Properties props = orbProperties;
         if( args != null ){
             for( int i=0;i<args.length;i++ ){
@@ -232,7 +228,6 @@ public final class ZenProperties{
                 }
             }
         }
-        System.out.println( "exiting addPropertiesFromArgs" );
     }
 
     public static String getORBId( String args[] , java.util.Properties properties ){

@@ -45,7 +45,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
        // gt the index into the Active Map
        FString objKey = req.getObjectKey();
 
-       System.out.println("Inside ServerRequestHandler.handleRequest and mem area: " + javax.realtime.RealtimeThread.getCurrentMemoryArea());
+       //System.out.println("Inside ServerRequestHandler.handleRequest and mem area: " + javax.realtime.RealtimeThread.getCurrentMemoryArea());
        int index = ObjectKeyHelper.getPOAIndex( objKey );
        int genCount = ObjectKeyHelper.getPOAGeneration( objKey );
 
@@ -54,6 +54,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
        if(ZenProperties.devDbg) System.out.println( "IOR: " + index + "," + genCount );
        if(ZenProperties.devDbg) System.out.println( "POA: " + index + "," + demuxTable.getGenCount(index) );
 
+       //TODO: Cant throw exception here. marshall and send back
        if (demuxTable.getGenCount(index) == genCount) {
            poa = ((POA)this.demuxTable.mapEntry(index));
        } else if (ObjectKeyHelper.isPersistent( objKey )) {

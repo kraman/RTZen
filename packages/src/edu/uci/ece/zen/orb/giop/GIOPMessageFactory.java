@@ -235,19 +235,23 @@ public final class GIOPMessageFactory
      * @param headerInfo GIOPHeaderInfo object to fill with data read from header
     */
     public static void parseStreamForHeader(java.io.InputStream in, GIOPHeaderInfo headerInfo)  throws java.io.IOException{
-        System.out.println( "parseStreamForHeader" );
+        if(ZenProperties.devDbg) System.out.println( "parseStreamForHeader" );
         byte[] header = new byte[12];
         int read = 0;
         while( read < 12 ){
             int tmp = in.read( header , 0 , 12 );
-            System.out.println( tmp );
+            if(ZenProperties.devDbg) System.out.println( tmp );
+            if( tmp < 0 ){
+                System.out.println( "RTZen doesnt support closing connection yet :-P ... shutting down" );
+                System.exit(0);
+            }
             read += tmp;
         }
 
         // Bytes 0,1,2,3 should equal 'GIOP'
-        System.err.println( "----GIOP Message Header ----" );
-        System.err.write( header , 0 , 12 );
-        System.err.println( "\n---- ----" );
+        //System.err.println( "----GIOP Message Header ----" );
+        //System.err.write( header , 0 , 12 );
+        //System.err.println( "\n---- ----" );
 
         if (  header[0] != magic[0]
               || header[1] != magic[1]

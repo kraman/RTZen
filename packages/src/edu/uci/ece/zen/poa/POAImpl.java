@@ -265,7 +265,6 @@ public class POAImpl{
             req.associatePOA( self );
             orb.orbImplRegion.executeInArea( eir );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 14" );
-            System.out.println( "Request processed in the POAImpl. Sending back reply" );
             orb.freeEIR(eir);
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here

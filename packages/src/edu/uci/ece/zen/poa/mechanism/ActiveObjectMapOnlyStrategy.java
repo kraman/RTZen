@@ -156,7 +156,6 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         //inside this region. At the end...free the region.
 
         ScopedMemory sm = poa.getORB().getScopedRegion();
-
         MSGRunnable msgr = getMSGR();
         msgr.init(request, myServant , reply, poa.getORB());
         sm.enter(msgr);

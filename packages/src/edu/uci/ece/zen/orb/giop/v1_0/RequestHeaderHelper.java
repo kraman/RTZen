@@ -100,15 +100,15 @@ public class RequestHeaderHelper
     public static RequestHeader read(org.omg.CORBA.portable.InputStream istream)
     {
         RequestHeader new_one = RequestHeader.instance();
-        System.out.println( "In request header read" );
+        //System.out.println( "In request header read" );
 
         new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.
                 read(istream,FString.instance(new_one.service_context));
 
         new_one.request_id = istream.read_ulong();
-        System.out.println("RequestHeader read -- req id: " + new_one.request_id);
+        //System.out.println("RequestHeader read -- req id: " + new_one.request_id);
         new_one.response_expected = istream.read_boolean();
-        System.out.println("RequestHeader read -- response_expected: " + new_one.response_expected);
+        //System.out.println("RequestHeader read -- response_expected: " + new_one.response_expected);
 
         new_one.object_key = FString.instance(new_one.object_key);
         int object_key_length = istream.read_ulong();
@@ -141,7 +141,7 @@ public class RequestHeaderHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, RequestHeader value)
     {
-        System.out.println("writing request header");
+        //System.out.println("writing request header");
         //edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
         value.service_context.write(ostream);
         System.out.println("sc len: " + value.service_context.length());

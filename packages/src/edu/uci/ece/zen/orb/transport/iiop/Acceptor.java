@@ -41,57 +41,35 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
     }
 
     protected TaggedProfile getInternalProfile( byte iiopMajorVersion , byte iiopMinorVersion, byte[] objKey){
-        System.out.println("yuez in Acceptor 1");   
         Version version = new Version(iiopMajorVersion, iiopMinorVersion);
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN
-        System.out.println("yuez in Acceptor 2");
         edu.uci.ece.zen.utils.Logger.printThreadStack();
  
         switch(iiopMinorVersion){
             case 0:
-
-             System.out.println("yuez in Acceptor 2.1");
-
-             System.out.println("yuez in Acceptor version "+version);
-
-             System.out.println("yuez in Acceptor, the current memoery is :"+javax.realtime.RealtimeThread.getCurrentMemoryArea());
-
-             System.out.println("yuez in Acceptor, the memory of ssock is "+ javax.realtime.MemoryArea.getMemoryArea(ssock) );
-             
-             System.out.println("yuez in Acceptor getHostAddress"+ssock.getInetAddress().getHostAddress());
-
-             System.out.println("yuez in Acceptor getLocalPort()"+(short)ssock.getLocalPort());
-
-             System.out.println("yuez in Acceptor objKey"+objKey);    
-             
-             
-             
-             
-
+                if( ZenProperties.devDbg ){
+                    System.out.println("yuez in Acceptor 2.1");
+                    System.out.println("yuez in Acceptor version "+version);
+                    System.out.println("yuez in Acceptor, the current memoery is :"+javax.realtime.RealtimeThread.getCurrentMemoryArea());
+                    System.out.println("yuez in Acceptor, the memory of ssock is "+ javax.realtime.MemoryArea.getMemoryArea(ssock) );
+                    System.out.println("yuez in Acceptor getHostAddress"+ssock.getInetAddress().getHostAddress());
+                    System.out.println("yuez in Acceptor getLocalPort()"+(short)ssock.getLocalPort());
+                    System.out.println("yuez in Acceptor objKey"+objKey);           
+                }
                 ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey);
-                System.out.println("yuez in Acceptor 2.2");
- 
                ProfileBody_1_0Helper.write(out, pb10);
 
             break;
             case 1:
                 //org.omg.IOP.TaggedComponent[] components = new org.omg.IOP.TaggedComponent[0];
                 //TODO: insert rt policy info and other tagged components
-
-                System.out.println("yuez in Acceptor 2.3");
-                 
                 ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey, getComponents());
-
-                System.out.println("yuez in Acceptor 2.4");
-                 
                 ProfileBody_1_1Helper.write(out, pb11);
 
             break;
         }
-
-        System.out.println("yuez in Acceptor 3");
          
         
         WriteBuffer outb = out.getBuffer();

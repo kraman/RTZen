@@ -167,11 +167,14 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
      * </p>
      */
     public void handleRequest(final RequestMessage sreq) {
+
+        edu.uci.ece.zen.orb.transport.Transport transport = (edu.uci.ece.zen.orb.transport.Transport) sreq.getTransport().getPortal();
+    
         //TODO: Peter, cant do a new here....
         POARunnable r = new POARunnable( POARunnable.HANDLE_REQUEST );
         r.addParam( sreq );
         r.addParam( RealtimeThread.getCurrentMemoryArea() );
-        System.out.println("Inside POAServerRequestHandler.handleRequest() and memoryArea: " + RealtimeThread.getCurrentMemoryArea());
+        //System.out.println("Inside POAServerRequestHandler.handleRequest() and memoryArea: " + RealtimeThread.getCurrentMemoryArea());
 
         //edu.uci.ece.zen.utils.Logger.printThreadStack();
         

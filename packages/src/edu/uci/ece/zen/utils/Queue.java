@@ -5,7 +5,7 @@ import javax.realtime.*;
 public class Queue{
     private QueueNode freeListHead;
     private QueueNode freeListTail;
-    private final static Integer syncObject = new Integer(0);
+    private final Integer syncObject = new Integer(0);
 
     private QueueNode getNode(){
         QueueNode ret = null;

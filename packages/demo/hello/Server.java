@@ -18,9 +18,9 @@ public class Server extends RealtimeThread
 {
     public static void main(String[] args) throws Exception
     {
-        System.out.println( "=====================Creating RT Thread in server==========================" );
+        //System.out.println( "=====================Creating RT Thread in server==========================" );
         RealtimeThread rt = (Server) ImmortalMemory.instance().newInstance( Server.class );
-        System.out.println( "=====================Starting RT Thread in server==========================" );
+        //System.out.println( "=====================Starting RT Thread in server==========================" );
         rt.start();
     }
 
@@ -32,17 +32,17 @@ public class Server extends RealtimeThread
     {
         try
         {
-            System.out.println( "=====================Calling ORB Init in server============================" );
+            //System.out.println( "=====================Calling ORB Init in server============================" );
             ORB zen = ORB.init((String[])null, null);
-            System.out.println( "=====================ORB Init complete in server===========================" );
+            //System.out.println( "=====================ORB Init complete in server===========================" );
 
             POA rootPOA = POAHelper.narrow(zen.resolve_initial_references("RootPOA"));
             rootPOA.the_POAManager().activate();
-            System.out.println( "=================== RootPOA resolved, starting servant_to_ref ==============" );
+            //System.out.println( "=================== RootPOA resolved, starting servant_to_ref ==============" );
 
             HelloWorldImpl impl = new HelloWorldImpl();
             org.omg.CORBA.Object obj = rootPOA.servant_to_reference(impl);
-            System.out.println( "=================== Servant registered, getting IOR ========================" );
+            //System.out.println( "=================== Servant registered, getting IOR ========================" );
             String ior = zen.object_to_string(obj);
 
             System.out.println("Running Hello World Example... ");
@@ -52,7 +52,7 @@ public class Server extends RealtimeThread
             bw.write(ior);
             bw.close();
 
-            System.out.println( "============================ ZEN.run() ====================================" );
+            //System.out.println( "============================ ZEN.run() ====================================" );
 			zen.run();
         }
         catch (Exception e)

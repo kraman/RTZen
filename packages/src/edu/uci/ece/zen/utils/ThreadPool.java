@@ -215,16 +215,16 @@ class ThreadSleepRunnable implements Runnable{
 
                 //process the task in the portal of the scoped region
                 ir.init( task );
-                System.out.println( "HandleRequestRunnable finished in ThreadPool" );
-                System.out.println( task.getAssociatedPOA() );
+                //System.out.println( "HandleRequestRunnable finished in ThreadPool" );
+                //System.out.println( task.getAssociatedPOA() );
                 eir.init( ir , ((edu.uci.ece.zen.poa.POA)task.getAssociatedPOA()).poaMemoryArea );
-                System.out.println( "Calling executeInArea on HandleRequestRunnable" );
+                //System.out.println( "Calling executeInArea on HandleRequestRunnable" );
                 try{
                     lane.tp.orb.orbImplRegion.executeInArea( eir );
                 }catch( Exception e ){
                     e.printStackTrace();
                 }
-                System.out.println( "Returned executeInArea on HandleRequestRunnable" );
+                //System.out.println( "Returned executeInArea on HandleRequestRunnable" );
                 task = null;
             }
         }catch( InterruptedException e ){
