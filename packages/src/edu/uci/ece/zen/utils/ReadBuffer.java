@@ -36,8 +36,9 @@ public class ReadBuffer {
             System.exit(-1);
         }
     }
-    static int idgen = -1000000;
+    static int idgen = 0;
     int id;
+
     boolean inUse = false;
     public static ReadBuffer instance() {
         try {
@@ -45,13 +46,19 @@ public class ReadBuffer {
                 numFree--;
             if (bufferCache.isEmpty()) {
                 ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
-                rb.id = idgen++;
+                //rb.id = idgen++;
 
                 rb.inUse = true;
                 return rb;
             }else {
                 //Thread.dumpStack();
                 ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
+                if(ret.inUse)
+                    ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class,
+                        "free",
+                        "Buffer already in use.");
+                //ret.previd = ret.id;
+                //ret.id = idgen++;
                 ret.inUse = true;
                 ret.init();
                 return ret;
@@ -183,6 +190,22 @@ public class ReadBuffer {
     }
 
     public void free() {
+        /*
+        synchronized(ReadBuffer.class){
+            System.out.println("freeing id" + id + "prev id" + previd);
+
+            Thread.dumpStack();
+        }
+
+        if(position < limit) {
+            synchronized(ReadBuffer.class){
+                System.out.println("pos: " + position);
+                System.out.println("lim: " + limit);
+            }
+            return;
+
+        }*/
+
         if(!inUse){
             ZenProperties.logger.log(Logger.WARN, ReadBuffer.class,
                 "free",
@@ -191,7 +214,7 @@ public class ReadBuffer {
                 //still deciding what to do here
             return;
         }
-                //Thread.dumpStack();
+
                 /*
         System.out.write('f');
         System.out.write('\n');
@@ -280,7 +303,7 @@ public class ReadBuffer {
     }
 
     private void pad(int boundry) {
-        int extraBytesUsed = (int) ((position + 8) % boundry); // The CDR
+        int extraBytesUsed = (int) ((position + 12) % boundry); // The CDR
         // alignment
         // should count
         // from the
@@ -306,6 +329,7 @@ public class ReadBuffer {
 
     public byte readByte() {
         checkReadPositionLimit(1);
+        //if (!inUse) System.out.println("IN USE:" + inUse);
         byte[] curBuf = (byte[]) buffers.elementAt((int) (position / 1024));
         byte ret = curBuf[(int) (position % 1024)];
         position++;
@@ -441,7 +465,7 @@ public class ReadBuffer {
         for(int i = 0; i < len; ++i)
             fs.append(readByte());
 
-        if (isString) readByte();
+        if (isString) readByte(); //eat an xtra byte if not just byte array
         return fs;
     }
 
