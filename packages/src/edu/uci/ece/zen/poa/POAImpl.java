@@ -276,6 +276,8 @@ public class POAImpl{
             prun.exception = POARunnable.TransientException;
             ex.printStackTrace();
             return;
+        }finally{
+            retIntHolder( ih );
         }
     }
 

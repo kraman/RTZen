@@ -120,7 +120,6 @@ class MessageProcessor implements Runnable{
     }
 
     public void run(){
-                edu.uci.ece.zen.utils.Logger.printMemStats(300);
         isActive = true;
         if(ZenProperties.devDbg) {
             System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea());

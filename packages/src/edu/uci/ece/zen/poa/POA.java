@@ -167,9 +167,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
      * </p>
      */
     public void handleRequest(final RequestMessage sreq) {
-
-        edu.uci.ece.zen.orb.transport.Transport transport = (edu.uci.ece.zen.orb.transport.Transport) sreq.getTransport().getPortal();
     
+        edu.uci.ece.zen.orb.transport.Transport transport = (edu.uci.ece.zen.orb.transport.Transport) sreq.getTransport().getPortal();
         if( transport.objectTable[0] == null ){
             transport.objectTable[0] = new POARunnable( POARunnable.HANDLE_REQUEST );
             System.out.println("new poa runnable");
