@@ -34,29 +34,34 @@ public abstract class Logger{
         //this.level=level;
     }
 
-    static boolean flag = true;
     public static void printMemStats(){
         printMemStats(-1);
     }
     
     
     public static void printMemStats(int code){
+    
         MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
+        printMemStats(code, ma);
+    
+    }
+        
+    public static void printMemStats(int code, MemoryArea ma){
 	    long mem = ma.memoryConsumed();
         //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());            
-        if(edu.uci.ece.zen.utils.ZenProperties.memDbg) perf.cPrint.nativePrinter.print(code,(int)mem,((ScopedMemory)ma).getReferenceCount());
-        //System.out.println(ma.memoryConsumed());            
-		/* disabled was to verify that memory printing does not consume memory
-		   JNI call does not consume mem !!
-        long diff = ma.memoryConsumed() - mem;
-        if(flag){
-            System.out.println("dbg size: " + diff);
-            flag = false;
+        if(edu.uci.ece.zen.utils.ZenProperties.memDbg){
+             if(ma instanceof ScopedMemory)
+                perf.cPrint.nativePrinter.print(code,(int)mem,((ScopedMemory)ma).getReferenceCount());
+            else
+                perf.cPrint.nativePrinter.print(code,(int)mem,0);
+
+
         }
-		*/
-    }  
+    }
+      
     public static void printMemStats(edu.uci.ece.zen.orb.ORB orb){
-	    printMemStats();
+	    printMemStats(0,orb.parentMemoryArea);
+	    printMemStats(1,orb.orbImplRegion);
         //System.out.println("orb,"+orb.orbImplRegion.memoryConsumed()+","+orb.orbImplRegion.memoryRemaining());            
 	    //System.out.println("client,"+orb.parentMemoryArea.memoryConsumed()+","+orb.parentMemoryArea.memoryRemaining());            
 
