@@ -20,7 +20,7 @@ import javax.realtime.*;
 /**
  * This class is a factory for creating GIOP messages for marshalling or
  * demarshalling messages.
- * 
+ *
  * @author Krishna Raman
  * @author Bruce Miller
  * @author Yue Zhang
@@ -43,6 +43,8 @@ public final class GIOPMessageFactory {
 
         do {
             java.io.InputStream in = trans.getInputStream();
+
+
             parseStreamForHeader(in, mainMsgHdr, trans);
             // Read the GIOP message (including any request/reply/etc headers)
             // into the variable "buffer"
@@ -80,7 +82,7 @@ public final class GIOPMessageFactory {
                                     //ret = edu.uci.ece.zen.orb.giop.v1_0.LocateRequestMessage
                                     //        .getMessage();
                                     //ret.init(orb, buffer);
-                                    
+
                                     //this is provisional until we get it working right
                                     //just return OBJECT_HERE for now
                                     ret = new edu.uci.ece.zen.orb.giop.v1_0.
@@ -184,14 +186,14 @@ public final class GIOPMessageFactory {
         if(ZenProperties.devDbg) {
             System.out.print("parse stream messageId:");
             System.out.println(ret.getRequestId());
-        }        
+        }
         return ret;
     }
 
     /**
      * Collects all fragments following the initial one in a request or a reply
      * in GIOP v1_1.
-     * 
+     *
      * @param trans
      *            Transport (e.g. iiop) where the inputstream should be found.
      * @param headerInfo
@@ -225,7 +227,7 @@ public final class GIOPMessageFactory {
     /**
      * Collects all fragments following the initial one in a request or a reply
      * in GIOP v1_2.
-     * 
+     *
      * @param trans
      *            Transport (e.g. iiop) where the inputstream should be found.
      * @param headerInfo
@@ -265,7 +267,7 @@ public final class GIOPMessageFactory {
 
     /**
      * Read the GIOP Message header from the Transport's stream.
-     * 
+     *
      * @param trans
      *            Transport stream
      * @param headerInfo
@@ -282,8 +284,8 @@ public final class GIOPMessageFactory {
         if(ZenProperties.devDbg) {
             System.out.print("parseStreamForHeader: buffer size");
             System.out.println(header.length);
-        }          
-        while (read < 4) {          
+        }
+        while (read < 4) {
             int tmp = in.read(header, 0, 4);
             //if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
@@ -298,7 +300,7 @@ public final class GIOPMessageFactory {
         //System.err.println( "----GIOP Message Header ----" );
         //System.err.write( header , 0 , 12 );
         //System.err.println( "\n---- ----" );
-	/*
+    /*
         if (header[0] != magic[0] || header[1] != magic[1]
                 || header[2] != magic[2] || header[3] != magic[3]) { throw new RuntimeException(
                 ""); //THROW GIOP Error here
@@ -310,17 +312,17 @@ public final class GIOPMessageFactory {
         // (byte 6)
 
         headerInfo.nextMessageIsFragment = false;
-	/*
+    /*
         if (headerInfo.giopMajorVersion == 1
                 && headerInfo.giopMinorVersion == 1) {
             headerInfo.nextMessageIsFragment = ((header[0] & 0x02) == 1);
         }
-	*/
+    */
 
         headerInfo.messageType = header[0]; //Message type (byte 7)
 
         headerInfo.messageSize = header[1];
-	/*
+    /*
         if (headerInfo.isLittleEndian) {
             //System.out.println( "Little endian msg" );
             //System.out.println( "" + ((int)header[11]) + " " +
@@ -346,7 +348,7 @@ public final class GIOPMessageFactory {
             headerInfo.messageSize <<= 8;
             headerInfo.messageSize |= header[5] & 0xFF;
         }
-	*/
+    */
         //System.out.println( "Message size " + headerInfo.messageSize );
     }
 
@@ -370,16 +372,19 @@ public final class GIOPMessageFactory {
         out.write_octet((byte) org.omg.GIOP.MsgType_1_0._Request);
         out.setLocationMemento();
         //out.write_long(0);
-	out.write_octet((byte)0);
-	out.write_octet((byte)0);
-	out.write_octet((byte)0);
+    out.write_octet((byte)0);
+    out.write_octet((byte)0);
+    out.write_octet((byte)0);
+
         //(new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId
         // )).marshal( out );
 
         edu.uci.ece.zen.orb.giop.v1_0.RequestMessage rm = edu.uci.ece.zen.orb.giop.v1_0.RequestMessage
                 .getMessage();
         rm.init(req, messageId);
+        //out.updateLength();
         rm.marshal(out);
+
         rm.free();
     }
 
@@ -387,11 +392,11 @@ public final class GIOPMessageFactory {
             RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
-        
+
         if(ZenProperties.devDbg) {
             System.out.print("construct reply for messageId:");
             System.out.println(req.getRequestId());
-        }            
+        }
 
         //out.write_octet_array(magic, 0, 4);
         //giop version
@@ -403,9 +408,9 @@ public final class GIOPMessageFactory {
         out.write_octet((byte) org.omg.GIOP.MsgType_1_0._Reply);
         out.setLocationMemento();
         //out.write_long(0);
-	out.write_octet((byte)0);
-	out.write_octet((byte)0);
-	out.write_octet((byte)0);
+    out.write_octet((byte)0);
+    out.write_octet((byte)0);
+    out.write_octet((byte)0);
 
         switch (req.getGiopVersion()) {
             case 10:
@@ -430,11 +435,12 @@ public final class GIOPMessageFactory {
             default:
                 ZenProperties.logger.log(Logger.WARN, GIOPMessageFactory.class, "constructReplyMessage", "giop version not supported");
         }
+        //out.updateLength();
         return out;
     }
     /**.
      */
-     
+
     public static CDROutputStream constructLocateReplyMessage(ORB orb,
             edu.uci.ece.zen.orb.giop.type.LocateRequestMessage req)
     {
@@ -463,7 +469,7 @@ public final class GIOPMessageFactory {
         }
         return out;
     }
-    
+
     public static CDROutputStream constructExceptionMessage(ORB orb,
             RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
@@ -479,9 +485,9 @@ public final class GIOPMessageFactory {
         out.write_octet((byte) org.omg.GIOP.MsgType_1_0._Reply);
         out.setLocationMemento();
         //out.write_long(0);
-	out.write_octet((byte)0);
-	out.write_octet((byte)0);
-	out.write_octet((byte)0);
+    out.write_octet((byte)0);
+    out.write_octet((byte)0);
+    out.write_octet((byte)0);
 
         switch (req.getGiopVersion()) {
             case 10:
@@ -513,7 +519,7 @@ public final class GIOPMessageFactory {
      * Read a CORBA long (Java int) from the input stream, using
      * headerInfo.isLittleEndian to decide if it should be treated as little
      * endian or big endian.
-     * 
+     *
      * @param in
      *            InputStream to read four bytes from
      * @param headerInfo
