@@ -22,7 +22,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             }catch( Exception e ){
                 e.printStackTrace();
                 System.exit(-1);
-            }           
+            }
         }else
             return (ObjRefDelegate) objRefDelegateCache.dequeue();
         return null;
@@ -41,7 +41,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     private WriteBuffer ior;
     private ORB orb;
-    
+
     private LaneInfo priorityLanes[];
     private int numLanes;
 
@@ -107,7 +107,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
                                 addLaneData( Thread.MIN_PRIORITY , Thread.MAX_PRIORITY , transportScope , profilebody.object_key );
                             }break;
-                            case 1:{
+                            case 1:
+                            case 2:{
                                 org.omg.IIOP.ProfileBody_1_1 profilebody = org.omg.IIOP.ProfileBody_1_1Helper.read( in );
                                 long connectionKey = ConnectionRegistry.ip2long( profilebody.host , profilebody.port );
                                 ScopedMemory transportScope = orb.getConnectionRegistry().getConnection( connectionKey );
@@ -116,7 +117,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                     transportScope = connector.connect( profilebody.host , profilebody.port , orb , orbImpl );
                                     orb.getConnectionRegistry().putConnection( connectionKey , transportScope );
                                 }
-                            
+
                                 //TODO: process priority policies here and add the appropriate lanes
                                 addLaneData( NoHeapRealtimeThread.MIN_PRIORITY , NoHeapRealtimeThread.MAX_PRIORITY , transportScope , profilebody.object_key );
                             }break;
@@ -126,7 +127,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                             Logger.WARN,
                             "edu.uci.ece.zen.orb.ObjRefDelegate",
                             "processTaggedProfile",
-                            "Cant make any more connections. Hashtable is full" 
+                            "Cant make any more connections. Hashtable is full"
                         );
                     }
                 }
@@ -148,7 +149,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     public String toString(){
         return IOR.makeIOR( ior );
     }
-    
+
     /**
      * The logical_type_id is a string denoting a shared type identifier (RepositoryId). The operation
      * returns true if the object is really an instance of that type, including if that type is an
@@ -156,7 +157,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      * compatible with the logical_type_id may require contacting a remote ORB or interface repository.
      * Such an attempt may fail at either the local or the remote end. If is_a cannot make a reliable
      * determination of type compatibility due to failure, it raises an exception in the calling
-     * application code. This enables the application to distinguish among the TRUE, FALSE, and 
+     * application code. This enables the application to distinguish among the TRUE, FALSE, and
      * indeterminate cases.
      */
     public boolean is_a(org.omg.CORBA.Object self, String repository_id ){
@@ -180,7 +181,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         }finally{
             releaseReply( self , _input);
         }
-        
+
         //if still not found
         */
         return false;
@@ -308,12 +309,12 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public org.omg.CORBA.Request create_request(org.omg.CORBA.Object self, org.omg.CORBA.Context ctx, String operation, 
+    public org.omg.CORBA.Request create_request(org.omg.CORBA.Object self, org.omg.CORBA.Context ctx, String operation,
             org.omg.CORBA.NVList arg_list, org.omg.CORBA.NamedValue result, org.omg.CORBA.ExceptionList exclist, org.omg.CORBA.ContextList ctxlist) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-    public org.omg.CORBA.Request create_request(org.omg.CORBA.Object self, org.omg.CORBA.Context ctx, String operation, 
+    public org.omg.CORBA.Request create_request(org.omg.CORBA.Object self, org.omg.CORBA.Context ctx, String operation,
             org.omg.CORBA.NVList arg_list, org.omg.CORBA.NamedValue result) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }

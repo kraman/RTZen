@@ -79,7 +79,7 @@ public class IOR
             throws IllegalAccessException,InstantiationException
     {
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea.newInstance(org.omg.IOP.IOR.class);
-        ior.type_id = typeID; 
+        ior.type_id = typeID;
         ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, objKeyLength, clientArea);
 
         ObjectImpl objectImpl = (ObjectImpl) clientArea.newInstance(edu.uci.ece.zen.orb.ObjectImpl.class);

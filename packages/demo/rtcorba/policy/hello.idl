@@ -1,0 +1,14 @@
+module demo
+{
+	module rtcorba
+	{
+		module policy
+		{
+			interface HelloWorld
+			{
+				string getMessage();
+			};
+		};
+	};
+};
+
