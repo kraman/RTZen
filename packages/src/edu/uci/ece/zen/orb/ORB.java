@@ -163,29 +163,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.omg.CORBA.ORB#set_parameters(java.applet.Applet, java.util.Properties)
-     *
-    protected void set_parameters(Applet app, Properties props)
-    {
-        // XXX Unsupported in RTZen because jRate does not support Applets.
-        /*
-         * NOTE: Unsupported in RTZen because jRate does not support Applets /**
-         * Initalizes the ORB and returns a reference to the orb. This method can be
-         * called multiple times and must return the same orb reference. This is a
-         * special method added to support Java Applets.
-         * @param app The applet object to load arguments from.
-         * @param props The properties to be used during ORB initialization.
-         * /
-
-         // public static org.omg.CORBA.ORB  init(java.applet.Applet app, java.util.Properties props)
-        // {
-         //     ZenProperties.loadProperties(props); return ORB.init((String[])null,props); }
-
-    }*/
-
-
-
     public ScopedMemory orbImplRegion;
 
     public MemoryArea parentMemoryArea;

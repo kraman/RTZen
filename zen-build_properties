@@ -41,12 +41,12 @@ Mackinac_install = /opt/mackinac
 #zen.aspects.pi
 
 #Debug Settings
-zen.debug.memory.immortal = true
-zen.debug.memory.scoped.application = true
-zen.debug.memory.scoped.orb = true
-zen.debug.memory.scoped.poa = true
-zen.debug.memory.scoped.transport = true
-zen.debug.memory.scoped.threadpool = true
+zen.debug.memory.immortal = false
+zen.debug.memory.scoped.application = false
+zen.debug.memory.scoped.orb = false
+zen.debug.memory.scoped.poa = false
+zen.debug.memory.scoped.transport = false
+zen.debug.memory.scoped.threadpool = false
 
 zen.debug.memory.immortal.id = 9
 zen.debug.memory.scoped.application.id = 0
@@ -60,14 +60,14 @@ zen.debug.memory.mem_stat_count = 100
 #it is safe to assume that there is no memory leak at all
 zen.debug.memory.observe_last_x_percent = 50
 
-zen.debug.invocations = true
-zen.debug.ior = true
-zen.debug.poa = true
-zen.debug.orb = true
-zen.debug.tp = true
+zen.debug.invocations = false
+zen.debug.ior = false
+zen.debug.poa = false
+zen.debug.orb = false
+zen.debug.tp = false
 zen.debug.zenproperties = false
-zen.debug.datastructures = true
-zen.debug.threadstack = true
+zen.debug.datastructures = false
+zen.debug.threadstack = false
 
 
 
