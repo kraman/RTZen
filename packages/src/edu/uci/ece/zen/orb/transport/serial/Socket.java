@@ -11,13 +11,22 @@ import edu.uci.ece.zen.utils.ZenProperties;
 public class Socket
 {
     private SerialPortConnection connection;
+    private byte id;
 
-    private Socket() {}
+    private static byte lastUsedID;
+
+    static final byte NEXT_AVAILABLE_ID = -1;
+
+    public Socket()
+    {
+        // No initialization
+    }
 
     public Socket(String host, int port) throws UnknownHostException, IOException
     {
         System.out.println("Socket(): host=" + host + ":" + port);
-        connection = SerialPortManager.instance().connect(port, host, this);
+        SerialPortManager.instance().connect(port, host, this, true);
+        System.out.println("Socket(): got connection, id=" + id + ", connection=" + connection);
     }
 
     public synchronized void setReceiveBufferSize(int size) throws SocketException {
@@ -37,10 +46,37 @@ public class Socket
     }
 
     public InputStream getInputStream() throws IOException {
-        return connection.stream.getInputStream();
+        System.out.println("Socket: getInputStream, socket=" + id + ", connection=" + connection);
+
+        return connection.getStream().getInputStream();
     }
 
     public OutputStream getOutputStream() throws IOException {
-        return connection.stream.getOutputStream();
+        System.out.println("Socket: getOutputStream, socket=" + id + ", connection=" + connection);
+
+        return connection.getStream().getOutputStream();
+    }
+
+    void setConnection(SerialPortConnection connection)
+    {
+        this.connection = connection;
+    }
+
+    byte getID()
+    {
+        return id;
+    }
+
+    void setID(byte id)
+    {
+        if (id == NEXT_AVAILABLE_ID)
+        {
+            lastUsedID++;
+            this.id = lastUsedID;
+        }
+        else
+        {
+            this.id = id;
+        }
     }
 }

@@ -20,13 +20,9 @@ public class ServerSocket
     {
         try
         {
-            System.out.println("ServerSocket.accept (port=" + connection.getPort() + ", addr=" + connection.getAddress() + "), waiting for incoming connections....");
+            System.out.println("ServerSocket: accept(port=" + connection.getPort() + ", addr=" + connection.getAddress() + "), waiting for incoming connections....");
 
-            connection.waitForConnection();
-
-            System.out.println("ServerSocket.accept got connection");
-
-            return connection.socket;
+            return connection.waitForConnection();
         }
         catch (InterruptedException e)
         {
