@@ -1,8 +1,4 @@
-/* --------------------------------------------------------------------------*
- * $Id: ExceptionHandler.java,v 1.1 2004/02/06 00:20:49 kraman Exp $
- *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.orb;
-
 
 import edu.uci.ece.zen.orb.protocols.Transport;
 import org.omg.CORBA.SystemExceptionHelper;
@@ -17,7 +13,7 @@ import edu.uci.ece.zen.orb.giop.RequestMessage;
  * @author Mayur Deshpande
  * @author Arvind Krishna
  * @author Krishna Raman
- * @version $Revision: 1.1 $ $Date: 2004/02/06 00:20:49 $
+ * @version $Revision: 1.5 $ $Date: 2003/07/14 20:45:51 $
  */
 public class ExceptionHandler {
 
@@ -29,9 +25,7 @@ public class ExceptionHandler {
      * @param transport The transport object associated with the message.
      * @param orb The ORB associated with the transport.
      */
-    public static void handleException(org.omg.CORBA.SystemException ex,
-            RequestMessage message,
-            Transport transport, ORB orb) {
+    public static void handleException(org.omg.CORBA.SystemException ex, RequestMessage message, Transport transport, ORB orb) {
         // Logger.debug("Handling system exception:" + ex);
 
         // print the Exception stack trace at the Server!

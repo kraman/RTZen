@@ -34,4 +34,5 @@ public class LocateReplyMessage extends edu.uci.ece.zen.orb.giop.type.LocateRepl
         return header.locate_status.value();
     }
     
+    public int getGiopVersion(){ return 10; }
 }

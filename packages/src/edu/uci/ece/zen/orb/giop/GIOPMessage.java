@@ -20,7 +20,6 @@ public abstract class GIOPMessage{
     protected CDRInputStream istream;
     protected ScopedMemory scope;
     protected ReadBuffer messageBody;
-
     protected GIOPMessage() {
     }
     
@@ -31,11 +30,11 @@ public abstract class GIOPMessage{
 
     public abstract int getRequestId();
     public abstract void marshal( CDROutputStream out );
+    public abstract int getGiopVersion();
 
     public CDRInputStream getCDRInputStream() {
         return istream;
     }
     public final void setScope( ScopedMemory scope ) { this.scope = scope; }
     public final ScopedMemory getScope(){ return scope; }
-
 }

@@ -34,4 +34,5 @@ public class LocateRequestMessage extends edu.uci.ece.zen.orb.giop.type.LocateRe
         LocateRequestHeader_1_0Helper.write(out, header);
     }
 
+    public int getGiopVersion(){ return 10; }
 }

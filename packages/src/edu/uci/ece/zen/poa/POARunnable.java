@@ -2,6 +2,9 @@ package edu.uci.ece.zen.poa;
 
 import javax.realtime.*;
 import java.util.Vector;
+import edu.uci.ece.zen.orb.*;
+import org.omg.CORBA.Policy;
+import org.omg.PortableServer.*;
 
 public class POARunnable implements Runnable{
     public static final int INIT=0;
@@ -11,7 +14,6 @@ public class POARunnable implements Runnable{
     public static final int REFERENCE_TO_SERVANT=4;
     public static final int REFERENCE_TO_ID=5;
     public static final int ID_TO_SERVANT=6;
-    public static final int ID_TO_REFERENCE=0;
     public static final int ACTIVATE_OBJECT=7;
     public static final int ACTIVATE_OBJECT_WITH_ID=8;
     public static final int DEACTIVATE_OBJECT=9;
@@ -25,6 +27,7 @@ public class POARunnable implements Runnable{
     public static final int CREATE_REFERENCE=17;
     public static final int CREATE_REFERENCE_WITH_ID=18;
     public static final int GET_POLICY_LIST=19;
+    public static final int ID_TO_REFERENCE=20;
 
     public static final int NoException = 0;
     public static final int InvalidPolicyException = 1;
@@ -67,7 +70,7 @@ public class POARunnable implements Runnable{
                 ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal(pimpl);
                 break;
             case HANDLE_REQUEST:
-                pimpl.handleRequest( (ServerRequest) args.elementAt(0) , this );
+                pimpl.handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) args.elementAt(0) , this );
                 break;
             case SERVANT_TO_ID:
                 pimpl.servant_to_id( (Servant) args.elementAt(0) , 
@@ -86,9 +89,9 @@ public class POARunnable implements Runnable{
                     this );
                 break;
             case REFERENCE_TO_ID:
-                pimpl.reference_to_id( (org.omg.CORBA.Object) args.elementAt(0) , 
-                    (MemoryArea) args.elementAt(1) ,
-                    this );
+//                pimpl.reference_to_id( (org.omg.CORBA.Object) args.elementAt(0) , 
+//                    (MemoryArea) args.elementAt(1) ,
+//                    this );
                 break;
             case ID_TO_SERVANT:
                 pimpl.id_to_servant( (byte[]) args.elementAt(0) , 

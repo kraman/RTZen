@@ -103,6 +103,6 @@ public abstract class RequestProcessingStrategy {
      * @return signifies the successful completion of request/internal errors,
      Forward Request Exceptions
      */
-    public abstract int handleRequest(ServerRequest request, edu.uci.ece.zen.poa.POA poa, edu.uci.ece.zen.poa.SynchronizedInt requests); 
+    public abstract int handleRequest(RequestMessage request, edu.uci.ece.zen.poa.POA poa, edu.uci.ece.zen.poa.SynchronizedInt requests); 
 }
 

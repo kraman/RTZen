@@ -96,13 +96,11 @@ public final class ActiveObjectMapOnlyStrategy extends
  * @param requests edu.uci.ece.zen.poa.SynchronizedInt
  * @return int
  */
-    public int handleRequest(ServerRequest request,
-            edu.uci.ece.zen.poa.POA poa,
-            edu.uci.ece.zen.poa.SynchronizedInt requests, IntHolder exceptionValue) {
-
+    public int handleRequest( edu.uci.ece.zen.orb.giop.type.RequestMessage request, POA poa, SynchronizedInt requests , IntHolder exceptionValue ) {
         exceptionValue.value = POARunnable.NoException;
-        byte[] okey = request.getObjectKey();
-        // edu.uci.ece.zen.poa.ObjectID  oid  = new ObjectID(okey.getId());
+        FString okey = new FString(255);
+        request.getObjectKey( okey );
+
         ActiveDemuxLoc loc = okey.servDemuxIndex();
 
         if (this.servant == null) {

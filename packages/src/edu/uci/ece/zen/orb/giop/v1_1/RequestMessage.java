@@ -40,4 +40,6 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
     public void marshal( CDROutputStream out ) {
         RequestHeader_1_1Helper.write( out, header );
     }
+
+    public int getGiopVersion(){ return 11; }
 }

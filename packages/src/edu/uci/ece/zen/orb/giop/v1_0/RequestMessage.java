@@ -38,4 +38,6 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
         // LocateRequest messages contain only a GIOP header then the LocateRequestHeader
         RequestHeader_1_0Helper.write( out , header );
     }
+
+    public int getGiopVersion(){ return 10; }
 }

@@ -29,4 +29,6 @@ public class LocateRequestMessage extends  edu.uci.ece.zen.orb.giop.type.LocateR
         // LocateRequest messages contain only a GIOP header then the LocateRequestHeader
         LocateRequestHeader_1_1Helper.write(out, header);
     }
+
+    public int getGiopVersion(){ return 11; }
 }

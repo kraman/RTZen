@@ -4,6 +4,11 @@ import javax.realtime.*;
 
 public class FString{
     public FString(){}
+    public FString( int maxSize ){
+        this.maxSize = maxSize;
+        this.currentSize = 0;
+        this.data = new byte[maxSize];
+    }
 
     int maxSize;
     int currentSize;

@@ -5,12 +5,9 @@ package edu.uci.ece.zen.poa;
 
 import org.omg.CORBA.CompletionStatus;
 import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.orb.ObjectLocation;
-import edu.uci.ece.zen.orb.ServerRequest;
-
 import edu.uci.ece.zen.orb.giop.*;
 import edu.uci.ece.zen.orb.giop.type.*;
-import edu.uci.ece.zen.sys.ZenProperties;
+import edu.uci.ece.zen.utils.*;
 
 
 public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHandler {
@@ -19,11 +16,13 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
     public POAServerRequestHandler(ORB orb) {
         super(orb);
         int numPOAs = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.maxNumPOAs" , "1" ) );
-        demuxTable = new edu.uci.ece.zen.utils.Hashtable( numPOAs );
+        demuxTable = new edu.uci.ece.zen.utils.Hashtable();
+        demuxTable.init( numPOAs );
     }
 
-    void addPOA(byte[] poaPath , int nameLen , POA poa) {
-        demuxTable.put(name , nameLen , poa);
+    public abstract int addPOA( FString path, org.omg.PortableServer.POA poa );
+        demuxTable.put(poaPath , poa);
+        return demuxTable.getIndex( poaPath );
     }
 
     /**
@@ -42,12 +41,11 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
      */
     public void handleRequest(RequestMessage req) {
        // gt the index into the Active Map
-       byte[] objKey = req.getObjectKey();
+       FString fs = new FString( 256 );
+       req.getObjectKey( fs );
 
-       int index = ObjectKeyHelper.getPOAIndex( objKey );
-       int genCount = ObjectKeyHelper.getPOAGeneration( objKey );
-
-       ServerRequest sreq = new ServerRequest( req );
+       int index = ObjectKeyHelper.getPOAIndex( fs );
+       int genCount = ObjectKeyHelper.getPOAGeneration( fs );
 
        POA poa = null;
 
@@ -63,7 +61,10 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
            throw new org.omg.CORBA.OBJECT_NOT_EXIST("The transient poa not found");
        }
 
-        poa.handleRequest(sreq);
+        poa.handleRequest(req);
+    }
+
+    public void handleCancelRequest( CancelRequestMessage crm ){
     }
 
     public POA findPOA( byte[] poaPath ) {
@@ -273,15 +274,6 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
                     waitForRequestsToComplete);
         }
     }
-    /**
-     *
-     * @param key
-     * @return ObjectLocatioin
-     */
-
-    public ObjectLocation locateObject(ObjectKey key) {
-        return new ObjectLocation(ObjectLocation.NOT_HERE);
-    }
 
     /**
      *
@@ -375,7 +367,7 @@ public class POAServerRequestHandler extends edu.uci.ece.zen.orb.ServerRequestHa
      * @param okey
      * @return POA
      */
-    public POA find_POA(ObjectKey okey) {
+    public POA find_POA( FString okey ) {
         /*
         int index = okey.poaIndex();
         int genCount = okey.poaIndexGenCount();

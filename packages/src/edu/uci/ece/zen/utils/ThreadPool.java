@@ -9,8 +9,9 @@ public class ThreadPool{
     int maxBufferedRequests;
     int requestBufferSize;
     boolean allowBorrowing;
+    ORB orb;
     
-    public ThreadPool( int stackSize , int staticThreads , int dynamicThreads , short defaultPriority , boolean allowRequestBuffering , int maxBufferedRequests , int requestBufferSize ){
+    public ThreadPool( int stackSize , int staticThreads , int dynamicThreads , short defaultPriority , boolean allowRequestBuffering , int maxBufferedRequests , int requestBufferSize , ORB orb ){
         //stackSize; //KLUDGE: ignored
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
@@ -20,9 +21,10 @@ public class ThreadPool{
         this.lanes = new Lane[1];
         this.lanes[0] = new Lane( stackSize , staticThreads, dynamicThreads , defaultPriority , this , allowBorrowing , allowRequestBuffering , maxBufferedRequests );
         this.lanes[0].setLaneId( 0 );
+        this.orb = orb;
     }
 
-    public ThreadPool( int stackSize ,  boolean allowRequestBuffering , int maxBufferedRequests , int requestBufferSize , org.omg.RTCORBA.ThreadpoolLane[] lanes , boolean allowBorrowing ){
+    public ThreadPool( int stackSize ,  boolean allowRequestBuffering , int maxBufferedRequests , int requestBufferSize , org.omg.RTCORBA.ThreadpoolLane[] lanes , boolean allowBorrowing , ORB orb ){
         //stackSize; //KLUDGE: ignored
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
@@ -36,6 +38,7 @@ public class ThreadPool{
         java.util.Arrays.sort( this.lanes , 0 , lanes.length );
         for( int i=0;i<this.lanes.length;i++ )
             this.lanes[i].setLaneId( i );
+        this.orb = orb;
     }
 
     public boolean borrowThreadAndExecute( ScopedMemory task , int laneId ){
@@ -211,7 +214,9 @@ class ThreadSleepRunnable implements Runnable{
                 //process the task in the portal of the scoped region
                 eir.init( ir , task );
                 try{
+                    eir.executeInArea( lane.tp.orb.orbImplRegion );
                 }catch( Exception e ){
+                    e.printStackTrace();
                 }
                 task = null;
             }

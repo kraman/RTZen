@@ -26,6 +26,7 @@ public class CancelRequestMessage extends edu.uci.ece.zen.orb.giop.type.CancelRe
         CancelRequestHeaderHelper.write( out , header );
     }
 
+    public int getGiopVersion(){ return 10; }
 }
 
 // client should call

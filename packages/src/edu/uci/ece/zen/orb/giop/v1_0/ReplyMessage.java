@@ -26,4 +26,6 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
     public void marshal( CDROutputStream out ){
         ReplyHeader_1_0Helper.write( out, header );
     }
+
+    public int getGiopVersion(){ return 10; }
 }

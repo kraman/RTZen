@@ -175,8 +175,8 @@ public class POAImpl{
      * <p>
      *      Transport thread:<br/>
      *      <p>
-     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; <b>Message</b> --ex in--&gt; ORBImpl scope --&gt; 
-     *              POAImpl region --ex in--&gt; ORBImpl scope --&gt; TP Region 
+     *          Transport scope --ex in--&gt; ORBImpl scope --&gt; Message --ex in--&gt; ORBImpl scope --&gt; 
+     *              <b>POAImpl region</b> --ex in--&gt; ORBImpl scope --&gt; TP Region 
      *      </p>
      *      TP Thread:<br/>
      *      <p>
@@ -206,8 +206,13 @@ public class POAImpl{
 
             ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );
-            tpr.init( this , numberOfCurrentRequests , this.requestProcessingStrategy , req );
+            tpr.init( self , requestScope );
             eir.init( tpr , tpRegion );
+
+            HandleRequestRunnable hrr = (HandleRequestRunnable) requestScope.newInstance( HandleRequestRunnable.class );
+            hrr.init( poa , req );
+            requestScope.setPortal( hrr );
+            
             orb.orbImplRegion.executeInArea( eir );
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here
@@ -334,7 +339,10 @@ public class POAImpl{
     public void id( MemoryArea mem , POARunnable prun ){
     }
 
-    public void get_servant_manager( ServantManager manager , POARunnable prun ){
+    public void get_servant_manager( POARunnable prun ){
+    }
+
+    public void set_servant_manager( ServantManager manager , POARunnable prun ){
     }
 
     public void get_servant( POARunnable prun ){
@@ -349,7 +357,7 @@ public class POAImpl{
     public void create_reference_with_id( byte[] oid , String str , MemoryArea mem , POARunnable prun ){
     }
 
-    public void get_policy_list( MemoryArea mem , POARunnable prun ){
+    public void policy_list( MemoryArea mem , POARunnable prun ){
     }
 
     protected void validateProcessingState( IntHolder ih ) {
@@ -413,6 +421,25 @@ class CreateReferenceWithObjectRunnable implements Runnable{
     {
         try{
             retVal = edu.uci.ece.zen.orb.IOR.makeCORBAObject(orb, intf, ok, ma);
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
+    }
+}
+
+class HandleRequestRunnable implements Runnable{
+    POA poa;
+    RequestMessage req;
+
+    public void init( POA poa , RequestMessage req ){
+        this.poa = poa;
+        this.req = req;
+    }
+    
+    public void run(){
+        POAImpl pimpl = ((POAImpl)poa.poaMemoryArea.getPortal());
+        try{
+            pimpl.requestProcessingStrategy.handleRequest( req , poa , pimpl.numRequests );
         }catch( Exception e ){
             e.printStackTrace();
         }

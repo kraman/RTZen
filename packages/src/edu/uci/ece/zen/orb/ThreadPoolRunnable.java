@@ -50,9 +50,9 @@ public class ThreadPoolRunnable implements Runnable{
         if(stacksize >= 0){
             ThreadPool tp;
             if(lanes == null)
-                tp = new ThreadPool(stacksize, staticThreads, dynamicThreads, defaultPriority, allowRequestBuffering, maxBufferedRequests, maxRequestBufferSize);
+                tp = new ThreadPool(stacksize, staticThreads, dynamicThreads, defaultPriority, allowRequestBuffering, maxBufferedRequests, maxRequestBufferSize , orb);
             else
-                tp = new ThreadPool(stacksize, allowRequestBuffering, maxBufferedRequests, maxRequestBufferSize, lanes, allowBorrowing );
+                tp = new ThreadPool(stacksize, allowRequestBuffering, maxBufferedRequests, maxRequestBufferSize, lanes, allowBorrowing , orb );
 
             orb.threadpoolList[rtorb.tpID] = RealtimeThread.getCurrentMemoryArea();
 

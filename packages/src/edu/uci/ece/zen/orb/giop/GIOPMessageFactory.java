@@ -7,6 +7,7 @@ package edu.uci.ece.zen.orb.giop;
 import edu.uci.ece.zen.orb.*;
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.orb.transport.*;
+import edu.uci.ece.zen.orb.giop.type.*;
 
 /**
  * This class is a factory for creating GIOP messages for marshalling or 
@@ -248,8 +249,6 @@ public final class GIOPMessageFactory
         System.err.println( "---- ----" );
     }
 
-
-
     /**
      * Client upcall:
      * <p>
@@ -270,6 +269,14 @@ public final class GIOPMessageFactory
         (new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId )).marshal( out );
     }
 
+    /**
+     * Client upcall:
+     * <p>
+     *     Client scope --&gt; <b>Message scope/Waiter region</b> --ex in --&gt; Immortal --&gt; Transport scope
+     * </p>
+     */
+    public static void constructReplyMessage( RequestMessage req , CDROutputStream out ){
+    }
 
 
     /**
