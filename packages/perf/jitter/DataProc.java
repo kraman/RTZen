@@ -60,6 +60,7 @@ class DataProc{
 		    for (int j=0; j<messageSizes.length; j++){
 			    if(localOrRemote.equals("local")|localOrRemote.equals("both")){
 				    String filename = "timeRecords.raw."+testType+"."+num+"."+num+"."+messageSizes[j]+".txt";
+                                    String newFilename = "timeRecords."+testType+"."+num+"."+num+"."+messageSizes[j]+".txt";
 				    BufferedReader br = new BufferedReader(new FileReader(filename));
 				    System.out.println("The file being processed is "+filename);
 				    String s;
@@ -93,16 +94,18 @@ class DataProc{
 				    }
 
 
-				    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
+				    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(newFilename)));
 				    for(int i=0; i<vecProc.size();i++){
 					    out.println(((Double)vecProc.elementAt(i)).doubleValue());
 				    }
 				    out.flush();
 				    out.close();
-				    System.out.println("Finish processing "+filename);
+				    System.out.println("Finish processing "+newFilename);
 			    }
 			    if(localOrRemote.equals("remote")|localOrRemote.equals("both")){
-				    String filename = "timeRecords.raw."+testType+"."+(num*10)+"."+num+"."+messageSizes[j]+".txt";
+				    String filename = "timeRecords.raw."+testType+"."+num+"."+num+"."+messageSizes[j]+".txt";
+				    String newFilename = "timeRecords."+testType+"."+num+"."+num+"."+messageSizes[j]+".txt";
+
 				    BufferedReader br = new BufferedReader(new FileReader(filename));
 				    System.out.println("The file being processed is "+filename);
 				    String s;
@@ -136,13 +139,13 @@ class DataProc{
 				    }
 
 
-				    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
+				    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(newFilename)));
 				    for(int i=0; i<vecProc.size();i++){
 					    out.println(((Double)vecProc.elementAt(i)).doubleValue());
 				    }
 				    out.flush();
 				    out.close();
-				    System.out.println("Finish processing "+filename);
+				    System.out.println("Finish processing "+newFilename);
 			    }
 		    }
 	    }

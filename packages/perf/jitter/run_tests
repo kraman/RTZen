@@ -17,9 +17,12 @@ function printUsage() {
 		echo "                20 TAO servant remote"
 		echo "                3  JacORB servant on Sun JVM"
 		echo "                30 JacORB servant remote on Sun JVM"
+                echo "                4  Simulated RTZen servant on Sun JVM"
+                echo "                40 Simulated RTZen servant remote on Sun JVM"
 		echo "    clientType  1  RTZen client on jRate (Ahead of time RTSJ VM"
 		echo "                2  TAO client"
 		echo "                3  JacORB client on Sun JVM"
+                echo "                4  Simulated RTZen client on Sun JVM 
 
 		exit -1;
 
@@ -79,6 +82,8 @@ export JRATE_SCOPES_ARENA_SIZE=300
 export JAC_HOME="/usr/share/java/JacORB_2_2_1"
 
 JAC_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$JAC_HOME/lib/jacorb.jar:$PROJECT_HOME/classes:$JAC_HOME/lib/logkit-1.2.jar:$JAC_HOME/lib/avalon-framework-4.1.5.jar -Djacorb.home=$JAC_HOME -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=orb.jacorb.orb.ORBSingleton"
+
+JAVA_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$PROJECT_HOME/classes:$CLASSPATH:/usr/java/j2sdk1.4.2_01/lib/tools.jar -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton -Xms200M -Xmx500M"
 
 
 #change to program dir, all filenames are relative
@@ -145,6 +150,26 @@ function startServer(){
                                 EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
                                 $EXEC_CMD2&
                                 echo $! > $STOPFNAME
+		elif [ $1 -eq 4 ]; then
+                                # start simulated RTZen server in Sun JVM
+				EXEC_CMD="$JAVA_START perf.jitter.Server $1"
+				echo "Exec cmd:"
+				echo $EXEC_CMD
+				$EXEC_CMD&
+				echo $! > $STOPFNAME
+
+		elif [ $1 -eq 40 ]; then
+                                # start simulated RTZen server remote in Sun JVM
+				EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 4 $1"
+				echo "Exec cmd:"
+				echo $EXEC_CMD
+				$EXEC_CMD&
+				sleep $SLEEPTIME
+				EXEC_CMD2="scp $REMNODE:`pwd`/ior.txt ."
+				$EXEC_CMD2&
+#echo $! > $STOPFNAME
+
+
            	else
                 printUsage "startServer, unknown server type '$1'"
                 fi
@@ -156,7 +181,7 @@ function startServer(){
 function stopServer(){
 	echo "stop server "
 
-	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 ]; then
+	if [ $1 -eq 1 -o $1 -eq 2 -o $1 -eq 3 -o $1 -eq 4]; then
 	
 		if [ -f $STOPFNAME ]; then
 		
@@ -187,6 +212,14 @@ function stopServer(){
 		echo $EXEC_CMD
 		$EXEC_CMD
 		echo $! > $STOPFNAME	
+       
+       elif [ $1 -eq 40 ]; then
+                EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 4$1"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD
+                echo $! > $STOPFNAME
+
        else
              printUsage "unknown server type"
        fi
@@ -194,7 +227,7 @@ function stopServer(){
 
 # startup function for the client
 # parameters 
-#   type of rt system to start  ( 1 RTZen client on jRate, 2 TAO, 3 JacORB client on Sun JVM )
+#   type of rt system to start  ( 1 RTZen client on jRate, 2 TAO, 3 JacORB client on Sun JVM 4 Simulated RTZen on JVM )
 #   type of test (see client.java)
 #   number of elements in sequence to be tested 
 function startClient(){
@@ -213,6 +246,12 @@ function startClient(){
                 
         elif [ $1 -eq 3 ]; then
                 EXEC_CMD="$JAC_START perf.jitter.Client_jni $2 $3"
+                echo "Exec cmd:"
+                echo $EXEC_CMD
+                $EXEC_CMD
+
+        elif [ $1 -eq 4 ]; then
+                EXEC_CMD="$JAVA_START perf.jitter.Client_jni $2 $3"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD
