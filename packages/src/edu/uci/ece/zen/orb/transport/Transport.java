@@ -184,8 +184,7 @@ class MessageProcessor implements Runnable {
 
     public void run() {
         isActive = true;
-        if (ZenProperties.dbg) ZenProperties.logger.log(javax.realtime.RealtimeThread
-                    .getCurrentMemoryArea().toString());
+        if (ZenProperties.dbg) ZenProperties.logger.log(javax.realtime.RealtimeThread.getCurrentMemoryArea().toString());
         GIOPMessageRunnable gmr = new GIOPMessageRunnable(orb, trans);
 
         //ExecuteInRunnable eir = new ExecuteInRunnable();
@@ -202,9 +201,8 @@ class MessageProcessor implements Runnable {
                 //messageScope.enter(gmr);
                 gmr.run();
             } catch (Exception e) {
-                ZenProperties.logger.log(Logger.SEVERE,
-                        getClass(),
-                        "run", "Could not process message", e);
+                ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", "Could not process message", e);
+		e.printStackTrace();
             }
             gmr.setRequestScope(null);
         }
@@ -267,18 +265,18 @@ class GIOPMessageRunnable implements Runnable {
         try {
 
             statCount++;
- //           edu.uci.ece.zen.utils.Logger.printMemStats(304);
+ //         edu.uci.ece.zen.utils.Logger.printMemStats(304);
 
             if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
                 //System.out.print(name);
                 edu.uci.ece.zen.utils.Logger.printMemStats(3);
                 edu.uci.ece.zen.utils.Logger.printMemStats(orb);
             }
- //           edu.uci.ece.zen.utils.Logger.printMemStats(305);
+ //         edu.uci.ece.zen.utils.Logger.printMemStats(305);
 
             ZenProperties.logger.log("Inside GMR run");
             if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread.getCurrentMemoryArea().toString());
- //           edu.uci.ece.zen.utils.Logger.printMemStats(306);
+ //         edu.uci.ece.zen.utils.Logger.printMemStats(306);
 
             message = edu.uci.ece.zen.orb.protocol.MessageFactory.parseStream(orb, trans);
 
@@ -288,68 +286,48 @@ class GIOPMessageRunnable implements Runnable {
                 return;
             }
 
- //           edu.uci.ece.zen.utils.Logger.printMemStats(307);
+ //         edu.uci.ece.zen.utils.Logger.printMemStats(307);
 
             if (message instanceof edu.uci.ece.zen.orb.protocol.type.RequestMessage) {
                 ZenProperties.logger.log("Inside GMR run: RequestMessage");
- //               edu.uci.ece.zen.utils.Logger.printMemStats(308);
-
-                trans.orbImpl.getServerRequestHandler().handleRequest(
-                        (edu.uci.ece.zen.orb.protocol.type.RequestMessage) message);
- //               edu.uci.ece.zen.utils.Logger.printMemStats(309);
+ //             edu.uci.ece.zen.utils.Logger.printMemStats(308);
+                trans.orbImpl.getServerRequestHandler().handleRequest( (edu.uci.ece.zen.orb.protocol.type.RequestMessage) message);
+ //             edu.uci.ece.zen.utils.Logger.printMemStats(309);
 
 
             }else if (message instanceof edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage) {
                 //this is provisional until we get it working right
                 //just return OBJECT_HERE for now
- //               edu.uci.ece.zen.utils.Logger.printMemStats(310);
-
-                CDROutputStream out = edu.uci.ece.zen.orb.protocol.MessageFactory.
-                         constructLocateReplyMessage(orb,
-                         (edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage)message);
+		//edu.uci.ece.zen.utils.Logger.printMemStats(310);
+		    CDROutputStream out = edu.uci.ece.zen.orb.protocol.MessageFactory.constructLocateReplyMessage(orb, (edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage)message);
  //               edu.uci.ece.zen.utils.Logger.printMemStats(311);
-
-                trans.send(out.getBuffer());
+		    trans.send(out.getBuffer());
  //               edu.uci.ece.zen.utils.Logger.printMemStats(312);
-
-                out.free();
+		    out.free();
  //               edu.uci.ece.zen.utils.Logger.printMemStats(313);
-
-
             }else if (message instanceof edu.uci.ece.zen.orb.protocol.type.ReplyMessage) {
                 ZenProperties.logger.log("Inside GMR run: ReplyMessage");
- //               edu.uci.ece.zen.utils.Logger.printMemStats(314);
-
-                ScopedMemory waiterRegion = orb.getWaiterRegion(message
-                        .getRequestId());
- //               edu.uci.ece.zen.utils.Logger.printMemStats(315);
-
+ //             edu.uci.ece.zen.utils.Logger.printMemStats(314);
+                ScopedMemory waiterRegion = orb.getWaiterRegion(message.getRequestId());
+		if( waiterRegion == null ){
+                    ZenProperties.logger.log( Logger.WARN, getClass(), "run", "ODD: Waiter region is missing");
+		    return;
+		}
+ //             edu.uci.ece.zen.utils.Logger.printMemStats(315);
                 wsnr.init(message, waiterRegion);
-
- //               edu.uci.ece.zen.utils.Logger.printMemStats(316);
-
+ //             edu.uci.ece.zen.utils.Logger.printMemStats(316);
                 eir.init(wsnr, waiterRegion);
- //               edu.uci.ece.zen.utils.Logger.printMemStats(317);
-
+ //             edu.uci.ece.zen.utils.Logger.printMemStats(317);
                 try {
- //                   edu.uci.ece.zen.utils.Logger.printMemStats(318);
-
+ //                 edu.uci.ece.zen.utils.Logger.printMemStats(318);
                     orb.orbImplRegion.executeInArea(eir);
- //                   edu.uci.ece.zen.utils.Logger.printMemStats(319);
-
+ //                 edu.uci.ece.zen.utils.Logger.printMemStats(319);
                 } catch (Exception e) {
-                    ZenProperties.logger
-                            .log(
-                                    Logger.SEVERE,
-                                    getClass(),
-                                    "run",
-                                    "Could not process reply message", e);
+                    ZenProperties.logger.log( Logger.SEVERE, getClass(), "run", "Could not process reply message", e);
                 }
             }else{
-                    ZenProperties.logger.log(Logger.SEVERE, getClass(),
-                                    "run", "Message type not supported.");
+                    ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", "Message type not supported.");                
             }
-
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(2223);
         } catch (java.io.IOException ioex) {
             //TODO: do something here
@@ -361,9 +339,7 @@ class GIOPMessageRunnable implements Runnable {
                 e.printStackTrace();
             }
             ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", ioex);
-
         }
-
     }
 }
 

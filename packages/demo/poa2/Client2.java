@@ -95,10 +95,10 @@ public class Client2 extends RealtimeThread
                 //sleep(10);
                 
                 //sm.enter(r);
-                if(i % 500 == 0){
+                //if(i % 500 == 0){
                     Logger.write(i);
                     Logger.writeln();
-                }
+                //}
             }
             long end = System.currentTimeMillis();
 

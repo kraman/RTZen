@@ -125,6 +125,7 @@ public class MSGRunnable implements Runnable {
             }
         }
         reply.free();
+	rm.free();
         //((Transport)( rm.getTransport() ).getPortal()).send(wb);
     }
 }

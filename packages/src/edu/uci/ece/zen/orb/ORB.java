@@ -688,19 +688,15 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             return null;
         }
 
-        if (!q.isEmpty()){
-            return q.dequeue();
-        }
-
-        Object o = null;
-
-        try {
-            o = ImmortalMemory.instance().newInstance(cls);
-        } catch (Exception e) {
-            ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
-        }
-
-        return o;
+	Object ret = q.dequeue();
+	if( ret == null ){
+		try {
+		    ret = ImmortalMemory.instance().newInstance(cls);
+		} catch (Exception e) {
+		    ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
+		}
+	}
+	return ret;
     }
 
 

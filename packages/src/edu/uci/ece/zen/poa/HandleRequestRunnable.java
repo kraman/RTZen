@@ -23,7 +23,7 @@ public class HandleRequestRunnable implements Runnable {
         try {
             pimpl.requestProcessingStrategy.handleRequest(req, poa, poa.numberOfCurrentRequests, exceptionValue);
         } catch (Throwable e) {
-	    e.printStackTrace();
+	    //e.printStackTrace();
             ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
         }
     }

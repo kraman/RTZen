@@ -3,6 +3,7 @@ package edu.uci.ece.zen.poa;
 import javax.realtime.MemoryArea;
 import javax.realtime.NoHeapRealtimeThread;
 import javax.realtime.ScopedMemory;
+import javax.realtime.ImmortalMemory;
 
 import org.omg.CORBA.IntHolder;
 import org.omg.CORBA.Policy;
@@ -336,7 +337,15 @@ public class POAImpl {
      * </p>
      * </p>
      */
-    public void handleRequest(RequestMessage req, POARunnable prun) {
+    TPRunnable tpr = null;	//KLUDGE..leaks memory to IMM, 3am..wll fix later
+    public synchronized void handleRequest(RequestMessage req, POARunnable prun) {
+	if( tpr == null ){
+		try{
+		 	tpr= (TPRunnable) ImmortalMemory.instance().newInstance( TPRunnable.class );//orb.getTPR();
+		}catch( Throwable e ){
+			System.out.println( "handleRequest: e" + e );
+		}
+	}
         ZenProperties.logger.log("POAImpl.handled 1");
         IntHolder ih = getIntHolder();
 
@@ -388,7 +397,6 @@ public class POAImpl {
             // requestScope.newInstance( ExecuteInRunnable.class );
             ExecuteInRunnable eir = orb.getEIR();
             ZenProperties.logger.log("POAImpl.handled 9.5");
-            TPRunnable tpr = orb.getTPR();
 
             ZenProperties.logger.log("POAImpl.handled 10");
             tpr.init(self, req);

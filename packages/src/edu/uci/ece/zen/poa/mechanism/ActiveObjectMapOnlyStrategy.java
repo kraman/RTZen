@@ -126,71 +126,75 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
      * @param exceptionValue
      */
 
-    public void handleRequest(RequestMessage request, POA poa, SynchronizedInt requests, 
-            				  IntHolder exceptionValue) {
+    public void handleRequest(RequestMessage request, POA poa, SynchronizedInt requests, IntHolder exceptionValue) {
+		exceptionValue.value = POARunnable.NoException;
 
-        exceptionValue.value = POARunnable.NoException;
+	Servant myServant = null;
+	CDROutputStream reply = null;
+	POAHashMap map = null;
+	FString okey = request.getObjectKey();
+	int index = ObjectKeyHelper.servDemuxIndex(okey);
+	int genCount = ObjectKeyHelper.servDemuxGenCount(okey);
 
-        FString okey = request.getObjectKey();
-        int index = ObjectKeyHelper.servDemuxIndex(okey);
-        int genCount = ObjectKeyHelper.servDemuxGenCount(okey);
+	if (this.aom == null) {
+		exceptionValue.value = POARunnable.ObjNotExistException;
+		return;
+	}
 
-        if (this.aom == null) {
-            exceptionValue.value = POARunnable.ObjNotExistException;
-            return;
-        }
+	int count = this.retainStrategy.activeMap.getGenCount(index);
 
-        int count = this.retainStrategy.activeMap.getGenCount(index);
+	map = (POAHashMap) this.retainStrategy.activeMap.mapEntry(index);
 
-        POAHashMap map = (POAHashMap) this.retainStrategy.activeMap.mapEntry(index);
+	if (count != genCount || !map.isActive()) {
+		exceptionValue.value = POARunnable.ObjNotExistException;
+		return;
+	}
 
-        if (count != genCount || !map.isActive()) {
-            exceptionValue.value = POARunnable.ObjNotExistException;
-            return;
-        }
+	myServant = map.getServant();
 
-        Servant myServant = map.getServant();
-        
-        POAImpl pimpl = (POAImpl) poa.poaMemoryArea.getPortal(); // the portal == POAImpl
+	POAImpl pimpl = (POAImpl) poa.poaMemoryArea.getPortal(); // the portal == POAImpl
 
-        // Logger.debug("logged debug 0");
-        // if (ZenProperties.dbg) ZenProperties.logger.log(pimpl + "");
-        // if (ZenProperties.dbg) ZenProperties.logger.log(pimpl.poaCurrent + "");
-        // if (ZenProperties.dbg) ZenProperties.logger.log(pimpl.poaCurrent.get() + "");
-        /*
-        try {
-            if (pimpl.poaCurrent.get() == null) 
-                pimpl.poaCurrent.set(poa.poaMemoryArea.newInstance(POACurrent.class));
-        } catch (Exception e) {
-            ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", e);
-        }
+	// Logger.debug("logged debug 0");
+	// if (ZenProperties.dbg) ZenProperties.logger.log(pimpl + "");
+	// if (ZenProperties.dbg) ZenProperties.logger.log(pimpl.poaCurrent + "");
+	// if (ZenProperties.dbg) ZenProperties.logger.log(pimpl.poaCurrent.get() + "");
+	/*
+	   try {
+	   if (pimpl.poaCurrent.get() == null) 
+	   pimpl.poaCurrent.set(poa.poaMemoryArea.newInstance(POACurrent.class));
+	   } catch (Exception e) {
+	   ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", e);
+	   }
 
-        ((POACurrent) pimpl.poaCurrent.get()).init(poa, okey, myServant);
-        */
+	   ((POACurrent) pimpl.poaCurrent.get()).init(poa, okey, myServant);
+	 */
 
-        CDROutputStream reply = null;
-        synchronized (mutex) {
-            requests.increment();
-            map.incrementActiveRequests();
-        }
-        
-        
-        if (this.threadPolicyStrategy instanceof ThreadPolicyStrategy.SingleThreadModelStrategy)
-        {
-            synchronized(mutex2)
-            {
-                this.invoke(request, poa, myServant, reply);
-            }
-        }
-        else
-        {
-            this.invoke(request, poa, myServant, reply);
-        }
-        
-        synchronized (mutex) {
-            requests.decrementAndNotifyAll(poa.processingState == POA.DESTRUCTION_APPARANT);
-            map.decrementActiveRequestsAndDeactivate();
-        }
+	synchronized (mutex) {
+		requests.increment();
+		map.incrementActiveRequests();
+	}
+	try{	
+		if (this.threadPolicyStrategy instanceof ThreadPolicyStrategy.SingleThreadModelStrategy)
+		{
+		    synchronized(mutex2)
+		    {
+			this.invoke(request, poa, myServant, reply);
+		    }
+		}
+		else
+		{
+		    this.invoke(request, poa, myServant, reply);
+		}
+		
+	}catch( Throwable e ){
+		e.printStackTrace();
+		System.out.println( "nlsjndjksndfkjnsafnsdfkjsdanfkjasnfkjsanfkjnsafkjnsdkjfnskjfnkjsnfkjnfkjsanfkjsnf==1" );
+		System.out.println(e);
+	}
+	synchronized (mutex) {
+		requests.decrementAndNotifyAll(poa.processingState == POA.DESTRUCTION_APPARANT);
+		map.decrementActiveRequestsAndDeactivate();
+	}
     }
 
     /**
@@ -210,14 +214,14 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
         sm.enter(msgr);
         retMSGR(msgr);
         ORB.freeScopedRegion(sm);
-        request.free();
+        //request.free();
     }
 
 
     /**
      * Returns an instance of MSGRunnable allocated (cached) in immortal memory.
      */
-    private MSGRunnable getMSGR() {
+    private synchronized MSGRunnable getMSGR() {
         if (msgrQueue == null) msgrQueue = new Queue();
 
         Object msgr = msgrQueue.dequeue();
@@ -229,6 +233,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
      * Puts the MSGRunnable back in to the cache.
      */
     private void retMSGR(MSGRunnable msgr) {
+	msgr.init(null,null,null,null);
         msgrQueue.enqueue(msgr);
     }
 }

@@ -55,12 +55,15 @@ public abstract class Message {
     }
 
     public ScopedMemory getTransport() {
+	//Thread.dumpStack();
         return transport;
     }
 
     public final void free(){
         if(istream != null) istream.free();
+	transport = null;
         istream = null;
+	scope = null;
         internalFree();
         //messageBody.free();
     }

@@ -6,8 +6,6 @@ import org.omg.CORBA.ORB;
 import javax.realtime.*;
 import org.omg.PortableServer.*;
 import edu.uci.ece.zen.utils.Logger;
-import edu.uci.ece.zen.utils.NativeTimeStamp;
-
 /**
  * This class implements a simple Client for the Hello World CORBA
  * demo
@@ -18,10 +16,10 @@ import edu.uci.ece.zen.utils.NativeTimeStamp;
 
 public class Client1 extends RealtimeThread
 {
-
+ 
     static String fileName; 
-
-
+    
+    
     public static void main(String[] args) throws Exception
     {
         //if(args.length > 0) 
@@ -57,55 +55,46 @@ public class Client1 extends RealtimeThread
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
             System.out.println( server.getMessage1() );
 
-            System.out.println( "===================Trying to initialize the NativeTimeStamp================" );
-            NativeTimeStamp rtts = new NativeTimeStamp();
-            NativeTimeStamp.Init(1, 20.0);
-            System.out.println( "===================NativeTimeStamp gets initialized================" );
-
-
-            /*
+/*
             // Create a scope for running requests in, so that we don't waste the scope we are in.
             ScopedMemory sm = new LTMemory(32000, 100000);
             Runnable r = new Runnable() {
-            public void run() {
-            server.getMessage1();
-            }
+                public void run() {
+                    server.getMessage1();
+                }
             };
-             */
-            //            System.out.println( "====================== Performance warmup =================================" );
-            //            for( int i=0;i<warmupNum;i++ ){
-            //                
-            //                server.getMessage1();
-            //                //sleep(1000);
-            //                
-            //                //sm.enter(r);
-            //                if(i % 100 == 0){        
-            //                    Logger.write(i);
-            //                    Logger.writeln();
-            //                }
-            //            }
+*/
+//            System.out.println( "====================== Performance warmup =================================" );
+//            for( int i=0;i<warmupNum;i++ ){
+//                
+//                server.getMessage1();
+//                //sleep(1000);
+//                
+//                //sm.enter(r);
+//                if(i % 100 == 0){        
+//                    Logger.write(i);
+//                    Logger.writeln();
+//                }
+//            }
 
-            //sleep(5000);
-
+            sleep(5000);
+            
             System.out.println( "====================== Performance benchmark ==============================" );
             long start = System.currentTimeMillis();
             for( int i=0;i<runNum;i++ ){
                 server.getMessage1();
-                NativeTimeStamp.RecordTime(21);
-
-
+                //System.out.println(System.currentTimeMillis());
+                //sleep(10);
+                
                 //sm.enter(r);
-
-                if(i % 500 == 0){
+                //if(i % 500 == 0){
                     Logger.write(i);
                     Logger.writeln();
-                }
-
+                //}
             }
             long end = System.currentTimeMillis();
 
             System.err.println( (double)runNum/((end-start)/1000.0));
-            NativeTimeStamp.OutputLogRecords();
             System.exit(0);
         }
         catch (Exception e)

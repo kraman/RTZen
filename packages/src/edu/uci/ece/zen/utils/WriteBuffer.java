@@ -30,10 +30,9 @@ public class WriteBuffer {
                     .getConstructor(new Class [] {int.class});
             vectorArgTypes = new Object[1];
             maxCap = Integer.parseInt(ZenProperties
-                .getGlobalProperty( "writebuffer.size" , "10" ));
+                .getGlobalProperty( "writebuffer.size" , "20" ));
             vectorArgTypes[0] = new Integer(maxCap);
-            bufferCache = (Queue) ImmortalMemory.instance().newInstance(
-                    Queue.class);
+	    bufferCache = (Queue) ImmortalMemory.instance().newInstance(Queue.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "static <init>", e);
             System.exit(-1);
@@ -49,22 +48,20 @@ public class WriteBuffer {
             //Thread.dumpStack();
             idgen++;
             numFree--;
-            if (bufferCache.isEmpty()){
-                WriteBuffer wb =
-                (WriteBuffer) ImmortalMemory
-                    .instance().newInstance(WriteBuffer.class);
+	    WriteBuffer wb = (WriteBuffer) bufferCache.dequeue();
+            if ( wb == null){
+                wb = (WriteBuffer) ImmortalMemory.instance().newInstance(WriteBuffer.class);
                 //System.out.println("WWINST:" + idgen);
                 wb.id = idgen;
                 wb.inUse = true;
                 return wb;
             } else {
-                WriteBuffer wb = (WriteBuffer) bufferCache.dequeue();
                 //System.out.println("WWINST:" + idgen);
                 wb.id = idgen;
                 wb.inUse = true;
                 return wb;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "instance", e);
             System.exit(-1);
         }
@@ -87,8 +84,8 @@ public class WriteBuffer {
 
     public WriteBuffer() {
         try {
-            buffers = (Vector) ImmortalMemory.instance().newInstance(
-                    vectorConstructor, vectorArgTypes);
+            //buffers = (Vector) ImmortalMemory.instance().newInstance(vectorConstructor, vectorArgTypes);
+	    buffers = new Vector( WriteBuffer.maxCap );
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, getClass(), "<init>", e);
             System.exit(-1);

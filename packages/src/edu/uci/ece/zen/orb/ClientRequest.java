@@ -15,37 +15,23 @@ import edu.uci.ece.zen.utils.Queue;
 
 public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     public String operation;
-
     public boolean responseExpected;
-
     public ObjRefDelegate del;
-
     public CDROutputStream out;
-
     public byte giopMajor;
-
     public byte giopMinor;
-
     public ScopedMemory transportScope;
-
     public FString objectKey;
-
     //public byte[] objectKey;
     //public FString objectKey;
     public ORB orb;
-
     private int messageId;
-
     public FString contexts;
-
     //private static ClientRequest inst;
-
     private static Queue queue = Queue.fromImmortal();
 
     public static ClientRequest instance() {
-
         ClientRequest cr = (ClientRequest)ORB.getQueuedInstance(ClientRequest.class,queue);
-
         return cr;
 /*
         if (inst == null) {

@@ -237,7 +237,8 @@ class ConsoleLogger extends Logger
     public void log(int level, Class thisClass, String thisFunction, String msg, Throwable e)
     {
         log(level, thisClass, thisFunction, msg);
-        e.printStackTrace(printStream);
+        //e.printStackTrace(printStream);
+        printStream.println(e);
     }
 
     public void log(int level, Class thisClass, String thisFunction, Throwable e)
