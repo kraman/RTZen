@@ -78,7 +78,7 @@ public class Client extends RealtimeThread
             //should create a better way of getting the PriorityMapping
             PriorityMapping pmap = new edu.uci.ece.zen.orb.PriorityMappingImpl();
 
-            //org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(orb.resolve_initial_references("RTCurrent"));
+            org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(orb.resolve_initial_references("RTCurrent"));
 
             short native_priority = 1;
 
@@ -89,10 +89,10 @@ public class Client extends RealtimeThread
 
             for( int i=0;i<3;i++ ){
 
-                //rtcur.the_priority(desired_priority.value);
+                rtcur.the_priority(desired_priority.value);
 
-                //if(rtcur.the_priority() != desired_priority.value)
-                //    System.out.println("[client] ERROR: Unable to set thread priority to " + desired_priority.value);
+                if(rtcur.the_priority() != desired_priority.value)
+                    System.out.println("[client] ERROR: Unable to set thread priority to " + desired_priority.value);
 
                 server.test_method(desired_priority.value);
 

@@ -40,7 +40,7 @@ public class Server extends RealtimeThread
         try
         {
             //System.out.println( "=====================Calling ORB Init in server============================" );
-            ORB zen = ORB.init( args , null);            
+            ORB zen = ORB.init( args , null);
             //System.out.println( "=====================ORB Init complete in server===========================" );
 
             POA rootPOA = POAHelper.narrow(zen.resolve_initial_references("RootPOA"));

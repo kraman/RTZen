@@ -1,10 +1,8 @@
 package edu.uci.ece.zen.poa.mechanism;
 
 import org.omg.CORBA.IntHolder;
-import org.omg.PortableServer.Servant;
 
 import edu.uci.ece.zen.poa.DualMap;
-import edu.uci.ece.zen.poa.POAHashMap;
 import edu.uci.ece.zen.poa.POARunnable;
 import edu.uci.ece.zen.poa.SingleMap;
 import edu.uci.ece.zen.utils.ActiveDemuxTable;
@@ -59,7 +57,8 @@ public final class RetainStrategy extends ServantRetentionStrategy {
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      * @throws org.omg.PortableServer.POAPackage.ObjectNotActive
      */
-    public Servant getServant(FString ok, IntHolder exceptionValue) {
+    public org.omg.PortableServer.Servant getServant(FString ok,
+            IntHolder exceptionValue) {
         exceptionValue.value = POARunnable.NoException;
         org.omg.PortableServer.Servant servant;
         servant = this.AOM.getServant(ok);
@@ -89,8 +88,8 @@ public final class RetainStrategy extends ServantRetentionStrategy {
      * @throws org.omg.PortableServer.POAPackage.ServantNotActive
      */
 
-    public void getObjectID(Servant servant, FString oid_out, IntHolder exceptionValue) 
-    {
+    public void getObjectID(org.omg.PortableServer.Servant servant,
+            FString oid_out, IntHolder exceptionValue) {
         exceptionValue.value = POARunnable.NoException;
         oid_out.reset();
         if (this.AOM.servantPresent(servant))
@@ -110,7 +109,8 @@ public final class RetainStrategy extends ServantRetentionStrategy {
      *            ObjectID
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
-    public void add(FString ok, POAHashMap map, IntHolder exceptionValue) {
+    public void add(FString ok, edu.uci.ece.zen.poa.POAHashMap map,
+            IntHolder exceptionValue) {
         exceptionValue.value = POARunnable.NoException;
         this.AOM.add(ok, map);
     }
@@ -118,11 +118,13 @@ public final class RetainStrategy extends ServantRetentionStrategy {
     /**
      * check if servant is presnt in the AOM
      * 
-     * @param servant org.omg.PortableServer.Servant
+     * @param servant
+     *            org.omg.PortableServer.Servant
      * @return boolean
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
-    public boolean servantPresent(Servant servant, IntHolder exceptionValue) {
+    public boolean servantPresent(org.omg.PortableServer.Servant servant,
+            IntHolder exceptionValue) {
         exceptionValue.value = POARunnable.NoException;
         return this.AOM.servantPresent(servant);
     }
@@ -155,6 +157,8 @@ public final class RetainStrategy extends ServantRetentionStrategy {
         edu.uci.ece.zen.poa.POAHashMap map = this.AOM.getHashMap(ok);
 
         if (map != null) {
+            // edu.uci.ece.zen.orb.Logger.debug("Deactivating the Object Key in
+            // the HashMap");
             map.deactivate();
         }
     }

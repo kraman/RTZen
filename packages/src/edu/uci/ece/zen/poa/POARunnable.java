@@ -11,11 +11,6 @@ import org.omg.PortableServer.Servant;
 import org.omg.PortableServer.ServantManager;
 
 import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.orb.CDROutputStream;
-import org.omg.CORBA.PolicyListHelper;
-import org.omg.CORBA.Policy;
-import edu.uci.ece.zen.utils.Logger;
-import edu.uci.ece.zen.utils.ZenProperties;
 
 //TODO Modify this class to be type safe.
 public class POARunnable implements Runnable {
@@ -61,10 +56,6 @@ public class POARunnable implements Runnable {
 
     public static final int ID_TO_REFERENCE = 20;
 
-    public static final int ACTIVATE_OBJECT_WITH_PRIORITY = 21;
-    
-    public static final int GET_CLIENT_EXPOSED_POLICIES = 22;
-    
     public static final int NoException = 0;
 
     public static final int InvalidPolicyException = 1;
@@ -87,9 +78,9 @@ public class POARunnable implements Runnable {
 
     public static final int InternalException = 10;
     
-    public static final int NoServant = 11;
+    public static final int NoServant = 11; // Add by Hojjat & Juan
     
-    public static final int SERVANT_ALREADY_ACTIVE = 12;
+    public static final int SERVANT_ALREADY_ACTIVE = 12; // Add by Hojjat & Juan
 
     private int operation;
 
@@ -98,18 +89,11 @@ public class POARunnable implements Runnable {
     public int exception; // add getException();
 
     public Object retVal;
-    
-    private ORB orb;
 
     public POARunnable(int op) {
         operation = op;
         args = new Vector();
     }
-    
-    public POARunnable(int op, ORB orb) {
-        this(op);
-        this.orb = orb;
-    }    
 
     public void addParam(Object arg) {
         args.addElement(arg);
@@ -130,6 +114,9 @@ public class POARunnable implements Runnable {
                     ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(pimpl);
                     break;
                 case HANDLE_REQUEST:
+                    //System.out.println("Inside POARunnable.runa and memarea: " +
+                    // RealtimeThread.getCurrentMemoryArea() + " and this: " +
+                    // this);
                     pimpl.handleRequest(
                             (edu.uci.ece.zen.orb.protocol.type.RequestMessage) args.elementAt(0), this);
                     break;
@@ -137,6 +124,7 @@ public class POARunnable implements Runnable {
                     pimpl.servant_to_id((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
                     break;
                 case SERVANT_TO_REFERENCE:
+                    //System.out.println(portal); // delete it
                     retVal = pimpl.servant_to_reference((Servant) args.elementAt(0), (MemoryArea) args.elementAt(1), this);
                     break;
                 case REFERENCE_TO_SERVANT:
@@ -144,8 +132,10 @@ public class POARunnable implements Runnable {
                             .elementAt(0), (MemoryArea) args.elementAt(1), this);
                     break;
                 case REFERENCE_TO_ID:
-                    // pimpl.reference_to_id((org.omg.CORBA.Object) args.elementAt(0),
-                    //                       (MemoryArea) args.elementAt(1), this );
+                    //                pimpl.reference_to_id( (org.omg.CORBA.Object)
+                    // args.elementAt(0) ,
+                    //                    (MemoryArea) args.elementAt(1) ,
+                    //                    this );
                     break;
                 case ID_TO_SERVANT:
                     pimpl.id_to_servant((byte[]) args.elementAt(0),
@@ -164,11 +154,6 @@ public class POARunnable implements Runnable {
                     pimpl.activate_object_with_id((byte[]) args.elementAt(0),
                             (Servant) args.elementAt(1), (MemoryArea) args
                             .elementAt(2), this);
-                    break;
-                case ACTIVATE_OBJECT_WITH_PRIORITY:
-                    pimpl.activate_object_with_priority((Servant) args.elementAt(0), 
-                            ((Short) args.elementAt(1)).intValue(), (MemoryArea) args.elementAt(2), 
-                            this);
                     break;
                 case DEACTIVATE_OBJECT:
                     pimpl.deactivate_object((byte[]) args.elementAt(0),
@@ -206,36 +191,6 @@ public class POARunnable implements Runnable {
                             .elementAt(2), this);
                 case GET_POLICY_LIST:
                     pimpl.policy_list((MemoryArea) args.elementAt(0), this);
-                    break;
-                    
-                case GET_CLIENT_EXPOSED_POLICIES:
-                    if(pimpl.getClientExposedPolicies().length == 0)
-                        System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
-                    else{
-                        CDROutputStream out = CDROutputStream.instance();
-                        out.init(orb);   
-                        out.write_boolean(false); //BIGENDIAN       
-                        Policy[] policies = pimpl.getClientExposedPolicies();
-                        int length = policies.length;
-                        out.write_ulong(length);
-                        for(int i = 0; i < length; ++i){
-                            if(policies[i] instanceof
-                                    org.omg.RTCORBA.PriorityModelPolicy){
-                                
-                                edu.uci.ece.zen.orb.transport.Acceptor.
-                                        marshalPriorityModelValue(
-                                        (org.omg.RTCORBA.PriorityModelPolicy)
-                                        policies[i], orb, out);
-                                        
-                            }else{
-                                ZenProperties.logger.log(Logger.FATAL, getClass(), 
-                                        "run()", "Unsupported client-exposed policy" );
-                            }
-                        }
-                        
-                        //PolicyListHelper.write(out, pimpl.getClientExposedPolicies());
-                        retVal = out;
-                    }
                     break;
             }
             args.clear();

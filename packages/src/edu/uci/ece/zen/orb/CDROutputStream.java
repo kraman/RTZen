@@ -180,9 +180,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
      * @return A concrete CDRInputStream
      */
     public org.omg.CORBA.portable.InputStream create_input_stream() {
-        CDRInputStream in = CDRInputStream.instance();
-        in.init(orb, buffer.getReadBuffer());
-        return in;
+        return null;
     }
 
     /**

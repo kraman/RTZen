@@ -179,8 +179,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
             if (exceptionValue.value == POARunnable.NoException) {
                 // Add the association in the AOM
                 map = pimpl.getPOAHashMap();
-                // TODO assigning the wrong priority
-                map.init(oid, (org.omg.PortableServer.Servant) invokeHandler, 0); 
+                map.init(oid, (org.omg.PortableServer.Servant) invokeHandler);
                 this.retain.add(oid, map, exceptionValue);
             }
 
@@ -189,11 +188,11 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
                 // Ask the ORB to handle the ForwardRequest Exception
                 //((edu.uci.ece.zen.poa.POA)
                 // poa).getORB().handleForwardRequest(e);
-                if (map != null) pimpl.freePOAHashMap(map);
+                if (map != null) pimpl.retPOAHashMap(map);
                 pimpl.retFString(oid);
                 return;// edu.uci.ece.zen.orb.ServerRequestHandler.REQUEST_NOT_HANDLED;
             } else {
-                if (map != null) pimpl.freePOAHashMap(map);
+                if (map != null) pimpl.retPOAHashMap(map);
                 pimpl.retFString(oid);
                 exceptionValue.value = POARunnable.InternalException;
                 return;
@@ -339,8 +338,7 @@ public class ServantActivatorStrategy extends ServantManagerStrategy {
             }
 
             POAHashMap map = pimpl.getPOAHashMap();
-            // TODO assigning the wrong priority
-            map.init(oid, (org.omg.PortableServer.Servant) invokeHandler, 0);
+            map.init(oid, (org.omg.PortableServer.Servant) invokeHandler);
 
             // Add the Reference to the AOM
             this.retain.add(oid, map, exceptionValue);
