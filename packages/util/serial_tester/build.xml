@@ -1,0 +1,21 @@
+<project default="compile">
+
+    <target name="compile">
+        <javac srcdir="." destdir="."/>
+    </target>
+    
+    <target name="clean">
+        <delete>
+            <fileset dir="." includes="*.class"/>
+        </delete>
+    </target>
+
+    <target name="read">
+        <java classname="SimpleRead" classpath="." fork="true"/>
+    </target>
+
+    <target name="write">
+        <java classname="SimpleWrite" classpath="." fork="true"/>
+    </target>
+
+</project>
