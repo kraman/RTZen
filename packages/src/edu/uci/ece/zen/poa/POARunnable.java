@@ -13,6 +13,9 @@ import org.omg.PortableServer.ServantManager;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.CDROutputStream;
 import org.omg.CORBA.PolicyListHelper;
+import org.omg.CORBA.Policy;
+import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.ZenProperties;
 
 //TODO Modify this class to be type safe.
 public class POARunnable implements Runnable {
@@ -211,8 +214,26 @@ public class POARunnable implements Runnable {
                     else{
                         CDROutputStream out = CDROutputStream.instance();
                         out.init(orb);   
-                        out.write_boolean(false); //BIGENDIAN                        
-                        PolicyListHelper.write(out, pimpl.getClientExposedPolicies());
+                        out.write_boolean(false); //BIGENDIAN       
+                        Policy[] policies = pimpl.getClientExposedPolicies();
+                        int length = policies.length;
+                        out.write_ulong(length);
+                        for(int i = 0; i < length; ++i){
+                            if(policies[i] instanceof
+                                    org.omg.RTCORBA.PriorityModelPolicy){
+                                
+                                edu.uci.ece.zen.orb.transport.Acceptor.
+                                        marshalPriorityModelValue(
+                                        (org.omg.RTCORBA.PriorityModelPolicy)
+                                        policies[i], orb, out);
+                                        
+                            }else{
+                                ZenProperties.logger.log(Logger.FATAL, getClass(), 
+                                        "run()", "Unsupported client-exposed policy" );
+                            }
+                        }
+                        
+                        //PolicyListHelper.write(out, pimpl.getClientExposedPolicies());
                         retVal = out;
                     }
                     break;

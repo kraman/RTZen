@@ -483,10 +483,10 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
         r.addParam( p_servant );
         r.addParam(RealtimeThread.getCurrentMemoryArea() );
 
-        ExecuteInRunnable eir1 = orb.getEIR();
+        ExecuteInRunnable eir1 = new ExecuteInRunnable();//orb.getEIR();
         eir1.init(r, poaMemoryArea);
 
-        ExecuteInRunnable eir2 = orb.getEIR();
+        ExecuteInRunnable eir2 = new ExecuteInRunnable();//orb.getEIR();
         eir2.init(eir1, orb.orbImplRegion);
 
         try{
@@ -497,8 +497,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
             ZenProperties.logger.log(Logger.WARN, getClass(), "activate_object", e);
         }
         finally{
-            orb.freeEIR(eir1);
-            orb.freeEIR(eir2);
+            //orb.freeEIR(eir1);
+            //orb.freeEIR(eir2);
         }
 
         switch( r.exception )

@@ -61,13 +61,16 @@ public class Server extends RealtimeThread
 
             //NON Standard -- using this until we can get some other stuff working
 
-            edu.uci.ece.zen.orb.transport.iiop.Acceptor.enableComponents = true;
-            edu.uci.ece.zen.orb.transport.iiop.Acceptor.serverPriority = 0;
-            edu.uci.ece.zen.orb.transport.iiop.Acceptor.priorityModel = org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED.value();
+            //edu.uci.ece.zen.orb.transport.iiop.Acceptor.enableComponents = true;
+            //edu.uci.ece.zen.orb.transport.iiop.Acceptor.serverPriority = 0;
+            //edu.uci.ece.zen.orb.transport.iiop.Acceptor.priorityModel = org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED.value();
 
             //for standard CORBA, this would be reenabled
-            ///poa_policy_list[0] = rtorb.create_priority_model_policy (org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,(short)0);
-            POA childPOA = rootPOA;///.create_POA ("Child_POA",poaManager,poa_policy_list);
+            poa_policy_list[0] = rtorb.create_priority_model_policy (org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,(short)0);
+
+            //POA childPOA = rootPOA.create_POA ("Child_POA",poaManager,poa_policy_list);
+            // pass null for manager for now, I think it's the same manager as root poa
+            POA childPOA = rootPOA.create_POA ("Child_POA",null,poa_policy_list);
 
             TestImpl impl = new TestImpl(orb);
 
