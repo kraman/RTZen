@@ -32,7 +32,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
 
     public void replyReceived(GIOPMessage reply) {
         this.replyMsg = reply.getCDRInputStream();
-
+        //reply.free();
         //TODO:handle service contexts here ... fix this... you can demarshall
         // stuff here
         /*
@@ -54,6 +54,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
          */
         //TODO:remember to release the message....u only have 1
         clientSem.release();
+        ((edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage)reply).release();
     }
 
     public CDRInputStream waitForReply() {

@@ -28,6 +28,7 @@ public class ReadBuffer {
 
     public static ReadBuffer instance() {
         try {
+            //Thread.dumpStack();
                 numFree--;
             if (bufferCache.isEmpty()) return (ReadBuffer) ImmortalMemory
                     .instance().newInstance(ReadBuffer.class);
@@ -173,6 +174,7 @@ public class ReadBuffer {
  
  
          if(ZenProperties.memDbg1) System.out.write('b');
+         if(ZenProperties.memDbg1) System.out.write('r');
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(ba);
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(buffers.size());
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(bs);
@@ -208,12 +210,12 @@ public class ReadBuffer {
     private void ensureCapacity(int size) {
         if (size <= 0) return;
         while (limit + size > capacity) {
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(711);
             byte[] byteArray = ByteArrayCache.instance().getByteArray();
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(712);
             capacity += byteArray.length;
             buffers.addElement(byteArray);
             ba++;
-          if(ZenProperties.memDbg1) System.out.write('c');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(capacity);
        }
         bs = buffers.size();
     }

@@ -40,7 +40,7 @@
       </javac>
 
       <jar 
-        jarfile="${zen.libdir}/object_usuage.jar" 
+        jarfile="${zen.libdir}/object_usage.jar" 
         basedir="${zen.classdir}" 
         includes="demo/object/**"
         />
@@ -85,7 +85,7 @@
     </target> 
 
     <target name="clean">
-      <delete file="${zen.libdir}/object_usuage.jar"/>
+      <delete file="${zen.libdir}/object_usage.jar"/>
       <delete dir="${zen.gendir}/demo/object"/>
       <delete dir="${zen.classdir}/demo/object"/>
       <delete file="${package.dir}/client"/>

@@ -427,7 +427,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
      */
     public final org.omg.CORBA.Object read_Object() {
         org.omg.IOP.IOR ior = org.omg.IOP.IORHelper.read(this);
-
+        
         WriteBuffer iorWB = WriteBuffer.instance();
         iorWB.init();
 
@@ -435,8 +435,16 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
         out.init(orb);
         org.omg.IOP.IORHelper.write(out, ior);
         out.getBuffer().dumpBuffer(iorWB);
+        //System.out.println("P1");
+        //System.out.println(iorWB.getPosition());
         out.free();
-        return orb.string_to_object(IOR.makeIOR(iorWB));
+        //System.out.println("P2");
+        //System.out.println(iorWB.getPosition());
+
+        String temp = IOR.makeIOR(iorWB);
+
+        iorWB.free();
+        return orb.string_to_object(temp);
     }
 
     /**
@@ -450,7 +458,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     }
 
     /**
-     * Read a Coeba context from CDR encapsulation. (Not Implemented)
+     * Read a Corba context from CDR encapsulation. (Not Implemented)
      * 
      * @return Read context
      */

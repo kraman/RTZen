@@ -13,12 +13,11 @@ import edu.uci.ece.zen.utils.Logger;
  */
 public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
 
-    private static RequestHeader rh;
-
-    public static RequestHeader instance() {
+    public static RequestHeader instance(RequestHeader rh) {
 
         try {
-            if (rh == null) rh = (RequestHeader) ImmortalMemory.instance()
+            if (rh == null) 
+                rh = (RequestHeader) ImmortalMemory.instance()
                     .newInstance(RequestHeader.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, RequestHeader.class, "instance", e);
@@ -109,6 +108,13 @@ public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
         //this.requesting_principal1 = requesting_principal;
         this.requesting_principal = FString.instance(this.requesting_principal);
         this.requesting_principal.append(requesting_principal);
+    }
+
+    public void reset(){
+        service_context.reset();
+        object_key.reset();
+        operation.reset();
+        requesting_principal.reset();
     }
 
 }

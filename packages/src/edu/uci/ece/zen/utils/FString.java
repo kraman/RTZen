@@ -17,13 +17,13 @@ public class FString {
      * Static function to create a FString object of 128 bytes in size from
      * immortal memory.
      * 
-     * @return A FString object of 128 bytes allocated from ImmortalMemory
+     * @return A FString object of 1024 bytes allocated from ImmortalMemory
      */
     private static FString fromImmortal() {
         FString fs = null;
         try {
             fs = (FString) ImmortalMemory.instance().newInstance(FString.class);
-            fs.init(128);
+            fs.init(1024);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, FString.class, "fromImmortal", e);
         }

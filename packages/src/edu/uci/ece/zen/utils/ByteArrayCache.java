@@ -69,13 +69,14 @@ public class ByteArrayCache {
         try {
             byte[] ret = (byte[]) byteBuffers.dequeue();
             num++;
-           //Thread.dumpStack();
-        if(ZenProperties.memDbg1) System.out.write('d');
-           if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(num);
-           if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln();
-           if (ret == null) {
-        if(ZenProperties.memDbg1) System.out.write('g');
-        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(byteBuffers.size());
+            //Thread.dumpStack();
+            if(ZenProperties.memDbg1) System.out.write('d');
+            if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(num);
+            if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln();
+
+            if (ret == null) {
+                if(ZenProperties.memDbg1) System.out.write('g');
+                if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(byteBuffers.size());
                 return (byte[]) imm.newArray(byte.class, 1024);
             } else {
                 return ret;

@@ -23,5 +23,9 @@ public class ObjectImpl extends org.omg.CORBA.portable.ObjectImpl {
     public String[] _ids() {
         return ids;
     }
-}
 
+    protected void finalize(){
+        //System.out.println("WWFinalize called");
+        _release();
+    }
+}

@@ -220,6 +220,9 @@ class GIOPMessageRunnable implements Runnable {
 
     //private static final String name = "Trans: ";
     public void run() {
+        edu.uci.ece.zen.orb.giop.GIOPMessage message = null;
+        
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(2220);
         try {
 
             statCount++;
@@ -231,8 +234,7 @@ class GIOPMessageRunnable implements Runnable {
 
             if (ZenProperties.dbg) ZenProperties.logger.log("Inside Transport and mem area: "
                             + RealtimeThread.getCurrentMemoryArea());
-            edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory
-                    .parseStream(orb, trans);
+            message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream(orb, trans);
             if (message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage) {
                 trans.orbImpl.getServerRequestHandler().handleRequest(
                         (edu.uci.ece.zen.orb.giop.type.RequestMessage) message);
@@ -253,9 +255,11 @@ class GIOPMessageRunnable implements Runnable {
                                     "Could not process reply message", e);
                 }
             }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(2223);
         } catch (java.io.IOException ioex) {
             //TODO: do something here
         }
+        
     }
 }
 

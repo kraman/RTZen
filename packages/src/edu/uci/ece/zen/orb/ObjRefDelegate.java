@@ -50,7 +50,11 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     private static void release(ObjRefDelegate self) {
-        objRefDelegateCache.enqueue(self);
+        if(!self.released){
+            objRefDelegateCache.enqueue(self);
+            self.ior.free();
+        }
+        self.released = true;
     }
 
     public ObjRefDelegate() {
@@ -60,6 +64,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         numLanes = 0;
     }
 
+    private boolean released = false;
+    
     private WriteBuffer ior;
 
     private ORB orb;
@@ -70,6 +76,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     protected void init(org.omg.IOP.IOR ior, ObjectImpl obj, ORB orb,
             ORBImpl orbImpl) {
+        released = false;
         referenceCount = 1;
         this.orb = orb;
 
@@ -256,6 +263,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                     }
                         break;
                 }
+                in.free();
             }
                 break;
             case TAG_MULTIPLE_COMPONENTS.value: //process the tagged components
@@ -312,7 +320,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     private int referenceCount;
 
-    private void incermentReferenceCount() {
+    private void incrementReferenceCount() {
         referenceCount++;
     }
 
@@ -327,7 +335,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     public org.omg.CORBA.Object duplicate(org.omg.CORBA.Object self) {
         org.omg.CORBA.portable.ObjectImpl impl = (org.omg.CORBA.portable.ObjectImpl) self;
         ObjRefDelegate delegate = (ObjRefDelegate) impl._get_delegate();
-        delegate.incermentReferenceCount();
+        delegate.incrementReferenceCount();
         return self;
     }
 

@@ -31,6 +31,7 @@ class LaneInfo {
         this.minPri = minPri;
         this.maxPri = maxPri;
         this.transpScope = transpScope;
+        objectKey.reset();
         objectKey.append(objKey, 0, objKey.length);
     }
 

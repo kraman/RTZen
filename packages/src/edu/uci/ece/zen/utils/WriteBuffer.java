@@ -28,14 +28,26 @@ public class WriteBuffer {
         }
     }
     private static int numFree = 0;
+    static int idgen = -1;
+    int id;
     public static WriteBuffer instance() {
         try {
-                numFree--;
+            
+            //Thread.dumpStack();
+            idgen++;
+            numFree--;
             if (bufferCache.isEmpty()){
-                 return (WriteBuffer) ImmortalMemory
+                WriteBuffer wb =
+                (WriteBuffer) ImmortalMemory
                     .instance().newInstance(WriteBuffer.class);
+                //System.out.println("WWINST:" + idgen);
+                wb.id = idgen;
+                return wb;    
             } else {
-                return (WriteBuffer) bufferCache.dequeue();
+                WriteBuffer wb = (WriteBuffer) bufferCache.dequeue();
+                //System.out.println("WWINST:" + idgen);
+                wb.id = idgen;
+                return wb;
             }
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "instance", e);
@@ -88,9 +100,23 @@ public class WriteBuffer {
 
     public void free() {
         //Thread.dumpStack();
+        //System.out.println("WWFREE:" + id);
+
         ByteArrayCache cache = ByteArrayCache.instance();
-        for (int i = 0; i < buffers.size(); i++)
+        for (int i = 0; i < buffers.size(); i++){
             cache.returnByteArray((byte[]) buffers.elementAt(i));
+            ba--;
+        }
+
+         if(ZenProperties.memDbg1) System.out.write('b');
+         if(ZenProperties.memDbg1) System.out.write('w');
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(ba);
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(buffers.size());
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(bs);
+ 
+
+
+
         buffers.removeAllElements();
         init();
         WriteBuffer.release(this);
@@ -103,7 +129,8 @@ public class WriteBuffer {
     public void setEndian(boolean isLittleEndian) {
         this.isLittleEndian = isLittleEndian;
     }
-
+    int ba = 0;
+    int bs = 0;
     private void ensureCapacity(int size) {
         if (size <= 0) return;
         while (position + size > capacity) {
@@ -117,8 +144,9 @@ public class WriteBuffer {
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(512);
             capacity += byteArray.length;
             buffers.addElement(byteArray);
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(513);
+            ba++;
         }
+        bs = buffers.size();
     }
 
     private void pad(int boundry) {

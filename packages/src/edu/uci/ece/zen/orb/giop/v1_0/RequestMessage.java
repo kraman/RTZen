@@ -31,7 +31,7 @@ public class RequestMessage extends
     public void init(ClientRequest clr, int messageId) {
         //super();
         ZenProperties.logger.log("RequestMessage1");
-        header = RequestHeader.instance();
+        header = RequestHeader.instance(header);
 
         header.init(clr.contexts, messageId, clr.responseExpected,
                 clr.objectKey, clr.operation, reqPrin);
@@ -54,16 +54,16 @@ public class RequestMessage extends
         return null;
 */        
     }
-
+/*
     public RequestMessage(ORB orb, ReadBuffer stream) {
         super(orb, stream);
         header = RequestHeaderHelper.read(istream);
         messageBody = stream;
     }
-
+*/
     public void init(ORB orb, ReadBuffer stream) {
         super.init(orb, stream);
-        header = RequestHeaderHelper.read(istream);
+        header = RequestHeaderHelper.read(istream, RequestHeader.instance(header));
         messageBody = stream;
     }
 
@@ -100,6 +100,7 @@ public class RequestMessage extends
     public void free(){
         super.free();
         drawn--;
+        header.reset();
         queue.enqueue(this);
     }
 }
