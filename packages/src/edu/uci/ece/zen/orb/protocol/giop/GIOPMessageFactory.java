@@ -21,7 +21,7 @@ import edu.uci.ece.zen.orb.protocol.*;
 /**
  * This class is a factory for creating GIOP messages for marshalling or
  * demarshalling messages.
- * 
+ *
  * @author Krishna Raman
  * @author Bruce Miller
  * @author Yue Zhang
@@ -80,7 +80,7 @@ public final class GIOPMessageFactory extends MessageFactory{
                                     //ret = edu.uci.ece.zen.orb.giop.v1_0.LocateRequestMessage
                                     //        .getMessage();
                                     //ret.init(orb, buffer);
-                                    
+
                                     //this is provisional until we get it working right
                                     //just return OBJECT_HERE for now
                                     ret = new edu.uci.ece.zen.orb.protocol.giop.v1_0.
@@ -184,14 +184,14 @@ public final class GIOPMessageFactory extends MessageFactory{
         if(ZenProperties.devDbg) {
             System.out.print("parse stream messageId:");
             System.out.println(ret.getRequestId());
-        }        
+        }
         return ret;
     }
 
     /**
      * Collects all fragments following the initial one in a request or a reply
      * in GIOP v1_1.
-     * 
+     *
      * @param trans
      *            Transport (e.g. iiop) where the inputstream should be found.
      * @param headerInfo
@@ -225,7 +225,7 @@ public final class GIOPMessageFactory extends MessageFactory{
     /**
      * Collects all fragments following the initial one in a request or a reply
      * in GIOP v1_2.
-     * 
+     *
      * @param trans
      *            Transport (e.g. iiop) where the inputstream should be found.
      * @param headerInfo
@@ -265,7 +265,7 @@ public final class GIOPMessageFactory extends MessageFactory{
     */
     /**
      * Read the GIOP Message header from the Transport's stream.
-     * 
+     *
      * @param trans
      *            Transport stream
      * @param headerInfo
@@ -282,8 +282,8 @@ public final class GIOPMessageFactory extends MessageFactory{
         if(ZenProperties.devDbg) {
             System.out.print("parseStreamForHeader: buffer size");
             System.out.println(header.length);
-        }          
-        while (read < 12) {          
+        }
+        while (read < 12) {
             int tmp = in.read(header, 0, 12);
             //if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
@@ -379,11 +379,11 @@ public final class GIOPMessageFactory extends MessageFactory{
             RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
-        
+
         if(ZenProperties.devDbg) {
             System.out.print("construct reply for messageId:");
             System.out.println(req.getRequestId());
-        }            
+        }
 
         out.write_octet_array(magic, 0, 4);
         //giop version
@@ -403,7 +403,27 @@ public final class GIOPMessageFactory extends MessageFactory{
                 rh.init(FString.instance(rh.service_context), req
                         .getRequestId(),
                         org.omg.GIOP.ReplyStatusType_1_0._NO_EXCEPTION);
-                rh.service_context.append(0);
+
+                // add Reply service context here, should probably be factored out
+
+                //using these global variables still a hack for now
+                if (edu.uci.ece.zen.orb.transport.iiop.Acceptor.priorityModel == org.omg.RTCORBA.PriorityModel._CLIENT_PROPAGATED
+                        && edu.uci.ece.zen.orb.transport.iiop.Acceptor.serverPriority >= 0) {
+
+                    ZenProperties.logger.log("Sending CLIENT PROPAGATED service context");
+
+                    rh.service_context.append(1); //list size
+
+                    rh.service_context.append(org.omg.IOP.RTCorbaPriority.value);
+                    //contexts.append(0); //big endian
+
+                    rh.service_context.append(4); //length of data
+                    rh.service_context.append((int) orb.getRTCurrent().the_priority());
+
+                } else {
+                    rh.service_context.append(0); //empty list
+                }
+
                 edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeaderHelper.write(out, rh);
                 break;
             /*
@@ -423,7 +443,7 @@ public final class GIOPMessageFactory extends MessageFactory{
     }
     /**.
      */
-     
+
     public CDROutputStream constructLocateReplyMessageImpl(ORB orb,
             edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage req)
     {
@@ -452,7 +472,7 @@ public final class GIOPMessageFactory extends MessageFactory{
         }
         return out;
     }
-    
+
     public CDROutputStream constructExceptionMessageImpl(ORB orb,
             RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
@@ -499,7 +519,7 @@ public final class GIOPMessageFactory extends MessageFactory{
      * Read a CORBA long (Java int) from the input stream, using
      * headerInfo.isLittleEndian to decide if it should be treated as little
      * endian or big endian.
-     * 
+     *
      * @param in
      *            InputStream to read four bytes from
      * @param headerInfo

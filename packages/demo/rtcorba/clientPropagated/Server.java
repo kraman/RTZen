@@ -69,7 +69,7 @@ public class Server extends RealtimeThread
             ///poa_policy_list[0] = rtorb.create_priority_model_policy (org.omg.RTCORBA.PriorityModel.CLIENT_PROPAGATED,(short)0);
             POA childPOA = rootPOA;///.create_POA ("Child_POA",poaManager,poa_policy_list);
 
-            TestImpl impl = new TestImpl();
+            TestImpl impl = new TestImpl(orb);
 
             org.omg.CORBA.Object obj = childPOA.servant_to_reference(impl);
             System.out.println( "=================== Going to create IOR ==============" );

@@ -9,8 +9,18 @@ import edu.uci.ece.zen.orb.ResponseHandler;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.WriteBuffer;
+import edu.uci.ece.zen.utils.ReadBuffer;
+import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
+
+/**
+ * @author Krishna Raman
+ * @author Mark Panahi
+ *
+ * Logic to make invocations on the servant and send back the reponse if expected.
+ * Also handles special operations like _is_a and _non_existent.
+ */
 
 public class MSGRunnable implements Runnable {
     RequestMessage rm;
@@ -34,6 +44,50 @@ public class MSGRunnable implements Runnable {
         ResponseHandler rh = new ResponseHandler(orb, rm);
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(323);
 
+        ///// Parse service context here
+
+        FString contexts = rm.getServiceContexts();
+
+        if (ZenProperties.dbg) System.out.println("MSGRunnable REQUEST SC: " + contexts.decode());
+
+        ReadBuffer rb = contexts.toReadBuffer();
+
+        //if (ZenProperties.dbg) System.out.println("#############REPLY RB: " + rb.toString());
+
+        int size = rb.readLong();
+
+        if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT size: " + size);
+
+        for(int i = 0; i < size; ++i){
+
+            int id = rb.readLong();
+            if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT id: " + id);
+
+            if(id == org.omg.IOP.RTCorbaPriority.value){
+                if(ZenProperties.devDbg) System.out.println("MSGRunnable REPLY CONTEXT id:RTCorbaPriority");
+                if(ZenProperties.devDbg) System.out.println("MSGRunnable CUR thread priority: " + orb.getRTCurrent().the_priority());
+
+                rb.readLong(); //eat length
+
+                short priority = (short)rb.readLong();
+
+                if(ZenProperties.devDbg) System.out.println("MSGRunnable RECEIVED thread priority: " + priority);
+
+                orb.getRTCurrent().the_priority(priority);
+
+                if(ZenProperties.devDbg) System.out.println("MSGRunnable NEW thread priority: " + orb.getRTCurrent().the_priority());
+
+            } else{ // just eat
+                if(ZenProperties.devDbg) System.out.println("MSGRunnable Skipping unknown service context " + id);
+                int byteLen = rb.readLong();
+                for(int i1 = 0; i1 < byteLen; ++i1)
+                    rb.readByte();
+            }
+        }
+
+        rb.free();
+        /////////// end parse service context
+
         if (rm.getOperation().equals("_is_a")) {
             boolean _result = servant._is_a(rm.getCDRInputStream()
                     .read_string());
@@ -49,7 +103,7 @@ public class MSGRunnable implements Runnable {
             edu.uci.ece.zen.utils.Logger.printMemStatsImm(324);
             String op = rm.getOperation().toString();
             edu.uci.ece.zen.utils.Logger.printMemStatsImm(325);
-           
+
             reply = (CDROutputStream) ((InvokeHandler) servant)
                     ._invoke(op,
                             (org.omg.CORBA.portable.InputStream) rm

@@ -1,6 +1,6 @@
 package demo.rtcorba.clientPropagated;
 
-
+import org.omg.CORBA.ORB;
 /**
  * This class implements the RTCORBA client propagated
     priority demo server from TAO.
@@ -11,6 +11,11 @@ package demo.rtcorba.clientPropagated;
 public class TestImpl extends TestPOA
 
 {
+    private ORB orb;
+
+    public TestImpl(ORB orb){
+        this.orb = orb;
+    }
 
     /**
      *
@@ -18,7 +23,8 @@ public class TestImpl extends TestPOA
     public void test_method (short priority)
     {
         try{
-            org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(_orb().resolve_initial_references("RTCurrent"));
+            //org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(_orb().resolve_initial_references("RTCurrent"));
+            org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(orb.resolve_initial_references("RTCurrent"));
             System.out.println("Priority: " + priority);
 
             short servant_thread_priority = rtcur.the_priority();

@@ -153,6 +153,9 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN
 
+        out.write_long(priorityModel);
+        out.write_short(serverPriority);
+
         pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
         pv.ptype = PRIORITY_MODEL_POLICY_TYPE.value;
 

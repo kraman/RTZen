@@ -13,8 +13,10 @@
     <property name="server.class" value="demo.rtcorba.${demo.name}.Server"/>
     <property name="client.class" value="demo.rtcorba.${demo.name}.Client"/>
 
-    <property name="ior1" value="${package.dir}/test.ior"/>
-<!--    <property name="ior1" value="C:/ACE_wrappers/TAO/tests/RTCORBA/Client_Propagated/Release/test.ior"/>-->
+    <property name="ior1" value="test.ior"/>
+<!--    
+<property name="ior1" value="${package.dir}/test.ior"/>
+<property name="ior1" value="C:/ACE_wrappers/TAO/tests/RTCORBA/Client_Propagated/Release/test.ior"/>-->
 
    <target name="all" depends="idl, compile"/>
 
