@@ -70,7 +70,7 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
     public void handleRequest(RequestMessage request, edu.uci.ece.zen.poa.POA poa,
              edu.uci.ece.zen.poa.SynchronizedInt requests , IntHolder exceptionValue) {
         //TODO implement handleRequest and be careful with ThreadStrategy
-        throw org.omg.CORBA.NO_IMPLEMENT();
+        throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
    /**
