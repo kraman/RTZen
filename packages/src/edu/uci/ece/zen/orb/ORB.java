@@ -668,8 +668,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     public static Object getQueuedInstance(Class cls, Queue q) {
 
         if(q == null){
-            ZenProperties.logger.log(Logger.FATAL, cls, "getQueuedInstance",
-                    "Queue not created");
+            ZenProperties.logger.log(Logger.FATAL, cls, "getQueuedInstance", "Queue not created");
             return null;
         }
 
@@ -686,14 +685,14 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
         Object ret = q.dequeue();
         if( ret == null ){
-        try {
-            ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", "Creating new instance.");
-            ret = ImmortalMemory.instance().newInstance(cls);
-        } catch (Exception e) {
-            ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
+            try {
+                ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", "Creating new instance.");
+                ret = ImmortalMemory.instance().newInstance(cls);
+            } catch (Exception e) {
+                ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
+            }
         }
-    }
-    return ret;
+        return ret;
     }
 
 

@@ -15,8 +15,6 @@ public class ReadBuffer {
     private static int numFree = 0; //just to debug the number of free buffers
     private boolean enableAlignment = true;
 
-    private static Object [] vectorArgTypes;
-    private static java.lang.reflect.Constructor vectorConstructor;
     private static int maxCap = 10;
 
     public void setAlignment( boolean align ){
@@ -25,10 +23,7 @@ public class ReadBuffer {
 
     static {
         try {
-            vectorConstructor = Vector.class.getConstructor(new Class [] {int.class});
-            vectorArgTypes = new Object[1];
             maxCap = Integer.parseInt(ZenProperties.getGlobalProperty( "readbuffer.size" , "20" ));
-            vectorArgTypes[0] = new Integer(maxCap);
             bufferCache = (Queue) ImmortalMemory.instance().newInstance( Queue.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, "static <init>", e);

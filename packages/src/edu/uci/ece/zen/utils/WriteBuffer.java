@@ -15,8 +15,6 @@ public class WriteBuffer {
     private static int LONG = 4;
     private static int LONGLONG = 8;
 
-    private static Object [] vectorArgTypes;
-    private static java.lang.reflect.Constructor vectorConstructor;
     private static int maxCap = 10;
     private static boolean enableAllignment = true;
 
@@ -26,12 +24,8 @@ public class WriteBuffer {
 
     static {
         try {
-            vectorConstructor = Vector.class
-                    .getConstructor(new Class [] {int.class});
-            vectorArgTypes = new Object[1];
             maxCap = Integer.parseInt(ZenProperties
                 .getGlobalProperty( "writebuffer.size" , "20" ));
-            vectorArgTypes[0] = new Integer(maxCap);
 	    bufferCache = (Queue) ImmortalMemory.instance().newInstance(Queue.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "static <init>", e);

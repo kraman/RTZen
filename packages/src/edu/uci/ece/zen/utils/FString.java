@@ -48,6 +48,7 @@ public class FString {
         FString fs = null;
         try {
             fs = (FString) ImmortalMemory.instance().newInstance(FString.class);
+            ZenProperties.logger.log(Logger.WARN, FString.class, "fromImmortal" , "new FString created");
             fs.init(1024);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, FString.class, "fromImmortal", e);
@@ -55,13 +56,10 @@ public class FString {
         return fs;
     }
 
-
-
     /** I have no idea. */
     public static FString instance(FString fs) {
         if (fs == null) {
             fs = fromImmortal();
-            ZenProperties.logger.log("new FString");
         } else {
             fs.reset();
         }

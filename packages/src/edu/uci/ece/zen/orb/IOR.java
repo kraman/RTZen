@@ -37,6 +37,7 @@ public class IOR {
         }
         catch(Throwable ex){
             System.out.println("Catched in IOR:"+ex);
+            ex.printStackTrace();
             return null;
         }
     }

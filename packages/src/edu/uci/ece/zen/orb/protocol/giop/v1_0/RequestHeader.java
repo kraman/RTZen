@@ -11,18 +11,15 @@ import edu.uci.ece.zen.utils.Logger;
  *
  * @author OpenORB Compiler
  */
-public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity {
+public final class RequestHeader implements org.omg.CORBA.portable.IDLEntity{
 
     public static RequestHeader instance(RequestHeader rh) {
-
         try {
             if (rh == null)
-                rh = (RequestHeader) ImmortalMemory.instance()
-                    .newInstance(RequestHeader.class);
+                rh = (RequestHeader) ImmortalMemory.instance().newInstance(RequestHeader.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, RequestHeader.class, "instance", e);
         }
-
         return rh;
     }
 
