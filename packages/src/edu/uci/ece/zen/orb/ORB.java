@@ -446,7 +446,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         return rtorb;
     }
 
-<<<<<<< .mine
     public NamingContextExt getNaming(){
         if (cachedNamingReference == null) {
             cachedNamingReference = NamingContextExtHelper.narrow(string_to_object(ZenProperties.getGlobalProperty("naming.ior_file.for_reading","")));
