@@ -43,7 +43,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.v1_0.RequestMessage
         messageBody = stream;
     }
 
-    public void marshall( CDROutputStream out ) {
+    public void marshal( CDROutputStream out ) {
         RequestHeader_1_1Helper.write( out, header );
     }
 

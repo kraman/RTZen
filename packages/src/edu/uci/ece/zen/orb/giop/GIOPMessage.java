@@ -28,5 +28,5 @@ public abstract class GIOPMessage{
     public final void setScope( ScopedMemory scope ){ this.scope = scope; }
     public final ScopedMemory getScope(){ return scope; }
 
-    public abstract void marshall( CDROutputStream out );
+    public abstract void marshal( CDROutputStream out );
 }

@@ -24,7 +24,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage{
     public boolean isRequest(){ return false; }
     public boolean isReply(){ return true; }
 
-    public void marshall( CDROutputStream out ){
+    public void marshal( CDROutputStream out ){
         ReplyHeader_1_0Helper.write( out , header );
     }
 }

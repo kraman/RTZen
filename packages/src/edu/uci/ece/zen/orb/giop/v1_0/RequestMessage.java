@@ -43,7 +43,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage{
     public boolean isRequest(){ return true; }
     public boolean isReply(){ return false; }
 
-    public void marshall( CDROutputStream out ){
+    public void marshal( CDROutputStream out ){
         RequestHeader_1_0Helper.write( out , header );
     }
 }

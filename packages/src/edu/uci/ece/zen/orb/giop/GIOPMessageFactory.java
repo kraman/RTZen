@@ -13,6 +13,7 @@ import edu.uci.ece.zen.orb.transport.*;
  * demarshalling messages.
  *
  * @author Krishna Raman
+ * @author Bruce Miller
  * @version $Revision: 1.7 $ $Date: 2004/02/25 08:15:19 $
  */
 public final class GIOPMessageFactory
@@ -30,6 +31,7 @@ public final class GIOPMessageFactory
             java.io.InputStream in = trans.getInputStream();
             parseStreamForHeader(in, mainMsgHdr);
             
+            // Read the GIOP message (including any request/reply/etc headers) into the variable "buffer"
             buffer.setEndian( mainMsgHdr.isLittleEndian );
             buffer.appendFromStream( in , mainMsgHdr.messageSize );
 
@@ -49,8 +51,7 @@ public final class GIOPMessageFactory
                                 case org.omg.GIOP.MsgType_1_0._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_0._CancelRequest :
                                     // A cancel request header is just the request id to cancel.
-                                    int requestIdToCancel = read_long(in, mainMsgHdr);
-                                    orb.cancelRequest(requestIdToCancel);
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.CancelMessage( orb, buffer );
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._MessageError :
                                     //TODO: Handle these properly
@@ -77,8 +78,7 @@ public final class GIOPMessageFactory
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
                                     // A cancel request header is just the request id to cancel.
-                                    int requestIdToCancel = read_long(in, mainMsgHdr);
-                                    orb.cancelRequest(requestIdToCancel);
+                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.CancelMessage( orb, buffer );
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_1._MessageError :
@@ -255,7 +255,7 @@ public final class GIOPMessageFactory
         out.write_boolean( false );
         out.setLocationMemento();
         out.write_long(0);
-        (new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId )).marshall( out );
+        (new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId )).marshal( out );
     }
 
 
@@ -268,9 +268,9 @@ public final class GIOPMessageFactory
      * @param in InputStream to read four bytes from
      * @param headerInfo GIOPHeaderInfo object whose isLittleEndian member will be used to determine how to treat input stream
      */
-    public static int read_long(java.io.InputStream in, GIOPHeaderInfo headerInfo) {
+    public static int read_long(java.io.InputStream in, GIOPHeaderInfo headerInfo) throws java.io.IOException {
         byte [] bytesOfLong = new byte [4];
-        in.read(fragRequestIdBytes, 0, 4);
+        in.read(bytesOfLong, 0, 4);
         int readLong = 0;
         
         if( !headerInfo.isLittleEndian ){
