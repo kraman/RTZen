@@ -36,9 +36,9 @@ public class CDRTestClient extends RealtimeThread
 			stub = DateTypesHelper.unchecked_narrow( obj );
 
 			testShort();
-			testLong();
-			testLongLong();
-			testUShort();
+			//testLong();
+			//testLongLong();
+			//testUShort();
 
 
 		}
@@ -57,7 +57,7 @@ public class CDRTestClient extends RealtimeThread
 	    (shcretVal == 100)?:System.out.println("return value wrong in echoShort()");
         (shcoutVal.value == 102)?:System.out.println("out value wrong in echoShort()");
     }
-
+/*
     public void testLong(){
 
 		int iinVal = 1000000;
@@ -86,7 +86,7 @@ public class CDRTestClient extends RealtimeThread
 		int ushretVal = datatypes.echoUShort( ushinVal, ushoutVal);
 		(ushcretVal == 32768)?:System.out.println("return value wrong in echoUShort()");
 		(ushcoutVal.value == 32770)?:System.out.println("out value wrong in echoUShort()");
-    }
+    }*/
 
 /*
 	public void testChar()

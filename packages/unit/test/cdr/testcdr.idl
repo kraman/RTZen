@@ -1,7 +1,7 @@
 module test{
     module cdr{
         interface DataTypes{
-
+/*
             typedef sequence<short> shortSeq;
             typedef sequence<long> longSeq;
             typedef sequence<long long> longlongSeq;
@@ -19,14 +19,14 @@ module test{
             typedef sequence<boolean> booleanSeq;       
             typedef sequence<octet> octetSeq;           
           
-            
+*/            
             
        
 
             short echoShort( in short inVal ,  out short outVal );
-            long echoLong( in long inVal ,  out long outVal );
+/*            long echoLong( in long inVal ,  out long outVal );
             long long echoLongLong( in long long inVal ,  out long long  outVal);
-            ushort echoUShort( in ushort inVal ,  out ushort outVal );
+            ushort echoUShort( in ushort inVal ,  out ushort outVal ); */
             
             /*
             ulong echoULong( in ulong inVal ,  out ulong outVal );

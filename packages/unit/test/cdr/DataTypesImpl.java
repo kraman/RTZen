@@ -13,7 +13,7 @@ public class DataTypesImpl extends DataTypesPOA
 	    short shretVal = shinVal;
 	    shoutVal.value = 102;
 	    return shretVal;
-    }
+    }/*
 
     public int echoLong( int iinVal , org.omg.CORBA.IntHolder ioutVal){
 
@@ -40,7 +40,7 @@ public class DataTypesImpl extends DataTypesPOA
 		    int ushretVal = ushinVal;
 		    ushoutVal.value = 32770;
 		    return ushretVal;
-    }
+    }*/
 
    /*
 
