@@ -127,7 +127,7 @@ public final class GIOPMessageFactory
 
 
 
-    /** Collects all fragments following the initial one in request or reply in v1_1.
+    /** Collects all fragments following the initial one in a request or a reply in GIOP v1_1.
      * @param trans Transport (e.g. iiop) where the inputstream should be found.
      * @param headerInfo is a reference to the header object that this method can use and modify.
      * @param firstFragmentBuffer ReadBuffer of the first fragment in set of fragments from a v1_1 Request or Reply
@@ -153,6 +153,11 @@ public final class GIOPMessageFactory
 
 
 
+    /** Collects all fragments following the initial one in a request or a reply in GIOP v1_2.
+     * @param trans Transport (e.g. iiop) where the inputstream should be found.
+     * @param headerInfo is a reference to the header object that this method can use and modify.
+     * @param firstFragmentBuffer ReadBuffer of the first fragment in set of fragments from a v1_2 Request or Reply
+     */
     private static void collectFragmentsv1_2( Transport trans, GIOPHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer, int requestId ) throws java.io.IOException { 
         // Read the fragment header
 
