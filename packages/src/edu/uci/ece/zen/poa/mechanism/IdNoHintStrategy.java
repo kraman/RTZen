@@ -18,31 +18,27 @@ final public class IdNoHintStrategy {
      * @param poaIndex byte[]
      * @return ObjectKey representation
      */
-    public static ObjectKey create(char prefix,
-                                   byte[] objectId,
-                                   byte[] time,
-                                   byte[] poaIndex) {
+    public static void create(char prefix,
+                                   FString objectId,
+                                   FString time,
+                                   FString poaIndex,
+                                   FString okey_out) {
         // length = prefix + length of the time stamp <8 bytes> + hint byte
-        int count = 1 + objectId.length + 8 + poaIndex.length + 1;
 
-        byte[] temp = new byte[count];
+        okey_out.reset();
 
-        int start = 0;
 
-        temp[start++] = (byte) (prefix & 0xFF);
-        temp[start++] = (byte) 0; // No hints present
+        okey_out.append((byte) (prefix & 0xFF));
+        okey_out.append((byte) 0); // No hints present
 
         // write out the time
-        System.arraycopy(time, 0, temp, start, time.length);
-        start += time.length;
+        okey_out.append(time.getData(), 0, time.length());
 
         // write out the active Object Map index
-        System.arraycopy(poaIndex, 0, temp, start, poaIndex.length);
-        start += poaIndex.length;
+        okey_out.append(poaIndex.getData(), 0, poaIndex.length()); 
 
         // copy the Object Id
-        System.arraycopy(objectId, 0, temp, start, objectId.length);
-        return new ObjectKey(temp);
+        okey_out.append(objectId.getData(), 0, objectId.length()); 
     }
 
     // For a persistent poa: No Hints present
@@ -54,52 +50,43 @@ final public class IdNoHintStrategy {
      * @param poaIndex byte[]
      * @return ObjectKey
      */
-    public static ObjectKey create(char prefix,
-                                   String poaPath,
-                                   byte[] time,
-                                   byte[] objectId,
-                                   byte[] poaIndex) {
+    public static void create(char prefix,
+                                   FString poaPath,
+                                   FString time,
+                                   FString objectId,
+                                   FString poaIndex,
+                                   FString okey_out) {
 
         // first get the number of bytes that are needed for creating
         // the object key
-        byte[] pathName = poaPath.getBytes();
 
         // length = prefix + <no of bytes that poaPathName occupies> +
         // poaPathName + length of the time stamp <8 bytes>
         // for a persistent poa; for a transient POA it is minus the
         // poaPathName
-        int count = 1 + pathName.length + objectId.length + 8 + 4
-                + poaIndex.length + 1;
 
-        int start = 0;
-        byte[] temp = new byte[count];
-
-        temp[start++] = (byte) (prefix & 0xFF);
-        temp[start++] = (byte) 0; // No hints present
+        
+        okey_out.reset();
+        okey_out.append((byte) (prefix & 0xFF));
+        okey_out.append( (byte) 0); // No hints present
         // write out the time
-        System.arraycopy(time, 0, temp, start, time.length);
-        start += time.length;
+        okey_out.append(time.getData(), 0, time.length()); 
         // write out the active Object Map index
-        System.arraycopy(poaIndex, 0, temp, start, poaIndex.length);
-        start += poaIndex.length;
+        okey_out.append(poaIndex.getData(), 0, poaIndex.length()); 
 
-        start = write_int(temp, start, pathName.length);
-        System.arraycopy(pathName, 0, temp, start, pathName.length);
-        start += pathName.length;
+        write_int(okey_out, poaPath.length());
+        okey_out.append(poaName.getData(), 0, poaName.length());
 
         // copy the Object Id
-        System.arraycopy(objectId, 0, temp, start, objectId.length);
-
-        return new ObjectKey(temp);
+        okey_out.append(objectId.getData(), 0, objectId.length()); 
 
     }
 
-    private static int write_int(byte[]buffer, int start, int value) {
-        buffer[start++] = (byte) ((value >>> 24) & 0xFF);
-        buffer[start++] = (byte) ((value >>> 16) & 0xFF);
-        buffer[start++] = (byte) ((value >>> 8) & 0xFF);
-        buffer[start++] = (byte) (value & 0xFF);
+    private static void write_int(byte[] okey_out, int value) {
+        okey_out.append( (byte) ((value >>> 24) & 0xFF));
+        okey_out.append( (byte) ((value >>> 16) & 0xFF));
+        okey_out.append( (byte) ((value >>> 8) & 0xFF));
+        okey_out.append( (byte) (value & 0xFF));
 
-        return start;
     }
 }
