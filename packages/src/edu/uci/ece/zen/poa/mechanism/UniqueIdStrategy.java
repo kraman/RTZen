@@ -15,9 +15,12 @@ public final class UniqueIdStrategy extends IdUniquenessStrategy {
      * @return boolean true if same, else false
      */
     public boolean validate(int policy) {
-        if (IdUniquenessStrategy.UNIQUE_ID == policy) {
+        if (IdUniquenessStrategy.UNIQUE_ID == policy) 
+        {
             return true;
-        } else {
+        } 
+        else 
+        {
             return false;
         }
 

@@ -92,9 +92,14 @@ public final class RetainStrategy extends ServantRetentionStrategy {
             FString oid_out, IntHolder exceptionValue) {
         exceptionValue.value = POARunnable.NoException;
         oid_out.reset();
-        if (this.AOM.servantPresent(servant)) this.AOM.getObjectID(servant,
-                oid_out, exceptionValue);
-        else exceptionValue.value = POARunnable.ServantNotActiveException;
+        if (this.AOM.servantPresent(servant))
+        {
+            this.AOM.getObjectID(servant, oid_out, exceptionValue);
+        }
+        else 
+        {
+            exceptionValue.value = POARunnable.ServantNotActiveException;
+        }
     }
 
     /**
@@ -196,8 +201,8 @@ public final class RetainStrategy extends ServantRetentionStrategy {
      * @return int slot where bound
      * @throws org.omg.PortableServer.POAPackage.WrongPolicy
      */
-    public int bindDemuxIndex(edu.uci.ece.zen.poa.POAHashMap map,
-            IntHolder exceptionValue) {
+    public int bindDemuxIndex(edu.uci.ece.zen.poa.POAHashMap map, IntHolder exceptionValue) 
+    {
         exceptionValue.value = POARunnable.NoException;
         return this.activeMap.bind(map.objectID(), map);
     }

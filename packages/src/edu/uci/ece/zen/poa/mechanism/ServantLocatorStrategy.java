@@ -69,7 +69,7 @@ public class ServantLocatorStrategy extends ServantManagerStrategy {
     */
     public void handleRequest(RequestMessage request, edu.uci.ece.zen.poa.POA poa,
              edu.uci.ece.zen.poa.SynchronizedInt requests , IntHolder exceptionValue) {
-        //TODO implement handleRequest
+        //TODO implement handleRequest and be careful with ThreadStrategy
 //        FString ok = request.getObjectKey();
 //        byte[] id = ok.getId();
 //

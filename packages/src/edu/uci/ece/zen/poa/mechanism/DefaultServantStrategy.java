@@ -51,6 +51,7 @@ public final class DefaultServantStrategy extends RequestProcessingStrategy
     protected org.omg.PortableServer.Servant defaultServant;
 
     private Object mutex = new byte[0];
+    private Object mutex2 = new byte[0];
 
     private Queue msgrQueue;
 
@@ -247,9 +248,17 @@ public final class DefaultServantStrategy extends RequestProcessingStrategy
             }
         }
 
-        this.threadPolicyStrategy.enter((InvokeHandler) myServant);
-        this.invoke(request, poa, myServant, reply);
-        this.threadPolicyStrategy.exit((InvokeHandler) myServant);
+        if (this.threadPolicyStrategy instanceof ThreadPolicyStrategy.SingleThreadModelStrategy)
+        {
+            synchronized(mutex2)
+            {
+                this.invoke(request, poa, myServant, reply);
+            }
+        }
+        else
+        {
+            this.invoke(request, poa, myServant, reply);
+        }
 
         if (map != null)
         {

@@ -46,6 +46,7 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
     private RetainStrategy retainStrategy;
 
     private Object mutex = new byte[0];
+    private Object mutex2 = new byte[0];
 
     private Queue msgrQueue;
     
@@ -171,10 +172,19 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
             requests.increment();
             map.incrementActiveRequests();
         }
-
-        this.threadPolicyStrategy.enter((InvokeHandler) myServant);
-        this.invoke(request, poa, myServant, reply);
-        this.threadPolicyStrategy.exit((InvokeHandler) myServant);
+        
+        
+        if (this.threadPolicyStrategy instanceof ThreadPolicyStrategy.SingleThreadModelStrategy)
+        {
+            synchronized(mutex2)
+            {
+                this.invoke(request, poa, myServant, reply);
+            }
+        }
+        else
+        {
+            this.invoke(request, poa, myServant, reply);
+        }
         
         synchronized (mutex) {
             requests.decrementAndNotifyAll(poa.processingState == POA.DESTRUCTION_APPARANT);

@@ -6,7 +6,12 @@ import edu.uci.ece.zen.poa.ObjectKeyHelper;
 import edu.uci.ece.zen.poa.POARunnable;
 import edu.uci.ece.zen.utils.FString;
 
-public final class PersistentStrategy extends LifespanStrategy {
+public final class PersistentStrategy extends LifespanStrategy 
+{
+    protected long value;
+    protected FString timeStamp;
+    protected static char prefix = 'P';    // --the character that has to be prepened  
+    
     public PersistentStrategy() {
         this.value = -1;
         timeStamp.reset();
@@ -87,10 +92,5 @@ public final class PersistentStrategy extends LifespanStrategy {
         }
     }
 
-    protected long value;
 
-    protected FString timeStamp;
-
-    // --the character that has to be prepened
-    protected static char prefix = 'P';
 }

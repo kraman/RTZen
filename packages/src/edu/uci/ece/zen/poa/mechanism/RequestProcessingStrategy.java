@@ -5,6 +5,7 @@ import org.omg.CORBA.IntHolder;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.poa.POAImpl;
 import edu.uci.ece.zen.poa.POARunnable;
+import edu.uci.ece.zen.utils.ZenProperties;
 
 /**
  * The class <code>RequestProcessingStrategy</code> takes care of creating
@@ -45,43 +46,66 @@ public abstract class RequestProcessingStrategy {
             IntHolder exceptionValue) {
         exceptionValue.value = POARunnable.NoException;
 
-        if (PolicyUtils.useServantManagerPolicy(policy)) {
-            retentionStrategy
-                    .validate(retentionStrategy.RETAIN, exceptionValue);
-            if (exceptionValue.value != POARunnable.NoException) return null;
+        if (PolicyUtils.useServantManagerPolicy(policy)) 
+        {
+            ZenProperties.logger.log("ReqProcStrat init 1");
+            retentionStrategy.validate(ServantRetentionStrategy.RETAIN, exceptionValue);
+            if (exceptionValue.value != POARunnable.NoException)
+            {   
+                return null;
+            }
+            
+            ZenProperties.logger.log("ReqProcStrat init 2");            
             ServantActivatorStrategy activator = new ServantActivatorStrategy();
-            activator.init(retentionStrategy, threadStrategy,
-                    uniquenessStrategy, pimpl, exceptionValue);
+            activator.init(retentionStrategy, threadStrategy, uniquenessStrategy, pimpl, exceptionValue);
 
-            if (exceptionValue.value == POARunnable.NoException) return activator;
-            else {
+            if (exceptionValue.value == POARunnable.NoException)
+            {  
+                ZenProperties.logger.log("ReqProcStrat init 3");
+                return activator;
+            }
+            else 
+            {
                 exceptionValue.value = POARunnable.NoException;
-                retentionStrategy.validate(retentionStrategy.NON_RETAIN,
+                retentionStrategy.validate(ServantRetentionStrategy.NON_RETAIN,
                         exceptionValue);
-                //KLUDGE
-                //ServantLocatorStrategy locator = new
-                // ServantLocatorStrategy();
-                if (exceptionValue.value == POARunnable.NoException) return null;
+                //KLUDGE: ServantLocatorStrategy locator = new ServantLocatorStrategy();
+                if (exceptionValue.value == POARunnable.NoException)
+                {
+                    return null;
+                }
                 //return locator;
-                else {
+                else 
+                {
                     exceptionValue.value = POARunnable.InvalidPolicyException;
                     return null;
                 }
             }
         }
 
-        if (PolicyUtils.useDefaultServantPolicy(policy)) {
 
-            if (uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID)) {
-                exceptionValue.value = POARunnable.InvalidPolicyException;
+        if (PolicyUtils.useDefaultServantPolicy(policy)) 
+        {
+            ZenProperties.logger.log("ReqProcStrat init DefServPol 1");
+// TODO Delete this 
+//            if (uniquenessStrategy.validate(IdUniquenessStrategy.UNIQUE_ID))
+//            {   
+//                exceptionValue.value = POARunnable.InvalidPolicyException;
+//                return null;
+//            }
+
+            DefaultServantStrategy strat = new DefaultServantStrategy();
+            strat.initialize(retentionStrategy, threadStrategy, exceptionValue);
+            if (exceptionValue.value == POARunnable.NoException)
+            {   ZenProperties.logger.log("ReqProcStrat init DefServPol 3");
+                return strat;
+            }
+            else
+            {   ZenProperties.logger.log("ReqProcStrat init DefServPol 4");
                 return null;
             }
-            DefaultServantStrategy servant = new DefaultServantStrategy();
-            servant.initialize(retentionStrategy, threadStrategy,
-                    exceptionValue);
-            if (exceptionValue.value == POARunnable.NoException) return servant;
-            else return null;
         }
+        
         ActiveObjectMapOnlyStrategy aom = new ActiveObjectMapOnlyStrategy();
         aom.initialize(retentionStrategy, threadStrategy, exceptionValue);
         return aom;
