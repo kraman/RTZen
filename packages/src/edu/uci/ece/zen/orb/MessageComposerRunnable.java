@@ -6,6 +6,7 @@ import edu.uci.ece.zen.utils.*;
 public class MessageComposerRunnable implements Runnable {
     ClientRequest clr;
     CDRInputStream reply;
+    int replyStatus;
     boolean success;
     private static Queue queue = Queue.fromImmortal();
     SendMessageRunnable smr;
@@ -73,6 +74,7 @@ public class MessageComposerRunnable implements Runnable {
         ZenProperties.logger.log("MCR run 2");
         if (waitingStrategy != null) {
             reply = waitingStrategy.waitForReply();
+            replyStatus = waitingStrategy.getReplyStatus();
             clr.releaseWaiter();
         }
         ZenProperties.logger.log("MCR run 3");
@@ -81,6 +83,10 @@ public class MessageComposerRunnable implements Runnable {
 
     public CDRInputStream getReply() {
         return reply;
+    }
+
+    public int getReplyStatus(){
+        return replyStatus;
     }
 }
 

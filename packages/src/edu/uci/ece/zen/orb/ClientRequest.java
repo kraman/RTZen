@@ -30,6 +30,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     public FString contexts;
     //private static ClientRequest inst;
     private static Queue queue = Queue.fromImmortal();
+    private int replyStatus;
 
     public static ClientRequest instance() {
         ClientRequest cr = (ClientRequest)Queue.getQueuedInstance(ClientRequest.class,queue);
@@ -53,7 +54,6 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
      */
     public void init(String operation, boolean responseExpected,
             byte giopMajor, byte giopMinor, ORB orb, ObjRefDelegate del) {
-        //          edu.uci.ece.zen.utils.Logger.printMemStats(310);
         this.orb = orb;
         this.del = del;
         this.operation = operation;
@@ -74,65 +74,16 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         objectKey = ln.getObjectKey();
         ZenProperties.logger.log("ClientRequest 7");
 
-        //TODO:Assemble and write message header and policies here
         contexts.reset();
-
-        //ZenProperties.logger.log("Sending CLIENT PROPAGATED service context" + contexts);
-        //contexts.append(0); //empty list
         if (del.priorityModel == PriorityModel._CLIENT_PROPAGATED
                 && del.serverPriority >= 0) {
-
             ZenProperties.logger.log("Sending CLIENT PROPAGATED service context");
-
             contexts.append(1); //list size
-
             contexts.append(org.omg.IOP.RTCorbaPriority.value);
-            //contexts.append(0); //big endian
-
             contexts.append(4); //length of data
             contexts.append((int) orb.getRTCurrent().the_priority());
-            /*
-             * CDROutputStream out1 = CDROutputStream.create(orb); short
-             * priority = orb.getRTCurrent().the_priority();
-             * out1.write_short(priority); int lim =
-             * (int)out1.getBuffer().getLimit();
-             * contexts.read(out1.getBuffer().getReadBuffer(), lim);
-             * if(ZenProperties.devDbg) System.out.println( "sc data Lim: " +
-             * lim); //contexts[0].context_data = new byte[lim];
-             * //out1.getBuffer().getReadBuffer().readByteArray(contexts[0].context_data,
-             * 0 , lim); //System.out.println("data " +
-             * contexts[0].context_data[0] + "-" + contexts[0].context_data[1] +
-             * "-" + // contexts[0].context_data[2] + "-" +
-             * contexts[0].context_data[3]); if(ZenProperties.devDbg)
-             * System.out.println("CLIENT_PROPAGATED policy -- Sending priority: " +
-             * priority); out1.free();
-             */
-            /*
-             * { org.omg.IOP.ServiceContext [] contexts1 = new
-             * org.omg.IOP.ServiceContext[1]; //kludge: of course there will be
-             * more than just 1 contexts1[0] = new org.omg.IOP.ServiceContext();
-             * contexts1[0].context_id = RTCorbaPriority.value; CDROutputStream
-             * out1 = CDROutputStream.create(orb); short priority =
-             * orb.getRTCurrent().the_priority(); out1.write_short(priority);
-             * int lim = (int)out1.getBuffer().getLimit();
-             * contexts1[0].context_data = new byte[lim];
-             * out1.getBuffer().getReadBuffer().readByteArray(contexts1[0].context_data,
-             * 0 , lim); //System.out.println("data " +
-             * contexts[0].context_data[0] + "-" + contexts[0].context_data[1] +
-             * "-" + // contexts[0].context_data[2] + "-" +
-             * contexts[0].context_data[3]); if(ZenProperties.devDbg)
-             * System.out.println("CLIENT_PROPAGATED policy -- Sending priority: " +
-             * priority); out1.free(); CDROutputStream out2 =
-             * CDROutputStream.create(orb);
-             * org.omg.IOP.ServiceContextListHelper.write(out2,contexts1); byte []
-             * test = new byte[(int)out2.getBuffer().getLimit()];
-             * out2.getBuffer().getReadBuffer().readByteArray(test, 0 ,
-             * (int)out2.getBuffer().getLimit()); System.out.println("what it
-             * should be: " + FString.byteArrayToString(test)); }
-             */
         } else {
             contexts.append(0); //empty list
-            //contexts = new ServiceContext[0];
         }
 
         messageId = WaitingStrategy.newMessageId();
@@ -143,6 +94,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         edu.uci.ece.zen.orb.protocol.MessageFactory.constructMessage(this,
                 messageId, out);
         ZenProperties.logger.log("ClientRequest 9");
+        replyStatus = -1;
         //edu.uci.ece.zen.utils.Logger.printMemStats(311);
     }
 
@@ -189,6 +141,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         if (mcr.success){
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(317);
             reply = mcr.getReply();
+            replyStatus = mcr.getReplyStatus();
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(318);
             mcr.release();
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(319);
@@ -198,6 +151,10 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         }
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(3100);
         return reply;
+    }
+
+    public int getReplyStatus(){
+        return replyStatus;
     }
 
     public void registerWaiter() {

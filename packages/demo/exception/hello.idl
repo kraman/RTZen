@@ -1,0 +1,15 @@
+module demo
+{
+	module _exception
+	{
+        exception TestException{
+            long val;
+        };
+        
+		interface HelloWorld
+		{
+			long getMessage() raises( TestException );
+		};
+	};
+};
+
