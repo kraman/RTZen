@@ -1,0 +1,74 @@
+
+/*
+ * This idl file defines a CORBA interface with different 
+ * methods to test different data types on RTZen
+ *  
+ * @author Hojjat Jafarpour
+ *
+ */
+
+
+
+module demo
+{
+	module params
+	{
+	    struct TestStruct; 
+	
+		struct TestStruct 
+		    {
+    	    	short a_short;
+        		long a_long;
+	    	};
+	    	
+	    union TestUnion switch(boolean)
+	    {
+	    	case TRUE: string val;
+	    };
+
+		interface ParamTest
+		{
+		
+			//short test
+			short test_short (in short s1);
+     	    
+     	    //unsigned long long test	              
+			unsigned long long test_ulonglong (in unsigned long long l);
+           	                  
+     
+     	    // strings unbounded test
+        	string test_unbounded_string (in string str);
+        	
+        	
+     		//char/wchar test
+			char test_char (in char ch);
+			
+			//float test
+			float test_float ( in float f);
+			
+			// boolean test
+			boolean test_boolean( in boolean b);
+			
+			//Sequence test (unbounded)
+			typedef sequence<long> unbounded_seq;
+			unbounded_seq test_sequence( in unbounded_seq mySeq );
+			
+			
+			// struct test
+			TestStruct test_struct(in TestStruct ts);
+			
+			//union test
+			TestUnion test_union(in TestUnion tu);
+			
+			//enum test
+			enum TestEnum {RTZEN , TAO , ZEN};
+			
+			TestEnum test_enum(in TestEnum te);
+			
+			
+		    typedef sequence<long> unbounded_seqJPL;
+			long getMessage(in long id, in unbounded_seqJPL mySeq);
+		};
+	};
+};
+
