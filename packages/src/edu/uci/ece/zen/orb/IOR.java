@@ -2,13 +2,23 @@ package edu.uci.ece.zen.orb;
 
 import javax.realtime.InaccessibleAreaException;
 import javax.realtime.MemoryArea;
+import javax.realtime.ScopedMemory;
+import javax.realtime.RealtimeThread;
 
+import org.omg.CORBA.Policy;
+
+import edu.uci.ece.zen.poa.POA;
 import edu.uci.ece.zen.utils.ByteArrayCache;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
+import edu.uci.ece.zen.utils.ThreadPool;
+import org.omg.IOP.TaggedProfile;
+import org.omg.IOP.TaggedProfileHelper;
+
+import edu.uci.ece.zen.orb.transport.Acceptor;
 
 public class IOR {
     private static final char[] intToHex = {
@@ -99,27 +109,57 @@ public class IOR {
      * @return The CORBA object.
      */
     public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID,
-            FString objKey, MemoryArea clientArea, WriteBuffer taggedComponents, int tcLen,
-            int threadPoolId)
+            FString objKey, MemoryArea clientArea, POA poa, int threadPoolId)
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea
                 .newInstance(org.omg.IOP.IOR.class);
         ior.type_id = typeID;
-        ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, clientArea, taggedComponents, tcLen, threadPoolId);
-        ZenProperties.logger.log("makeCORBAObject 2");
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        //ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, clientArea, taggedComponents, tcLen, threadPoolId);
+        ScopedMemory tpRegion = orb.getThreadPoolRegion(threadPoolId);
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 1.5 " + MemoryArea.getMemoryArea(objKey));
+        //final org.omg.IOP.IOR tempior = ior;
+        IORRunnable iorRun = new IORRunnable();
+        iorRun.init(objKey, clientArea, poa, ior, out);
+        tpRegion.enter(iorRun);
 
+        ZenProperties.logger.log("makeCORBAObject 2");
+        
+        //read back tagged profiles -- uhhhgggg, kludge for now
+        CDRInputStream in = (CDRInputStream)(out.create_input_stream());
+
+        int length = in.read_ulong();
+        ZenProperties.logger.log("makeCORBAObject 3");
+        ior.profiles = (TaggedProfile[]) clientArea.newArray(
+                org.omg.IOP.TaggedProfile.class, length);
+        ZenProperties.logger.log("makeCORBAObject 4");
+        for(int i = 0; i < length; ++i){
+            ior.profiles[i] = (TaggedProfile)clientArea.newInstance(org.omg.IOP.TaggedProfile.class);
+            ior.profiles[i].tag = in.read_ulong();
+            int size = in.read_ulong();
+            ior.profiles[i].profile_data = (byte[]) clientArea.newArray(
+                byte.class, size);
+            in.read_octet_array(ior.profiles[i].profile_data, 0, ior.profiles[i].profile_data.length);
+        }
+        
+        ZenProperties.logger.log("makeCORBAObject 5");
+        in.free();
+        ///////////////////////////////
+        
         ObjectImpl objectImpl = (ObjectImpl) clientArea
                 .newInstance(edu.uci.ece.zen.orb.ObjectImpl.class);
         objectImpl.init(ior);
         ObjRefDelegate delegate = ObjRefDelegate.instance();
         objectImpl._set_delegate(delegate);
-        ZenProperties.logger.log("makeCORBAObject 3");
+        ZenProperties.logger.log("makeCORBAObject 6");
 
         ORBImpl orbImpl = (ORBImpl) orb.orbImplRegion.getPortal();
         delegate.init(ior, objectImpl, orb, orbImpl);
-        ZenProperties.logger.log("makeCORBAObject 4");
+        ZenProperties.logger.log("makeCORBAObject 7");
+        out.free();
         return objectImpl;
     }
 
@@ -153,5 +193,38 @@ public class IOR {
         rd.free();
 
         return result.toString();
+    }
+}
+
+class IORRunnable implements Runnable {
+
+    FString objKey;
+    MemoryArea clientArea; 
+    POA poa;
+    org.omg.IOP.IOR ior;
+    CDROutputStream out;
+
+    public IORRunnable() {
+    }
+
+    public void init(FString objKey, MemoryArea clientArea, 
+            POA poa, org.omg.IOP.IOR ior, CDROutputStream out) {
+
+         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 2");
+        this.clientArea = clientArea;
+         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 3");
+        this.poa = poa;
+         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 4");
+        this.ior = ior;
+         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 5");
+         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("IORRunnable 1");
+        this.objKey = objKey;
+        this.out = out;
+    }
+
+    public void run() {
+        ThreadPool tp = (ThreadPool)((ScopedMemory) RealtimeThread
+                .getCurrentMemoryArea()).getPortal();
+        tp.getProfiles(objKey, clientArea, poa, ior, out);
     }
 }

@@ -34,7 +34,6 @@
    
    <target name="check_zbp" if="zbp">
         <fail>
-
             *************************************** NOTICE ******************************************
             You need to create the file zen-build.properties. Copy it from to zen-build_properties.
             Also make sure that the correct properties are set in that file.
@@ -50,6 +49,32 @@
    <target name="compile" depends="init">
       <ant antfile="${zen.srcdir}/build.xml" target="compile"/>
    </target>   
+
+   <target name="isoleak" depends="init">
+       <javac
+            destdir="utils"
+            srcdir="utils"
+            failonerror = "true"
+            classpath="utils/bcel-5.1.jar:${zen.classpath}"
+            >
+            <include name="IsoLeak.java"/>
+        </javac>
+        <java classname="IsoLeak"
+              fork="yes"
+              failonerror="yes"
+              classpath="utils:utils/bcel-5.1.jar:lib/RTZen.jar"
+              >
+              <arg line="lib/RTZen.jar"/>
+        </java>     
+        <delete dir="classes/edu"/>
+        <delete dir="classes/org"/>       
+          <move todir="classes/edu">
+            <fileset dir="edu"/>
+          </move>        
+          <move todir="classes/org">
+            <fileset dir="org"/>
+          </move>  
+   </target>
 
    <target name="track_size" if="track_size_prop">
     <echo>Tracking Size of rteverything.jar</echo>

@@ -5,6 +5,7 @@ import javax.realtime.NoHeapRealtimeThread;
 import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
 import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.poa.POA;
 
 import org.omg.IOP.TaggedProfile;
 
@@ -90,13 +91,14 @@ public abstract class Acceptor {
     private ProfileRunnable prunnable;
 
     public synchronized TaggedProfile getProfile(byte iiopMajorVersion,
-            byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion, int threadPoolId) {
-        if( this.threadPoolId == threadPoolId ){
+            byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion, POA poa) {
+        //if( this.threadPoolId == threadPoolId )
+        {
             try {
                 if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("Acceptor client region: " + clientRegion);
                 edu.uci.ece.zen.utils.Logger.printThreadStack();
                 if (prunnable == null) prunnable = new ProfileRunnable();
-                prunnable.init(iiopMajorVersion, iiopMinorVersion, objKey, this);
+                prunnable.init(iiopMajorVersion, iiopMinorVersion, objKey, this, poa);
                 clientRegion.executeInArea(prunnable);
                 return prunnable.getRetVal();
             } catch (Exception e) {
@@ -107,10 +109,55 @@ public abstract class Acceptor {
     }
 
     protected abstract TaggedProfile getInternalProfile(byte iiopMajorVersion,
-            byte iiopMinorVersion, byte[] objKey);
+            byte iiopMinorVersion, byte[] objKey, POA poa);
 
     public void finalize() {
         ZenProperties.logger.log("Acceptor region has been GC'd");
+    }
+
+    protected TaggedComponent[] getComponents(POA poa) {
+        ZenProperties.logger.log("getComponents()");
+        TaggedComponent[] tcarr;
+
+        TaggedComponent polComp = getPolicyComponent(poa);
+
+        if(polComp != null){
+            tcarr = new TaggedComponent[1];
+            tcarr[0] = polComp;
+        }else{
+            tcarr = new TaggedComponent[0];
+        }
+
+        return tcarr;
+    }
+
+    private TaggedComponent getPolicyComponent(POA poa) {
+        ZenProperties.logger.log("getPolicyComponent()");
+        //CDROutputStream out = CDROutputStream.instance();
+        //out.init(orb);
+        //out.write_boolean(false); //BIGENDIAN
+
+        //org.omg.CORBA.PolicyListHolder holder = new org.omg.CORBA.PolicyListHolder();
+
+        //holder.value = poa.getClientExposedPolicies();
+
+        //holder._write(out);
+
+        //org.omg.CORBA.PolicyListHelper.write(out, policies);
+        
+        CDROutputStream out = poa.getClientExposedPolicies();
+        
+        if(out == null)
+            return null;
+        
+        TaggedComponent tc = new TaggedComponent();
+        tc.tag = org.omg.IOP.TAG_POLICIES.value;
+        tc.component_data = new byte[(int) out.getBuffer().getLimit()];
+        out.getBuffer().getReadBuffer().readByteArray(tc.component_data, 0,
+                (int) out.getBuffer().getLimit());
+        out.free();
+
+        return tc;
     }
 
     //trust me, this is just a temporary hack
@@ -152,6 +199,32 @@ public abstract class Acceptor {
         return tc;
     }
 
+    public static PolicyValue marshalPriorityModelValue(
+            org.omg.RTCORBA.PriorityModelPolicy pol, ORB orb, CDROutputStream outRet) {
+        ZenProperties.logger.log("createPriorityModelValue()");
+        PolicyValue pv = new PolicyValue();
+        pv.ptype = priorityModel;
+
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        out.write_boolean(false); //BIGENDIAN
+
+        out.write_long(pol.priority_model().value());
+        out.write_short(pol.server_priority());
+
+        pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
+        pv.ptype = PRIORITY_MODEL_POLICY_TYPE.value;
+
+        out.getBuffer().getReadBuffer().readByteArray(pv.pvalue, 0 ,
+                (int)out.getBuffer().getLimit());
+
+        out.free();
+        
+        PolicyValueHelper.write(outRet, pv);
+
+        return pv;
+    }
+    
     private PolicyValue createPriorityModelValue() {
         ZenProperties.logger.log("createPriorityModelValue()");
         PolicyValue pv = new PolicyValue();
@@ -230,14 +303,17 @@ class ProfileRunnable implements Runnable {
 
     private TaggedProfile retVal;
 
+    private POA poa;
+
     public ProfileRunnable() {
     }
 
-    public void init(byte major, byte minor, byte[] objKey, Acceptor acc) {
+    public void init(byte major, byte minor, byte[] objKey, Acceptor acc, POA poa) {
         this.major = major;
         this.minor = minor;
         this.acc = acc;
         this.objKey = objKey;
+        this.poa = poa;
     }
 
     public TaggedProfile getRetVal() {
@@ -245,7 +321,7 @@ class ProfileRunnable implements Runnable {
     }
 
     public void run() {
-        retVal = acc.getInternalProfile(major, minor, objKey);
+        retVal = acc.getInternalProfile(major, minor, objKey, poa);
     }
 }
 

@@ -13,19 +13,25 @@ public class TPRunnable implements Runnable {
 
     Message mseg;
 
-    public TPRunnable() {
-    }
+    short priority;
+    
+    public TPRunnable() { }
 
-    public void init(POA poa, Message mseg) {
+    public void init(POA poa, Message mseg, short priority) {
         this.poa = poa;
         this.mseg = mseg;
+        this.priority = priority;
     }
 
     public void run() {
-        ThreadPool tp = (ThreadPool) ((ScopedMemory) RealtimeThread
-                .getCurrentMemoryArea()).getPortal();
-        tp.execute((RequestMessage) mseg, (short) javax.realtime.PriorityScheduler.instance().getMinPriority(), (short) javax.realtime.PriorityScheduler.instance().getMaxPriority());
+        ThreadPool tp = 
+            (ThreadPool) ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
+//        tp.execute((RequestMessage) mseg, 
+//                   (short) javax.realtime.PriorityScheduler.instance().getMinPriority(), 
+//                   (short) javax.realtime.PriorityScheduler.instance().getMaxPriority());
         //KLUDGE: ?? sreq.waitTillInvoked();
+ 
+      tp.execute((RequestMessage) mseg, this.priority, this.priority);  
     }
 }
 
