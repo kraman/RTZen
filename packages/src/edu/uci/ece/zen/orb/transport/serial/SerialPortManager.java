@@ -59,7 +59,7 @@ public class SerialPortManager
         throws UnknownHostException, IOException
     {
         SerialPortConnection requestedConnection = new SerialPortConnection(port, host);
-System.out.println("SerialPortManager: connect: trying to connect socket to " + host + ":" + port);
+
         // Synchronize on the connection list so that it doesn't get modified while we are
         // iterating over it
         synchronized (listeningConnections)
@@ -74,14 +74,13 @@ System.out.println("SerialPortManager: connect: trying to connect socket to " + 
                 {
                     i.remove();
                     connections.add(listeningConnection);
-System.out.println("SerialPortManager: connect: found listener for " + host + ":" + port + ", connecting to socket...");
+
                     listeningConnection.connect(socket, fromLocalHost, serialPort);
 
                     return listeningConnection;
                 }
             }
         }
-System.out.println("SerialPortManager: connect: trying to connect socket to " + host + ":" + port + " failed - NO LISTENERS WERE FOUND");
 
         // We didn't find any local sockets to connect to, so if this is a local socket requesting
         // a connection, ask the other end if it has any listening sockets...
@@ -89,15 +88,12 @@ System.out.println("SerialPortManager: connect: trying to connect socket to " + 
         {
             try
             {
-System.out.println("SerialPortManager: connect: trying to satisfy connection request by contacting other host...");
                 // Tell the connection what socket it's for so that the serial port listener knows about it
                 requestedConnection.setSocket(socket);
 
                 requestedConnections.add(requestedConnection);
 
                 serialPort.sendMessage(SerialPortProtocol.encodeConnectionRequested(requestedConnection));
-
-System.out.println("SerialPortManager: connect: connection request sent to other host, waiting for reply...");
 
                 requestedConnection.waitForConnection();
 
@@ -109,12 +105,13 @@ System.out.println("SerialPortManager: connect: connection request sent to other
             }
         }
 
-        throw new UnknownHostException("The requested host (" + requestedConnection + ") could not be found, or it had no sockets open for connections.");
+        // The requested host could not be found, or it had no sockets open for connections.
+        return null;
     }
 
     private class SerialPortListener extends Thread
     {
-        private static final int LISTEN_INTERVAL = 5000;
+        private static final int LISTEN_INTERVAL = 50;
 
         public void run()
         {
@@ -285,7 +282,7 @@ class SerialPortConnection
         {
             socket.setID(Socket.NEXT_AVAILABLE_ID);
         }
-System.out.println("SerialPortManager: making new " + (local?"local":"remote") + " connection with " + this + ", socketID=" + socket.getID());
+
         if (local)
         {
             stream = new LocalSerialPortStream();
@@ -402,9 +399,7 @@ class LocalSerialPortStream implements SerialPortStream
         {
             try
             {
-System.out.println("Local input stream: trying to remove byte from queue (may block)");
                 Integer n = (Integer) queue.take();
-System.out.println("Local input stream: removed byte from queue: " + Integer.toHexString(n.intValue() & 0xFF) + ", available=" + available());
                 return n.intValue() & 0xFF;
             }
             catch (InterruptedException e)
@@ -427,7 +422,6 @@ System.out.println("Local input stream: removed byte from queue: " + Integer.toH
         {
             try
             {
-System.out.println("Local output stream: writing " + Integer.toHexString(b & 0xFF) + ", buffer size = " + queue.size());
                 queue.put(new Integer(b));
             }
             catch (InterruptedException e)
@@ -477,9 +471,7 @@ class RemoteSerialPortStream implements SerialPortStream
         {
             try
             {
-System.out.println("Remote input stream: trying to remove byte from queue (may block)");
                 Integer n = (Integer) inputBuffer.take();
-System.out.println("Remote input stream: removed byte from queue: " + Integer.toHexString(n.intValue() & 0xFF) + ", available=" + available());
                 return n.intValue() & 0xFF;
             }
             catch (InterruptedException e)
@@ -513,15 +505,12 @@ System.out.println("Remote input stream: removed byte from queue: " + Integer.to
 
         public void write(int b) throws IOException
         {
-System.out.println("Remote output stream: writing " + Integer.toHexString(b&0xFF) + ", buffer size = " + outputBuffer.size());
-
             outputBuffer.add(new Integer(b & 0xFF));
         }
 
         public void write(byte b[], int off, int len) throws IOException
         {
             super.write(b, off, len);
-System.out.println("Remote output stream: flushing " + outputBuffer.size() + " bytes");
             flush();
         }
 

@@ -75,7 +75,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
 
         // Ensure that the serial port manager is loaded
         edu.uci.ece.zen.orb.transport.serial.SerialPortManager.instance();
-        System.out.println("ORB.init: instance loaded");
 
         try {
             try {

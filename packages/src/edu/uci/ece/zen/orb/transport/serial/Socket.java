@@ -24,9 +24,7 @@ public class Socket
 
     public Socket(String host, int port) throws UnknownHostException, IOException
     {
-        System.out.println("Socket: trying to connect to " + host + ":" + port);
         SerialPortManager.instance().connect(port, host, this, true);
-        System.out.println("Socket: got connection to " + host + ":" + port + "!");
     }
 
     public synchronized void setReceiveBufferSize(int size) throws SocketException {
