@@ -196,6 +196,7 @@ public class POAImpl{
                 this.retentionStrategy, this.uniquenessStrategy, this.threadPolicyStrategy, this , ih);
         if( ih.value != 0 ){ retIntHolder(ih); prun.exception = POARunnable.InvalidPolicyException; return; }
         if(ZenProperties.devDbg) System.out.println( "POAImpl init 12" );
+        retIntHolder( ih );
 
         poaImplRunnable = new POAImplRunnable( self.poaMemoryArea );
         self.poaMemoryArea.setPortal( this );

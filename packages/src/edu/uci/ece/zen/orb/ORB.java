@@ -210,6 +210,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         }
         return null;
     }
+
     private void internalInit( ScopedMemory mem , String orbId , String[] args , Properties props ){
         this.orbId.reset();
         this.orbId.append( orbId );

@@ -50,13 +50,9 @@ public class ThreadPool{
     }
 
     private int statCount = 0;
-    //private static final String name = "TP: ";
     public void execute( RequestMessage task , short minPriority , short maxPriority ){
-
-
         statCount++;
         if(statCount % 100 == 0){
-            //System.out.print(name);
             edu.uci.ece.zen.utils.Logger.printMemStats(4);
         }
 
@@ -166,9 +162,9 @@ class Lane{
     }
 
     public void returnToPool( ThreadSleepRunnable runnable ){
-        runnable.getThread().setPriority( runnable.getNativePriority() );
-        if( !runnable.getLane().checkRequestBuffer() )
+        if( !runnable.getLane().checkRequestBuffer() ){
             runnable.getLane().threads.enqueue( runnable );
+        }
     }
 
     public void shutdown( boolean waitForCompletion ){

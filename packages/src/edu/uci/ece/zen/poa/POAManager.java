@@ -19,7 +19,6 @@ public class POAManager extends org.omg.CORBA.LocalObject implements org.omg.Por
     private static ImmortalMemory imm;
 
     private ORB orb;
-    private ScopedMemory poaManagerMemoryArea;
     private State state;
 
     private org.omg.PortableServer.POA registeredPOAs[];
