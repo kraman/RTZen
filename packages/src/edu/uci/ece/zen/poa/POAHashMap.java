@@ -1,48 +1,38 @@
-/* --------------------------------------------------------------------------*
- * $Id: POAHashMap.java,v 1.2 2004/03/11 19:31:34 nshankar Exp $
- *--------------------------------------------------------------------------*/
-
-
 package edu.uci.ece.zen.poa;
 
 import javax.realtime.*;
 import edu.uci.ece.zen.utils.*;
 import java.util.Properties;
 
-
-
-
-
-
 public class POAHashMap {
-	private static Queue unusedFacades;
-    	public static void init()
-    	{
+    private static Queue unusedFacades;
+    public static void init()
+    {
 
 
-            //Set up Max No of servants
-            int numFacades = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.maxNumServants" , "1" ) );
-            unusedFacades = new Queue();;
-            for( int i=0;i<numFacades;i++ )
-                unusedFacades.enqueue( new POAHashMap() );
+        //Set up Max No of servants
+        int numFacades = Integer.parseInt( ZenProperties.getGlobalProperty( "doc.zen.poa.maxNumServants" , "1" ) );
+        unusedFacades = new Queue();;
+        for( int i=0;i<numFacades;i++ )
+            unusedFacades.enqueue( new POAHashMap() );
 
     }
 
     public static POAHashMap initialize(byte[] oid,
             org.omg.PortableServer.Servant servant) {
 
-            POAHashMap retVal =  (POAHashMap) unusedFacades.dequeue();
+        POAHashMap retVal =  (POAHashMap) unusedFacades.dequeue();
 
-             if(MemoryArea.getMemoryArea(servant) instanceof ScopedMemory)
-			retVal.servantMemory = (ScopedMemory)MemoryArea.getMemoryArea(servant);
-              else retVal.servant = servant;
-	      retVal.objId = oid;
-              return retVal;
+        if(MemoryArea.getMemoryArea(servant) instanceof ScopedMemory)
+            retVal.servantMemory = (ScopedMemory)MemoryArea.getMemoryArea(servant);
+        else retVal.servant = servant;
+        retVal.objId = oid;
+        return retVal;
     }
 
     public static void enqueue( POAHashMap ret)
     {
-    	unusedFacade.enqueue(ret);
+        unusedFacade.enqueue(ret);
     }
 
     /**
@@ -122,11 +112,12 @@ public class POAHashMap {
      * @return org.omg.PortableServer.Servant
      */
 
-    public org.omg.PortableServer.Servant getServant() {
-    		if (servant!= null) return this.servant;
-                else
-		return (org.omg.PortableServer.Servant) servantMemory.getPortal();
-
+    public ScopedMemory getServantRegion() {
+        return null;/*
+        if (servant!= null) return this.servant;
+        else
+            return (org.omg.PortableServer.Servant) servantMemory.getPortal();
+        */
     }
 
 
@@ -144,7 +135,7 @@ public class POAHashMap {
     // --Making this volatile does not need to be synchronized
     private volatile boolean active = true;
     private org.omg.PortableServer.Servant servant;
-	private ScopedMemory servantMemory;
+    private ScopedMemory servantMemory;
 
     // have the object Id too, done for fast demuxing requests
     private byte[] objId;

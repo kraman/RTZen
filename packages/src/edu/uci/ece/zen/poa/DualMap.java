@@ -2,40 +2,40 @@
  * $Id: DualMap.java,v 1.3 2004/03/11 19:31:34 nshankar Exp $
  *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa;
-
-
-/**
- * Dual Map is used in the case where the POA has UNIQUE_ID Policy,
- * to make operations like servant_to_id and id_to_servant faster there
- * is a reverse map maintained from servant to ObjectID that helps in
- * retrieving the ObjectID associated with the servant.
- *
- * @author <a href="mailto:krishnaa@uci.edu">Arvind S. Krishna</a>
- * @version 1.0
- * @see SingleMap
- */
-
 import edu.uci.ece.zen.utils.*;
+import javax.realtime.*;
 
 
-public class DualMap implements ActiveObjectMap {
+public class DualMap implements ActiveObjectMap{
 
-    private static int initialCapacity;
-    private static String name = "poa.aom.size";
-    public static int DEFAULT_CAPACITY = 100;
+    private static String maxCapacityProperty = "poa.aom.size";
+    private static String defaultMaxCapacity = "100";
+    private static int maxCapacity;
 
     static {
-        DualMap.initialCapacity = Integer.parseInt(ZenProperties.getGloablProperty(DualMap.name, DEFAULT_CAPACITY));
+        maxCapacity= Integer.parseInt(ZenProperties.getGlobalProperty( maxCapacityProperty, defaultMaxCapacity ));
     }
+
+    Hashtable mapByObjectIDs;
+    Hashtable mapByServants;
+
+    DualMap(){
+        super();
+        mapByObjectIDs = new Hashtable();
+        mapByServants = new Hashtable();
+
+        mapByObjectIDs.init( DualMap.maxCapacity );
+        mapByServants.init( DualMap.maxCapacity );
+    }
+
     /**
      * This method adds the servant to the ActiveObjectMap.
      * @param key Object_id of the object.
      * @param map POAHashMap that contains the object.
      */
-
-    public void add(byte[] key, POAHashMap map) {
+    public void add(byte[] key, POAHashMap map) throws HashtableOverflowException{
         mapByObjectIDs.put(key, map);
-        mapByServants.put(map.getServant(), key);
+        mapByServants.put(map.getServantRegion(), key);
     }
 
 
@@ -44,10 +44,8 @@ public class DualMap implements ActiveObjectMap {
      * @param st Seravnt.
      * @return ObjectID The objectid of the servant
      */
-
-    public byte[] getObjectID(org.omg.PortableServer.Servant st)
-        throws org.omg.PortableServer.POAPackage.ServantNotActive {
-        return (byte[]) mapByServants.get(st);
+    public byte[] getObjectID( ScopedMemory servantRegion ) throws org.omg.PortableServer.POAPackage.ServantNotActive {
+        return (byte[]) mapByServants.get(servantRegion);
     }
 
     // PRE CONDITION:
@@ -58,8 +56,7 @@ public class DualMap implements ActiveObjectMap {
      * @return POAHashMap
      */
     public POAHashMap getHashMap(byte[] ok) {
-        return (POAHashMap) this.mapByObjectIDs.get(ok);
-
+        return (POAHashMap) mapByObjectIDs.get(ok);
     }
 
     /**
@@ -67,8 +64,8 @@ public class DualMap implements ActiveObjectMap {
      * @param key
      * @return Servant
      */
-    public org.omg.PortableServer.Servant getServant(byte[] key) {
-        return ((POAHashMap) mapByObjectIDs.get(key)).getServant();
+    public ScopedMemory getServant(byte[] key) {
+        return ((POAHashMap) mapByObjectIDs.get(key)).getServantRegion();
     }
 
     /**
@@ -76,10 +73,9 @@ public class DualMap implements ActiveObjectMap {
      * @param st
      * @return boolean
      */
-    public boolean servantPresent(org.omg.PortableServer.Servant st) {
-        return mapByServants.containsKey(st);
-
-        }
+    public boolean servantPresent( ScopedMemory st ) {
+        return mapByServants.get(st) != null;
+    }
 
     /**
      * This method returns true if the ObjectID is present in the table else false.
@@ -87,7 +83,7 @@ public class DualMap implements ActiveObjectMap {
      * @return boolean
      */
     public boolean objectIDPresent(byte[] key) {
-        return mapByObjectIDs.containsKey(key);
+        return mapByObjectIDs.get(key) != null;
     }
 
     /**
@@ -96,36 +92,24 @@ public class DualMap implements ActiveObjectMap {
      */
     public void remove(Object key) {
         if (key instanceof byte[]) {
-            org.omg.PortableServer.Servant st = getServant((byte[]) key);
-
-
-	    POAHashMap.enqueue( getHashMap( (byte[]) key) );
+            ScopedMemory st = getServantRegion((byte[]) key);
             mapByObjectIDs.remove((byte[]) key);
             mapByServants.remove(st);
-        } else if (key instanceof org.omg.PortableServer.Servant) {
+        } else if (key instanceof ScopedMemory ) {
             byte[] okey = null;
 
             try {
-                okey = getObjectID((org.omg.PortableServer.Servant) key);
+                okey = getObjectID((ScopedMemory)key);
             } catch (Exception ex) {}
-	    POAHashMap.enqueue( getHashMap( (byte[]) okey) );
             mapByObjectIDs.remove(okey);
             mapByServants.remove((org.omg.PortableServer.Servant) key);
         } else {
-            ZenProperties.logger.logp(
-                Logger.SEVERE;
-                "edu.uci.ece.zen.poa.DualMap",
-                "remove(...)"
-                "Wrong key passed to HashTable.remove");
+            ZenProperties.logger.log(
+                    Logger.SEVERE,
+                    "edu.uci.ece.zen.poa.DualMap",
+                    "remove(...)",
+                    "Wrong key passed to HashTable.remove");
         }
-    }
-
-    /**
-     * This method lists all the servants present in the table.
-     * @return java.util.Enumeration Enumeration of all the servants.
-     */
-    public java.util.Enumeration elements() {
-        return mapByServants.elements();
     }
 
     /**
@@ -133,9 +117,9 @@ public class DualMap implements ActiveObjectMap {
      * @param ok ObjectID of the object to be destroyed.
      */
     public void destroyObjectID(byte[] ok) {
-        if (this.mapByObjectIDs.containsKey(ok)) {
+        if (this.mapByObjectIDs.get(ok) != null) {
             org.omg.PortableServer.Servant servant = (org.omg.PortableServer.Servant)
-                    this.mapByObjectIDs.get(ok);
+                this.mapByObjectIDs.get(ok);
 
             POAHashMap map = (POAHashMap) mapByServants.get(servant);
 
@@ -143,16 +127,8 @@ public class DualMap implements ActiveObjectMap {
                 map.waitForDestruction();
             }
 
-            this.remove(ok);
-            // edu.uci.ece.zen.orb.Logger.debug("Removing the objectKey from the"
-            // + "MapbyObjectIDs");
-            this.remove(servant);
-            // edu.uci.ece.zen.orb.Logger.debug("Removing Key from the Map");
-
+            remove(ok);
+            remove(servant);
         }
     }
-
-    /* ---------------- Private members ------------------------*/
-    private java.util.Hashtable mapByObjectIDs = new java.util.Hashtable(DualMap.initialCapacity);
-    private java.util.Hashtable mapByServants = new java.util.Hashtable(DualMap.initialCapacity);
 }

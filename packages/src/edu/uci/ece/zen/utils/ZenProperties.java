@@ -44,6 +44,7 @@ public final class ZenProperties{
     private static synchronized void init(){
         if( isInit )
             return;
+        isInit = true;
         //load global properties
 
         Properties tmpProperties = new Properties();
@@ -103,7 +104,6 @@ public final class ZenProperties{
             System.out.println("Global properties have been loaded");
         System.out.flush();
         //All properties loaded
-        isInit = true;
     }
 
     /**
@@ -117,8 +117,7 @@ public final class ZenProperties{
      * @return The value of the property if it is set in props or System.properties, null otherwise
      */
     public static String getGlobalProperty(String property, String defaultValue ) {
-        if( !isInit )
-            init();
+        init();
         String propertyValue = defaultValue;
         propertyValue = globalProperties.getProperty( property , propertyValue );
         propertyValue = System.getProperty( property , propertyValue );
@@ -229,8 +228,7 @@ public final class ZenProperties{
     }
 
     public static String getORBId( String args[] , java.util.Properties properties ){
-        if( !isInit )
-            init();
+        init();
         if( properties == null )
             properties = new Properties();
         if( args != null ){

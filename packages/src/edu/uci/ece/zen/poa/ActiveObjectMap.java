@@ -3,7 +3,7 @@
  *--------------------------------------------------------------------------*/
 
 package edu.uci.ece.zen.poa;
-
+import javax.realtime.*;
 
 /**
  * This class represents the ActiveObjectMap in the POA. The 
@@ -35,7 +35,7 @@ public interface ActiveObjectMap {
      * @param key ObjectID that wraps the ObjectId for the Servant
      * @param map Map entry asspciated with this Object Id
      */
-    void add(byte[] key, POAHashMap map);
+    void add(byte[] key, POAHashMap map) throws Exception;
 
     /**
      * <code> getObjectID </code> returns the ObjectID associated with the
@@ -48,7 +48,7 @@ public interface ActiveObjectMap {
      * is only a single
      * Map present.
      */
-    byte [] getObjectID(org.omg.PortableServer.Servant st)
+    byte [] getObjectID(ScopedMemory st)
         throws org.omg.PortableServer.POAPackage.ServantNotActive; 
 
     /**
@@ -67,7 +67,7 @@ public interface ActiveObjectMap {
      * @param key the ObjectID associated with the Servant.
      * @return Servant if the key is associated with a Servant, null otherwise
      */
-    org.omg.PortableServer.Servant getServant(byte[] key);
+    ScopedMemory getServant(byte[] key);
 
     /**
      * <code> servantPresent </code> checks if there is a Servant Associated
@@ -76,7 +76,7 @@ public interface ActiveObjectMap {
      * @param st whose ObjectID is needed.
      * @return true if there is a Servant Present false otherwise.
      */
-    boolean servantPresent(org.omg.PortableServer.Servant st);
+    boolean servantPresent(ScopedMemory st);
 
     /**
      * <code> objectKeyPresent </code> checks if the ObjectID is present in the
@@ -95,13 +95,6 @@ public interface ActiveObjectMap {
      */
 
     void remove(Object key);
-
-    /**
-     * <code> elements </code> returns the Collections view of the AOM.
-     * @return List of elements in the AOM.
-     */
-
-    java.util.Enumeration elements(); 
 
     /**
      * <code> destroyObjectID </code> is used to deactivate the ObjectID in the
