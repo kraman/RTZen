@@ -16,7 +16,7 @@ import java.io.FileReader;
 public class CDRTestClient extends RealtimeThread
 {
 
-	private DateTypes stub;
+	private DataTypes stub;
 
 	public static void main( String[] args ){
 
