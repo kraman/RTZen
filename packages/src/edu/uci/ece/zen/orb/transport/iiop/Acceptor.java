@@ -52,8 +52,12 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
 
              System.out.println("yuez in Acceptor 2.1");
 
-             System.out.println("yuez in Acceptor version"+version);
+             System.out.println("yuez in Acceptor version "+version);
 
+             System.out.println("yuez in Acceptor, the current memoery is :"+javax.realtime.RealtimeThread.getCurrentMemoryArea());
+
+             System.out.println("yuez in Acceptor, the memory of ssock is "+ javax.realtime.MemoryArea.getMemoryArea(ssock) );
+             
              System.out.println("yuez in Acceptor getHostAddress"+ssock.getInetAddress().getHostAddress());
 
              System.out.println("yuez in Acceptor getLocalPort()"+(short)ssock.getLocalPort());
