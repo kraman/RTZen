@@ -54,7 +54,7 @@ public class PolicyManagerImpl
 
         if(set_add.value() == SetOverrideType._ADD_OVERRIDE){
             throw new org.omg.CORBA.NO_IMPLEMENT();
-        }else{
+        }else{  // if(set_add.value() == SetOverrideType._SET_OVERRIDE){
             this.policies = policies;
         }
     }

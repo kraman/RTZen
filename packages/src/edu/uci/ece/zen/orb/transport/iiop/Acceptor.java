@@ -4,6 +4,9 @@ import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.orb.*;
 import org.omg.IOP.*;
 import org.omg.IIOP.*;
+import org.omg.RTCORBA.*;
+import org.omg.CORBA.*;
+import org.omg.Messaging.*;
 
 public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
     private java.net.ServerSocket ssock;
@@ -52,9 +55,9 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
 
             break;
             case 1:
-                org.omg.IOP.TaggedComponent[] components = new org.omg.IOP.TaggedComponent[0];
+                //org.omg.IOP.TaggedComponent[] components = new org.omg.IOP.TaggedComponent[0];
                 //TODO: insert rt policy info and other tagged components
-                ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey, components);
+                ProfileBody_1_1 pb11 = new ProfileBody_1_1(version, ssock.getInetAddress().getHostAddress(), (short)ssock.getLocalPort(), objKey, getComponents(orb));
                 ProfileBody_1_1Helper.write(out, pb11);
 
             break;
@@ -68,5 +71,53 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
         out.free();
 
         return tp;
+    }
+
+    private TaggedComponent[] getComponents(edu.uci.ece.zen.orb.ORB orb){
+
+        TaggedComponent[] tcarr = new TaggedComponent[1];
+
+        //tcarr[0].tag = SERVER_PROTOCOL_POLICY_TYPE.value;
+
+        tcarr[0] = getPolicyComponent(orb);
+
+        return tcarr;
+    }
+
+    private TaggedComponent getPolicyComponent(edu.uci.ece.zen.orb.ORB orb){
+        TaggedComponent tc = new TaggedComponent();
+        tc.tag = org.omg.IOP.TAG_POLICIES.value;
+
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        out.write_boolean(false); //BIGENDIAN
+
+        PolicyValueHelper.write(out, createServerProtocolPolicyValue(orb));
+
+        tc.component_data = new byte[(int)out.getBuffer().getLimit()];
+        out.getBuffer().readByteArray(tc.component_data, 0 , (int)out.getBuffer().getLimit());
+        out.free();
+
+        return tc;
+    }
+
+    private PolicyValue createServerProtocolPolicyValue(edu.uci.ece.zen.orb.ORB orb){
+
+        ServerProtocolPolicy spp = ((RTORBImpl)(orb.getRTORB())).spp;
+        PolicyValue pv = new PolicyValue();
+        pv.ptype = spp.policy_type();
+
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        out.write_boolean(false); //BIGENDIAN
+
+        org.omg.CORBA.Any value = edu.uci.ece.zen.orb.ORB.init().create_any();
+        ServerProtocolPolicyHelper.insert(value, spp);
+        out.write_any(value);
+        pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
+        out.getBuffer().readByteArray(pv.pvalue, 0 , (int)out.getBuffer().getLimit());
+        out.free();
+
+        return pv;
     }
 }

@@ -2,7 +2,7 @@
 package edu.uci.ece.zen.utils;
 
 /**
- * This class implements a hashtable which doesnot allocate any extra memory 
+ * This class implements a hashtable which doesnot allocate any extra memory
  * after initialization. It uses the next slot instead of chaining. This table
  * has O(n) complexity. Use only when needed.
  *
@@ -32,7 +32,7 @@ public class Hashtable
     public void empty(){
         for( int i=0;i<keytable.length;i++ ){
             keytable[i]=-1;
-            table[i]=0;
+            table[i]=null;
         }
     }
 
@@ -96,6 +96,6 @@ public class Hashtable
                 }
             }
         }
-    }   
+    }
 }
 

@@ -12,12 +12,17 @@ public class ClientProtocolPolicyImpl
         extends org.omg.CORBA.LocalObject
         implements ClientProtocolPolicy
 {
-    private org.omg.RTCORBA.Protocol[] protocols;
+    private Protocol[] protocols;
 
+    public ClientProtocolPolicyImpl(){
+        //right now there's only IIOP
+        protocols = new Protocol[1];
+    }
+/*
     public ClientProtocolPolicyImpl(org.omg.RTCORBA.Protocol[] protocols){
         this.protocols = protocols;
 
-    }
+    }*/
     /**
      * Read accessor for policy_type attribute
      * @return the attribute value
@@ -30,7 +35,9 @@ public class ClientProtocolPolicyImpl
      * Operation copy
      */
     public org.omg.CORBA.Policy copy(){
-        return new ClientProtocolPolicyImpl(protocols);
+        ClientProtocolPolicyImpl cpp = new ClientProtocolPolicyImpl();
+        cpp.protocols(protocols);
+        return cpp;
     }
 
     /**
@@ -44,9 +51,12 @@ public class ClientProtocolPolicyImpl
      * Read accessor for protocols attribute
      * @return the attribute value
      */
-    public org.omg.RTCORBA.Protocol[] protocols(){
+    public Protocol[] protocols(){
         return protocols;
     }
 
+    public void protocols(Protocol[] protocols){
+        this.protocols[0] = protocols[0];
+    }
 
 }

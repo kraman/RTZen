@@ -12,12 +12,17 @@ public class ServerProtocolPolicyImpl
         extends org.omg.CORBA.LocalObject
         implements ServerProtocolPolicy
 {
-    private org.omg.RTCORBA.Protocol[] protocols;
+    private Protocol[] protocols;
 
+    public ServerProtocolPolicyImpl(){
+        //right now there's only IIOP
+        protocols = new Protocol[1];
+    }
+/*
     public ServerProtocolPolicyImpl(org.omg.RTCORBA.Protocol[] protocols){
         this.protocols = protocols;
 
-    }
+    }*/
     /**
      * Read accessor for policy_type attribute
      * @return the attribute value
@@ -30,7 +35,9 @@ public class ServerProtocolPolicyImpl
      * Operation copy
      */
     public org.omg.CORBA.Policy copy(){
-        return new ServerProtocolPolicyImpl(protocols);
+        ServerProtocolPolicyImpl spp = new ServerProtocolPolicyImpl();
+        spp.protocols(protocols);
+        return spp;
     }
 
     /**
@@ -44,9 +51,11 @@ public class ServerProtocolPolicyImpl
      * Read accessor for protocols attribute
      * @return the attribute value
      */
-    public org.omg.RTCORBA.Protocol[] protocols(){
+    public Protocol[] protocols(){
         return protocols;
     }
 
-
+    public void protocols(Protocol[] protocols){
+        this.protocols[0] = protocols[0];
+    }
 }

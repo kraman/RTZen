@@ -399,6 +399,10 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         return acceptorRegistry;
     }
 
+    public RTORB getRTORB(){
+        return rtorb;
+    }
+
     public PolicyManager getPolicyManager(){
         return policyManager;
     }
