@@ -45,7 +45,7 @@ STOPFNAME=$PROGNAME.stopToken
 
 
 # startup types 
-TESTSIZES="4 32 128 512 1024 2048 4096 8192"
+TESTSIZES="4 8 16 32 64 128 256 512"
 SERVERTYPE=1
 CLIENTTYPE=1
 TESTTYPE=1
@@ -101,8 +101,17 @@ TJVM_START="/opt/timesys/rtsj-ri/bin/tjvm -Xverify:all -Ximmortal400M -Xms200M -
 #OVM_INT_START="$OVMHOME/OpenVM_bin/bin/gen-ovm -engine=interpreter -threads=RealtimeJVM -model=MostlyCopyingRegions-B_M_F_H  -app-methods-live -classpath=$PROJECT_HOME/lib/RTZen.jar"
 
 #OVM_NAT_START="$OVMHOME/OpenVM_bin/bin/gen-ovm -engine=j2c -threads=RealtimeJVM -model=MostlyCopyingRegions-B_M_F_H  -app-methods-live -classpath=$PROJECT_HOME/lib/RTZen.jar"
+
+export ZEN_HOME="/users/kraman/RTZEN/Zen"
+
+ZEN_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$ZEN_HOME/classes -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"
+
 export JAC_HOME="/groups/pces/uav_oep/exp/RTZEN/tools/JacORB_2_2"
+
 JAC_START="$JAVA_HOME/jre/bin/java -Xbootclasspath/p:$JAC_HOME/lib/jacorb.jar:$PROJECT_HOME/classes:$JAC_HOME/lib/logkit-1.2.jar:$JAC_HOME/lib/avalon-framework-4.1.5.jar -Djacorb.home=$JAC_HOME -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=orb.jacorb.orb.ORBSingleton"
+
+
+
 #change to program dir, all filenames are relative
 cd $PROGDIR
 
@@ -189,7 +198,7 @@ function startServer(){
 
 		elif [ $1 -eq 6 ]; then
 # start ZEN server in regular JVM
-		EXEC_CMD="$JAVA_START perf.jitter.Server $1"
+		EXEC_CMD="$ZEN_START perf.jitter.Server $1"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
 		$EXEC_CMD&
@@ -345,7 +354,7 @@ function startClient(){
                 echo $EXEC_CMD
                 $EXEC_CMD
                 elif [ $1 -eq 6 ]; then
-                EXEC_CMD="$JAVA_START perf.jitter.Client $2 $3"
+                EXEC_CMD="$ZEN_START perf.jitter.Client $2 $3"
                 echo "Exec cmd:"
                 echo $EXEC_CMD
                 $EXEC_CMD
