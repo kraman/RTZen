@@ -44,7 +44,7 @@ import edu.uci.ece.zen.utils.ZenBuildProperties;
 import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
-import java.net.URL;
+import java.net.*;
 
 //import edu.uci.ece.zen.utils.ThreadLocal;
 
@@ -70,7 +70,12 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     static {
         try {
             try {
-                endpoints = new String [] {java.net.InetAddress.getLocalHost().getHostAddress(), "127.0.0.1"};
+                InetAddress addrList[] = InetAddress.getAllByName( InetAddress.getLocalHost().getHostName() );
+                endpoints = new String[ addrList.length ];
+                for( int i=0;i<addrList.length;i++ )
+                    endpoints[i] = addrList[i].getHostAddress();
+                
+                //endpoints = new String [] {java.net.InetAddress.getLocalHost().getHostAddress(), "127.0.0.1"};
                 if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("local address" + endpoints[0]);
                 //sockAddr = new
                 // java.net.InetSocketAddress(java.net.InetAddress.getLocalHost().getHostAddress(),0);
