@@ -9,10 +9,8 @@ import org.omg.RTCORBA.*;
 import org.omg.Messaging.*;
 
 /**
- * This class implements a simple Client for the Hello World CORBA
- * demo
- *
- * @author <a href="mailto:mpanahi@doc.ece.uci.edu">Mark Panahi</a>
+ * This class implements the RTCORBA threadpool demo client from TAO.
+ * @author Mark Panahi
  * @version 1.0
  */
 

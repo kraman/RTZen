@@ -8,8 +8,8 @@ import org.omg.RTCORBA.*;
 import org.omg.Messaging.*;
 
 /**
- * This class implements the simple Hello World server.
- * @author Angelo Corsaro
+ * This class implements the RTCORBA threadpool demo server from TAO.
+ * @author Mark Panahi
  * @version 1.0
  */
 
@@ -27,17 +27,18 @@ public class TestImpl extends testPOA
     }
 
     /**
-     * Gets a message from the Hello World Server.
+     * .Still in progress.
      */
     public int method (int client_id, int iteration){
-        //return "Hello To the Zen World!!!";
-        //System.out.println("Priority: " + priority);
-
         return iteration;
     }
 
     public void shutdown (){}
 
+    /**
+        The poa used to activate the servant when _this() is called.
+        The root poa is returned by default, so we need to override this.
+    */
     public POA _default_POA() {
         return poa;
     }

@@ -1,4 +1,4 @@
-<project name="Zen ORB Hello Demo" default="IdlCheck" basedir="../../../..">
+<project name="server declared Demo from TAO" default="IdlCheck" basedir="../../../..">
 
     <property file="zen-build-bootstrap.properties"/>
     <property file="zen-build.properties"/>
