@@ -50,28 +50,27 @@
                 <include name="src/edu/uci/ece/zen/util/TracerAspect.java" if="zen.aspects.trace"/>
              </patternset> 
       </javac>
-      <javac
-            srcdir="${zen.srcdir}:${zen.gendir}"
-            executable="/usr/java/jRate-gcc/bin/jRate-gcj"
-            compiler="org.apache.tools.ant.taskdefs.compilers.jRateGcj"
-            includeAntRuntime="false"
-            includeJavaRuntime="false"
-            classpath="${zen.classdir}"
-            includes="demo/hello/**.java"
-        >
-           <compilerarg line=" -g -o ${zen.srcdir}/demo/hello/client -L /home/kraman/RTZen/lib/ -lZen --main=demo.hello.Client -L/usr/java/jRate/lib -ljRateRT -ljRate -ljRateCore -lrt"/>
-      </javac>
-      <javac
-            srcdir="${zen.srcdir}:${zen.gendir}"
-            executable="/usr/java/jRate-gcc/bin/jRate-gcj"
-            compiler="org.apache.tools.ant.taskdefs.compilers.jRateGcj"
-            includeAntRuntime="false"
-            includeJavaRuntime="false"
-            classpath="${zen.classdir}"
-            includes="demo/hello/**.java"
-        >
-           <compilerarg line=" -g -o ${zen.srcdir}/demo/hello/server -L /home/kraman/RTZen/lib/ -lZen --main=demo.hello.Server -L/usr/java/jRate/lib  -ljRateRT -ljRate -ljRateCore -lrt"/>
-      </javac>
+      <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate"/>
+      <jRate
+            optimizeLevel="2"
+            libDirs="${zen.jRateLibDir}"
+            additionalLinkOptions="-L${zen.libdir} -lZen"
+            destdir="${package.dir}"
+            classpath="${zen.classpath}"
+            out="${package.dir}/client"
+            main="demo.hello.Client"
+            debug="true">
+            <fileset dir="${zen.srcdir}">
+                <patternset>
+                    <include name="demo/hello/**.java"/>
+                </patternset>
+            </fileset>
+            <fileset dir="${zen.gendir}">
+                <patternset>
+                    <include name="demo/hello/**.java"/>
+                </patternset>
+            </fileset>
+      </jRate>
    </target>
 
     <target name="server">
@@ -89,6 +88,11 @@
     <target name="clean">
       <delete dir="${zen.gendir}/${package.dir}"/>
       <delete dir="${zen.classdir}/${package.dir}"/>
+      <delete file="${package.dir}/client"/>
+      <delete file="${package.dir}/server"/>
+      <delete quiet="true" defaultexcludes="no"> 
+          <fileset dir="${package.dir}" includes="*.o"/> 
+      </delete> 
     </target>
 </project>
 

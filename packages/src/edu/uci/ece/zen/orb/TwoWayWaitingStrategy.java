@@ -6,39 +6,27 @@ import javax.realtime.*;
 import edu.oswego.cs.dl.util.concurrent.*;
 
 public class TwoWayWaitingStrategy extends WaitingStrategy{
+    Semaphore clientSem;
     CDRInputStream replyMsg;
-    Object waitObject;
 
     TwoWayWaitingStrategy(){
-        waitObject = new Integer(0);
+        clientSem = new Semaphore(0);
     }
     
     public void replyReceived( GIOPMessage reply ){
-        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.replyReceived 1" );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " TwoWayWaitingStrategy.replyReceived 1" );
         this.replyMsg = reply.getCDRInputStream();
-        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.replyReceived 2" );
-        try{
-        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.replyReceived 4" );
-            synchronized( waitObject ){
-                waitObject.notify();
-            }
-        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.replyReceived 5" );
-        }catch( Exception e ){
-            e.printStackTrace();
-        }
-        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.replyReceived 6" );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " TwoWayWaitingStrategy.replyReceived 2" );
+        clientSem.release();
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " TwoWayWaitingStrategy.replyReceived 4" );
     }
 
     public CDRInputStream waitForReply(){
-        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.waitForReply 1" );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " TwoWayWaitingStrategy.waitForReply 1" );
         try{
-        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.waitForReply 2" );
-            synchronized( waitObject ){
-                waitObject.wait();
-            }
-        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.waitForReply 3" );
-        }catch( Exception e ){
-            e.printStackTrace();
+            clientSem.acquire();
+        }catch( InterruptedException ie ){
+            ie.printStackTrace();
         }
         System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.waitForReply 5" );
         return replyMsg;

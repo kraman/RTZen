@@ -53,6 +53,8 @@ public class Client implements Runnable
             System.out.println( Thread.currentThread() + " Client.run 13" );
             server.getMessage();
             System.out.println( Thread.currentThread() + " Client.run 14" );
+            server.getMessage();
+            System.out.println( Thread.currentThread() + " Client.run 15" );
             System.exit(0);
 		}
 		catch (Exception e)

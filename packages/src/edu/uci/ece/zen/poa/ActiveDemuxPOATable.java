@@ -4,7 +4,7 @@
 package edu.uci.ece.zen.poa;
 
 
-import edu.uci.ece.zen.sys.ZenProperties;
+import edu.uci.ece.zen.utils.ZenProperties;
 
 /**
  * Active Demultiplexing Table for all the POAs created in ZEN
@@ -15,31 +15,15 @@ import edu.uci.ece.zen.sys.ZenProperties;
  */
 
 
-final public class ActiveDemuxPOATable {
+final public class ActiveDemuxPOATable extends edu.uci.ece.zen.utils.Hashtable{
 
     private static int capacity;
     private static int increment;
 
     private static String capId = "poa.poa_demux_table.capcity";
-    private static String inc = "poa.poa_demux_table.increment";
-
-    public static int DEFAULT_CAPACITY = 10;
-    public static int DEFAULT_INCREMENT = 15;
 
     static {
-        try {
-            ActiveDemuxPOATable.capacity = Integer.parseInt
-                    (ZenProperties.getProperty(ActiveDemuxPOATable.capId));
-        } catch (Exception ex) {
-            ActiveDemuxPOATable.capacity = ActiveDemuxServantTable.DEFAULT_CAPACITY;
-        }
-
-        try {
-            ActiveDemuxPOATable.increment = Integer.parseInt
-                    (ZenProperties.getProperty(ActiveDemuxPOATable.inc));
-        } catch (Exception ex) {
-            ActiveDemuxPOATable.increment = ActiveDemuxPOATable.DEFAULT_INCREMENT;
-        }
+        ActiveDemuxPOATable.capacity = Integer.parseInt(ZenProperties.getGlobalProperty(ActiveDemuxPOATable.capId , "10"));
     }
 
 
@@ -47,8 +31,7 @@ final public class ActiveDemuxPOATable {
     * Constructor for the ActiveDemuxPOATable
     */
     public ActiveDemuxPOATable() {
-        this.activeMap = new ActiveDemuxPOATableNode[ActiveDemuxPOATable.capacity];
-        this.freeList = new java.util.LinkedList();
+        super( ActiveDemuxPOATable.capacity );
     }
 
     /**

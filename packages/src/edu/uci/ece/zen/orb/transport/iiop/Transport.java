@@ -16,8 +16,8 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
     public Transport( edu.uci.ece.zen.orb.ORB orb , String host , int port ){
         super( orb );
         try{
-            System.out.println( "Connecting to " + host + ":"+port );
-            sock = new java.net.Socket( java.net.InetAddress.getByName( host ) , port );
+            //System.out.println( "Connecting to " + host + ":"+port );
+            sock = new java.net.Socket( java.net.InetAddress.getByName( "doc.ece.uci.edu" ) , port );
             System.out.println( "sock = " + sock );
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();

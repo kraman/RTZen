@@ -61,6 +61,8 @@ import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.taskdefs.Execute;
+import org.apache.tools.ant.types.*;
+import org.apache.tools.ant.DirectoryScanner;
 import java.io.File;
 
 /**
@@ -113,10 +115,13 @@ public class jRate extends MatchingTask {
 	private boolean debug;
 	private Path classpath;
 	private Path destdir;
-	private Path includeDirs;
 	private Path libDirs;
 	private String main;
+    private String additionalCompileOptions;
+    private String additionalLinkOptions;
 	private File out;
+    private boolean sharedLib;
+    private java.util.Vector fileSets = new java.util.Vector();
 	
 	/**
 	Sets the --extdirs parameter (only for compiling)
@@ -160,6 +165,13 @@ public class jRate extends MatchingTask {
 		this.debug = debug;
 	}
 
+    /**
+	If true, -shared is added to the command line (for linking)
+	*/
+    public void setSharedLib(boolean sharedLib){
+        this.sharedLib = sharedLib;
+    }
+
 	/**
 	Sets the --classpath parameter (only for compiling)
 	*/
@@ -177,14 +189,6 @@ public class jRate extends MatchingTask {
 	}
 
 	/**
-	Sets the -I parameter for each of the given pathnames (only for compiling)
-	*/
-	public void setIncludeDirs(Path includeDirs)
-	{
-		this.includeDirs = includeDirs;
-	}
-	
-	/**
 	Sets the -L parameter for each of the given pathnames (only for linking)
 	*/
 	public void setLibDirs(Path libDirs)
@@ -199,6 +203,16 @@ public class jRate extends MatchingTask {
 	{
 		this.main = main;
 	}
+
+	public void setAdditionalCompileOptions(String additionalCompileOptions)
+	{
+		this.additionalCompileOptions = additionalCompileOptions;
+	}
+
+	public void setAdditionalLinkOptions(String additionalLinkOptions)
+	{
+		this.additionalLinkOptions = additionalLinkOptions;
+	}
 	
 	/**
 	Sets the -o parameter (only for linking)
@@ -207,42 +221,78 @@ public class jRate extends MatchingTask {
 	{
 		this.out = out;
 	}
+
+    public void add( FileSet fileSet ){
+        fileSets.add( fileSet );
+    }
 	
     /**
     Performs a compile and link using the jRate compiler.
 	
 	@throws BuildException if there was an error running the compiler
     */
-    public void execute() throws BuildException {
+    public void execute() throws BuildException{
 
-        String[] files = getDirectoryScanner(getProject().getBaseDir()).getIncludedFiles();
+        //2 step process.
+        //  -first compile all files to obj code (*.o)
+        //  -then link *.o to form final executable or shared lib
 
-		log("Compiling and linking " + files.length + " source file"
-			+ (files.length == 1 ? "" : "s")
+        java.util.Vector vfiles = new java.util.Vector();
+
+        for( int i=0;i<fileSets.size();i++ ){
+            FileSet fs = (FileSet) fileSets.elementAt(i);
+            DirectoryScanner ds = fs.getDirectoryScanner( getProject() );
+            //ds.setBasedir( getProject().getBaseDir() );
+            ds.scan();
+            String[] files = ds.getIncludedFiles();
+            for( int j=0;j<files.length;j++ ){
+                if( files[j].endsWith( ".java" ) )
+                    vfiles.add( fs.getDir(getProject()) + System.getProperty("file.separator") + files[j] );
+            }
+        }
+
+		log("Compiling and linking " + vfiles.size() + " source file"
+			+ (vfiles.size() == 1 ? "" : "s")
 			+ (destdir != null ? " to " + destdir : ""));
-		
-		for (int i = 0; i < files.length; i++) {
-			
-			// Prepend the base directory to the filename
-			String file = getProject().getBaseDir().getAbsolutePath() + System.getProperty("file.separator") + files[i];
 
-			if (!file.endsWith(".java"))
-			{
-				throw new BuildException("Expecting a file ending with \".java\" " +
-					"but got this instead: " + file);
-			}
-			
-			file = file.substring(0, file.lastIndexOf("java")); // Strip extension from filename
-	
-			Commandline cmd = getCompileCommand();
-			cmd.createArgument().setValue("-o");
-			cmd.createArgument().setValue(file + "o");
-			cmd.createArgument().setValue(file + "java");
-			
-			Execute.runCommand(this, cmd.getCommandline());
-		}
+        Execute procs[] = new Execute[vfiles.size()];
+        log( "Starting compilation of files using jrate..." );
+        int percentDrawn=0;
+        for( int i=0;i<vfiles.size();i++ ){
+            String file = vfiles.elementAt(i).toString();
+            String objFileName = file.substring(0, file.lastIndexOf("java")).replace(
+                    System.getProperty("file.separator").charAt(0) , '_' ) + "o";
+            Commandline cmd = getCompileCommand();
+            cmd.createArgument().setValue( "-o" + objFileName );
+            cmd.createArgument().setValue( file );
+            
+            //progress bar
+            int percentDone = ((int)(i*100.0/vfiles.size()));
+            if( percentDone-percentDrawn > 1 ){
+                log(percentDone + "% complete");
+                percentDrawn = percentDone ;
+            }
 
-		Execute.runCommand(this, getLinkCommand(files).getCommandline());
+            procs[i] = new Execute();
+            procs[i].setCommandline( cmd.getCommandline() );
+            procs[i].setWorkingDirectory( new File( destdir.toString() ) );
+            try{
+                procs[i].execute();
+            }catch( Exception e ){
+                e.printStackTrace();
+            }
+        }
+
+        log( "Linking files" );
+        Commandline cmd = getLinkCommand( vfiles.toArray() );
+        Execute linkProc = new Execute();
+        linkProc.setCommandline( cmd.getCommandline() );
+        linkProc.setWorkingDirectory( new File( destdir.toString() ) );
+        try{
+            linkProc.execute();
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
     }
 
 	/**
@@ -254,16 +304,6 @@ public class jRate extends MatchingTask {
         Commandline cmd = new Commandline();
 
 		cmd.setExecutable("jRate-gcj");
-		
-		if (includeDirs != null)
-		{
-			String[] dirs = includeDirs.list();
-			for (int i = 0; i < dirs.length; i++)
-			{
-				cmd.createArgument().setValue("-I" + dirs[i]);
-			}
-		}
-
         if (bootclasspath != null) {
 			cmd.createArgument().setValue("--bootclasspath=" + bootclasspath);
         }
@@ -274,11 +314,6 @@ public class jRate extends MatchingTask {
 
         if (extdirs != null) {
 			cmd.createArgument().setValue("--extdirs=" + bootclasspath);
-        }
-
-        if (destdir != null) {
-            cmd.createArgument().setValue("-d");
-            cmd.createArgument().setPath(destdir);
         }
 
         if (encoding != null) {
@@ -293,6 +328,9 @@ public class jRate extends MatchingTask {
             cmd.createArgument().setValue("-O" + optimizeLevel);
         }
 
+        if( additionalCompileOptions != null )
+            cmd.createArgument().setLine(additionalCompileOptions);
+
 		cmd.createArgument().setValue("-c");
 		
         return cmd;
@@ -305,7 +343,7 @@ public class jRate extends MatchingTask {
 	@param files a list of files to be linked. These are assumed to be Java
 	files; their .java extensions will be replaced by .o for the command line.
 	*/
-    protected Commandline getLinkCommand(String[] files) {
+    protected Commandline getLinkCommand(Object[] files) {
         Commandline cmd = new Commandline();
 
 		cmd.setExecutable("jRate-gcj");
@@ -327,15 +365,17 @@ public class jRate extends MatchingTask {
 		{
 			cmd.createArgument().setValue("--main=" + main);
 		}
+
+        if( sharedLib ){
+            cmd.createArgument().setValue("-shared");
+        }
 		
 		for (int i = 0; i < files.length; i++) {
-			
-			// Prepend the base directory to the filename
-			String file = getProject().getBaseDir().getAbsolutePath() + System.getProperty("file.separator") + files[i];
-
-			file = file.substring(0, file.lastIndexOf("java")); // Strip extension from filename
-	
-			cmd.createArgument().setValue(file + "o");
+			String file = (String) files[i];
+            String objFileName = file.substring(0, file.lastIndexOf("java"));
+            objFileName = objFileName.replace( System.getProperty("file.separator").charAt(0) , '_' );
+            objFileName += "o";
+			cmd.createArgument().setValue(objFileName);
 		}
 			
 		if (out != null)
@@ -343,6 +383,9 @@ public class jRate extends MatchingTask {
 			cmd.createArgument().setValue("-o");
 			cmd.createArgument().setFile(out);
 		}
+
+        if( additionalLinkOptions != null )
+            cmd.createArgument().setLine(additionalLinkOptions);
 
 		cmd.createArgument().setValue("-ljRateRT");
 		cmd.createArgument().setValue("-ljRate");

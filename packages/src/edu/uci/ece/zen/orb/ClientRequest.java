@@ -51,16 +51,16 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
      * </p>
      */
     public CDRInputStream invoke(){
-        System.out.println( Thread.currentThread() + "In client memory: " + RealtimeThread.getCurrentMemoryArea() );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "In client memory: " + RealtimeThread.getCurrentMemoryArea() );
         out.updateLength();
         if( ZenProperties.dbg )
             System.err.println( "Sending message" );
         MessageComposerRunnable mcr = new MessageComposerRunnable( this );
         ScopedMemory messageScope = orb.getScopedRegion();
 
-        System.out.println( Thread.currentThread() + "ORBImpl perent memory: " + orb.parentMemoryArea );
-        System.out.println( Thread.currentThread() + "ORBImpl memory: " + orb.orbImplRegion );
-        System.out.println( Thread.currentThread() + "message memory: " + messageScope );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ORBImpl perent memory: " + orb.parentMemoryArea );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ORBImpl memory: " + orb.orbImplRegion );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "message memory: " + messageScope );
 
         ExecuteInRunnable erOrbMem = new ExecuteInRunnable();
         ExecuteInRunnable erMsgMem = new ExecuteInRunnable();
@@ -161,7 +161,7 @@ class MessageComposerRunnable implements Runnable{
      * </p>
      */
     public void run(){
-        System.out.println( Thread.currentThread() + "In memory: " + RealtimeThread.getCurrentMemoryArea() );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "In memory: " + RealtimeThread.getCurrentMemoryArea() );
         //setup waiting stratergy
         WaitingStrategy waitingStrategy = null;
         if( clr.responseExpected )

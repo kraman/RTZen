@@ -4,6 +4,7 @@ import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.utils.*;
 import org.omg.IOP.*;
 import org.omg.IIOP.*;
+import javax.realtime.*;
 
 public class IOR
 {
@@ -11,16 +12,16 @@ public class IOR
 
     private static ReadBuffer stringToByteBuffer( String s ){
         int line=1;
-        System.out.println( Thread.currentThread() + "ior.stringToByteBuffer " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.stringToByteBuffer " + (line++) );
         ReadBuffer buffer = ReadBuffer.instance();
-        System.out.println( Thread.currentThread() + "ior.stringToByteBuffer " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.stringToByteBuffer " + (line++) );
         byte[] tmpBuffer = ByteArrayCache.instance().getByteArray();
-        System.out.println( Thread.currentThread() + "ior.stringToByteBuffer " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.stringToByteBuffer " + (line++) );
         int len=0;
-        System.out.println( Thread.currentThread() + "ior.stringToByteBuffer " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.stringToByteBuffer " + (line++) );
 
         int readPos=4;
-        System.out.println( Thread.currentThread() + "ior.stringToByteBuffer " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.stringToByteBuffer " + (line++) );
         while (readPos < s.length())
         {
             char first = s.charAt(readPos++);
@@ -30,12 +31,12 @@ public class IOR
                     | (hexToInt(second) & 0xF));
             tmpBuffer[len++] = combined;
         }
-        System.out.println( Thread.currentThread() + "ior.stringToByteBuffer " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.stringToByteBuffer " + (line++) );
 
         buffer.writeByteArray( tmpBuffer , 0 , len );
-        System.out.println( Thread.currentThread() + "ior.stringToByteBuffer " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.stringToByteBuffer " + (line++) );
         ByteArrayCache.instance().returnByteArray( tmpBuffer );
-        System.out.println( Thread.currentThread() + "ior.stringToByteBuffer " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.stringToByteBuffer " + (line++) );
         return buffer;
     }
 
@@ -65,17 +66,17 @@ public class IOR
     public static org.omg.IOP.IOR parseString(edu.uci.ece.zen.orb.ORB orb, String ior)
     {
         int line=1;
-        System.out.println( Thread.currentThread() + "ior.parseString " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.parseString " + (line++) );
         CDRInputStream cdrIn = CDRInputStream.instance();
-        System.out.println( Thread.currentThread() + "ior.parseString " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.parseString " + (line++) );
         cdrIn.init( orb , stringToByteBuffer( ior ));
-        System.out.println( Thread.currentThread() + "ior.parseString " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.parseString " + (line++) );
         cdrIn.setEndian( cdrIn.read_boolean() );
-        System.out.println( Thread.currentThread() + "ior.parseString " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.parseString " + (line++) );
         org.omg.IOP.IOR ret = org.omg.IOP.IORHelper.read( cdrIn );
-        System.out.println( Thread.currentThread() + "ior.parseString " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.parseString " + (line++) );
         cdrIn.free();
-        System.out.println( Thread.currentThread() + "ior.parseString " + (line++) );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ior.parseString " + (line++) );
         return ret;
     }
 

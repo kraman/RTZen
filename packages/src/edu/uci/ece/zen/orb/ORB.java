@@ -379,7 +379,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     public static ScopedMemory getScopedRegion(){
         ScopedMemory mem = null;
         if( unusedMemoryAreas.isEmpty() ){
-            mem = new javax.realtime.LTMemory( scopeMemorySize , scopeMemorySize );
+            System.err.println( "Out of memmory areas" );
+            return null;
         }else{
             mem = (ScopedMemory) unusedMemoryAreas.dequeue();
         }
@@ -588,11 +589,11 @@ class ORBInitRunnable implements Runnable{
     public void run(){
         ScopedMemory curMem = ((ScopedMemory) RealtimeThread.getCurrentMemoryArea());
         if( curMem.getPortal() == null ){
-            System.out.println( Thread.currentThread() + "--" );
+            System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "--" );
             ORBImpl orbImpl = new ORBImpl( args , props , orbFacade );
-            System.out.println( Thread.currentThread() + "---" );
+            System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "---" );
             curMem.setPortal( orbImpl );
-            System.out.println( Thread.currentThread() + "----" );
+            System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "----" );
         }else{
             ((ORBImpl)curMem.getPortal()).setProperties( args , props );
         }
@@ -607,17 +608,17 @@ class ORBStrToObjRunnable implements Runnable{
     }
 
     public void init( org.omg.IOP.IOR ior , org.omg.CORBA.portable.ObjectImpl objImpl ){
-        System.out.println( Thread.currentThread() + "In ORBStrToObjRunnable.init()" );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "In ORBStrToObjRunnable.init()" );
         this.ior = ior;
         this.objImpl = objImpl;
-        System.out.println( Thread.currentThread() + "Exiting ORBStrToObjRunnable.init()" );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "Exiting ORBStrToObjRunnable.init()" );
     }
 
     public void run(){
-        System.out.println( Thread.currentThread() + "In ORBStrToObjRunnable.run()" );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "In ORBStrToObjRunnable.run()" );
         ORBImpl orbImpl = ((ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal()  );
-        System.out.println( Thread.currentThread() + "---" );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "---" );
         orbImpl.string_to_object( ior , objImpl );
-        System.out.println( Thread.currentThread() + "Exiting ORBStrToObjRunnable.run()" );
+        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "Exiting ORBStrToObjRunnable.run()" );
     }
 }
