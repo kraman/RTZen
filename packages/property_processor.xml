@@ -39,4 +39,16 @@
     <condition property="compiler_JamaicaVM">
         <equals arg1="${zen.build.runtime}" arg2="JamaicaVM"/>
     </condition>
+
+     <!-- SUN mackinac properties -->
+    <condition property="zen.rtbootclasspath" value="${Mackinac_install}/binaries/jre/lib/rt.jar:${Mackinac_install}/binaries/jre/lib/rt2.jar"> <!--may need to change later, don't know exactly-->
+        <equals arg1="${zen.build.runtime}" arg2="Mackinac"/>
+    </condition>
+    <condition property="compiler_Mackinac">
+        <equals arg1="${zen.build.runtime}" arg2="Mackinac"/>
+    </condition>
+
+
+
+
 </project>

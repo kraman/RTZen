@@ -103,7 +103,8 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
             contexts.append(1); //list size
 
             contexts.append(org.omg.IOP.RTCorbaPriority.value);
-            //contexts.append((byte)0); //big endian
+            //contexts.append(0); //big endian
+
             contexts.append(4); //length of data
             contexts.append((int) orb.getRTCurrent().the_priority());
             /*

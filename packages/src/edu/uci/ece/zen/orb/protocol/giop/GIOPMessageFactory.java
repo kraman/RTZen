@@ -34,20 +34,48 @@ public final class GIOPMessageFactory extends MessageFactory{
 
     public Message parseStreamImpl(ORB orb, Transport trans)
             throws java.io.IOException {
+//        edu.uci.ece.zen.utils.Logger.printMemStats(330);
         ReadBuffer buffer = ReadBuffer.instance();
+  //      edu.uci.ece.zen.utils.Logger.printMemStats(331);
         buffer.init();
+    //    edu.uci.ece.zen.utils.Logger.printMemStats(332);
 
-        ProtocolHeaderInfo mainMsgHdr = (ProtocolHeaderInfo) new ProtocolHeaderInfo();
+
+        Object obj = trans.getObject(3);
+        ProtocolHeaderInfo mainMsgHdr; 
+        if(obj == null){
+            mainMsgHdr = new edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo();
+            trans.setObject(mainMsgHdr, 3);
+        }
+        else{
+            mainMsgHdr = (edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo)obj;
+        }
+
+ //       edu.uci.ece.zen.utils.Logger.printMemStats(333);
+
 
         edu.uci.ece.zen.orb.protocol.Message ret = null;
 
+ //       edu.uci.ece.zen.utils.Logger.printMemStats(334);
+
+
         do {
             java.io.InputStream in = trans.getInputStream();
+ //           edu.uci.ece.zen.utils.Logger.printMemStats(335);
+
             parseStreamForHeaderImpl(in, mainMsgHdr, trans);
+
+ //           edu.uci.ece.zen.utils.Logger.printMemStats(336);
+
             // Read the GIOP message (including any request/reply/etc headers)
             // into the variable "buffer"
             buffer.setEndian(mainMsgHdr.isLittleEndian);
+ //           edu.uci.ece.zen.utils.Logger.printMemStats(337);
+
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
+
+ //           edu.uci.ece.zen.utils.Logger.printMemStats(338);
+
             if (ZenProperties.dbg) ZenProperties.logger.log
                             ("In MessageFactory, the message size is "
                             + mainMsgHdr.messageSize);
@@ -176,15 +204,28 @@ public final class GIOPMessageFactory extends MessageFactory{
                     throw new RuntimeException(""); //throw GIOP error here
             }
         } while (false);
+ //       edu.uci.ece.zen.utils.Logger.printMemStats(339);
+
         ZenProperties.logger.log("GMF parse stream 1");
+        
         ScopedMemory transportScope = (ScopedMemory) javax.realtime.MemoryArea.getMemoryArea(trans);
+
+ //       edu.uci.ece.zen.utils.Logger.printMemStats(340);
+
         transportScope.setPortal( trans );
+
+ //       edu.uci.ece.zen.utils.Logger.printMemStats(341);
+
         ret.setTransport( transportScope );
+ //       edu.uci.ece.zen.utils.Logger.printMemStats(342);
+
         ZenProperties.logger.log("GMF parse stream 2");
         if(ZenProperties.devDbg) {
             System.out.print("parse stream messageId:");
             System.out.println(ret.getRequestId());
         }        
+ //       edu.uci.ece.zen.utils.Logger.printMemStats(343);
+
         return ret;
     }
 
@@ -283,8 +324,8 @@ public final class GIOPMessageFactory extends MessageFactory{
             System.out.print("parseStreamForHeader: buffer size");
             System.out.println(header.length);
         }          
-        while (read < 12) {          
-            int tmp = in.read(header, 0, 12);
+        while (read < header.length) {          
+            int tmp = in.read(header, 0, header.length);
             //if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
                 ZenProperties.logger.log(Logger.FATAL, MessageFactory.class, "parseStreamForHeader(InputStream, ProtocolHeaderInfo, Transport)", "RTZen doesnt support closing connection yet :-P ... shutting down");
@@ -403,7 +444,27 @@ public final class GIOPMessageFactory extends MessageFactory{
                 rh.init(FString.instance(rh.service_context), req
                         .getRequestId(),
                         org.omg.GIOP.ReplyStatusType_1_0._NO_EXCEPTION);
-                rh.service_context.append(0);
+
+                // add Reply service context here, should probably be factored out
+
+                //using these global variables still a hack for now
+                if (edu.uci.ece.zen.orb.transport.iiop.Acceptor.priorityModel == org.omg.RTCORBA.PriorityModel._CLIENT_PROPAGATED
+                        && edu.uci.ece.zen.orb.transport.iiop.Acceptor.serverPriority >= 0) {
+
+                    ZenProperties.logger.log("Sending CLIENT PROPAGATED service context");
+
+                    rh.service_context.append(1); //list size
+
+                    rh.service_context.append(org.omg.IOP.RTCorbaPriority.value);
+                    //contexts.append(0); //big endian
+
+                    rh.service_context.append(4); //length of data
+                    rh.service_context.append((int) orb.getRTCurrent().the_priority());
+
+                } else {
+                    rh.service_context.append(0); //empty list
+                }
+
                 edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeaderHelper.write(out, rh);
                 break;
             /*

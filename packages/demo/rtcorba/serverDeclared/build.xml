@@ -1,59 +1,45 @@
-<project name="server declared Demo from TAO" default="IdlCheck" basedir="../../../..">
+<project name="server declared Demo from TAO" default="all" basedir="../../../..">
 
-    <property file="zen-build-bootstrap.properties"/>
-    <property file="zen-build.properties"/>
-    
-    
+
+
+    <import file="../../../../init.xml"/>
     <property name="demo.name" value="serverDeclared"/>
-    <property name="ior1" value="C:/ACE_wrappers/TAO/tests/RTCORBA/Server_Declared/Release/iorfile1"/>
-    <property name="ior2" value="C:/ACE_wrappers/TAO/tests/RTCORBA/Server_Declared/Release/iorfile2"/>
-    <!-- TAO server run with command: server -p iorfile1 -o iorfile2 -a 1 -b 2 -->
     
     <property name="package.rel.dir" value="demo/rtcorba/${demo.name}"/>
     <property name="package.dir" value="${zen.srcdir}/${package.rel.dir}"/>
+    
+    
+    <import file="../../demo_tasks.xml"/>
+  
     <property name="idl.src" value="test.idl"/>
     <property name="server.class" value="demo.rtcorba.${demo.name}.Server"/>
     <property name="client.class" value="demo.rtcorba.${demo.name}.Client"/>
 
-   <target name="IdlCheck" depends="zen, openorb"/>
-   
-   <target name="zen" if="zen.idl.compiler">
-       <antcall target="compile">
-           <param name="idl.flags" value="-o"/>
-           <param name="gendir" value="${zen.gendir}/"/>
-           <param name="idl.dir" value="${package.dir}"/>
-           <param name="classpath" value="${zen.classpath}"/>
-       </antcall>
-   </target>
+    <property name="ior1" value="C:/ACE_wrappers/TAO/tests/RTCORBA/Server_Declared/Release/iorfile1"/>
+    <property name="ior2" value="C:/ACE_wrappers/TAO/tests/RTCORBA/Server_Declared/Release/iorfile2"/>
+    
 
-   <target name="openorb" if="openorb.idl.compiler">
-       <antcall target="compile">
-           <param name="idl.flags" value="-all -d"/>
-           <param name="gendir" value="${zen.gendir}"/>
-           <param name="classpath" value="${openorb.class.path}"/>
-           <param name="idl.dir" value="${package.dir}"/>
-       </antcall>
-   </target>
+    <!-- TAO server run with command: server -p iorfile1 -o iorfile2 -a 1 -b 2 -->
+    
+
+   <target name="all" depends="idl, compile"/>
 
    <target name="idl">
-      <java classpath="${classpath}"
-            dir="${zen.gendir}"
-            classname="${idl2java.compiler}"
-            fork="yes">
-            <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
-      </java>
+      <echo message="compiling ${package.dir}/${idl.src}"/>
+      <idlc file="${package.dir}/${idl.src}"/>
    </target>
 
-   <target name="compile" depends="idl">
+   <target name="compile">
       <javac srcdir="${zen.srcdir}:${zen.gendir}"
              destdir="${zen.classdir}"
-             classpath="${classpath}"
+             bootclasspath="${zen.rtbootclasspath}"
+             classpath="${zen.classpath}"
              debug="${zen.debug}"
              optimize="${zen.optimization}"
              >
              
              <patternset>
-                <include name="src/edu/uci/ece/zen/util/TracerAspect.java" if="zen.aspects.trace"/>
+                <!--include name="src/edu/uci/ece/zen/util/TracerAspect.java" if="zen.aspects.trace"/-->
                 <include name="${package.rel.dir}/**.java"/>
              </patternset> 
       </javac>

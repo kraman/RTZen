@@ -17,6 +17,8 @@ import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 
+import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
+
 public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
     private java.net.ServerSocket ssock;
 
@@ -53,23 +55,22 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN
         edu.uci.ece.zen.utils.Logger.printThreadStack();
-
+        if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor version " + version);
         switch (iiopMinorVersion) {
             case 0:
                 if (ZenProperties.devDbg) {
-                    ZenProperties.logger.log("yuez in Acceptor 2.1");
-                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor version " + version);
-                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor, the current memoery is :"
+
+                    if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor, the current memoery is :"
                                     + javax.realtime.RealtimeThread
                                             .getCurrentMemoryArea());
-                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor, the memory of ssock is "
+                    if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor, the memory of ssock is "
                                     + javax.realtime.MemoryArea
                                             .getMemoryArea(ssock));
-                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor getHostAddress"
+                    if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor getHostAddress"
                             + ssock.getInetAddress().getHostAddress());
-                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor getLocalPort()"
+                    if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor getLocalPort()"
                             + (short) ssock.getLocalPort());
-                    if (ZenProperties.dbg) ZenProperties.logger.log("yuez in Acceptor objKey" + objKey);
+                    if (ZenProperties.dbg) ZenProperties.logger.log("Acceptor objKey" + objKey);
                 }
                 ProfileBody_1_0 pb10 = new ProfileBody_1_0(version, ssock
                         .getInetAddress().getHostAddress(), (short) ssock
@@ -78,6 +79,7 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
 
                 break;
             case 1:
+            case 2:
                 //org.omg.IOP.TaggedComponent[] components = new
                 // org.omg.IOP.TaggedComponent[0];
                 //TODO: insert rt policy info and other tagged components
@@ -103,31 +105,66 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         return tp;
     }
 
+    //trust me, this is just a temporary hack
+    public static boolean enableComponents = false;
+    public static short serverPriority = -1; //initial value, not a valid priority
+    public static int priorityModel = 0;
+
     private TaggedComponent[] getComponents() {
-        return new TaggedComponent[0];
-        /*
-         * TaggedComponent[] tcarr = new TaggedComponent[1]; //tcarr[0].tag =
-         * SERVER_PROTOCOL_POLICY_TYPE.value; tcarr[0] = getPolicyComponent();
-         * return tcarr;
-         */
+        ZenProperties.logger.log("getComponents()");
+        TaggedComponent[] tcarr;
+
+        if(enableComponents){
+            tcarr = new TaggedComponent[1];
+            //tcarr[0].tag = SERVER_PROTOCOL_POLICY_TYPE.value;
+            tcarr[0] = getPolicyComponent();
+        }else{
+            tcarr = new TaggedComponent[0];
+        }
+        return tcarr;
     }
 
     private TaggedComponent getPolicyComponent() {
+        ZenProperties.logger.log("getPolicyComponent()");
         TaggedComponent tc = new TaggedComponent();
         tc.tag = org.omg.IOP.TAG_POLICIES.value;
 
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN
+        out.write_ulong((int)1); //just one policy for now
 
-        PolicyValueHelper.write(out, createServerProtocolPolicyValue());
+        PolicyValueHelper.write(out, createPriorityModelValue());
 
         tc.component_data = new byte[(int) out.getBuffer().getLimit()];
-        out.getBuffer().readByteArray(tc.component_data, 0,
+        out.getBuffer().getReadBuffer().readByteArray(tc.component_data, 0,
                 (int) out.getBuffer().getLimit());
         out.free();
 
         return tc;
+    }
+
+    private PolicyValue createPriorityModelValue() {
+        ZenProperties.logger.log("createPriorityModelValue()");
+        PolicyValue pv = new PolicyValue();
+        pv.ptype = priorityModel;
+
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        out.write_boolean(false); //BIGENDIAN
+
+        out.write_long(priorityModel);
+        out.write_short(serverPriority);
+
+        pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
+        pv.ptype = PRIORITY_MODEL_POLICY_TYPE.value;
+
+        out.getBuffer().getReadBuffer().readByteArray(pv.pvalue, 0 ,
+                (int)out.getBuffer().getLimit());
+
+        out.free();
+
+        return pv;
     }
 
     private PolicyValue createServerProtocolPolicyValue() {

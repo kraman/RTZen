@@ -81,7 +81,7 @@ public class ORBImpl {
             orbFacade.getRTORB().create_threadpool(0,//stacksize,
                     1,//static_threads,
                     0,//dynamic_threads,
-                    (short) RealtimeThread.NORM_PRIORITY,//default_thread_priority,
+                    (short) javax.realtime.PriorityScheduler.instance().getNormPriority(),//default_thread_priority,
                     false,//allow_request_buffering,
                     0,//max_buffered_requests,
                     0//max_request_buffer_size
@@ -96,14 +96,14 @@ public class ORBImpl {
         ZenProperties.logger.log("======================Performing post initialization steps====================");
         boolean startSerialTransportAcceptor = this. properties.getProperty( "edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
         //boolean startSerialTransportAcceptor = ZenProperties.getGlobalProperty("edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
-        
+        /*
         if( startSerialTransportAcceptor ){
             ZenProperties.logger.log("**** STARTING SERIAL ACCEPTOR ****");
             edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable r =
                 new edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable();
             r.init(this.orbFacade);
             orbFacade.setUpORBChildRegion( r );
-        }
+        }*/
         
     }
 

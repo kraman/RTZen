@@ -63,7 +63,7 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
     public POAManager() {
         state = State.INACTIVE;
         int numPOAs = Integer.parseInt(ZenProperties.getGlobalProperty(
-                "doc.zen.poa.maxNumPOAManagers", "5"));
+                "doc.zen.poa.maxNumPOAManagers", "1"));
         registeredPOAs = new org.omg.PortableServer.POA[numPOAs];
         numRegisteredPOAs = 0;
     }
@@ -110,7 +110,6 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
                  * for now the queue length in the POAManager is 0. Should later
                  * be implemented.
                  */
-                
                 return POARunnable.TransientException;
             case State._DISCARDING:
                 return POARunnable.TransientException;

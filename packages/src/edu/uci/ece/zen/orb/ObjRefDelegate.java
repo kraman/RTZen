@@ -27,7 +27,7 @@ import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.FString;
 
 public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
-    
+
     public int giopType;
 
     private static Queue objRefDelegateCache;
@@ -103,7 +103,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         out.getBuffer().dumpBuffer(this.ior);
         out.free();
         ZenProperties.logger.log("ObjRefDel init 1");
-        System.out.println("++++++++++++++++++++++++++++++++++ObjRefDel no of prof:" + ior.profiles.length);
+        //System.out.println("++++++++++++++++++++++++++++++++++ObjRefDel no of prof:" + ior.profiles.length);
         //process all the tagged profiles
         for (int i = 0; i < ior.profiles.length; i++) { //go through each
             // tagged profile
@@ -186,8 +186,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
                         //edu.uci.ece.zen.utils.Logger.printMemStats(400);
                         //edu.uci.ece.zen.utils.Logger.printMemStatsImm(500);
-                        in.read_octet();
-                        in.read_octet();
+                        in.read_octet(); //iiop major
+                        in.read_octet(); //iiop minor
 
                         FString host = in.getBuffer().readFString(true);
                         short port = in.read_ushort();
@@ -208,8 +208,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                             transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector
                                     .instance().connect(host, port, orb, orbImpl);
                             orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
-                            addLaneData(RealtimeThread.MIN_PRIORITY,
-                                    99/* RealtimeThread.MAX_PRIORITY */,
+                            addLaneData( javax.realtime.PriorityScheduler.instance().getMinPriority(),
+                                    javax.realtime.PriorityScheduler.instance().getMaxPriority(),
                                     transportScope, object_key,
                                     edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
                         } else {
@@ -222,8 +222,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                     case 1:
                     case 2: {
 
-                        in.read_octet();
-                        in.read_octet();
+                        in.read_octet(); //iiop major
+                        in.read_octet(); //iiop minor
 
                         FString host = in.getBuffer().readFString(true);
                         short port = in.read_ushort();
@@ -248,16 +248,65 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
                         int numComp = in.read_ulong();
 
+                        if (ZenProperties.devDbg) System.out.println(in.toString());
+
                         if (ZenProperties.dbg) ZenProperties.logger.log("number of components: " + numComp);
 
                         for (int i = 0; i < numComp; ++i) {
                             //TaggedComponent tc = profilebody.components[i];
 
                             int ctag = in.read_ulong();
+
+
                             if (ZenProperties.dbg) ZenProperties.logger.log("found tag: " + ctag);
 
-                            if (ctag == org.omg.IOP.TAG_POLICIES.value) {
+                            if (ctag == org.omg.IOP.TAG_ORB_TYPE.value) {
 
+                                int byteLen = in.read_ulong();
+                                in.read_boolean(); //endianess
+
+                                int orbType = in.read_ulong();
+
+                                if (ZenProperties.dbg) ZenProperties.logger.log("ORB type: " + orbType);
+
+
+                            } else if (ctag == org.omg.IOP.TAG_CODE_SETS.value) {
+                                //just eat for now
+                                int byteLen = in.read_ulong();
+                                for(int i1 = 0; i1 < byteLen; ++i1)
+                                    in.read_octet();
+                                /*
+                                int codeId = in.read_ulong();
+                                if (ZenProperties.dbg) ZenProperties.logger.log("Code is: " + codeId);
+
+                                int arrSize = in.read_ulong();
+                                if (ZenProperties.dbg) ZenProperties.logger.log("arrSize: " + arrSize);
+
+                                for(int i1 = 0; i1 < arrSize; ++i1){
+                                    int tempCS = in.read_ulong();
+
+                                    if (ZenProperties.dbg) ZenProperties.logger.log("arrelem: " + tempCS);
+
+                                }
+
+                                codeId = in.read_ulong();
+                                if (ZenProperties.dbg) ZenProperties.logger.log("Code is: " + codeId);
+
+                                arrSize = in.read_ulong();
+                                if (ZenProperties.dbg) ZenProperties.logger.log("arrSize: " + arrSize);
+
+                                for(int i1 = 0; i1 < arrSize; ++i1){
+                                    int tempCS = in.read_ulong();
+
+                                    if (ZenProperties.dbg) ZenProperties.logger.log("arrelem: " + tempCS);
+
+                                }
+                                */
+
+                            } else if (ctag == org.omg.IOP.TAG_POLICIES.value) {
+
+                                int byteLen = in.read_ulong();
+                                in.read_boolean(); //endianess
                                 int numPol = in.read_ulong();
 
                                 //CDRInputStream in1 = CDRInputStream
@@ -272,6 +321,9 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                 for (int j = 0; j < numPol; ++j) {
 
                                     int polType = in.read_ulong();
+
+                                    int byteLen1 = in.read_ulong();
+                                    in.read_boolean(); //endianess
 
                                     if (ZenProperties.dbg) ZenProperties.logger.log("found policy value: " + polType);
 
@@ -291,30 +343,52 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                             break;
 
                                         case THREADPOOL_POLICY_TYPE.value:
+                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
+                                                in.read_octet();
                                             ZenProperties.logger.log("\tTHREADPOOL_POLICY_TYPE");
                                             break;
 
                                         case SERVER_PROTOCOL_POLICY_TYPE.value:
+                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
+                                                in.read_octet();
                                             ZenProperties.logger.log("\tSERVER_PROTOCOL_POLICY_TYPE");
                                             break;
 
                                         case CLIENT_PROTOCOL_POLICY_TYPE.value:
+                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
+                                                in.read_octet();
                                             ZenProperties.logger.log("\tCLIENT_PROTOCOL_POLICY_TYPE");
                                             break;
 
                                         case PRIVATE_CONNECTION_POLICY_TYPE.value:
+                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
+                                                in.read_octet();
                                             ZenProperties.logger.log("\tPRIVATE_CONNECTION_POLICY_TYPE");
                                             break;
 
                                         case PRIORITY_BANDED_CONNECTION_POLICY_TYPE.value:
+                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
+                                                in.read_octet();
                                             ZenProperties.logger.log("\tPRIORITY_BANDED_CONNECTION_POLICY_TYPE");
                                             break;
 
-                                    }
+                                        default:
+                                            for(int i1 = 0; i1 < byteLen-1; ++i1)
+                                                in.read_octet();
+                                            ZenProperties.logger.log("ERROR: Invalid policy type");
+
+                                    } //end switch
 
                                     //in2.free();
 
-                                }
+                                } //end for
+
+                            }else{
+                                //just eat if we don't know the type
+                                int byteLen = in.read_ulong();
+                                for(int i1 = 0; i1 < byteLen; ++i1)
+                                    in.read_octet();
+
 
                             }
 
@@ -323,7 +397,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                         //TODO: process priority policies here and add the
                         // appropriate
                         // lanes
-                        addLaneData(RealtimeThread.MIN_PRIORITY, 99,
+		        addLaneData( javax.realtime.PriorityScheduler.instance().getMinPriority(),
+                                javax.realtime.PriorityScheduler.instance().getMaxPriority(),
                                 transportScope, object_key,
                                 edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
                     }
@@ -336,7 +411,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 //TODO: Currently ignored because they are of no immediate use
                 ZenProperties.logger.log("TAG_MULTIPLE_COMPONENTS ignored");
                 break;
-            case TAG_SERIAL.value: //process serial
+            case TAG_SERIAL.value: //process serial 
+/*
                 System.out.println( "Serial transport profile found" );
 
                 if( isCollocated ){
@@ -374,9 +450,9 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
                 if (transportScope != null) {
                     System.out.println( "Serial connection succesful" );
-                    addLaneData(RealtimeThread.MIN_PRIORITY,
-                    99/* RealtimeThread.MAX_PRIORITY */,
-                    transportScope, object_key,
+		    addLaneData( javax.realtime.PriorityScheduler.instance().getMinPriority(),
+                        javax.realtime.PriorityScheduler.instance().getMaxPriority(),
+                        transportScope, object_key,
                     edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
                 }else{
                     System.out.println( "Serial connection unsuccesful" );
@@ -384,7 +460,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 3");
                 in.free();
 
-                break;
+                break;*/
             default:
                 ZenProperties.logger.log(Logger.WARN, getClass(), "processTaggedProfile", "unhandled tag: " + tag);
         }

@@ -10,12 +10,12 @@
             <include name="src/edu/uci/ece/zen/utils/**"/>
             <include name="omg-01-02-01/org/omg/CORBA/**"/>
             <include name="omg-01-02-01/org/omg/CORBA_2_3/**"/>
-            <include name="generated/org/omg/Dynamic/**/" if="zen.aspects.pi"/>
+            <include name="generated/org/omg/Dynamic/**/" if="_zen.aspects.pi"/>
             <include name="generated/org/omg/IOP/**/"/>
             <include name="generated/org/omg/IIOP/**/"/>
-            <include name="omg-01-02-01/org/omg/IOP_N/**/" if="zen.aspects.pi"/>
+            <include name="omg-01-02-01/org/omg/IOP_N/**/" if="_zen.aspects.pi"/>
             <include name="omg-01-02-01/org/omg/RTCORBA/**" if="zen.rtcorba"/>
-            <include name="omg-01-02-01/org/omg/RTPortableServer/**"/>
+            <!--include name="omg-01-02-01/org/omg/RTPortableServer/**"/-->
             <include name="omg-01-02-01/org/omg/PortableServer/**"/>
 
             <include name="generated/org/omg/CORBA/**"/>
@@ -25,6 +25,7 @@
             <include name="generated/org/omg/IOP/**"/>
             <include name="generated/org/omg/GIOP/**"/>
             <include name="generated/org/omg/PortableServer/**"/>
+            <include name="generated/org/omg/RTPortableServer/**"/>
             <include name="generated/org/omg/Messaging/**"/>
             <include name="generated/org/omg/TimeBase/**"/>
             <include name="generated/org/omg/CosNaming/**"/>
@@ -42,17 +43,23 @@
             <include name="src/edu/uci/ece/zen/orb/protocol/**"/>
             <exclude name="src/edu/uci/ece/zen/orb/ServerRequest.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
-            <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TracerAspect.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/TypeCodeAspect.java"/>
 
             <include name="src/edu/uci/ece/zen/poa/**"/>
+            <exclude name="src/edu/uci/ece/zen/orb/transport/serial/**"/>
             <exclude name="src/edu/uci/ece/zen/orb/protocol/giop/v1_1/**"/>
             <exclude name="src/edu/uci/ece/zen/orb/protocol/giop/v1_2/**"/>
 
+            <include name="src/edu/uci/ece/zen/orb/portableInterceptor/**"  if="zen.aspects.pi"/>
+            <include name="generated/org/omg/PortableInterceptor/**/"  if="zen.aspects.pi"/>
+            
             <exclude name="src/edu/uci/ece/zen/orb/resolvers/**"/>
 
             <exclude name="src/edu/uci/ece/zen/poa/mechanism/ServantLocatorStrategy.java"/>
+            
+        <!--*** Zen services ***-->           
+            <include name="src/edu/uci/ece/zen/services/naming/**/"  if="zen.naming"/>
 
         <!--*** classes that jRate cant compile ***-->
             <exclude name="src/edu/oswego/cs/dl/util/concurrent/VetoableChangeMulticaster.java"/>
@@ -64,7 +71,8 @@
             <include name="src/edu/uci/ece/zen/utils/Logger.java"/>
     </patternset>
 
-    <!--target name="all" depends="idl, compile, lib, jRate, naming_service, compile_perf"/-->
+    <!--target name="all" depends="idl, compile, lib, jRate, naming_service, compile_perf"/
+    -->
     <target name="all" depends="idl, compile, lib, jRate, naming_service"/>
 
 
@@ -74,25 +82,34 @@
     </target>
 
     <target name="compile">
-        <echo message="Compiling OMG and Zen sources"/>
-        <echo message="Current rt classpath is: ${zen.rtbootclasspath}"/>
-
+        <echo message="Compiling OMG and Zen sources with the AspectJ compiler."/>
+        <echo message=""/>
+        <echo message="********** New message from mpanahi: Jan. 27, 2005 **********"/>
+        <echo message="Make sure you are using the AspectJ compiler adapter."/>
+        <echo message="To use it, please copy the appropriate line from zen-build_properties to zen-build.properties."/>
+        <echo message=""/>
+        <!--echo message="Current rt classpath is: ${zen.rtbootclasspath}"/-->
+        <!--echo message="Current classpath is: ${zen.classpath}"/-->
+        <!--echo message="Current classpath is: ${java.home}"/-->
         <javac
             destdir="${zen.classdir}"
             srcdir="${zen.srcdir}"
             failonerror = "true"
             fork = "true"
-            target="1.1"
-			debug="${zen.debug}"
-            bootclasspath="${zen.rtbootclasspath}"
+            debug="${zen.debug}"
+            target="${javac.target}"
+            bootclasspath="${zen.classpath};${java.home}/lib/rt.jar;${zen.rtbootclasspath}"
             includeJavaRuntime="yes"
+            memoryMaximumSize="256m"
             >
             <patternset refid="sources"/>
             <include name="ant-tasks/edu/uci/ece/doc/tools/ant/taskdefs/compilers/jRate.java" if="compiler_jRate"/>
             <include name="src/javax/**" if="compiler_jdk"/>
-            <classpath>
+            <!--<classpath>
+            
+            bootclasspath="${zen.classpath};${java.home}/lib/rt.jar"
                 <pathelement location="${zen.classpath}"/>
-            </classpath>
+            </classpath>-->
         </javac>
     </target>
 
@@ -114,10 +131,6 @@
     </target>
 
     <target name="naming_service" if="zen.naming">
-        <ant antfile="${zen.srcdir}/src/edu/uci/ece/zen/services/naming/build.xml"/>
-    </target>
-
-    <target name="naming" if="zen.naming">
         <ant antfile="${zen.srcdir}/src/edu/uci/ece/zen/services/naming/build.xml"/>
     </target>
 

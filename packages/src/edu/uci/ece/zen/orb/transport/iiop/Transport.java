@@ -4,6 +4,7 @@ import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.policies.PolicyManagerImpl;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ZenProperties;
+import java.net.InetAddress;
 
 public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     private java.net.Socket sock;
@@ -65,7 +66,11 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
                                 + javax.realtime.RealtimeThread
                                         .currentRealtimeThread());
 
-                sock = new java.net.Socket(host, port);
+                sock = new java.net.Socket( InetAddress.getByAddress( new byte[]{ 
+			((byte)(128&0xFF)),
+			((byte)(195&0xFF)),
+			((byte)(174&0xFF)),
+			((byte)(20&0xFF))})  , port );
                 ZenProperties.logger.log("Connected");
                 //setSockProps(sock, orb);
                 //             System.err.println( "sock = " + sock );

@@ -23,7 +23,17 @@ public final class GLiteMessageFactory extends MessageFactory{
         ReadBuffer buffer = ReadBuffer.instance();
         buffer.init();
         buffer.setAlignment( false );
-        ProtocolHeaderInfo mainMsgHdr = (ProtocolHeaderInfo) new ProtocolHeaderInfo();
+       
+        Object obj = trans.getObject(3);
+        ProtocolHeaderInfo mainMsgHdr;
+        if(obj == null){
+            mainMsgHdr = new edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo();
+            trans.setObject(mainMsgHdr, 3);
+        }
+        else{
+            mainMsgHdr = (edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo)obj;
+        }
+        
         edu.uci.ece.zen.orb.protocol.Message ret = null;
 
         do {

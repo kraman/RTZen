@@ -58,26 +58,23 @@ public class POAServerRequestHandler extends
 
         POA poa = null;
 
-        if (ZenProperties.dbg) ZenProperties.logger.log("IOR: " + index + "," + genCount);
-        if (ZenProperties.dbg) ZenProperties.logger.log("POA: " + index + "," + demuxTable.getGenCount(index));
+        if (ZenProperties.dbg) ZenProperties.logger.log("IOR: " + index + ","
+                + genCount);
+        if (ZenProperties.dbg) ZenProperties.logger.log("POA: " + index + ","
+                + demuxTable.getGenCount(index));
 
         //TODO: Cant throw exception here. marshall and send back
-
         if (demuxTable.getGenCount(index) == genCount) {
             poa = ((POA) this.demuxTable.mapEntry(index));
-            if (ZenProperties.dbg) ZenProperties.logger.log("POA: " + poa);
-        } 
-        else if (ObjectKeyHelper.isPersistent(objKey)) 
-        {
+        } else if (ObjectKeyHelper.isPersistent(objKey)) {
             throw new org.omg.CORBA.NO_IMPLEMENT();
             /*
              * Transient objects only for now byte[] poaPath =
              * ObjectKeyHelper.getPOAPathName( objKey ); poa = findPOA( poaPath );
              */
-        } 
-        else 
-        {
-            throw new org.omg.CORBA.OBJECT_NOT_EXIST("The transient poa not found");
+        } else {
+            throw new org.omg.CORBA.OBJECT_NOT_EXIST(
+                    "The transient poa not found");
         }
 
         poa.handleRequest(req);

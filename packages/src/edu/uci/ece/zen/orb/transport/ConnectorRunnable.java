@@ -43,31 +43,35 @@ public class ConnectorRunnable implements Runnable {
     private boolean retVal;
     public boolean getReturnStatus(){ return retVal; }
     public void run() {
-        statCount++;
-        if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
-            edu.uci.ece.zen.utils.Logger.printMemStats(5);
-        }
+        try{
+            statCount++;
+            if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
+                edu.uci.ece.zen.utils.Logger.printMemStats(5);
+            }
 
-        int iport = 0;
-        iport |= port & 0xffff;
-        String host2=null;
-        if( host != null ){
-            host2 = new String(this.host.getTrimData());
-            FString.free(host);
-        }
-        
-        Transport trans = conn.internalConnect(host2, iport, orb,
-                (ORBImpl) orb.orbImplRegion.getPortal());
-        if( trans != null ){
-            RealtimeThread transportThread = new NoHeapRealtimeThread(null, null,
-                    null, RealtimeThread.getCurrentMemoryArea(), null, trans);
-            //RealtimeThread transportThread = new
-            // RealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);
-            transportThread.start();
-            ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(trans);
-            retVal = true;
-        }else{
-            retVal = false;
+            int iport = 0;
+            iport |= port & 0xffff;
+            String host2=null;
+            if( host != null ){
+                //host2 = new String(this.host.getTrimData());
+                FString.free(host);
+            }
+            
+            Transport trans = conn.internalConnect(host2, iport, orb,
+                    (ORBImpl) orb.orbImplRegion.getPortal());
+            if( trans != null ){
+                RealtimeThread transportThread = new NoHeapRealtimeThread(null, null,
+                        null, RealtimeThread.getCurrentMemoryArea(), null, trans);
+                //RealtimeThread transportThread = new
+                // RealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);
+                transportThread.start();
+                ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(trans);
+                retVal = true;
+            }else{
+                retVal = false;
+            }
+        }catch( Throwable e ){
+            e.printStackTrace();
         }
     }
 }

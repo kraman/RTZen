@@ -51,6 +51,8 @@ import java.net.URL;
 /**
  * @author Alex Potanin (alex@mcs.vuw.ac.nz)
  * @author Krishna Raman
+ *
+ *
  */
 
 public class ORB extends org.omg.CORBA_2_3.ORB {
@@ -146,7 +148,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             FString fOrbId = new FString(orbId.length());
             fOrbId.append(orbId);
 
-            edu.uci.ece.zen.orb.ORB retVal = (edu.uci.ece.zen.orb.ORB) orbTable.get(fOrbId);
+            edu.uci.ece.zen.orb.ORB retVal = (edu.uci.ece.zen.orb.ORB) orbTable
+                    .get(fOrbId);
             if (retVal == null) {
                 //TODO: According to Alex, the use of scopes here has to be dealt with from Scoped Types perspective
                 ZenProperties.logger.log("======================None found...new orb will mbe made====================");
@@ -672,6 +675,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             ZenProperties.logger.log(Logger.FATAL,
                     getClass(), "create_threadpool",
                     "Could not create threadpool", e);
+            System.err.println("Caught Exception");
+            e.printStackTrace();           
             System.exit(-1);
         }
     }

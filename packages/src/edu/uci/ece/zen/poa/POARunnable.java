@@ -11,12 +11,9 @@ import org.omg.PortableServer.Servant;
 import org.omg.PortableServer.ServantManager;
 
 import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.utils.ZenProperties;
 
 //TODO Modify this class to be type safe.
 public class POARunnable implements Runnable {
-    
-    // Operation IDs.
     public static final int INIT = 0;
 
     public static final int HANDLE_REQUEST = 1;
@@ -59,9 +56,6 @@ public class POARunnable implements Runnable {
 
     public static final int ID_TO_REFERENCE = 20;
 
-    public static final int ACTIVATE_OBJECT_WITH_PRIORITY = 21;
-    
-    // Exception constant values.
     public static final int NoException = 0;
 
     public static final int InvalidPolicyException = 1;
@@ -84,7 +78,7 @@ public class POARunnable implements Runnable {
 
     public static final int InternalException = 10;
     
-    public static final int NoServant = 11;
+    public static final int NoServant = 11; // Add by Hojjat & Juan
     
     public static final int SERVANT_ALREADY_ACTIVE = 12; // Add by Hojjat & Juan
 
@@ -197,16 +191,7 @@ public class POARunnable implements Runnable {
             case GET_POLICY_LIST:
                 pimpl.policy_list((MemoryArea) args.elementAt(0), this);
                 break;
-                
-//            case ACTIVATE_OBJECT_WITH_PRIORITY:
-//                pimpl.activate_object_with_priority((Servant) args.elementAt(0),
-//                                                    (Short) args.elementAt(1),
-//                                                    (MemoryArea) args.elementAt(2),
-//                                                    this);
-//                break;                
-                
         }
-
         args.clear();
     }
 }

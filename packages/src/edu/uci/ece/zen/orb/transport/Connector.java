@@ -15,7 +15,7 @@ public abstract class Connector {
 
     private int statCount = 0;
     public final ScopedMemory connect(FString host, short port, edu.uci.ece.zen.orb.ORB orb, ORBImpl orbImpl) {
-        System.err.println( "]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]Connector " );
+        //System.err.println( "]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]Connector " );
         ExecuteInRunnable eir = (ExecuteInRunnable) orbImpl.eirCache.dequeue();
         if (eir == null) eir = new ExecuteInRunnable();
         ExecuteInRunnable eir2 = (ExecuteInRunnable) orbImpl.eirCache.dequeue();

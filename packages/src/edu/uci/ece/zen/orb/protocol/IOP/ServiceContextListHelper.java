@@ -4,14 +4,14 @@ import edu.uci.ece.zen.utils.FString;
 
 /**
  * Helper class for : ServiceContextList
- * 
+ *
  * @author OpenORB Compiler
  */
 public class ServiceContextListHelper {
 
     /**
      * Read ServiceContextList from a marshalled stream
-     * 
+     *
      * @param istream
      *            the input stream
      * @return the readed ServiceContextList value public static
@@ -28,7 +28,7 @@ public class ServiceContextListHelper {
         //ServiceContext[] new_one = ServiceContext.arrayInstance();
 
         int length = istream.read_ulong();
-        fs.append((long) length);
+        fs.append((int) length);
         //new_one = new org.omg.IOP.ServiceContext[size7];
         for (int i7 = 0; i7 < length; i7++)
             ServiceContextHelper.read(istream, fs);
@@ -38,7 +38,7 @@ public class ServiceContextListHelper {
 
     /**
      * Write ServiceContextList into a marshalled stream
-     * 
+     *
      * @param ostream
      *            the output stream
      * @param value

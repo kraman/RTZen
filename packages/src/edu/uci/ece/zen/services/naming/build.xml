@@ -5,7 +5,7 @@
    <property file="zen-build-bootstrap.properties"/>
    <property file="zen-build.properties"/>
 
-   <target name="all" depends="compile, lib"/>
+   <target name="all" depends="lib"/>
 
    <target name="compile">
             <javac srcdir="${zen.srcdir}/src:${zen.gendir}"
@@ -20,7 +20,7 @@
               fork="yes"
               failonerror="yes"
               >
-		 <jvmarg line="${zen.jvm.properties}"/>
+         <jvmarg line="${zen.jvm.properties}"/>
         </java>
     </target> 
    

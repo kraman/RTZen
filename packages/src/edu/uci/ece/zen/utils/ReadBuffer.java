@@ -25,14 +25,11 @@ public class ReadBuffer {
 
     static {
         try {
-            vectorConstructor = Vector.class
-                    .getConstructor(new Class [] {int.class});
+            vectorConstructor = Vector.class.getConstructor(new Class [] {int.class});
             vectorArgTypes = new Object[1];
-            maxCap = Integer.parseInt(ZenProperties
-                .getGlobalProperty( "readbuffer.size" , "20" ));
+            maxCap = Integer.parseInt(ZenProperties.getGlobalProperty( "readbuffer.size" , "20" ));
             vectorArgTypes[0] = new Integer(maxCap);
-            bufferCache = (Queue) ImmortalMemory.instance().newInstance(
-                    Queue.class);
+            bufferCache = (Queue) ImmortalMemory.instance().newInstance( Queue.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.WARN, ReadBuffer.class, "static <init>", e);
             System.exit(-1);
@@ -46,7 +43,8 @@ public class ReadBuffer {
         try {
             //Thread.dumpStack();
                 numFree--;
-            if (bufferCache.isEmpty()) {
+	    ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
+            if (ret == null) {
                 ReadBuffer rb = (ReadBuffer) ImmortalMemory.instance().newInstance(ReadBuffer.class);
                 //rb.id = idgen++;
 
@@ -54,7 +52,6 @@ public class ReadBuffer {
                 return rb;
             }else {
                 //Thread.dumpStack();
-                ReadBuffer ret = (ReadBuffer) bufferCache.dequeue();
                 if(ret.inUse)
                     ZenProperties.logger.log(Logger.FATAL, ReadBuffer.class,
                         "free",
@@ -90,8 +87,7 @@ public class ReadBuffer {
 
     public ReadBuffer() {
         try {
-            buffers = (Vector) ImmortalMemory.instance().newInstance(
-                    vectorConstructor, vectorArgTypes);
+            buffers = (Vector) new Vector( maxCap );
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, getClass(), "<init>", e);
             System.exit(-1);
@@ -319,8 +315,8 @@ public class ReadBuffer {
         if( !enableAlignment )
             return;
 
-        int extraBytesUsed = (int) ((position + 12) % boundry); 
-        // The CDR alignment should count from the beginning of GIOP header.  But the GIOP header is excluded in CDRInputStream position. So 12 must be added. Yue Zhang on 09.22pm, 08/01/2004 
+        int extraBytesUsed = (int) ((position + 12) % boundry);
+        // The CDR alignment should count from the beginning of GIOP header.  But the GIOP header is excluded in CDRInputStream position. So 12 must be added. Yue Zhang on 09.22pm, 08/01/2004
         if (extraBytesUsed != 0) {
             int incr = boundry - extraBytesUsed;
             checkReadPositionLimit(incr);
@@ -380,7 +376,7 @@ public class ReadBuffer {
         byte b3 = readByte();
         byte b4 = readByte();
         //System.out.println( "" + ((int)b1) + " " + ((int)b2) + " " +
-        // ((int)b3) + " " + ((int)b4) );
+         //((int)b3) + " " + ((int)b4) );
         int ret = 0;
         if (isLittleEndian) {
             ret |= b4 & 0xFF;
