@@ -4,7 +4,7 @@
     |
     | This file contains the ZEN XML configuration script. ZEN uses ANT
     | as its building tool. Some useful properties are defined at configuration
-    | time. These properties are used to keep all the build files clear and 
+    | time. These properties are used to keep all the build files clear and
     | self-documenting.
     |
     |
@@ -15,21 +15,21 @@
     |
     |
     | NOTE: Some part of this file is "mis-indented" on purpose
-    |       so that the generated configuration files have the 
+    |       so that the generated configuration files have the
     |       proper indentation.
     +-->
 
-<project name="Config" default="all" basedir=".">
+<project name="Config" default="all">
 
     <property file="zen-build.properties"/>
     <target name="init">
         <path id="zen.os.base">
            <pathelement location="${basedir}"/>
         </path>
-    
+
         <pathconvert targetos="unix" property="new.zen.basedir" refid="zen.os.base"/>
         <property name="config-file" value="zen-build-bootstrap.properties"/>
-        
+
         <condition property="zen.rtbootclasspath" value="${timesys_ri_install}/lib/foundation.jar">
             <equals arg1="${zen.build.runtime}" arg2="timesys_ri"/>
         </condition>
@@ -46,7 +46,7 @@
 
         <condition property="zen.rtbootclasspath" value="${OVM_install}/src/syslib/user/ovm_rt_user.jar">
             <equals arg1="${zen.build.runtime}" arg2="OVM"/>
-        </condition>       
+        </condition>
 
         <property name="zen.win.exec" value="zen.bat"/>
         <property name="idl.win.exec" value="idlc.bat"/>
@@ -57,7 +57,7 @@
         <property name="naming.unix.exec" value="naming.sh"/>
         <property name="zen.classdir" value="${new.zen.basedir}/classes"/>
         <property file="zen-build.properties"/>
-        
+
         <!-- Make sure we always use the unix-style path separator, even in windows. -->
         <path id="class.path">
           <pathelement location="${java.class.path}"/>
@@ -65,12 +65,12 @@
 
         <pathconvert dirsep="/" property="new.java.class.path" refid="class.path">
         </pathconvert>
-        
+
         <property name="zen.classpath" value="${zen.rtbootclasspath}${path.separator}${zen.classdir}${path.separator}${new.java.class.path}"/>
-    
+
         <property
             name="zen.jvm.properties"
-            value="-Xbootclasspath/p:${zen.classpath} -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"/>  
+            value="-Xbootclasspath/p:${zen.classpath} -Dorg.omg.CORBA.ORBClass=edu.uci.ece.zen.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=edu.uci.ece.zen.orb.ORBSingleton"/>
     </target>
 
     <target name="all" depends="init, createConfigFile, body-zen, body-openorb, createDirectories, createScripts"/>
@@ -113,14 +113,14 @@ build.compiler.pedantic = false
 
 #
 # System properties for the Java Virtual Machine.
-# Generally necessary for most programs that require Zen.  
+# Generally necessary for most programs that require Zen.
 #
 zen.jvm.properties = ${zen.jvm.properties}
 
        </echo>
    </target>
 
-   
+
    <target name="body-openorb" if="openorb.idl.compiler">
         <echo  file="${config-file}" append="yes">
 #########################
@@ -137,7 +137,7 @@ classpath = ${openorb.class.path}
         </echo>
     </target>
 
-    
+
     <target name="body-zen" if="zen.idl.compiler">
         <echo  file="${config-file}" append="yes">
 ##########################
@@ -180,7 +180,7 @@ java -Xbootclasspath:${new.zen.basedir}/lib/omg.jar;${new.zen.basedir}/lib/zen.j
 #!/bin/sh
 java -Xbootclasspath:${new.zen.basedir}/lib/omg.jar:${new.zen.basedir}/lib/zen.jar:${java.home}/lib/rt.jar:${java.class.path} ${zen.jvm.properties} $@
       </echo>
-      
+
       <echo file="bin/${naming.win.exec}">
 #!/bin/sh
 java -Xbootclasspath:${new.zen.basedir}/lib/naming.jar;${new.zen.basedir}/lib/concurrent.jar;new.zen.basedir}/lib/omg.jar;${new.zen.basedir}/lib/zen.jar;${java.home}/lib/rt.jar;${java.class.path} ${zen.jvm.properties} edu.uci.ece.zen.naming.NamingService

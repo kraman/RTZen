@@ -4,7 +4,7 @@
     |
     | This is the main ANT file for ZEN. Please make sure that you have read
     | the ZEN README before building ZEN, so that you know all the choices
-    | and have had a chance to select all the components that you want/need 
+    | and have had a chance to select all the components that you want/need
     | to build.
     |
     | File: build.xml
@@ -14,7 +14,7 @@
     |
     +-->
 
-<project name="ZEN ORB" default="all" basedir=".">
+<project name="ZEN ORB" default="all">
    <!-- Targets Definition  -->
    <target name="all" depends="init, packages"/>
    <target name="cleanBuild" depends="clean, all"/>
@@ -34,17 +34,17 @@
 
    <target name="clover" depends="init">
       <ant antfile="${zen.srcdir}/build.xml" target="clover"/>
-   </target>   
-   
+   </target>
+
    <target name="track_size" if="track_size_prop">
     <echo>Tracking Size of rteverything.jar</echo>
     <java classname="TrackSize"
           fork="yes"
           failonerror="yes"
           classpath="."
-          >    
+          >
           </java>
-   </target>     
+   </target>
 
     <target name="version_update">
         <!--Setup a default version information file-->
@@ -71,7 +71,7 @@ public class VersionStamp{
     </target>
 
     <target name="javadoc" depends="init">
-        
+
         <echo>Generating Javadoc for RTZen</echo>
         <javadoc
             destdir="docs/javaDoc"
@@ -96,7 +96,7 @@ public class VersionStamp{
                 </doctitle>
         </javadoc>
     </target>
-   
+
     <target name="ns">
         <property file="zen-build-bootstrap.properties"/>
         <property file="zen-build.properties"/>
@@ -106,8 +106,8 @@ public class VersionStamp{
               >
          <jvmarg line="${zen.jvm.properties}"/>
         </java>
-    </target>        
-        
+    </target>
+
     <target name="changelog">
         <property name="changelog.name" value="ChangeLog"/>
         <cvschangelog destfile="${changelog.name}.xml" daysinpast="7">
@@ -129,7 +129,7 @@ public class VersionStamp{
         </style>
     </target>
 
-   
+
     <target name="clean" depends="init">
       <property file="zen-build-bootstrap.properties"/>
       <property file="zen-build.properties"/>
