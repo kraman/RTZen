@@ -155,7 +155,7 @@ public class WriteBuffer {
         for(int i = 0; i < position; ++i)
             newarr[i] = buf[i];
 
-        return FString.byteArrayToString(newarr);
+        return FString.byteArrayToString(newarr) + "\n\nposition: " + position;
     }
 
     public void setEndian(boolean isLittleEndian) {

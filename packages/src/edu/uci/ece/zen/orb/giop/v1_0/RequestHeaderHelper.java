@@ -85,12 +85,13 @@ public class RequestHeaderHelper {
         if (ZenProperties.dbg) ZenProperties.logger.log("RequestHeader read -- class: " + istream.getClass());
 
 
-        //if (ZenProperties.dbg) ZenProperties.logger.log("\n\n\n\n\n\n\n\n");
-        if (ZenProperties.dbg) ZenProperties.logger.log(istream.toString());
-        //if (ZenProperties.dbg) ZenProperties.logger.log("\n\n\n\n\n\n\n\n");
+        //System.out.println("+++++++++++++++1");
+        //if (ZenProperties.dbg) ZenProperties.logger.log(istream.toString());
+        //System.out.println(istream.toString());
+        //System.out.println("+++++++++++++++2");
 
-        new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper
-                .read(istream, FString.instance(new_one.service_context));
+        //new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper
+        //        .read(istream, FString.instance(new_one.service_context));
 
         new_one.request_id = istream.read_ulong();
         if (ZenProperties.dbg) ZenProperties.logger.log("RequestHeader read -- req id: " + new_one.request_id);
@@ -144,9 +145,9 @@ public class RequestHeaderHelper {
         if (ZenProperties.dbg) ZenProperties.logger.log("Write RequestHeader_1_0 -- class: " + ostream.getClass());
 
         //edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
-        value.service_context.write(ostream);
-        if (ZenProperties.dbg) ZenProperties.logger.log("sc len: " + value.service_context.length());
-        if (ZenProperties.dbg) ZenProperties.logger.log("sc: " + value.service_context.decode());
+        ////value.service_context.write(ostream);
+        ////if (ZenProperties.dbg) ZenProperties.logger.log("sc len: " + value.service_context.length());
+        ////if (ZenProperties.dbg) ZenProperties.logger.log("sc: " + value.service_context.decode());
         //ostream.write_ulong(0);
 
         ostream.write_ulong(value.request_id);
@@ -171,7 +172,10 @@ public class RequestHeaderHelper {
         ostream.write_ulong(value.requesting_principal.length());
         value.requesting_principal.write(ostream);
 */
-
+        //System.out.println("\n------------------------------1");
+        //if (ZenProperties.dbg) ZenProperties.logger.log(msg.toString());
+        //System.out.println(ostream.toString());
+        //System.out.println("\n------------------------------2");
         //org.omg.CORBA.OctetSeqHelper.write(ostream,value.requesting_principal1);
         //ostream.write_ulong(value.requesting_principal_length);
         //ostream.write_octet_array(value.requesting_principal,

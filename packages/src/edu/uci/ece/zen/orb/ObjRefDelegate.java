@@ -60,7 +60,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             for(int i = 0; i < self.priorityLanes.length; ++i)
                 if(self.priorityLanes[i].objectKey != null)
                     FString.free(self.priorityLanes[i].objectKey);
-       
+
             //System.out.println("RELEASEEEEEEEEEEEEEEEEEEEEEEEEE");
         }
         self.released = true;
@@ -149,8 +149,9 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             // register them
             {
                 boolean startSerialTransportAcceptor = ZenProperties.getGlobalProperty("serial.client.only" , "" ).equals("1");
-                
-                if( startSerialTransportAcceptor && !isCollocated ){      
+
+                if( startSerialTransportAcceptor && !isCollocated ){
+
                     ZenProperties.logger.log("+++++++++++++++++++++++++++++++++++++++++++++Skipping IIOP");
                     return;
                 }
@@ -168,7 +169,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 if (ZenProperties.dbg) ZenProperties.logger.log("iiop minor " + iiopMinor);
                 switch (iiopMinor) {
                     case 0: {
-                        ZenProperties.logger.log("ObjRefDel processTaggedProfile IIOPv1.0 1");                        
+                        ZenProperties.logger.log("ObjRefDel processTaggedProfile IIOPv1.0 1");
                         /*
                         TaggedProfileRunnable profRun = TaggedProfileRunnable.instance();
                         profRun.init(in);
@@ -178,80 +179,80 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                         ORB.freeScopedRegion(profScope);
 */
                         /////////////////////////
-                
+
                         //edu.uci.ece.zen.utils.Logger.printMemStats(400);
                         //edu.uci.ece.zen.utils.Logger.printMemStatsImm(500);
                         in.read_octet();
                         in.read_octet();
-                
+
                         FString host = in.getBuffer().readFString(true);
                         short port = in.read_ushort();
-                
+
                         FString object_key = in.getBuffer().readFString(false);
                         //edu.uci.ece.zen.utils.Logger.printMemStats(402);
                         //edu.uci.ece.zen.utils.Logger.printMemStatsImm(502);
-                
+
                         ///////////////////
                         //org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read(in);
 
                         long connectionKey = ConnectionRegistry.ip2long(host, port);
                         ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
-                
+
                         if (transportScope == null) {
-                        
-                            
+
+
                             transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector
                                     .instance().connect(host, port, orb, orbImpl);
                             orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
                             addLaneData(RealtimeThread.MIN_PRIORITY,
                                     99/* RealtimeThread.MAX_PRIORITY */,
-                                    transportScope, object_key);                            
+                                    transportScope, object_key);
                         } else {
                             FString.free(host);
-                        }        
+                        }
                         ZenProperties.logger.log("ObjRefDel processTaggedProfile IIOPv1.0 2");
                     }
                         break;
-                    
+
                     case 1:
                     case 2: {
-                    
+
                         in.read_octet();
                         in.read_octet();
-                    
+
                         FString host = in.getBuffer().readFString(true);
                         short port = in.read_ushort();
-                
+
                         FString object_key = in.getBuffer().readFString(false);
                         //edu.uci.ece.zen.utils.Logger.printMemStats(402);
                         //edu.uci.ece.zen.utils.Logger.printMemStatsImm(502);
-                
+
                         ///////////////////
                         //org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read(in);
-                        
+
                         long connectionKey = ConnectionRegistry.ip2long(host, port);
                         ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
-                
+
                         if (transportScope == null) {
                             transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector
                                     .instance().connect(host, port, orb, orbImpl);
                             orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
                         } else {
                             FString.free(host);
-                        }    
-                    
+                        }
+
                         int numComp = in.read_ulong();
 
                         if (ZenProperties.dbg) ZenProperties.logger.log("number of components: " + numComp);
 
                         for (int i = 0; i < numComp; ++i) {
                             //TaggedComponent tc = profilebody.components[i];
-                       
+
                             int ctag = in.read_ulong();
                             if (ZenProperties.dbg) ZenProperties.logger.log("found tag: " + ctag);
-                            
+
                             if (ctag == org.omg.IOP.TAG_POLICIES.value) {
-                                
+
                                 int numPol = in.read_ulong();
 
                                 //CDRInputStream in1 = CDRInputStream
@@ -264,7 +265,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                                 if (ZenProperties.dbg) ZenProperties.logger.log("number of policies: " + numPol);
 
                                 for (int j = 0; j < numPol; ++j) {
-                                    
+
                                     int polType = in.read_ulong();
 
                                     if (ZenProperties.dbg) ZenProperties.logger.log("found policy value: " + polType);
@@ -319,8 +320,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                         // lanes
                         addLaneData(RealtimeThread.MIN_PRIORITY,
                                 99,
-//                                 RealtimeThread.MAX_PRIORITY 
-                                
+//                                 RealtimeThread.MAX_PRIORITY
+
                                 transportScope, object_key);
                     }
                         break;
@@ -334,49 +335,51 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 break;
             case TAG_SERIAL.value: //process serial
                 System.out.println( "Serial transport profile found" );
- 
-                if( isCollocated ){      
+
+
+                if( isCollocated ){
                     ZenProperties.logger.log("+++++++++++++++++++++++++++++++++++++++++++++Collocated object, Skipping Serial");
                     return;
                 }
 
 
-                ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 1");            
+                ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 1");
+
                 byte[] data = profile.profile_data;
                 if (ZenProperties.dbg) ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL prof data len:" + data.length);
                 CDRInputStream in = CDRInputStream.fromOctetSeq(data, orb);
-  
+
                 //for(int i = 0 ; i < in.getBuffer().getLimit()/4; ++i)
                 //    if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + in.read_ulong());
-                
+
                 FString object_key = in.getBuffer().readFString(false);
                 //if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + object_key.length());
-               // if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + object_key.decode()); 
+               // if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ObjRefDel processTaggedProfile SERIAL obj key" + object_key.decode());
                 long connectionKey = -TAG_SERIAL.value;
                 ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 2");
                 if( transportScope == null ){
-                    try{ 
+                    try{
                         transportScope = edu.uci.ece.zen.orb.transport.serial.Connector
                             .instance().connect(null, (short)0, orb, orbImpl);
-			orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
-		    }catch(Exception e){
-                        e.printStackTrace();   
+            orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
+            }catch(Exception e){
+                        e.printStackTrace();
                     }
                 }
 
                 if (transportScope != null) {
-		    System.out.println( "Serial connection succesful" );
-			addLaneData(RealtimeThread.MIN_PRIORITY,
-					99/* RealtimeThread.MAX_PRIORITY */,
-					transportScope, object_key);
+            System.out.println( "Serial connection succesful" );
+            addLaneData(RealtimeThread.MIN_PRIORITY,
+                    99/* RealtimeThread.MAX_PRIORITY */,
+                    transportScope, object_key);
                 }else{
                     System.out.println( "Serial connection unsuccesful" );
                 }
                 ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 3");
                 in.free();
 
-                break;                
+                break;
             default:
                 ZenProperties.logger.log(Logger.WARN, getClass(), "processTaggedProfile", "unhandled tag: " + tag);
         }
@@ -561,7 +564,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         //        edu.uci.ece.zen.utils.Logger.printMemStats(302);
         org.omg.CORBA.portable.InputStream ret = ((ClientRequest) os).invoke();
         //      edu.uci.ece.zen.utils.Logger.printMemStats(303);
-
+        ((ClientRequest) os).free();
         return ret;
     }
 

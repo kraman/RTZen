@@ -345,15 +345,18 @@ public class FString {
      * @return The converted string.
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(currentSize);
+        if(currentSize > 0){
+            StringBuffer sb = new StringBuffer(currentSize);
 
-        for(int i = 0; i < currentSize; ++i){
-            sb.append((char)data[i]);
-            //sb.append( " " );
+            for(int i = 0; i < currentSize; ++i){
+                sb.append((char)data[i]);
+                //sb.append( " " );
+            }
+
+            return sb.toString();
         }
 
-        return sb.toString();
-
+        return "";
         /*
         NOTE: The code below would be simpler but it somehow leaks into immortal
         on Timesys RI even when allocated in scoped memory

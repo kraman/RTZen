@@ -276,6 +276,7 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
             return;
         }
         buffer.free();
+        buffer = null;
         CDROutputStream.release(this);
         inUse = false;
     }

@@ -103,7 +103,7 @@ public class ReadBuffer {
         for(int i = 0; i < limit; ++i)
             newarr[i] = buf[i];
 
-        return FString.byteArrayToString(newarr);
+        return FString.byteArrayToString(newarr) + "\n\nlimit: " + limit;
     }
     public void init() {
         position = capacity = limit = 0;

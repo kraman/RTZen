@@ -12,6 +12,8 @@ import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ZenProperties;
 
+import edu.uci.ece.zen.utils.Queue;
+
 public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     public String operation;
 
@@ -37,9 +39,16 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
 
     public FString contexts;
 
-    private static ClientRequest inst;
+    //private static ClientRequest inst;
+
+    private static Queue queue = Queue.fromImmortal();
 
     public static ClientRequest instance() {
+
+        ClientRequest cr = (ClientRequest)ORB.getQueuedInstance(ClientRequest.class,queue);
+
+        return cr;
+/*
         if (inst == null) {
             try {
                 inst = (ClientRequest) ImmortalMemory.instance().newInstance(
@@ -49,6 +58,8 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
             }
         }
         return inst;
+*/
+        //return new ClientRequest();
     }
 
     /**
@@ -178,9 +189,9 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         erMsgMem.init(mcr, messageScope);
         ZenProperties.logger.log("ClientRequest invoke 2");
         try {
-            if (orb.parentMemoryArea == RealtimeThread.getCurrentMemoryArea()) 
+            if (orb.parentMemoryArea == RealtimeThread.getCurrentMemoryArea())
                 erOrbMem.run();
-            else 
+            else
                 orb.parentMemoryArea.executeInArea(erOrbMem);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.SEVERE,
@@ -264,7 +275,9 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     }
 
     public void free() {
-        out.free();
+        //out.free();
+        queue.enqueue(this);
+        //Thread.dumpStack();
     }
 
     public void write_wstring(String s) {

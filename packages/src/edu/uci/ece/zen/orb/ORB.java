@@ -103,7 +103,11 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             unusedMemoryAreas = (Queue) imm.newInstance(Queue.class);
             scopeMemorySize = Integer.parseInt(ZenProperties.getGlobalProperty(
                     "doc.zen.orb.scopedMemorySize", "2097951"));    //Change by Alex...TODO: unknown reason
-            for (int i = 0; i < 20; i++)
+
+            int numMemAreas = Integer.parseInt(ZenProperties
+                .getGlobalProperty( "memarea.amount" , "20" ));
+
+            for (int i = 0; i < numMemAreas; i++)
                 unusedMemoryAreas.enqueue(new LTMemory(100, scopeMemorySize));
 
             //Set up connection registry
@@ -267,7 +271,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         orbImplRegion = mem;
 
         executeInORBRegion(orbInitRunnable);
-        
+
 
         /*
          * ExecuteInRunnable r = new ExecuteInRunnable(); r.init(

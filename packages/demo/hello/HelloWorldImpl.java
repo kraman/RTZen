@@ -14,9 +14,8 @@ public class HelloWorldImpl extends HelloWorldPOA
      */
     public void aa()
     {
-        System.out.println( "******************  WOOHOO! Request got here1 ********************" );
+        System.out.println( "******************  WOOHOO! Request got here ********************" );
         if(semaphore!=null) semaphore.release();
-        System.out.println( "******************  WOOHOO! Request got here2 ********************" );
         //return "Hello To the Zen World!!!";
         //return 42;
     }

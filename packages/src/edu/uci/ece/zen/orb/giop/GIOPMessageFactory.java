@@ -184,8 +184,7 @@ public final class GIOPMessageFactory {
         ret.setTransport( transportScope );
         ZenProperties.logger.log("GMF parse stream 2");
         if(ZenProperties.devDbg) {
-            System.out.print("parse stream messageId:");
-            System.out.println(ret.getRequestId());
+            ZenProperties.logger.log("parse stream messageId:"+ret.getRequestId());
         }
         return ret;
     }
@@ -282,8 +281,7 @@ public final class GIOPMessageFactory {
         int read = 0;
         ZenProperties.logger.log("parseStreamForHeader: reading");
         if(ZenProperties.devDbg) {
-            System.out.print("parseStreamForHeader: buffer size");
-            System.out.println(header.length);
+            ZenProperties.logger.log("parseStreamForHeader: buffer size:" + header.length);
         }
         while (read < 4) {
             int tmp = in.read(header, 0, 4);
@@ -369,12 +367,13 @@ public final class GIOPMessageFactory {
         //endian
         //out.write_boolean(false);
         //message type
+
         out.write_octet((byte) org.omg.GIOP.MsgType_1_0._Request);
         out.setLocationMemento();
         //out.write_long(0);
-    out.write_octet((byte)0);
-    out.write_octet((byte)0);
-    out.write_octet((byte)0);
+        out.write_octet((byte)0);
+        out.write_octet((byte)0);
+        out.write_octet((byte)0);
 
         //(new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId
         // )).marshal( out );
@@ -386,6 +385,7 @@ public final class GIOPMessageFactory {
         rm.marshal(out);
 
         rm.free();
+
     }
 
     public static CDROutputStream constructReplyMessage(ORB orb,
@@ -394,8 +394,7 @@ public final class GIOPMessageFactory {
         out.init(orb);
 
         if(ZenProperties.devDbg) {
-            System.out.print("construct reply for messageId:");
-            System.out.println(req.getRequestId());
+            ZenProperties.logger.log("construct reply for messageId:"+req.getRequestId());
         }
 
         //out.write_octet_array(magic, 0, 4);
@@ -408,9 +407,9 @@ public final class GIOPMessageFactory {
         out.write_octet((byte) org.omg.GIOP.MsgType_1_0._Reply);
         out.setLocationMemento();
         //out.write_long(0);
-    out.write_octet((byte)0);
-    out.write_octet((byte)0);
-    out.write_octet((byte)0);
+        out.write_octet((byte)0);
+        out.write_octet((byte)0);
+        out.write_octet((byte)0);
 
         switch (req.getGiopVersion()) {
             case 10:
