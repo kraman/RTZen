@@ -6,6 +6,7 @@ import org.omg.CORBA.ORB;
 import javax.realtime.*;
 import org.omg.PortableServer.*;
 import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.NativeTimeStamp;
 /**
  * This class implements a simple Client for the Hello World CORBA
  * demo
@@ -54,6 +55,12 @@ public class Client2 extends RealtimeThread
             System.out.println( "===================Trying to establish connection==========================" );
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
             System.out.println( server.getMessage2() );
+           
+            System.out.println( "===================Trying to initialize the NativeTimeStamp================" );
+            NativeTimeStamp rtts = new NativeTimeStamp();
+            NativeTimeStamp.Init(1, 20.0);
+            System.out.println( "===================NativeTimeStamp gets initialized================" );
+
 
 /*
             // Create a scope for running requests in, so that we don't waste the scope we are in.
@@ -83,6 +90,7 @@ public class Client2 extends RealtimeThread
             long start = System.currentTimeMillis();
             for( int i=0;i<runNum;i++ ){
                 server.getMessage2();
+                NativeTimeStamp.RecordTime(21);
                 //System.out.println(System.currentTimeMillis());
                 //sleep(10);
                 
@@ -95,6 +103,7 @@ public class Client2 extends RealtimeThread
             long end = System.currentTimeMillis();
 
             System.err.println( (double)runNum/((end-start)/1000.0));
+            NativeTimeStamp.OutputLogRecords();
             System.exit(0);
         }
         catch (Exception e)
