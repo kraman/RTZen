@@ -142,11 +142,14 @@ public class RequestHeaderHelper {
         //System.out.println("RequestHeader write -- ok len: " + value.object_key.length());
         ostream.write_ulong(value.object_key.length());
         value.object_key.write(ostream);
+        
+        if (ZenProperties.dbg) ZenProperties.logger.log("ok len: " + value.object_key.length());
+        if (ZenProperties.dbg) ZenProperties.logger.log("ok: " + value.object_key.decode());        
         //ostream.write_octet_array(value.object_key1,
         // 0,value.object_key1.length);
 
         //ostream.write_string(value.operation1);
-        //System.out.println("operation: " + value.operation.toString());
+        if (ZenProperties.dbg) ZenProperties.logger.log("operation: " + value.operation.toString());
         ostream.write_ulong(value.operation.length() + 1);
         value.operation.write(ostream);
         ostream.write_octet((byte) 0);

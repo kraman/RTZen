@@ -275,7 +275,11 @@ class GIOPMessageRunnable implements Runnable {
             //TODO: do something here
             if(ZenProperties.devDbg)
                 System.out.println("Exception");
-
+            try{
+                Thread.currentThread().sleep(1000);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
             ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", ioex);
             
         }

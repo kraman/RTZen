@@ -11,10 +11,11 @@ public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
             String host, int port, edu.uci.ece.zen.orb.ORB orb,
             edu.uci.ece.zen.orb.ORBImpl orbImpl) {
         System.err.println( "Serial transport: internalConnect() " );
+        
         try{
             if( !NativeSerialPort.instance().lock.attempt(0) ){
-                System.out.println( "Serial port is already in use....cannot connect" );
-                return null;              
+                ZenProperties.logger.log("------------------------------ Returning null transport in SERIAL connector.");           
+                return null; 
             }
         }catch(java.lang.InterruptedException ie){
             ie.printStackTrace();

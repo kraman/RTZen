@@ -11,7 +11,7 @@ class NativeSerialPort
 
     static
     {
-        System.out.println("Loading libNativeSerialPort.so...");
+        ZenProperties.logger.log("Loading libNativeSerialPort.so...");
         //System.load("/home/mpanahi/RTZen/packages/src/edu/uci/ece/zen/orb/transport/serial/jni/libNativeSerialPort.so");
         System.load(ZenProperties.getGlobalProperty( "serial.library.path" , "" ));
     }
@@ -43,16 +43,18 @@ class NativeSerialPort
 
     public synchronized NativeSerialPort accept(){
         try{
-            System.err.println( "Serial port: accept called() " );
+            ZenProperties.logger.log( "++++++++++++Serial port: accept called() " );
             lock.acquire();
-            System.err.println( "Serial port: accept called(); lock acquired" );
+            ZenProperties.logger.log( "++++++++++++Serial port: accept called(); lock acquired" );
             while( true ){
-                getMessage( tmpBuffer );
+                int size = getMessage( tmpBuffer );
                 if( tmpBuffer[0] == 0 && tmpBuffer[1] == 1 && tmpBuffer[2] == 7 && tmpBuffer[3] == 7 ){
-                    System.err.println( "Serial port: accept called(); lock acquired; magic recieved" );
+                    ZenProperties.logger.log( "Serial port: accept called(); lock acquired; magic recieved" );
                     return this;
                 }else{
-                    System.out.println( "Synchronization lost. port reset" );
+                    ZenProperties.logger.log("Synchronization lost. port reset" );
+                    if (ZenProperties.dbg) ZenProperties.logger.log( "data: " + tmpBuffer[0] + " " +tmpBuffer[1] + " " +tmpBuffer[2] + " "+  tmpBuffer[3] + " " );
+                    if (ZenProperties.dbg) ZenProperties.logger.log("size: " + size);
                 }
             }
         }catch( Exception e ){
@@ -76,6 +78,7 @@ class SerialPortInputStream extends InputStream{
     }
 
     public int read() throws java.io.IOException{
+        ZenProperties.logger.log( "-------------------------Serial port: read 1 " );
         while( NativeSerialPort.instance().getMessage( tmpBuffer ) != 1 ){}
         return tmpBuffer[0];
     }
@@ -95,10 +98,12 @@ class SerialPortInputStream extends InputStream{
     }
 
     public int read(byte[] buf) throws java.io.IOException{
+        ZenProperties.logger.log( "-------------------------Serial port: read 2 " );
         return NativeSerialPort.instance().getMessage( buf );
     }
 
     public int read(byte[] buf,int start,int len) throws java.io.IOException{
+        ZenProperties.logger.log( "-------------------------Serial port: read 3 " );
         for( int i=start;i<start+len;i++ )
             buf[i] = (byte)read();
         return len;
@@ -117,10 +122,12 @@ class SerialPortOutputStream extends OutputStream{
     }
 
     public void write(byte[] buf) throws java.io.IOException{
+        ZenProperties.logger.log("-------------------------Serial port: write 1 " );
         NativeSerialPort.instance().setMessage( buf , buf.length );
     }
 
     public void write(byte[] buf,int start,int len) throws java.io.IOException{
+        ZenProperties.logger.log("-------------------------Serial port: write 2 " );
         for( int i=start;i<start+len;i++ )
             write( buf[i] );
     }

@@ -460,6 +460,7 @@ public class ReadBuffer {
 
     public FString readFString(boolean isString) {
         int len = readLong();
+if (ZenProperties.dbg) ZenProperties.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$FString len" + len);        
         len--;
         FString fs = FString.instance();
         for(int i = 0; i < len; ++i)

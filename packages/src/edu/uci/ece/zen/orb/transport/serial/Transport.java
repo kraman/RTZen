@@ -19,7 +19,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             this.sock = sock;
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
-            ZenProperties.logger.log("Serial Transport: Got io streams");
+            ZenProperties.logger.log("+++++++Serial Transport: Got io streams");
             if (ZenProperties.dbg) ZenProperties.logger.
                     log("Serial Transport ready: " + istream + " " + ostream);
             //setSockProps(sock, orb);
@@ -33,13 +33,16 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     //Connector
     public Transport(edu.uci.ece.zen.orb.ORB orb, edu.uci.ece.zen.orb.ORBImpl orbImpl) {
         this( orb , orbImpl , NativeSerialPort.instance() );
+        /*
         try{
-            NativeSerialPort.instance().lock.acquire();            
+            ZenProperties.logger.log("++++++Serial Transport: Trying to get lock");
+            NativeSerialPort.instance().lock.acquire();  
+            ZenProperties.logger.log("++++++Serial Transport: Got lock");
         }catch(java.lang.InterruptedException ie){
             ZenProperties.logger.log(Logger.WARN,
                     getClass(), "<init>",
                     "Error ", ie);      
-        }
+        }*/
     }
 
     public java.io.InputStream getInputStream() {
