@@ -283,9 +283,12 @@ public class jRate extends MatchingTask {
             //procs[i].setWorkingDirectory( new File( destdir.toString() ) );
             try {
                 /*
-                 * String[] cmdline = cmd.getCommandline(); for( int j=0;j
-                 * <cmdline.length;j++ ){ System.out.println( cmdline[j] ); }
-                 */
+                String[] cmdline = cmd.getCommandline();
+		for( int j=0;j<cmdline.length;j++ ){ 
+		    System.out.print( cmdline[j] + " " ); 
+                }
+		System.out.println( "\n" );
+                */
                 procs[i].execute();
             } catch (Exception e) {
                 e.printStackTrace();
