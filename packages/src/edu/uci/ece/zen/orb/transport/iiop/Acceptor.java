@@ -18,9 +18,10 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
         }catch( Exception ex ){
             ZenProperties.logger.log(
                 Logger.WARN,
-                "edu.uci.ece.zen.orb.transport.iiop.Acceptor",
+                getClass(),
                 "<cinit>",
-                "Error binding to post. " + ex.toString() );
+                "Error binding to post.",
+				ex);
         }
     }
 
@@ -31,9 +32,9 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor{
         }catch( java.io.IOException ioex ){
             ZenProperties.logger.log(
                 Logger.WARN,
-                "edu.uci.ece.zen.orb.transport.iiop.Acceptor",
+                getClass(),
                 "accept",
-                "IOException occured " + ioex.toString() );
+                ioex);
         }
     }
 
