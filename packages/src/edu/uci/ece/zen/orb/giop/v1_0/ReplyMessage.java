@@ -3,6 +3,7 @@ package edu.uci.ece.zen.orb.giop.v1_0;
 import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.orb.*;
+import javax.realtime.ImmortalMemory;
 
 /**
  * Reply messages as described in section 15.4.3 of the CORBA v3.0 Spec. 
@@ -11,11 +12,32 @@ import edu.uci.ece.zen.orb.*;
 
 public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
     private ReplyHeader_1_0 header;
+    private static ReplyMessage rm;
     
+    public ReplyMessage() {}
     public ReplyMessage( ORB orb , ReadBuffer stream ){
         super( orb , stream );
         header = ReplyHeader_1_0Helper.read( istream );  // read method initializes header variable
         messageBody = stream;
+    }
+    public void init( ORB orb , ReadBuffer stream ){
+        super.init( orb , stream );
+        header = ReplyHeader_1_0Helper.read( istream );  // read method initializes header variable
+        messageBody = stream;
+    }
+
+    public static ReplyMessage getMessage()
+    {
+        try
+        {
+            if (rm == null)
+                rm = (ReplyMessage) ImmortalMemory.instance().newInstance(ReplyMessage.class);
+            return rm;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public int getRequestId() { return header.request_id; }

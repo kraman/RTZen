@@ -28,7 +28,11 @@ public abstract class GIOPMessage{
         this.istream = CDRInputStream.instance();
         this.istream.init( orb , stream );
     }
-    
+     protected void init( ORB orb , ReadBuffer stream ) {
+        this.istream = CDRInputStream.instance();
+        this.istream.init( orb , stream );
+    }
+
     public abstract int getRequestId();
     public abstract void marshal( CDROutputStream out );
     public abstract int getGiopVersion();
@@ -39,20 +43,12 @@ public abstract class GIOPMessage{
     public final void setScope( ScopedMemory scope ) { this.scope = scope; }
     public final ScopedMemory getScope(){ return scope; }
 
-    protected Transport transport;
+    protected ScopedMemory transportMemArea;
     public void setTransport( Transport t ){
-
-
-        edu.uci.ece.zen.utils.Logger.printThreadStack();
-
-		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
-			System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea());
-			System.out.println("GIOPMessage.setTransport, the current memory regionis "+javax.realtime.MemoryArea.getMemoryArea(this));  
-			System.out.println("GIOPMessage.setTransport, the memory region for Transport t is "+javax.realtime.MemoryArea.getMemoryArea(t));
-			System.out.println(javax.realtime.MemoryArea.getMemoryArea(this));        
-		}
-
-        this.transport = t;
+        this.transportMemArea = (ScopedMemory) javax.realtime.MemoryArea.getMemoryArea(t);
     }
-    public Transport getTransport(){ return transport; }
+    public Transport getTransport()
+    { 
+        return (Transport) transportMemArea.getPortal();
+    }
 }

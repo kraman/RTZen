@@ -17,10 +17,14 @@ public abstract class RequestMessage extends GIOPMessage {
     public RequestMessage( ORB orb, ReadBuffer stream) {
         super( orb , stream );
     }
+    public void init(ORB orb, ReadBuffer stream)
+    {
+        super.init(orb, stream);
+    }
 
     // Abstract declarations in addition to those in GIOPMessage 
-    public abstract org.omg.IOP.ServiceContext[] getServiceContexts();
+    public abstract FString getServiceContexts();
     public abstract void getObjectKey( FString id_out );
-    public abstract String getOperation();
+    public abstract FString getOperation();
     public abstract int getResponseExpected();
 }

@@ -3,6 +3,7 @@ package edu.uci.ece.zen.orb.giop.v1_2;
 import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.orb.*;
+import javax.realtime.ImmortalMemory;
 
 /**
  * GIOP v1.2 LocateRequest Message as discussed in section 15.4.6 of the CORBA v3.0 specification. 
@@ -12,6 +13,7 @@ import edu.uci.ece.zen.orb.*;
 */
 public class LocateRequestMessage extends edu.uci.ece.zen.orb.giop.type.LocateRequestMessage {
     private LocateRequestHeader_1_2 header;
+    private static LocateRequestMessage lrm;
 
     public LocateRequestMessage(ORB orb, ReadBuffer stream) {
         super (orb, stream);
@@ -21,6 +23,19 @@ public class LocateRequestMessage extends edu.uci.ece.zen.orb.giop.type.LocateRe
 
     public int getRequestId() { return header.request_id; }
 
+    public static LocateRequestMessage getMessage()
+    {
+        try
+        {
+            if (lrm == null)
+                lrm = (LocateRequestMessage) ImmortalMemory.instance().newInstance(LocateRequestMessage.class);
+            return lrm;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * @see edu.uci.ece.zen.orb.giop.GIOPMessage#marshal(edu.uci.ece.zen.orb.CDROutputStream)

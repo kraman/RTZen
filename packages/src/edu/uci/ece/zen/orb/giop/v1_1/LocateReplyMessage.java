@@ -3,6 +3,7 @@ package edu.uci.ece.zen.orb.giop.v1_1;
 import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.orb.*;
+import javax.realtime.ImmortalMemory;
 
 /**
  * GIOP v1.1 reply message to a LocateRequest message, as discussed in section 15.4.6 of the CORBA v3.0 specification. 
@@ -11,6 +12,7 @@ import edu.uci.ece.zen.orb.*;
  */
 public class LocateReplyMessage extends edu.uci.ece.zen.orb.giop.type.LocateReplyMessage {
     private org.omg.GIOP.LocateReplyHeader_1_0 header; // v1.1 also uses the v1.0 header structure
+    private static LocateReplyMessage lrm;
 
 	public LocateReplyMessage(ORB orb, ReadBuffer stream) {
         super (orb, stream);
@@ -19,6 +21,19 @@ public class LocateReplyMessage extends edu.uci.ece.zen.orb.giop.type.LocateRepl
         messageBody = null; // message body is read by the call to readBody(), retrieve it using accessor methods
 	}
 
+    public static LocateReplyMessage getMessage()
+    {
+        try
+        {
+            if (lrm == null)
+                lrm = (LocateReplyMessage) ImmortalMemory.instance().newInstance(LocateReplyMessage.class);
+            return lrm;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public int getRequestId() { return header.request_id; }
 
     /**

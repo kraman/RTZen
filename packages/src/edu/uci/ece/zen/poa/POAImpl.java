@@ -66,6 +66,7 @@ public class POAImpl{
 
     private transient edu.uci.ece.zen.poa.mechanism.ActivationStrategy
         activationStrategy;
+	private Runnable cachedRunnable;
 
     POAManager manager;
     int tpId;
@@ -246,6 +247,12 @@ public class POAImpl{
             ScopedMemory tpRegion = this.orb.getThreadPoolRegion(tpId);
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 8" );
 
+<<<<<<< .mine
+            //ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
+			ExecuteInPeterRunnable eipr = (ExecuteInPeterRunnable)  getEIPRunnable();
+			eipr.init(requestScope, TPRunnable.class, HandleRequestRunnable.class);
+            //TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );
+=======
             edu.uci.ece.zen.utils.Logger.printThreadStack();
 			
             if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
@@ -256,18 +263,18 @@ public class POAImpl{
             ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 9.5" );
             TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );
+>>>>>>> .r442
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 10" );
-            tpr.init( self , (ScopedMemory) requestScope );
-            eir.init( tpr , tpRegion );
+            //tpr.init( self , (ScopedMemory) requestScope );
+            //eir.init( tpr , tpRegion );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 11" );
 
-            HandleRequestRunnable hrr = (HandleRequestRunnable) requestScope.newInstance( HandleRequestRunnable.class );
-            hrr.init( self , req );
+            //HandleRequestRunnable hrr = (HandleRequestRunnable) requestScope.newInstance( HandleRequestRunnable.class );
+            //hrr.init( self , req );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 12" );
-            ((ScopedMemory)requestScope).setPortal( hrr );
+            //((ScopedMemory)requestScope).setPo{rtal( hrr );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 13" );
-
-            orb.orbImplRegion.executeInArea( eir );
+            orb.orbImplRegion.executeInArea( eipr );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 14" );
         } catch (Exception ex) {
             // -- have to send a request not handled to the client here
@@ -277,6 +284,16 @@ public class POAImpl{
             return;
         }
     }
+
+	public Runnable getEIPRunnable()
+	{
+		if (cachedRunnable == null)
+		{
+			cachedRunnable = new ExecuteInPeterRunnable();
+			return cachedRunnable;
+		}
+		return cachedRunnable;
+	}
 
     /**
      * Generates the object reference for that particular servant.

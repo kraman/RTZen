@@ -25,39 +25,46 @@ public final class GIOPMessageFactory
         ReadBuffer buffer = ReadBuffer.instance();
         buffer.init();
 
-        GIOPHeaderInfo mainMsgHdr = new GIOPHeaderInfo();
+        GIOPHeaderInfo mainMsgHdr = (GIOPHeaderInfo) GIOPHeaderInfoHelper.instance();
     
         edu.uci.ece.zen.orb.giop.GIOPMessage ret = null;
 
         do{
             java.io.InputStream in = trans.getInputStream();
             parseStreamForHeader(in, mainMsgHdr);
-            
+
             // Read the GIOP message (including any request/reply/etc headers) into the variable "buffer"
             buffer.setEndian( mainMsgHdr.isLittleEndian );
             buffer.appendFromStream( in , mainMsgHdr.messageSize );
 
+            System.err.println("Inside GIOPMessageFactory and mainMsgHdr: " + mainMsgHdr.toString() + " and giopMajorVersion: " + mainMsgHdr.giopMajorVersion + " and minorversion: " + mainMsgHdr.giopMinorVersion + " and messageType: " + mainMsgHdr.messageType);
             switch( mainMsgHdr.giopMajorVersion ){                   //GIOP major version (byte 4)
                 case 1:
                     switch( mainMsgHdr.giopMinorVersion ){           //GIOP minor version (byte 5)
                         case 0:
                             switch( mainMsgHdr.messageType ){
                                 case org.omg.GIOP.MsgType_1_0._Request:
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_0.RequestMessage.getMessage();
+                                        ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._Reply :
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage( orb , buffer );
+                                            ret = edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage.getMessage();
+                                            ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._LocateRequest :
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.LocateRequestMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_0.LocateRequestMessage.getMessage();
+                                        ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._LocateReply :
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.LocateReplyMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_0.LocateReplyMessage.getMessage();
+                                        ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_0._CancelRequest :
+                                        ret = edu.uci.ece.zen.orb.giop.v1_0.CancelRequestMessage.getMessage();
+                                        ret.init(orb, buffer);
+
                                     // A cancel request header is just the request id to cancel.
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_0.CancelRequestMessage( orb, buffer );
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._MessageError :
                                     //TODO: Handle these properly
@@ -67,39 +74,49 @@ public final class GIOPMessageFactory
                         case 1:
                             switch( mainMsgHdr.messageType ){
                                 case org.omg.GIOP.MsgType_1_1._Request:
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.RequestMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_1.RequestMessage.getMessage();
+                                        ret.init(orb, buffer);
+
                                     if (mainMsgHdr.nextMessageIsFragment) {
                                         System.err.println("reading fragment");
                                         collectFragmentsv1_1( trans, mainMsgHdr, buffer );
                                     }
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._Reply :
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.ReplyMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_1.ReplyMessage.getMessage();
+                                        ret.init(orb, buffer);
+
                                     if (mainMsgHdr.nextMessageIsFragment) {
                                         System.err.println("reading fragment");
                                         collectFragmentsv1_1( trans, mainMsgHdr, buffer );
                                     }
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._LocateRequest :
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.LocateRequestMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage.getMessage();
+                                        ret.init(orb, buffer);
+
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.LocateReplyMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_1.LocateReplyMessage.getMessage();
+                                        ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
+                                        ret = edu.uci.ece.zen.orb.giop.v1_1.CancelRequestMessage.getMessage();
+                                        ret.init(orb, buffer);
                                     // A cancel request header is just the request id to cancel.
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.CancelRequestMessage( orb, buffer );
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_1._MessageError :
                                 case org.omg.GIOP.MsgType_1_1._Fragment :
-                                    throw new org.omg.CORBA.NO_IMPLEMENT("Fragment read out of order"); //BM
+                                    //throw new org.omg.CORBA.NO_IMPLEMENT("Fragment read out of order"); //BM
                             }
                         case 2: // No newer version of MsgType classes than MsgType_1_1 is generated for RTZen
                         case 3:
                             switch( mainMsgHdr.messageType ){
                                 case org.omg.GIOP.MsgType_1_1._Request:
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_2.RequestMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_2.RequestMessage.getMessage();
+                                        ret.init(orb, buffer);
+
                                     if (mainMsgHdr.nextMessageIsFragment) {
                                         System.err.println("reading fragment");
                                         int requestId = ((edu.uci.ece.zen.orb.giop.v1_2.RequestMessage) ret).getRequestId();
@@ -107,7 +124,9 @@ public final class GIOPMessageFactory
                                     }
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._Reply :
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_2.ReplyMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_2.ReplyMessage.getMessage();
+                                        ret.init(orb, buffer);
+
                                     if (mainMsgHdr.nextMessageIsFragment) {
                                         System.err.println("reading fragment");
                                         int requestId = ((edu.uci.ece.zen.orb.giop.v1_2.RequestMessage) ret).getRequestId();
@@ -115,13 +134,16 @@ public final class GIOPMessageFactory
                                     }
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._LocateRequest :
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_2.LocateRequestMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_2.LocateRequestMessage.getMessage();
+                                        ret.init(orb, buffer);
+
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
-                                    ret = new edu.uci.ece.zen.orb.giop.v1_1.LocateReplyMessage( orb , buffer );
+                                        ret = edu.uci.ece.zen.orb.giop.v1_2.LocateReplyMessage.getMessage();
+                                        ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._CancelRequest :
-                                    throw new org.omg.CORBA.BAD_CONTEXT("CancelRequest Cannot be called in GIOP 1.2 and higher");
+                                    //throw new org.omg.CORBA.BAD_CONTEXT("CancelRequest Cannot be called in GIOP 1.2 and higher");
                                 case org.omg.GIOP.MsgType_1_1._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_1._MessageError :
                                 case org.omg.GIOP.MsgType_1_1._Fragment :
@@ -136,12 +158,7 @@ public final class GIOPMessageFactory
                     throw new RuntimeException(""); //throw GIOP error here
             }   
         }while( false );
-		
-		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
-			System.out.println("In parseStream");
-			System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea()); 
-		}
-		ret.setTransport( trans );
+        ret.setTransport( trans );
         return ret;
     }
 

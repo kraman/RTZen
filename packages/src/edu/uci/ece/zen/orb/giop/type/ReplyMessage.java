@@ -11,9 +11,14 @@ import edu.uci.ece.zen.utils.ReadBuffer;
  * @author bmiller
  */
 public abstract class ReplyMessage extends GIOPMessage {
+    public ReplyMessage() {}
     public ReplyMessage(ORB orb, ReadBuffer stream) {
         super(orb, stream);
     }
+public void init(ORB orb, ReadBuffer stream)
+{
+    super.init(orb, stream);
+}
 
     // Abstract declarations in addition to those in GIOPMessage 
     public abstract int getReplyStatus();

@@ -12,8 +12,13 @@ import edu.uci.ece.zen.utils.*;
 * @author bmiller
 */
 public abstract class LocateReplyMessage extends GIOPMessage {
+    public LocateReplyMessage() {}
     public LocateReplyMessage( ORB orb, ReadBuffer stream) {
         super( orb , stream );
+    }
+    public void init(ORB orb, ReadBuffer stream)
+    {
+        super.init(orb, stream);
     }
 
 
