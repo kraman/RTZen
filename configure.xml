@@ -20,6 +20,9 @@
 <project name="Config" default="all">
 
     <property file="zen-build.properties"/>
+
+    <import file="packages/property_processor.xml"/>
+
     <target name="init">
         <path id="zen.os.base">
            <pathelement location="${basedir}"/>
@@ -36,28 +39,6 @@
             <equals arg1="${idl.compiler}" arg2="openorb"/>
         </condition>
 
-        <condition property="zen.rtbootclasspath" value="${timesys_ri_install}/lib/foundation.jar">
-            <equals arg1="${zen.build.runtime}" arg2="timesys_ri"/>
-        </condition>
-
-        <condition property="zen.rtbootclasspath" value="${jRate_install}/classes/:${jRate_classpath}">
-            <equals arg1="${zen.build.runtime}" arg2="jRate"/>
-        </condition>
-        <condition property="zen.jRateLibDir" value="${jRate_install}/lib/">
-            <equals arg1="${zen.build.runtime}" arg2="jRate"/>
-        </condition>
-        <condition property="compiler_jRate">
-            <equals arg1="${zen.build.runtime}" arg2="jRate"/>
-        </condition>
-
-        <condition property="zen.rtbootclasspath" value="${OVM_install}/src/syslib/user/ovm_rt_user.jar">
-            <equals arg1="${zen.build.runtime}" arg2="OVM"/>
-        </condition>
-
-        <condition property="zen.rtbootclasspath" value="">
-            <equals arg1="${zen.build.runtime}" arg2="jvm"/>
-        </condition>
-
         <property name="zen.win.exec" value="zen.bat"/>
         <property name="idl.win.exec" value="idlc.bat"/>
         <property name="zen.unix.exec" value="zen.sh"/>
@@ -68,13 +49,12 @@
         <property name="zen.classdir" value="${new.zen.basedir}/classes"/>
         <property file="zen-build.properties"/>
 
-        <!-- Make sure we always use the unix-style path separator, even in windows. -->
+        <!-- Make sure we always use the Unix-style path separator, even in Windows. -->
         <path id="class.path">
           <pathelement location="${java.class.path}"/>
         </path>
 
-        <pathconvert dirsep="/" property="new.java.class.path" refid="class.path">
-        </pathconvert>
+        <pathconvert dirsep="/" property="new.java.class.path" refid="class.path"/>
 
         <property name="zen.classpath" value="${zen.rtbootclasspath}${path.separator}${zen.classdir}${path.separator}${new.java.class.path}"/>
 

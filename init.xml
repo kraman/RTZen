@@ -1,9 +1,10 @@
 <project name="init">
 
 	<dirname property="basedir.init" file="${ant.file.init}"/>
-
     <property file="${basedir.init}/zen-build-bootstrap.properties"/>
     <property file="${basedir.init}/zen-build.properties"/>
+
+    <import file="${zen.srcdir}/property_processor.xml"/>
 
 	<!-- Set onError="ignore" to fix problems when doing "clean" targets. -->
 	<taskdef name="idlcheck" classname="idldepend.IDLCheckerTask" onError="ignore">
@@ -12,7 +13,15 @@
 		</classpath>
 	</taskdef>
 
-	<presetdef name="idlc">
+    <!-- Set onError="ignore" because <taskdef> has no "if" attribute, and it's the
+    easiest way to handle the possibility of the task not existing. -->
+    <taskdef
+        name="jRate"
+        classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate"
+        classpath="${zen.classpath}"
+        onError="ignore"/>
+
+    <presetdef name="idlc">
 		<!-- Unfortunately we cannot set failOnError="yes" here. Doing so causes
 		problems with the deprecated IDL files that we currently use. -->
 		<idlcheck compiler="${idl.compiler}" targetdir="${zen.gendir}">
@@ -22,6 +31,6 @@
 			<package auto="yes"/>
 		</idlcheck>
 	</presetdef>
-	
+
 </project>
 
