@@ -436,9 +436,9 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     public void write_Object(org.omg.CORBA.Object value) {
         //org.omg.IOP.IOR ior = ((edu.uci.ece.zen.orb.ObjectImpl) value).ior;
         org.omg.IOP.IOR ior =
-         ((edu.uci.ece.zen.orb.ObjRefDelegate)((org.omg.CORBA.portable.ObjectImpl)value)._get_delegate()).getIOR();
-        if(ior == null)
-            System.out.println("IOR NULL");
+          ((edu.uci.ece.zen.orb.ObjRefDelegate)
+          ((org.omg.CORBA.portable.ObjectImpl)value)
+          ._get_delegate()).getIOR();
         org.omg.IOP.IORHelper.write(this, ior);
     }
 
