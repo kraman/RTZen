@@ -83,6 +83,7 @@ public abstract class Transport implements Runnable {
      * </p>
      */
     public final void run() {
+
         messageProcessor = new MessageProcessor(this, orb);
 
         if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread
@@ -95,7 +96,6 @@ public abstract class Transport implements Runnable {
         RealtimeThread messageProcessorThr = new RealtimeThread(null,
                 null, null, RealtimeThread.getCurrentMemoryArea(), null,
                 messageProcessor);
-
         messageProcessorThr.setDaemon(true);
 
 
@@ -275,21 +275,16 @@ class GIOPMessageRunnable implements Runnable {
                 edu.uci.ece.zen.utils.Logger.printMemStats(3);
                 edu.uci.ece.zen.utils.Logger.printMemStats(orb);
             }
- //         edu.uci.ece.zen.utils.Logger.printMemStats(305);
 
             ZenProperties.logger.log("Inside GMR run");
             if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread.getCurrentMemoryArea().toString());
- //         edu.uci.ece.zen.utils.Logger.printMemStats(306);
-
+          
             message = edu.uci.ece.zen.orb.protocol.MessageFactory.parseStream(orb, trans);
-
             if( message == null )   //connection closed
             {
                 trans.shutdown(true);
                 return;
             }
-
- //         edu.uci.ece.zen.utils.Logger.printMemStats(307);
 
             if (message instanceof edu.uci.ece.zen.orb.protocol.type.RequestMessage) {
                 ZenProperties.logger.log("Inside GMR run: RequestMessage");

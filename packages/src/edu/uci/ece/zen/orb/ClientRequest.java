@@ -160,20 +160,18 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         //out.printWriteBuffer(); This will printout every byte in the
         // OutputStream
 
-        //edu.uci.ece.zen.utils.Logger.printMemStats(310);
-
         ZenProperties.logger.log("ClientRequest invoke 1");
         out.updateLength();
         MessageComposerRunnable mcr = MessageComposerRunnable.instance();
         mcr.init(this);
         ScopedMemory messageScope = ORB.getScopedRegion();
-
         ExecuteInRunnable erOrbMem = orb.getEIR();//new ExecuteInRunnable();
         ExecuteInRunnable erMsgMem = orb.getEIR();//new ExecuteInRunnable();
 
         erOrbMem.init(erMsgMem, orb.orbImplRegion);
         erMsgMem.init(mcr, messageScope);
         ZenProperties.logger.log("ClientRequest invoke 2");
+        //edu.uci.ece.zen.utils.Logger.printMemStats(312);
         try {
             if (orb.parentMemoryArea == RealtimeThread.getCurrentMemoryArea())
                 erOrbMem.run();
@@ -184,12 +182,11 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
                     getClass(), "invoke()",
                     "Could not invoke remote object", e);
         }
-        //edu.uci.ece.zen.utils.Logger.printMemStats(310);
+        //edu.uci.ece.zen.utils.Logger.printMemStats(313);
         ZenProperties.logger.log("ClientRequest invoke 3");
         ORB.freeScopedRegion(messageScope);
         orb.freeEIR( erOrbMem );
         orb.freeEIR( erMsgMem );
-        //edu.uci.ece.zen.utils.Logger.printMemStats(311);
         if (mcr.success) return mcr.getReply();
         else throw new org.omg.CORBA.TRANSIENT();
     }

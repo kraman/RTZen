@@ -19,7 +19,7 @@ import edu.uci.ece.zen.utils.Queue;
 public class ReplyMessage extends edu.uci.ece.zen.orb.protocol.type.ReplyMessage {
     private ReplyHeader header;
 
-    private static ReplyMessage rm;
+    //private static ReplyMessage rm;
 
     private static  Queue queue = Queue.fromImmortal();
 
@@ -69,6 +69,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.protocol.type.ReplyMessage
     public void release(){
         drawn--;
         queue.enqueue(this);
+        header.free();
     }
 
     public void internalFree(){

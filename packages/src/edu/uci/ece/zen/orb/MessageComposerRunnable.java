@@ -46,6 +46,7 @@ public class MessageComposerRunnable implements Runnable {
      */
     private int statCount = 0;
     public void run() {
+
             if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
                 edu.uci.ece.zen.utils.Logger.printMemStats(6);
             }
@@ -74,6 +75,7 @@ public class MessageComposerRunnable implements Runnable {
         smr.init(clr.out.getBuffer());
         eir.init(smr, clr.transportScope);
         success = true;
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(383);
         try {
             ZenProperties.logger.log("MCR run 1");
             clr.orb.orbImplRegion.executeInArea(eir);
@@ -86,15 +88,19 @@ public class MessageComposerRunnable implements Runnable {
             success = false;
         } finally {
             clr.out.free();
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(384);
         }
         ZenProperties.logger.log("MCR run 2");
 
         if (waitingStrategy != null) {
             reply = waitingStrategy.waitForReply();
+
             clr.releaseWaiter();
         }
+
         ZenProperties.logger.log("MCR run 3");
         clr.orb.freeEIR( eir );
+      
     }
 
     public CDRInputStream getReply() {

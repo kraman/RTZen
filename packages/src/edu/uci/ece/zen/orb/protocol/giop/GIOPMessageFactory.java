@@ -34,12 +34,12 @@ public final class GIOPMessageFactory extends MessageFactory{
 
     public Message parseStreamImpl(ORB orb, Transport trans)
             throws java.io.IOException {
-//        edu.uci.ece.zen.utils.Logger.printMemStats(330);
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(330);
         ReadBuffer buffer = ReadBuffer.instance();
-  //      edu.uci.ece.zen.utils.Logger.printMemStats(331);
+        
         buffer.init();
-    //    edu.uci.ece.zen.utils.Logger.printMemStats(332);
-
+        
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(331);
 
         Object obj = trans.getObject(3);
         ProtocolHeaderInfo mainMsgHdr;
@@ -57,7 +57,7 @@ public final class GIOPMessageFactory extends MessageFactory{
         edu.uci.ece.zen.orb.protocol.Message ret = null;
 
  //       edu.uci.ece.zen.utils.Logger.printMemStats(334);
-
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(332);
 
         do {
             java.io.InputStream in = trans.getInputStream();
@@ -68,7 +68,7 @@ public final class GIOPMessageFactory extends MessageFactory{
                 return null;
 
  //           edu.uci.ece.zen.utils.Logger.printMemStats(336);
-
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(333);
             // Read the GIOP message (including any request/reply/etc headers)
             // into the variable "buffer"
             buffer.setEndian(mainMsgHdr.isLittleEndian);
@@ -76,7 +76,6 @@ public final class GIOPMessageFactory extends MessageFactory{
 
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
 
- //           edu.uci.ece.zen.utils.Logger.printMemStats(338);
 
             if (ZenProperties.dbg) ZenProperties.logger.log
                             ("In MessageFactory, the message size is "
@@ -105,6 +104,7 @@ public final class GIOPMessageFactory extends MessageFactory{
                                     ret = edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyMessage
                                             .getMessage();
                                     ret.init(orb, buffer);
+                                    //edu.uci.ece.zen.utils.Logger.printMemStatsImm(336);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._LocateRequest:
                                     //ret = edu.uci.ece.zen.orb.giop.v1_0.LocateRequestMessage
@@ -206,8 +206,6 @@ public final class GIOPMessageFactory extends MessageFactory{
                     throw new RuntimeException(""); //throw GIOP error here
             }
         } while (false);
- //       edu.uci.ece.zen.utils.Logger.printMemStats(339);
-
         ZenProperties.logger.log("GMF parse stream 1");
 
         ScopedMemory transportScope = (ScopedMemory) javax.realtime.MemoryArea.getMemoryArea(trans);
@@ -226,8 +224,6 @@ public final class GIOPMessageFactory extends MessageFactory{
             System.out.print("parse stream messageId:");
             System.out.println(ret.getRequestId());
         }
- //       edu.uci.ece.zen.utils.Logger.printMemStats(343);
-
         return ret;
     }
 
