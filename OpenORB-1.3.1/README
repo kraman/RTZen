@@ -1,0 +1,81 @@
+
+  O p e n O R B
+
+
+  What is it?
+  -----------
+
+  OpenORB is a fully compliant implementation of the OMG CORBA/IIOP
+  specification. It provides a lot of features, services and
+  extensions.
+
+
+  Build
+  -----
+
+  To build OpenORB from scratch you need the source code via anonymous
+  access from the CVS repository on openorb.sf.net.
+
+  Note, that all packages refer to a "tools" module which holds the
+  libraries that are shared by all packages. To compile OpenORB you
+  need this "tools" package in parallel to your OpenORB directory.
+
+  Therefore the usual CVS command sequence for OpenORB is:
+
+  cvs co tools
+  cvs co OpenORB
+
+  When you have both modules checked out, type the following to
+  build the jars of the OpenORB package from the sources:
+
+  cd OpenORB
+  ./build.sh jar-all (under UNIX)  or  build jar-all (under Windows)
+
+  When the build process succeeds the dist directory contains the
+  jars, in the case for OpenORB there are openorb-x.y.z.jar and
+  openorb_tools-x.y.z.jar where "x.y.z" is the current version number
+  of the package. The first jar file contains all the classes that are
+  needed for running a CORBA application, the second jar file contains
+  the IDL compiler which is used to create the stub and the skeleton
+  for a CORBA object.
+
+  Note: The standard build setup assumes that the Java Runtime 
+  Libraries are located in ${java.home}/lib/rt.jar. If your JDK doesn't
+  use this path then you must specify the jdk-runtime-library property
+  in the local.properties file.
+
+  The Latest Version
+  ------------------
+
+  Details of the latest version can be found on the SourceForge
+  Project web site <http://openorb.sf.net/>.
+
+
+  Documentation
+  -------------
+
+  Documentation is available in XML format, in the src/doc/ directory.
+  To build the documentation from the sources please type:
+
+  ./build.sh doc (under UNIX)  or  build doc (under Windows)
+
+  When the build process succeeds the dist directory contains a pdf
+  and an html file which have been generated from the xml file.
+
+  Information concerning OMG Standard Minor Codes is available at
+  the following URL: http://cgi.omg.org/cgi-bin/doc?minor-codes
+
+
+  Licensing
+  ---------
+
+  This software is licensed under the terms you may find in the file
+  named "LICENSE.txt" and "EXOLAB.txt" in this directory.
+
+
+  Thanks for using OpenORB.
+
+                                         The Community OpenORB Project
+                                            <http://openorb.sf.net/>
+
+

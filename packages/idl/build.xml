@@ -1,0 +1,15 @@
+<!-- $Id: build.xml,v 1.1 2003/10/16 22:06:40 kraman Exp $ -->
+
+<project name="IDL components" default="all" basedir="../..">
+   <property file="zen-build-bootstrap.properties"/>
+   <property file="zen-build.properties"/>
+
+   <target name="all" depends="compile-omg"/>
+   <target name="compile-omg">
+       <echo message="Compiling IDL files to ${zen.gendir}"/>
+      <ant antfile="${zen.srcdir}/idl/omg/build.xml"/>
+   </target>
+
+   <target name="clean"/>
+
+</project>

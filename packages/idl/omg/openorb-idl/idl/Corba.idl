@@ -1,0 +1,16 @@
+// This file is the master which includes all the others.
+
+#include <orb.idl>
+#include <PortableInterceptor.idl>
+#include <GIOP.idl>
+#include <IIOP.idl>
+#include <BiDirPolicy.idl>
+#include <CONV_FRAME.idl>
+#include <CosTime.idl>
+#include <DCE_CIOP.idl>
+#include <PortableServer.idl>
+#include <imr.idl>
+#include <CosNaming.idl>
+#include <RTCosScheduling.idl>
+#include <RTCORBA.idl>
+#include <RTPortableServer.idl>

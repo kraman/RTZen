@@ -1,0 +1,11 @@
+module demo
+{
+	module hello
+	{
+		interface HelloWorld
+		{
+			string getMessage();
+		};
+	};
+};
+

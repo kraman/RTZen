@@ -1,0 +1,15 @@
+// $Id: imr.idl,v 1.1 2003/10/16 22:06:40 kraman Exp $ 
+#pragma prefix "zen.ece.uci.edu"
+
+module imr
+{
+    interface LookUp
+    { 
+ 	    void serverRegister( in string object_key ,in string ior);
+	    string getIOR(in string  object_key);
+	    boolean isThere(in string  object_key);
+	    void serverDeRegister(in string object_key , in string ior);
+	    void serverReRegister(in string object_key , in string ior);
+    };
+};
+														    

@@ -1,0 +1,126 @@
+// CORBA 2.3
+// Chapter 16 The DCE ESIOP 
+#ifndef _DCE_CIOP_IDL_
+#define _DEC_CIOP_IDL_
+#include <orb.idl>
+#include <IOP.idl>
+#pragma prefix "omg.org"
+
+module DCE_CIOP {		
+    enum InvokeResponseStatus {
+	INVOKE_NO_EXCEPTION,
+	INVOKE_USER_EXCEPTION,
+	INVOKE_SYSTEM_EXCEPTION,
+	INVOKE_LOCATION_FORWARD,
+	INVOKE_TRY_AGAIN
+    };
+
+    struct InvokeResponseHeader {
+	boolean byte_order;
+	IOP::ServiceContextList service_context;
+	InvokeResponseStatus status;
+
+	// if status = INVOKE_NO_EXCEPTION,
+	// result then inouts and outs follow
+
+	// if status = INVOKE_USER_EXCEPTION or
+	// INVOKE_SYSTEM_EXCEPTION, an exception follows
+
+	// if status = INVOKE_LOCATION_FORWARD, an 
+	// IOP::IOR follows
+    };
+
+    struct LocateRequestHeader {
+	boolean byte_order;
+	sequence <octet> object_key;
+	string operation;
+	// no body follows
+    };
+
+    enum LocateResponseStatus {
+	LOCATE_UNKNOWN_OBJECT,
+	LOCATE_OBJECT_HERE,
+	LOCATE_LOCATION_FORWARD,
+	LOCATE_TRY_AGAIN
+    };
+    struct LocateResponseHeader {
+	boolean byte_order;
+	LocateResponseStatus status;
+
+	// if status = LOCATE_LOCATION_FORWARD, an
+	// IOP::IOR follows
+    };
+
+    struct BindingNameComponent {
+	unsigned long entry_name_syntax;
+	string entry_name;
+	string object_uuid;
+    };
+
+    struct InvokeRequestHeader {
+	boolean byte_order;
+	IOP::ServiceContextList service_context;
+	sequence <octet> object_key;
+	string operation;
+	CORBA::OctetSeq principal;
+
+	// in and inout parameters follow
+    };
+
+    //enum InvokeResponseStatus {
+	//INVOKE_NO_EXCEPTION,
+	//INVOKE_USER_EXCEPTION,
+	//INVOKE_SYSTEM_EXCEPTION,
+	//INVOKE_LOCATION_FORWARD,
+	//INVOKE_TRY_AGAIN
+    //};
+	
+    //struct InvokeResponseHeader {
+	//boolean byte_order;
+	//IOP::ServiceContextList service_context;
+	//InvokeResponseStatus status;
+
+	// if status = INVOKE_NO_EXCEPTION,
+	// result then inouts and outs follow
+
+	// if status = INVOKE_USER_EXCEPTION or
+	// INVOKE_SYSTEM_EXCEPTION, an exception follows
+
+	// if status = INVOKE_LOCATION_FORWARD, an 
+	// IOP::IOR follows
+    //};
+	
+    //struct LocateRequestHeader {
+	//boolean byte_order;
+	//sequence <octet> object_key;
+	//string operation;
+
+	// no body follows
+    //};
+
+    //enum LocateResponseStatus {
+	//LOCATE_UNKNOWN_OBJECT,
+	//LOCATE_OBJECT_HERE,
+	//LOCATE_LOCATION_FORWARD,
+	//LOCATE_TRY_AGAIN
+    //};
+    //struct LocateResponseHeader {
+	//boolean byte_order;
+	//LocateResponseStatus status;
+
+	// if status = LOCATE_LOCATION_FORWARD, an
+	// IOP::IOR follows
+    //};
+
+    //struct BindingNameComponent {
+	//unsigned long entry_name_syntax;
+	//string entry_name;
+	//string object_uuid;
+    //};
+
+    struct EndpointIdPositionComponent {
+	unsigned short begin;
+	unsigned short end;
+    };
+};
+#endif // _DCE_CIOP_IDL_

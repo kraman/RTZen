@@ -1,0 +1,38 @@
+// File TimeBase.idl
+
+#ifndef _TIME_BASE_IDL
+#define _TIME_BASE_IDL
+#pragma prefix "omg.org"
+
+#include <orb.idl>
+
+module TimeBase 
+{
+		
+#ifdef NOLONGLONG
+    struct ulonglong {
+	unsigned long low;
+	unsigned long high;
+    };
+    typedef ulonglong TimeT;
+#else
+    typedef unsigned long long TimeT;
+#endif
+		
+    typedef TimeT              InaccuracyT;
+    typedef short              TdfT;
+		
+    struct UtcT {
+	TimeT            time;    
+	unsigned long    inacclo;
+	unsigned short   inacchi; 
+	TdfT             tdf; 
+    };
+		
+    struct IntervalT {
+	TimeT            lower_bound;
+	TimeT            upper_bound;
+    };
+
+};
+#endif // _TIME_BASE_IDL_

@@ -1,0 +1,161 @@
+<!-- $Id: build.xml,v 1.7 2004/02/25 08:15:19 kraman Exp $ -->
+<project name="Zen Source Packages" default="all" basedir="./..">
+
+   <property file="zen-build-bootstrap.properties"/>
+   <property file="zen-build.properties"/>
+
+    <taskdef 
+        resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+        <classpath>
+            <pathelement location="${zen.classpath}"/>    
+        </classpath>
+    </taskdef>
+
+    <patternset id="sources" >
+
+        <!--*** Ant extensions -->
+            <include name="src/org/apache/**"/>
+
+        <!--*** OMG Sources ***-->
+        
+            <include name="omg-01-02-01/org/omg/CORBA/**"/>
+            <include name="omg-01-02-01/org/omg/CORBA_2_3/**"/>
+            <include name="generated/org/omg/Dynamic/**/" if="zen.aspects.pi"/>
+            <include name="generated/org/omg/IOP/**/"/>
+            <include name="generated/org/omg/IIOP/**/"/>
+            <include name="omg-01-02-01/org/omg/IOP_N/**/" if="zen.aspects.pi"/>
+            <include name="omg-01-02-01/org/omg/RTCORBA/**" if="zen.rtcorba"/>
+            <include name="omg-01-02-01/org/omg/RTPortableServer/**"/>
+            <include name="omg-01-02-01/org/omg/PortableServer/**"/>
+
+            <include name="generated/org/omg/CORBA/**"/>
+            <include name="generated/org/omg/RTCORBA/**"/>
+            <include name="generated/org/omg/CORBA_2_3/**"/>
+            <include name="generated/org/omg/IOP/**"/>
+            <include name="generated/org/omg/GIOP/**"/>
+            <include name="generated/org/omg/PortableServer/**"/> 
+            <include name="generated/org/omg/Messaging/**"/> 
+            <include name="generated/org/omg/TimeBase/**"/> 
+        
+        <!--*** Doug Lea's Concurrent Package ***-->
+            <include name="src/edu/oswego/cs/dl/util/concurrent/**"/>
+
+        <!--*** Zen core packages ***-->
+            <include name="src/javax/**"/>
+            <include name="src/edu/uci/ece/zen/utils/**"/>
+            <include name="src/edu/uci/ece/zen/orb/any/**"/>
+            <include name="src/edu/uci/ece/zen/orb/dynany/**"/>
+            <include name="src/edu/uci/ece/zen/orb/transport/**"/>
+            <include name="src/edu/uci/ece/zen/orb/**.java"/>
+            <include name="src/edu/uci/ece/zen/orb/giop/GIOPMessage.java"/>
+            <include name="src/edu/uci/ece/zen/orb/giop/GIOPMessageFactory.java"/>
+            <include name="src/edu/uci/ece/zen/orb/giop/v1_0/**.java"/>
+            <exclude name="src/edu/uci/ece/zen/orb/ServerRequest.java"/>
+            <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
+            <exclude name="src/edu/uci/ece/zen/orb/Resolver.java"/>
+    </patternset>
+
+    <target name="all" depends="idl, compile"/>
+
+    <target name="idl">
+
+        <echo message="Compiling IDL files"/>
+        <ant antfile="${zen.srcdir}/idl/build.xml"/>
+    
+    </target>    
+
+    <target name="lib">
+    
+        <!--<antcall target="zenlib"/>-->
+        <delete dir="${zen.classdir}/src"/>
+        <javac 
+            srcdir="${zen.srcdir}/src/"
+            destdir="${zen.classdir}"
+            includes="org/apache/**"/>
+        <exec dir="${zen.classdir}" executable="/home/kraman/jad-1.5.8e/jad" >
+            <arg line="-s java -r -dsrc edu/uci/ece/**/*.class"/>
+        </exec>
+        <copy todir="${zen.classdir}/src/edu/oswego">
+            <fileset dir="${zen.srcdir}/src/edu/oswego">
+                <include name="**/*.java"/>
+                <exclude name="cs/dl/util/concurrent/VetoableChangeMulticaster.java"/>
+                <exclude name="cs/dl/util/concurrent/PropertyChangeMulticaster.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${zen.classdir}/src/org">
+            <fileset dir="${zen.srcdir}/omg-01-02-01/org"/>
+        </copy>
+        <copy todir="${zen.classdir}/src/org">
+            <fileset dir="${zen.gendir}/org"/>
+        </copy>
+        <javac
+            srcdir="${zen.classdir}/src/"
+            destdir="${zen.libdir}"
+            executable="/root/jRate-gcc/bin/jRate-gcj"
+            compiler="org.apache.tools.ant.taskdefs.compilers.jRateGcj"
+            includeAntRuntime="false"
+            includeJavaRuntime="false"
+            classpath="${zen.classdir}"
+        >
+           <compilerarg line="-shared -o ${zen.libdir}/libZen.so"/>
+        </javac>
+    </target>     
+
+    <target name="compile">
+        <echo message="Compiling OMG and Zen sources with the AspectJ compiler"/>
+      
+        <iajc  
+            destdir="${zen.classdir}"          
+            srcdir="${zen.srcdir}"
+            failonerror = "true"
+            fork = "true"
+            maxmem="${build.maxmem}"
+            >  
+            
+            <patternset refid="sources"/>
+            
+            <classpath>
+                <pathelement location="${zen.classpath}"/> 
+            </classpath>
+            
+        </iajc>  
+    </target>
+
+    <target name="zenlib" if="zen.lib">
+        <jar 
+        jarfile="${zen.libdir}/zen.jar" 
+        basedir="${zen.classdir}" 
+        includes="edu/uci/ece/zen/**"
+        />
+        <jar 
+        jarfile="${zen.libdir}/omg.jar" 
+        basedir="${zen.classdir}" 
+        includes="org/omg/**"
+        />
+        <jar 
+        jarfile="${zen.libdir}/everything.jar" 
+        basedir="${zen.classdir}" 
+        includes="org/omg/**,edu/**"
+        />
+    </target>
+
+    <target name="clean">
+        <!--<echo message="Cleaning Zen JUnit tests"/>-->
+        <!--<ant antfile="${zen.srcdir}/tests/build.xml" target="clean"/>-->
+
+        <echo message="Removing generated directory all its contents"/>
+        <delete failonerror="false" dir="${zen.srcdir}/generated"/>
+    </target>
+
+    <target name="clover">
+        <delete dir="${clover.temp}"/>
+        <delete dir="${clover.html}"/>
+        <antcall target="idl"/>
+        <ant antfile="${zen.srcdir}/clover.xml" inheritRefs="true"/>
+        <antcall target="lib"/>
+        <ant antfile="${zen.srcdir}/tests/build.xml"/>
+        <ant antfile="${zen.srcdir}/tests/build.xml" target="test"/>
+        <ant antfile="${zen.srcdir}/clover.xml" target="clover.html"/>
+    </target>    
+    
+</project>

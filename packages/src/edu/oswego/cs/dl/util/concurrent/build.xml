@@ -1,0 +1,29 @@
+<!--$Id: build.xml,v 1.1 2003/10/16 22:06:41 kraman Exp $-->
+
+<project name="Concurrent" default="all" basedir="../../../../../../..">
+
+   <property file="zen-build-bootstrap.properties"/>
+   <property file="zen-build.properties"/>
+
+   <target name="all" depends="compile, lib"/>
+
+   <target name="compile">
+      <javac srcdir="${zen.srcdir}"
+             destdir="${zen.classdir}"
+             classpath="${zen.classdir}"
+             debug="${zen.debug}"
+             optimize="${zen.optimization}"
+             includes="edu/oswego/cs/dl/util/concurrent/**"/>
+   </target>
+
+
+   <target name="clean">
+     <delete dir="${zen.classdir}edu/oswego/cs/dl/util/concurrent"/>
+   </target>
+
+   <target name="lib">
+      <jar jarfile="${zen.libdir}/concurrent.jar" basedir="${zen.classdir}" includes="edu/oswego/cs/dl/util/concurrent/**"/>
+   </target>
+    
+
+</project>

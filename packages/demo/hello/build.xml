@@ -1,0 +1,72 @@
+<project name="Zen ORB Hello Demo" default="IdlCheck" basedir="../../..">
+
+    <property file="zen-build-bootstrap.properties"/>
+    <property file="zen-build.properties"/>
+    
+    <property name="package.dir" value="${zen.srcdir}/demo/hello"/>
+    <property name="idl.src" value="hello.idl"/>
+
+   <target name="IdlCheck" depends="zen, openorb"/>
+   
+   <target name="zen" if="zen.idl.compiler">
+       <antcall target="compile">
+           <param name="idl.flags" value="-o"/>
+           <param name="gendir" value="${zen.gendir}/"/>
+           <param name="idl.dir" value="${package.dir}"/>
+           <param name="classpath" value="${zen.classpath}"/>
+       </antcall>
+   </target>
+
+   <target name="openorb" if="openorb.idl.compiler">
+       <antcall target="compile">
+           <param name="idl.flags" value="-all -d"/>
+           <param name="gendir" value="${zen.gendir}"/>
+           <param name="classpath" value="${openorb.class.path}"/>
+           <param name="idl.dir" value="${package.dir}"/>
+       </antcall>
+   </target>
+
+
+   <target name="idl">
+      <java classpath="${classpath}"
+            dir="${zen.gendir}"
+            classname="${idl2java.compiler}"
+            fork="yes">
+            <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
+      </java>
+   </target>
+
+
+
+   <target name="compile" depends="idl">
+      <javac srcdir="${zen.srcdir}:${zen.gendir}"
+             destdir="${zen.classdir}"
+             classpath="${classpath}"
+             debug="${zen.debug}"
+             optimize="${zen.optimization}"
+             includes="demo/hello/**.java">
+             
+             <patternset>
+                <include name="src/edu/uci/ece/zen/util/TracerAspect.java" if="zen.aspects.trace"/>
+             </patternset> 
+      </javac>
+   </target>
+
+    <target name="server">
+        <java classname="demo.hello.Server" fork="yes">
+            <jvmarg line="${zen.jvm.properties}"/>
+        </java>
+    </target> 
+
+    <target name="client">
+        <java classname="demo.hello.Client" fork="yes">
+            <jvmarg line="${zen.jvm.properties} -Xms200M -Xmx500M"/>
+        </java>
+    </target> 
+
+    <target name="clean">
+      <delete dir="${zen.gendir}/${package.dir}"/>
+      <delete dir="${zen.classdir}/${package.dir}"/>
+    </target>
+</project>
+

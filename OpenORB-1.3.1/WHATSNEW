@@ -1,0 +1,1121 @@
+OpenORB
+-------
+
+Version 1.3.1 - May, 18 2003 - OpenORB_1_3_1
+
+- Fixed fragment messages bug #548187. Patch provided by
+  Jan Cada <jan _dot_ cada _at_ trema _dot_ com>
+
+- Fixed org.openorb.orb.test.iiop.primitive.PrimitiveTest failure which
+  occurred on OSX with an ArrayIndexOutOfBoundsException
+
+- Added a final bug-fix for bug #545853. The Byte Order Marker problem
+  was finally discovered by Daniel Bell (Daniel _dot_ Bell _at_ colorbus
+  _dot_ com _dot_ au). In an interoperability scenario with omniORB 4.0
+  the C++ side was sending wstring data with reversed byte-order.
+
+- Made corbaloc URLs with ',' and '/' in the object key work again.
+
+- Fixed a problem with xlink URLs. A link to a fragment in a file was
+  not recognized as a valid URL. Bug report and patch sent by
+  JC Tchitchiama <jct _at_ panonet _dot_ net>.
+
+- Do not include the config files in the jars more than once. Bug report
+  and patch sent by JC Tchitchiama <jct _at_ panonet _dot_ net>.
+
+- Recalculate the binding array when similar endpoints are provided in an
+  IOR to avoid a ArrayIndexOutOfBoundsException.
+
+- Moved the create local request method from the LocalClientRequest to the
+  ClientBinding where the remote create request method is located.
+  This makes sure that any exception that has happened with the binding
+  will get thrown before proceeding.
+
+- Removed a dependency from the compiler to the OpenORB core classes which
+  caused the compilation from the source archive to fail.
+
+Version 1.3.0 - September, 27 2002 - OpenORB_1_3_0
+
+- Fixed an endless loop with resolve_initial_refernces(). When looking
+  up the rir NameService the last fallback is to try to resolve the rir
+  on the NameService. This should not be done for the NameService itself
+  as it is not known at that time.
+
+- Made corbaloc parsing more fault-tolerant. A common mistake is to write
+  "corbaloc://". The scan_url_loc() method was looking for the first
+  occurence of '/' which returned position 0 in this special case.
+  This method has been changed to look for the lastIndexOf( '/' ).
+
+- Fixed several problems with fixed type handling and included the
+  iiop.complex test cases.
+
+- Optimized IIOPClientRequest so that is doesn't have to catch an INV_POLICY
+  each time it is instantiated and the SYNC_SCOPE_POLICY_TYPE isn't set.
+
+- Added configuration enhancements to allow greater control on how servers 
+  listen for connections, replacing hardcoded values. New properties added:
+      iiop.serverMaxSocketAcceptTimeout
+      iiop.serverMinSocketAcceptTimeout
+      iiop.serverOverrideSocketTimeout
+
+- Added configuration enhancements to allow the a BufferedOutputStream to be
+  used on socket output stream. New property added:
+      iiop.bufferedOutputStreamSize
+
+- Added configuration enhancements to allow the control of SO_SNDBUF and
+  SO_RCVBUF socket properties. New properties added:
+      iiop.recieveBufferSize
+      iiop.sendBufferSize
+
+- Changed default value for iiop.boostReceivePriority as it assumed that most
+  people would be running NT4.0. Default is now false and NT4.0 users should
+  explicitly enable it.
+
+- Added a patch by Albert Zhou (azhou _at_ yahoo _dot_ com) to
+  address the root context in a corbname URL by specifying an
+  empty string after '#'.
+
+- HTML documentation is showing the pictures as in the pdf file now.
+
+- Fixed bug #599048 with the IdlCompiler option -portablehelper.
+  The generated code for the extract() method was missing a
+  closing bracket and thus was not compilable at all.
+
+- Added a patch for fixing a strange exception when running the
+  OpenORB unit tests. Patch contributed by John Farell
+  <friendless _at_ optushome _dot_ com _dot_ au>.
+
+- Added documentation updates contributed by John Farell
+  <friendless _at_ optushome _dot_ com _dot_ au>.
+
+- Fixed bug #595173 (Wrong name for valuetype factory methods).
+  Patch contributed by Joncheng Kuo (ckuo01 _at_ syr _dot_ edu).
+
+- Fixed bug #589335 (IdlDoc can't take hexadecimal expression). Patch
+  contributed by Joncheng Kuo (ckuo01 _at_ users _dot_ sf _dot_ net).
+
+- Make build.sh work with the latest cygwin version. The script
+  was using a variable OSTYPE that is not available in sh. The
+  official way to get the name of the platform is uname which
+  is now used for determining the CLASSPATH separator.
+
+Version 1.3.0 BETA2 - August, 10 2002 - OpenORB_1_3_0_BETA2
+
+- Added patch by Chris Wood (openorb _at_ ninjateaparty _dot_ com)
+  Fixed problem with comparing valuebox types in an any.
+
+- Added patch by Diego Sevilla Ruiz (dsevilla _at_ um _dot_ es) for
+  the install target of the build.xml. The new version copies the
+  files to the path specified by the property install.path just as
+  if you extract one of the binary tarballs.
+
+- Added support for local calls.
+  Patch by Erik Putrycz <erik _dot_ putrycz _at_ int-evry _dot_ fr>.
+
+- Made the property parsing more fault tolerant, -ORBDebug without
+  further parameters was crashing the ORB with an ArrayIndexOutOfBounds
+  exception.
+
+- Fixed bug #583158 (MacOSX charset problem). This is not a bug.
+  The OSF codeset registry doesn't have a MacRoman codeset.
+  The fallbacks for "char data" are used in this case: UTF-8 and ASCII.
+  The error message is misleading, so it has been changed to a warning
+  level message instead.
+
+- Fixed bug #584008 (Infinite loop with Japanese codeset).
+  Bug reported by Stefan Reich.
+
+- Added a patch to make OpenORB work on the iPAQ runging IBM VAME
+  (VisualAge Micro Edition). The IBM version of the VM has
+  capitalized canonic codeset names, this did not work with OpenORBs
+  CodeSetDatabase table, adding calls to upperCase() makes
+  OpenORB resistent against such differences. Patch contributed
+  by Erik Putrycz <erik _dot_ putrycz _at_ int-evry _dot_ fr>.
+  The patch needed a check to handle a special case for
+  running OpenORB on JDK 1.3.x or on JDK 1.4.x.
+
+- Added a patch to allow setting the priority of a logger
+  even if it is passed from the outside to the OpenORB
+  loading sequence. Patch contributed by Erik Putrycz
+  <erik _dot_ putrycz _at_ int-evry _dot_ fr>.
+
+- Added property aliases to enable debug and trace output
+  without the need to pass system properties to the vm.
+  Patch contributed by Erik Putrycz
+  <erik _dot_ putrycz _at_ int-evry _dot_ fr>.
+
+- Added the ant target 'build-codesetdb' for automatic
+  generation of the file CodeSetDatabase.java.
+  Patch contributed by Erik Putrycz
+  <erik _dot_ putrycz _at_ int-evry _dot_ fr>.
+
+- Fixed package names of the examples (Patch contributed by
+  Diego Sevilla Ruiz <dsevilla _at_ um _dot_ es>).
+
+- Make the install target in build.xml copy all jars from the
+  dist directory to the specified install location.
+
+- Added another protected constructor to the Delegate class.
+  This constructor enables a sub-class to perform only needed
+  initializations and by that significantly improves performance
+  of the delegation mechanism in the local optimized call case.
+
+- Added support for TAG_SSL_SEC_TRANS components when printing object
+  references. This functionality was only present when the
+  SSLTransportClientInitializer was loaded instead of the
+  IIOPTransportClientInitializer.
+  Additionally the output of the other components has been aligned 
+  to follow a common pattern so that the output gets more readable.
+
+- Added dump-info target to build.xml to show the basic settings
+  that are used by ant.
+
+- Add support for xalan on JDK 1.4 to build.xml. Without the fix the
+  compile-docbook target does not work.
+
+- Added fix to avoid BAG_MAGIC exceptions when running OpenORB with JDK1.4
+  and NT4.0. This can be controlled using the property:
+      iiop.boostReceivePriority=(true*/false)
+    * - default value
+
+- Added configuration enhancement to allow the control of TCP_NODELAY
+  feature on both the client and server side. New properties added:
+      iiop.serverNoDelay=(true*/false)
+      iiop.clientNoDelay=(true*/false)
+    * - default value
+
+Version 1.3.0 BETA1 - June, 19 2002 - OpenORB_1_3_0_BETA1
+
+- Changed the constructor access modifiers of org.openorb.CORBA.Delegate
+  from private to protected and added three getter methods. This changes
+  enable sub-classing of the Delegate class to provide performance
+  optimizations in the local optimized call case. The object id
+  decomposing seems to be quite expensive and is done for each call when
+  doing in process calls. A possible sub-class implementation caches
+  object ids in relation to CORBA object instances in a Hashtable and
+  by that significantly improves the object lookup overhead.
+
+- Added a patch by Thomas Haug (thomas.haug@siemens.com) to support
+  the evaluation of the propertyset tags in OpenORB's config xml files.
+  This was not working before and therefore no alternate endpoints could
+  neither be declared in default.xml nor in a properties file. With the
+  patch the following works now:
+      <propertyset prefix="alternateAddr">
+          <property name="endpoint1" value="localhost:6661" />
+          <property name="endpoint2" value="localhost:6662" />
+      </propertyset>
+  Or in property file syntax:
+      iiop.alternateAddr.endpoint3 localhost:8888
+      iiop.alternateAddr.endpoint4 localhost:8889
+
+- Added some checks to avoid ClassCastExceptions, see RMIoverIIOP's
+  WHATSNEW file for detailed explanation.
+
+- Added a method to print human readable IDLType constants (not used yet).
+
+- Simple performance improvement by caching the target adapter in the
+  client binding so that it is not searched for with each _is_local call.
+
+- Commented out an expensive connection attempt from class IdlGrammar
+  to the InterfaceRepository. This was slowing down the IdlCompiler
+  because each time the IdlGrammar was instantiated an ORB.init() was
+  performed and a lookup of the InterfaceRepository was done.
+
+- Added support to the IdlParser to load IDL files from Jar resources.
+  IDL files in Jar archives can be referenced now be adding a "-I" switch
+  with the relative path in the archive. E.g. the file OpenORB_corbaloc.idl
+  can be found now by adding "-I org/openorb/idl" as parameter to the
+  IdlCompiler command line.
+
+- Fixed the OBJECT_NOT_EXIST semantics according to the spec. The spec.
+  mentions that upon OBJECT_NOT_EXIST the internal and external references
+  to the object should be removed. Now the exception is thrown to the client
+  so that it knows that the reference does not point to a valid object
+  anymore.
+
+- Added a property "openorb.client.bindings.discard_old" to throw away
+  old endpoint information when a client receives a redirection from the
+  server. The method RequestState.receiveRedirect() does some magic things
+  and it might be dangerous to touch so a property is safer here.
+  The behaviour of the alternate receiveRedirect() is not quite
+  standard compliant because it really throws away old endpoint information.
+  The spec. demands that old information should be kept in any case. In the
+  LOCATION_FORWARD_PERM case the new endpoint(s) should be used preferably.
+  This behaviour is some kind of broken in the old receiveRedirect()
+  method because depending on the object key and a "priority" the endpoints
+  are sorted. This could result in a situation where the newer endpoints
+  are placed after older ones and causing a delay when switching between
+  endpoints.
+
+- Fixed a bug (Reported by David Weiss) in the OpenORB initialization
+  procedure. The POA creation was not thread safe and resulted in
+  sporadic InvalidPolicy or BAD_PARAM exception when calling POA
+  methods.
+
+- Updated IdlToJava generator to implement readResolve for the correct
+  deserialization of enums. See Java RTF Issue 4271.
+
+- Fixed ListOutputStream to handle nulls property for the CORBA 2.3
+  additions to OutputStream.
+
+- Optimized IIOPAddress.getAddresses to lazily create component data
+  strings along with the Int2Hex optimization proposed by Lars KÅhne.
+
+- Fixed bug #550366. The jdk-runtime-library property can be used
+  to specify the path of the Java Runtime Library for those JDK's which
+  do not use ${java.home}/lib/rt.jar.
+
+- Fixed an IdlCompiler bug. The generated Helper class was passing
+  the integer 0 for a char/wchar parameter to the constructor of
+  the value box constructor. The compile failed because of incompatible
+  types. The fix is putting a cast in front of the value 0.
+
+- Added a fix from Lars Kuehne to avoid creating Boolean objects. The
+  kernel is now "new Boolean" statement free.
+
+- Added a checkstyle target to build.xml. The command
+  "build.sh checkstyle" checks the source code for adherence
+  to the Jakarta coding conventions. Fixed many coding style warnings.
+
+- Fixed an interoperability problem when receiving wchar/wstring
+  data. The other side is allowed to send a BOM which needs to
+  be removed before the data is passed on to the user.
+  The other side can also decide to send wchar/wstring in arbitrary
+  endianess, this mismatch in byte order must be fixed when
+  receivin the data, indicating that the byte order of the
+  process differs from the wchar/wstring byte order.
+
+- Fixed a memory leak in object_id() of DelegateImpl. Reported
+  by Patrick Mann <Patrick.Mann@isrglobal.com>.
+
+- Started switching to an internal exception logging policy that
+  shows internal exceptions only when DEBUG/MEDIUM is set.
+  On JDK1.4 stack traces will be merged so that internal exceptions
+  will not be lost. This is not possible on older JDKs but a similar
+  behaviour can be achieved by setting trace to DEBUG/HIGH, because
+  in this case internal exceptions will be logged before they are
+  rethrown as CORBA System Exceptions.  Fixed bug #517892.
+
+- IDL compiler enhancements including more control over the generation of
+  invoke methods, optional use of JDK1.4 supported features.
+  Experimental features include generation of default factory and
+  implementation classes for Value Types.
+
+- Fixed bug #543751. Removed uses of InternalError which should only
+  be used by the JVM to indicate internal error conditions.
+
+- Fixed bug #515918, the TRANSIENT exception is thrown now as specified
+  by the spec. Before the COMM_FAILURE exception is thrown in most cases
+  where a communication problem occurs. The spec. is quite clear about
+  the semantics of COMM_FAILURE and TRANSIENT. COMM_FAILURE should
+  be thrown when a communication problem occurs after a request has
+  been send and no reply received yet. TRANSIENT should be thrown when
+  the ORB failed to establish a connection to send the request.
+
+- Added compiler override directory that allowing code that uses
+  JDK1.4 operations to be compiled on JDK's prior to 1.4.
+
+- Added JREVersion class to determine the version of JRE running the class.
+  This is used in conjunction with the compiler overrides to determine
+  if a 1.4 feature can be used by the current JRE without causing a runtime
+  error.
+
+- Corrected semantics of DynStruct methods, fixed bug #504025.
+
+- The properties "openorb.debug", "debug", and "verbose" have
+  been deprecated. The properties
+    openorb.debug.trace=0|1|2|3|4 or FATAL|ERROR|WARN|INFO|DEBUG
+    openorb.debug.level=0|1|2|3   or OFF|LOW|MEDIUM|HIGH
+  have been added. The latter controls the verbosity of the
+  DEBUG priority. The priority setting using this property is applied
+  only when no logger instance is passed by a LOGGER property.
+
+- Fixed bug #509463. When ignoreXML=true was specified, the
+  "-ORBname=value" command line arguments weren't parsed at all.
+
+- Fixed relative roundtrip timeouts for wait_for_response and
+  poll_request of the org.openorb.CORBA.Delegate class.
+
+- Replaced static created exceptions such as QUEUE_FULL_EX, etc in
+  org.openorb.net.ServerManagerImpl with static methods that create
+  new instances each time. Before, when these exceptions were
+  thrown, the stack trace was that of when they were created!
+
+- Fixed bug #505157. Problem with Delegate's getAddress method causing
+  problems for local invocations.
+
+- Fix unmarshalling problem for DynAny arrays/sequences
+  Problem reported by Alexander Schnell and Andrew Finney
+
+- Throw INITIALIZE exception from org.omg.CORBA.BOA.init()
+  when the BOA hasn't been initialized.
+
+- Changed codeset to ISO-8859-1 when using GIOP 1.0
+  See spec section 13.10.2.1 for details.
+
+- Fixed a strange TIMEOUT exception that was occuring when
+  a timeout was set and the method _non_existent() was called
+  on the object.
+
+- Added an example showing correct usage of the CORBA Messaging
+  RelativeRoundtripTimeout Policy.
+
+- Fixed a EOFException that was occuring when using the CORBA
+  Messaging policy RelativeRoundtripTimeoutPolicy. The client
+  was sending a bogus CancelRequest message to the server which
+  was causing the message to be shorter as it should.
+
+- Changed all Class.forName() calls to
+  Thread.currentThread().getContextLoader().loadClass()
+  This is safer when having multiple class loaders.
+
+- Fixed bug #523913. Similar problem as in #523963 below.
+  In this case, using DynAny to create an array and then creating
+  an Any. Marshalling of the Any would fail.
+
+- Fixed bug #523963. Problem with marshalling
+  arrays using Helper classes from ORBacus and JDK idl compiler.
+  Arrays were written element by element using write_xxx.
+  The portable InputStream class, ListInputStream, would not
+  handle this.
+
+- Fixed bug #515914. Removed the last remaining System.exit(1)
+  call by a call to Trace.signalIllegalCondition() so that the
+  whole VM is not taken down upon error in one orb instance.
+
+- Changed the property name for the transport server initializer
+  from "iiop.IIOPTransportServerInitializerClass" to
+  "iiop.TransportServerInitializerClass". This is following the
+  name for the client transport initializer.
+
+- Support for cyrillic charset alias ISO8859_5 added,
+  see bug #523358 and #526855. The last creation of the
+  CodeSetDatabaseInit.java file was bogus. The codeset names
+  didn't use the Java codeset names. Therefore only the
+  default codesets made it into the list of supported
+  server codesets. The complete overhaul of the CodeSet
+  classes fixed this and introduced many optimizations as
+  well as general cleanups.
+
+- Support for clean Initializer disposal.
+  Updated ServerManagerImpl, ORBLoader, and ORBInitInfo to
+  support initializer disposal on shutdown.  The orb.shutdown
+  method hands control over to ServerManagerImpl which now
+  checks id the ORBLoader implements the Avalon Disposable
+  interface, and if so, invokes dispose on the loader. The
+  the in-progress Apache ORB Loader implemention of dispose
+  invokes dispose of the ORBInitInfo which in term invokes
+  dispose on any Initializer instances that implement the
+  Disposable interface.  This enasures that any Initializer
+  can properly clean-up as a result of an ORB shutdown.
+
+- Started removing the dependency to the CosNaming module
+  (NamingService). It had been a bad idea just because of
+  an ill designed NamingService (No easy transient version)
+  to introduce a transient NamingService into the ORB.
+  This transient NamingService has been refactored and moved
+  as org.openorb.tns into the NamingService package. To get
+  rid of the ORB internal NamingService we declared all related
+  classes/methods as deprecated and we will remove them in a
+  future release of the OpenORB package.
+  The corbaname URL resolving has been converted to use a
+  reflection approach so that there is no compile time
+  dependency. This is not a problem, because a runtime dependency
+  always existed as you need a NamingService instance to resolve
+  the URL against.
+
+- Modified Configurator to accept the standard initializer
+  specification syntax; deprecated use of the old syntax.
+
+- The logging system has been changed and is based on the Jakarta
+  Avalon LogKit now. The ORB Loader and Connector classes have
+  been changed to use the pattern "Inversion of Control" (see the
+  Jakarta Avalon page for more information). That means that the
+  ORB is seen as a component and any information is passed to the
+  ORB from a parent component. This passing of a logger instance
+  can be achieved via the context property "LOGGER".
+
+- Fixed bug #501443 by adding a switch "-codepage:ISO-8859-5" to
+  the IdlDoc tool. This switch changes the code page in the meta
+  tag of the generated html files. Default is ISO-8859-1.
+
+- Fixed bug #505154: hexadecimal constants with 'd' or 'D' were
+  not processed correctly, because the letter was misinterpreted
+  as the fixed constant delimiter.
+
+- According to 21.7.3.1 of the CORBA spec., initializers are
+  specified as
+     org.omg.PortableInterceptor.ORBInitializerClass.CLASSNAME
+  where CLASSNAME is the full class name. When using the ignoreXML
+  property for circumventing the XML parser instantiation, the
+  initializer properties have been changed to follow the CORBA
+  PI scheme.
+
+- Added an additional way to initialize the transient naming
+  service MapNamingContext. Patch provided by Stefan Reich.
+
+- Separated the setConfig shell scripts from the build.xml.
+  Added an add.bat file to perform the actual command.
+
+- Added local.properties file to influence the ant build
+  process locally.
+
+- build.sh now works under Cygwin, patch submitted by
+  David Blevins (dblevins@users.sourceforge.net).
+
+- Aligned idl files to the Jakarta coding guidelines.
+
+- Removed assert() methods from Trace class due to JDK-1.4
+  assertTrue() should be used.
+
+- Moved the tests from src/test/src to src/test (to align with
+  other packages) and renamed the test "primative" to "primitive".
+  Aligned the test idl files to the coding guidelines.
+  Added a test.idl file for uptodate checking.
+
+- Total restructuring of the build.xml file. It is now
+  much easier and much more flexible to use (see "ant help/targets"
+  for details).
+
+- Added another fixed type patch by Marc Schuelpbach.
+  The class IdlToJava is scaling a fixed using the method
+  movePointLeft. This method lets untouched the BigDecimal
+  instance but returns the scaled value. so the stubs/skeletons
+  generated by the IDL compiler do not scale the fixed they have
+  unmarshalled.
+
+- Removed scripts test.bat/test.sh, use build.bat/build.sh with
+  parameter run-test instead.
+
+- Fixed Javadoc warnings and deprecation warnings.
+
+- Fixed Unmarshalling exception (buffer underread) when marshalling
+  0 as a fixed type.
+  (Patch send by Marc SchÅpbach <Marc.Schuepbach@sic.ch>)
+
+- Fixed a COMM_FAILURE when shutting down on AIX boxes.
+  This is due to interrupting a ServerSocket.accept().
+  On AIX (JRE 1.3.0) a SocketException is thrown in this case.
+  (Patch send by Marc SchÅpbach <Marc.Schuepbach@sic.ch>)
+
+- Removed the cause for some deprecation warnings in several
+  test cases and the WrongTransaction exception.
+
+- Bug #510234: Added the proposed patch by Satish Boggavarapu.
+  Added a test for the bug to ORBTest.java.
+
+- Removed the common libs from the lib directory.
+
+- Converted the orb.xml file to docbook format.
+  Build.xml creates pdf and html output now.
+  The documentation has been extended by a description of OpenORB's
+  architecture. However the docs in general need serious work...
+
+- Merged install.txt and src/etc/README files.
+  Moved src/etc files CHANGELOG, README, and EXOLAB.txt
+  to the base directory of the package and renamed
+  CHANGELOG to WHATSNEW (Jakarta style). Also added
+  the Apache license to the root file LICENSE.
+
+- Switched to template based manifest files.
+
+- Aligned code to the Apache/Jakarta coding guidlines
+  (Normal and generated code). Removed unused classes from import
+  section, patch by (Lars Kuehne <Lars.Kuehne@ppi.de>)
+  Also by Lars is a patch that has its origins in the tool
+  checkstyle v2.2. This patch aligns the code to JLS and
+  substitutes lines of the form import x.y.*; by the actual classes.
+
+- Fix #504462: Removed an unnecessary allocation of
+  float/double arrays and the corresponding copy loop.
+
+Version 1.2.1 - January, 11 2002 - OpenORB_1_2_1
+
+- Fix #502230/#771: Call servant_preinvoke() in the remote case
+  only with the isLocal parameter set to false, otherwise a
+  ClassCastException will be the effect.
+
+- Fix #501840/#771: Compile for JDK1.2.x should work again.
+
+- Fixed a bug reported by Chris Smith (Chris.Smith@uab.ericsson.se)
+  concerning a wrong timeout value for the RelativeRoundtripTimeout
+  policy.
+
+- Bug #848: Added a check for null to avoid a NullPointerException.
+
+- Bug #844: Added the patch to allow Japanese comments in IDL files.
+  (torutk@alles.or.jp)
+
+- Bug #668: Added a patch to fix the upper/lower-case problem.
+
+- Bug #433: Added the patch by Greg Hamer (ghamer@troikanetworks.com).
+
+- Added several fixes for the local invocation case in POA.java.
+
+- Bug #758: Use getValue() instead of getExpression() to avoid
+  a NumberFormatException when the values are constants.
+
+- Added a TODO file to src/etc
+
+- Bug #761: Added a patch contributed by ??? (mhb@cephei.com).
+
+- Bug #829: Return from fullname() with null when IdlRoot object
+  is passed, because no modules can be found then.
+
+- Bug #798: Added an enhancement by Anton Jansen (gradius@fmf.nl)
+  to the class generated for enums.
+
+- Bug #795: Added a fix to DynEnumImpl by Adrian Hempel
+  (adrianh@ot.com.au)
+
+- Translated some comments in IdlCompiler.java into english.
+
+- Bug #835: A NullPointerException could be thrown when a partner
+  has already died and the thread is still trying to process msgs
+  by accessing either _clientChannel or _serverChannel.
+
+- Bug #715: Added trace output for original exceptions.
+  Added a new property openorb.debug.ShowStackTrace. This property
+  can be used to show the actual exception traces for all the
+  rethrown exceptions.
+
+- Fixed the example (idl2java) in the IdlCompiler's usage text.
+
+- Fixed a NullPointerException in servant_postinvoke() (local case).
+
+- Updated InputStream, OutputStream to the latest IDL2Java mapping.
+      formal/01-06-06.pdf: read_fixed/write_fixed()
+  Added some deprecation comments from the latest IDL2Java spec.
+
+- Translated some comments.
+
+- Added a runtest target to the build.xml file.
+
+- Bug #824: Removed the System.exit(0) call.
+  But running the IDLCompiler in process multiple
+  times could reveal the same problem as with the JavaToIdl
+  compiler (see #646)
+
+- Bug #827: Use the class org.openorb.CORBA.ORBSingleton explicitly.
+
+- Fixed a NullPointerException when creating recursive typecodes.
+
+- Added IOR display support for the HEARTBEAT_ENABLED policy.
+
+- Added a patch from Sam Cooper for bug #648, fixing a problem with
+  package names for union members.
+
+- Windows fixes to IORDump utility, -f switch was not working
+  properly.
+
+- Added some undocumented flags to the usage list and ordered the
+  switches lexicographically.
+
+- Added the fix for bug number #771 which has been reopened recently
+  because of problems with servant_postinvoke when using servant
+  managers.
+
+- Fixed a small bug in one of the constructors of the
+  SimpleIORInterceptor class. A member was not initialized correctly.
+
+- Fixed a typo in idlType submitted by Holger Brands.
+
+- Removed an internal throw of an INV_POLICY exception. Returning null
+  to indicate a problem is more efficient here.
+
+- Enhancement #796: Added the files to support the Messaging policies.
+
+- Added a method getImportList() for bug #802.
+
+- Performance and memory optimization for codeset initialization,
+  bugzilla #793.
+
+- Added a solution to OMG's JavaToIdl Issue 4429
+  See http://cgi.omg.org/issues/issue4429.txt
+
+- Added an ant target to create debug jars.
+
+- Enh #794: Added a method and constants to the Trace class.
+
+- Bug #785: else was missing in generated code when using the option
+  "-portableHelper"
+
+- Bug: Fixed some short to int conversions for alternate IIOP
+  addresses.
+
+- Bug: corbaname URLs without any # were not working.
+
+- Bug: Compiler was not using operations interface for local
+  invocation path of attribute setter.
+
+- Bug: iiop.publishIP=true and iiop.publishIP=false had reversed
+  meanings. iiop.publishIP=true will now use the IP address, not the
+  hostname, and vice versa.
+
+- Fixed a bug in the IDL compiler for module that contains a module
+  with the same name.
+
+- Update: CORBA 2.4 specifies that LocateReply bodies must be 8-byte
+  aligned. Updated to comply.
+
+- Bug: Check for null nameservice when doing corbaloc resolves.
+
+- Bug: hashCode was using 32 as the maximum value, rather than
+  Integer.MAX_VALUE.
+
+- Optimization: Modified CDR streams to only initialize valuetype
+  stuff when the first valuetype is sent/recieved.
+
+- Update: Removed WrongPolicy exception from create_reference_with_id
+  to conform with the spec. This was a JDK 1.4 interoperability patch.
+  This will require anyone using this method to update their code,
+  just delete the catch block. Since an exception was never thrown
+  in this location, it should be a simple change.
+
+- Update: Updated PortableInterceptor::ForwardRequest to remove the
+  permanent flag. This conforms to the latest PI specification, and
+  allows operation under JDK 1.4, however will again require changes
+  to some code.
+
+- Bug: compiler.object.IdlObject#searchObject() behaving incorrectly.
+  Patch sent by Michael Rumpf <michael@rumpfonline.de>
+
+- Bug: In the repository ID helper. The class names were not well
+  generated for compound prefixes like ab.cd.ef.
+
+Version 1.2.0 - August 8, 2001 - OpenORB_1_2_0
+
+- Hack: added destroy method to all request interceptors. This hack is
+  added to allow JDK 1.4 compatability. The destroy method will be
+  implemented after the 1.2.0 release.
+  Patch by Stephen McConnel <mcconnel@osm.net>
+
+- Update: Updated junit to 3.7, updated all the test cases to use
+  assertTrue to avoid problems in JDK 1.4.
+  Patch by Stephen McConnel <mcconnel@osm.net>
+
+- Update: Renamed Trace.assert to Trace.assertTrue, this allows
+  compilation in JDK 1.4. The old assert is still available, although
+  marked as deprecated and will be removed in the next version.
+  Patch by Stephen McConnel <mcconnel@osm.net>
+
+- Bug: Issuing a oneway request with sync scope WITH_SERVER or
+  WITH_TRANSPORT to a target which had been destroyed or was otherwise
+  disabled at a point before preinvoke would cause a block.
+  Bug found using test case by Jeremy Davis <jdavis@accessline.com>
+
+- Bug: Multiple IIOP versioned profiles causing
+  NullPointerExceptions. Updated addresses to not compare as equal for
+  all same but different versions. Interop problem with JacORB.
+
+- Update: the ReleaseInfo class and the build.xnl file to reflect the
+  new OpenORB version.
+
+- Bug: problem in AbstractServerRequest.
+  Patch sent by Stuart Wheater [ Stuart_Wheater@hp.com ]
+
+- Bug #688: Compiler was incorrectly not creating the local invocation
+  path for abstract interfaces, resulting in infinite loop.
+
+- Update: Updated IORDump to work with files as well as bare IORs.
+  Patch submitted by Jesper Pedersen <jep@itplus.dk>
+
+- Bug #648: concerning a problem with Union within the generated
+  classes. Patch sent by Sam Cooper <sam.cooper@scisys.co.uk>
+
+- Bug #661: concerning a problem with constants in IDL descriptions.
+
+- Bug #645: concerning the -d and -package flags of the Idl compiler.
+  Patch sent by Michael Rumpf <michael@rumpfonline.de>
+
+- Bug: in the IDL compiler.
+  Submitted by Sam Cooper <sam.cooper@scisys.co.uk>
+
+- Feature: Added new Corbaloc Service. This interface improves on the
+  old DefaultAdapter by using a real CORBA object for the registry,
+  and having it available as a initial reference service. This
+  required modifying many of the other services.
+
+- Feature: System exceptions from the server side are clearly
+  identified as such in the exception string, and have their vendor
+  and minor code numbers extracted for easy debugging.
+
+- Bug: Changed default _charEnc to match the GIOP default, as
+  the old value is the fallback value used when no match is found in
+  charset negotiation.  Also changed logic when Unicode text should be
+  byte swaped. From CORBA 2.4.2 all Unicode text should be in Big
+  Endian or tagged in GIOP 1.2, so byteswapping can only be valid when
+  using GIOP 1.1.
+  Patch submitted by: Goran Lowkrantz <goran.lowkrantz@ismobile.com>
+
+- Optimization: Reorganized much of the server side to improve
+  performance, mostly breaking down the events so that single notifies
+  can be used on the server side. This improves performance under
+  heavy load with many threads in the pool as dramaticaly as the the
+  client optimization.
+
+- Update: util.NamingUtils to do everything that ContextUtilities
+  does. Deprecated ContextUtils as it doesn't throw exceptions much
+  of the time, causing problems in a range of situations.
+
+- Bug: In reflective org.openorb.compiler.idl.parser.idlParser class,
+  modified the way the IdlParser is created, so now it uses the
+  IdlCompiler.createIdlParser() method that manages the included URL
+  files (such as org/openorb/idl/*.idl).
+
+- Test: Added test to POA. Checks in set_servant_manager that the
+  servant manager is local. Also fixed the exception/minor code thrown
+  when servant manager is wrong type or null.
+
+- Optimization: When writing trace messages objects are sent, instead
+  of strings. This avoids the often costly toString method. %1-%5
+  performance increace.
+
+- Optimization: Removed queue for message sending. Threads sending on
+  a channel synchronize directly for writing to the channel. %700
+  performance increace under heavy client load.
+
+- Bug: In iiop.CodeSetDatabase which was causing a array bound
+  exception. Submitted by Jason Tishler [Jason.Tishler@dothill.com].
+
+- Update: OpenORBLoader now loads the PI using the class types as well
+  as the arguments. Allows overloading of the orb.
+
+- Bug #617: Compiler bug, the local invocation path for the set
+  operation was looping. Problem fixed. Submitted by Arend Smit
+  <arends@fmf.nl>.
+
+- Bug: Fixed a problem with DelegateImpl, _this() would not work
+  correctly when in context of a request on a non-retain POA.
+
+- Optimization: Set TcpNoDelay on sockets for performance improvement.
+
+- Doc: Added some extra javadocs to the test cases
+
+- Bug: Fixed problem with ClassLoader when reading bytes from file
+  and not checking the number of bytes actually read (especially for
+  last packet).
+
+- Bug: Bug in the NamingUtils class for the 'parent' operation.
+
+- Bug: Fixed problem where multicomponent profile not added to
+  published IORs.
+
+- Update: Added ServiceId SecurityAttributeService to IOP.idl.
+
+- Bug: Compiler problem, extra full constructor output for empty
+  exceptions.
+
+- Bug: Compiler problem, race condition for creating typecodes. Also
+  updated to avoid synchronizing when creating typecodes for types
+  without members.
+
+- Bug: Fixed problem with bidirectional, fragmented IIOP losing the
+  fragments.
+
+Version 1.1.0 - May 7, 2001 - OpenORB_1_1_0
+
+- Fixed bug where '.' in system properties would cause initialize
+  exceptions.
+
+- Updated the documentation.
+
+- Added the installation class, util.CreateORBProperties. This
+  installs the orb quickly and easily.
+
+- Made some changes to the Configurator to comply with the docs.
+
+- Fixed shutdown bug in IIOP. When shutting down a connection, openorb
+  will use shutdownOutput if available, and will only read incomming
+  data until it has to wait > 1s for more data.
+
+- Fixed channel age problem. Channel ages were not being updated when
+  the last active request completed on the client side.
+
+- Updated config file format to allow propertyset elements in
+  modules. These declare that a property set may be used. At the
+  moment, for documentation only, no action is taken.
+
+- Modified server manager semantics for registering multiple protocols
+  as profile constructors, any unique protocol/profile tag pair will
+  have it's own profile in constructed IORs.
+
+- Modified server manager a bit so that listen and stop listen result
+  in thread actions.
+
+- Added iiop.biDirOnlyServer property. This can be used on client orbs
+  which do not wish to listen for incomming requests.
+
+- Fixed problem with bidirectional IIOP. Server side BiDir policy was
+  being ignored, if any client requested BiDir, it was used.
+
+- Fixed bug in class generation for concrete valuetype that inherits
+  from abstract valuetypes.
+
+- Fixed compilation problem on jdk 1.2.
+
+- Fixed bug  with disorderly shutdown of connections. If a server
+  was killed all future attempts to invoke on the server failed.
+
+- Fixed problem with case sensitive profile/module names when
+  performed through xml file.
+
+- Moved OpenORB.dtd to src/config. The entire contents of src/config
+  are now copied complete to the org/openorb/config directory in the
+  openorb jar file.
+
+- Fixed bug for port number > 32656 ( for example under Mac OS X )
+
+- Fixed bug in fragmentation. Some message fragmentation would result
+  in bad allignment for the following data.
+
+- Modified compiler output so that helper for complex types are not
+  dependant on org.openorb.CORBA.Any. Two possible helper formats, one
+  fast and must be compiled using OpenORB, one slower, but surer. Use
+  the -portablehelper compiler flag to chose the latter.
+
+- Modified compiler output so interface helpers define the
+  unchecked_narrow operation.
+
+- Fixed shutdown problem, calling orb.shutdown(false) from a server
+  thread would block indefinatly.
+
+- Bug fixed : problem with several constants declared in the same
+  interface.
+
+- Bug fixed : reuse of an identifier when declaring a constant.
+
+- Added a new flag '-noreverseprefix' to use prefix as package name
+  without reversing the order of the prefix components.
+
+- Made some changes to the net package, the ServerManager and
+  ClientManager classes have been split off from their interfaces. The
+  reasoning behind this move is to not load the ServerManager class
+  for client-only orbs.
+
+- Modified the semantics of the iiop.publishIP property, adding an
+  'auto' value. When this default value is used IP addresses are
+  published if a fqdn cannot be found.
+
+- Fixed bug in dii.Request, inout parameters were not being
+  unmarshalled resulting in buffer underread exceptions.
+
+- Fixed bug in IIOPClientRequest which was causing null pointer
+  exceptions whenever a client side interceptor resulted in a forward
+  request.
+
+- Added a pragma prefix consistency test in the IDL compiler.
+  A pragma prefix must not contain any '/' or ':' character.
+  See CORBA 2.4.2, 10.6.1 for details.
+  Modified class: org.openoeb.compiler.parser.IdlGrammar.java
+
+- Fixed bug in PI Current for the 'get_slot' operation. If not slot is
+  available, tk_null is returned instead of tk_void. Bug reported and
+  fixed by Michael Rumpf
+  ( michael@rumpfonline.de )
+
+- Added support for Class loader manifest-file referenced classpath.
+  Mofidied file: org.openorb.CORBA.kernel.ClassLoader
+
+- Fixed bug in OpenORB in the Any class to support 'insert_fixed' and
+  'insert_TypeCode'. Bug reported and fixed by weckerle@ikv.de
+
+- Fixed bug in Delegate.getAddresses. Was breaking local invokes it
+  was enclosed within. Also fixed potential problem with standard
+  local object operations which could have occoured if the adapter
+  performed a local invoke on the target while performing the
+  operation.
+
+- Fixed some applet problems, initializing with a null applet would
+  fail, and some SecurityExceptions were not being caught.
+
+- Fixed some bugs present on platforms which allow IO to be
+  interrupted, and a rare race condition which occours when both ends
+  of a connection attempt to close symultaniously.
+  There's some serious problems using JDK 1.3 on solaris (but not
+  JDK 1.2 or JDK 1.3.1 ) attempting any kind of IO operation using an
+  interrupted thread will fail silently. Use JDK 1.3.1 for
+  solaris. Still to do is to avoid setting socket timeouts on
+  platforms which support interrupted read and accept operations.
+
+- Bug fixed in the IDL compiler ( reported by Jason Tishler ). Before,
+  IDL definitions defined in the global namespace do not end up in the
+  Java package dictated by #pragma prefix.
+
+- Bug fixed ( reported and fixed by Jason Tishler ) concerning an
+  incorrectly uses the path separator (i.e., "/" or "\") instead of
+  the Java package separator (i.e., ".") when the "-package" option is
+  used in conjunction with multiple input files.
+
+- Bug fixed in the IDL compiler. A 'supports' clause was not correctly
+  generated.
+
+- Changed the IDL Compiler to support '-I xxxxx' and '-Ixxxxx'.
+
+- Fixed some problems with bidir IIOP. It seems the previous 'fix' was
+  not a fix at all, it just resulted in Bidir never being activated.
+
+- The is_a operation now returns true if the tested repository ID is
+  equal to, or has a lower minor code but is otherwise equal to, one
+  of the supported IDs of the request target. This also includes a fix
+  for the is_a test, if the servant overloaded the is_a operation for
+  a POA servant to do somthing other than the default behaviour this
+  would be lost for the target_is_a operation on the server side
+  interceptor.
+
+- Fixed a problem with TRANSIENT SYSTEM_ID poas, IDs can now cover the
+  full rance of 0xFFFFFFFF and the activate_object_with_id will fail
+  for IDs created on a previously destroyed POA with the same name.
+
+- Fixed a bug in the IDL to Java class ( bug #421 ). When an interface
+  was used in a typedef description. A classcast exception was raised
+  because the real object was identified as an interface so the object
+  ( typedef ) was casted to an interface.
+
+- Fixed a bug in the IDLFromIR tool. A malformed URL exception was
+  thrown.
+
+- Changed the IdlCompiler to support the new IDLFromIR constructor. An
+  exception was thrown since it was not possible to instanciate this
+  class.
+
+- Fixed some problems with to_url in naming service, addresses were in
+  old format.
+
+- Fixed some problems with using corbaloc addresses on their local
+  host, the primative object operations needed to be forwarded.
+
+- Added iiop.publishIP to publish the IP address of the local host in
+  IORs rather than the hostname, since the latter doesn't seem to work
+  on some hosts.
+
+- Added openorb.useStaticThreadGroup property.
+
+- Fixed some bugs in thread pool sizing, the pool would never grow
+  beyond 10 due to faulty array copying code, and would not shrink
+  once all requests stopped comming in since _syncState was never
+  notified.
+
+Version 1.0.1 - March 9, 2001 - OpenORB_1_0_1
+
+- Improve the IDL compiler scope management.
+
+- Enhanced the IDL compiler to detect exception types as arguments or
+  return types.
+
+- Enhanced the IDL compiler to detect identifier repetitions in enum,
+  struct, union
+
+- Enhanced the IDL compiler to detect excepion repetitions in the
+  'raise' clause and to detect exception types as parameter or return
+  type.
+
+- Updated the ant (version 1.3) and xerces (version 1.3.0) jar files.
+  Removed the parser.jar and jaxp.jar files (not needed anymore).
+  Modified the build.file so the manifest files are now generated in
+  the build file.  Removed the manifest files from src/etc.
+
+- The InitialReferencesService / DefaultAdapter is now compatable with
+  the JDK ORB's initial reference location protocol, use the arguments
+  -ORBInitialHost=<hostname> and -ORBInitialPort=683 on your JDK orb
+  to be able to resolve the reference to the NameService.
+
+- Replaced the French comments in the compiler package for most of
+  classes.  Remaining ones will be modified shortly.
+
+- Previously DII deferred invocation and polling wasn't performing to
+  the spec, a poll_response operation would be equivalent to a
+  get_response operation if the poll_response returned true. This is
+  fixed. There were also problems with sending defered requests where
+  the recieving thread was not the sending thread, these are now
+  fixed. One problem remains: no check is made to ensure the recieving
+  thread of a polling request is in the same transaction as the
+  sending thread.
+
+- invalid state at releaseReply crashes are now avoided. This will
+  potentialy cause some issues with matching up the exception reported
+  to the interceptors and the exception actualy thrown during
+  marshalling, but this can't be helped.
+
+- toString method of objects now returns description of all the
+  currently used bindings for an object, this is used by the IORDump
+  utility.. The getAddresses function, defined in the delegate, allows
+  introspection of the currently bound addresses.
+
+- Added bindCorbaloc operation to MapNamingContext for easy corbaloc
+  binding.
+
+- Recursive typecodes get natural definitions of hashCode and equals.
+
+- Fixed handling of -ORBmodule prop=value arguments.
+
+- Modified configuration to throw more errors instead of silently
+  ignoring problems, and to parse files as urls when parsing as a URL
+  fails.
+
+- Modified CORBA_InterfaceRepository.idl to remove extra #pragma
+  version 2.3 as specified in the CORBA 2.4 spec
+
+- Fixed race conditions on channel shutdown on client and server
+  sides.
+
+- Allow orb.init((String[])null, null)
+
+- Modified IdlUnion.java to ensure than discriminant is
+  returned in case of a forwarded union.
+
+- Modified IdlGrammar.java to ensure forwarded structs and unions
+  are correctly managed within IDL reflection and the IR.
+
+- Modified IdlObject.java to ensure forwarded interfaces and
+  valuetypes are correctly managed within IDL reflection and the IR.
+
+- Modified the charsets added to IORs to always add US-ASCII and UCS-2
+  to enable interoperation with JDK orb.
+
+- IDL generation has been updated for value box. The problem has been
+  identified by Stephen McConnell.
+
+- IDL compiler updated to forbid two arguments with the same name in a
+  method declaration.
+
+- Added the JUNIT tests and removed JTF
+
+- DynUnion class modified to ensure correct set_discriminator() equal
+  test. The discriminator TypeCode wasn't correctly tested.
+  Modified file: DynUnionImpl.java
+
+- DynBasicImpl class was calling the deprecated method available()
+  from org.openorb.io.ListInputStream.
+  Modified file: DynBasicImpl.java
+
+- Helper classes generation updated to fix a bug for the generation of
+  the write/read methods for CORBA fixed data type.
+  Modified file : IdlToJava.java
+
+- Added ForceMarshalPolicy, client/server policy which dissallows
+  local invocation.
+
+- Allow the thread handed to orb.run to be interrupted while the
+  server keeps running.
+
+- Fixed local invocation bug. A->B->C all locals would fail.
+
+- Helper classes generation updated to fix a bug for the generation of
+  the write/read methods for CORBA fixed data type.
+  Modified file : IdlToJava.java
+
+- Fixed a bug when generating the fixed TypeCode (int tpe instead of
+  short).
+  Bug submitted by Michael Rumpf (michael@rumpfonline.de).
+  Modified file: IdlToJava.java
+
+- Allow the thread handed to orb.run to be interrupted while the
+  server keeps running.
+
+- Fixed bug with canceled requests and connection failures not calling
+  the receive_exception interception point.
+
+Version 1.0.0 - February, 1 2001 - OpenORB_1_0_0
+
+- Initial Release

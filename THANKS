@@ -1,0 +1,11 @@
+# $Id: THANKS,v 1.1 2003/10/16 22:06:40 kraman Exp $
+
+Our sincere thanks are due to the following contributors:
+
+SeyedMasoud Sadjadi <masoud@cse.msu.edu>
+ - Fix to the compilation problem with gperf module
+
+Barry Nathan
+
+Mayur Deshpande <mayur@doc.ece.uci.edu>
+ - Initial implementation of many ORB CORE classes.

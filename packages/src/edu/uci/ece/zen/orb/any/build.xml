@@ -1,0 +1,19 @@
+<project name="ZenCore" default="all" basedir="../../../../../../../..">
+
+   <property file="zen-build-bootstrap.properties"/>
+   <property file="zen-build.properties"/>
+
+   <target name="all">
+            <javac srcdir="${zen.srcdir}/src"
+             destdir="${zen.classdir}"
+             classpath="${zen.basedir}:${zen.classdir}"
+             debug="${zen.debug}"
+             optimize="${zen.optimization}"
+             includes="edu/uci/ece/zen/orb/any/**"/>
+   </target>
+
+   <target name="clean">
+     <delete dir="${zen.classdir}/edu/uci/ece/zen/orb/any "/>
+   </target>
+
+</project>

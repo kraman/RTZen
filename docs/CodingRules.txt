@@ -1,0 +1,34 @@
+Introduction
+--------------
+
+This document contains an outline of the Coding Rule that have to be
+followed while developing Zen code.
+
+
+Code Formatting
+-----------------
+
+The code should be formatted according to the following style rules:
+
+    - Indentation should be 4 spaces (DON'T USE TAB or expand TAB as SPACE)
+
+    - Class Names should be Capitalized, and should be meaningful
+
+      For example
+
+       Button, Frame, EventHandler, Acceptor, etc  [GOOD]
+
+       Event_Handler, eventHandler, event_handler  [BAD]
+
+      NEVER EVER PUT "_" IN A CLASS NAME!!!
+
+    - Packages name should be all small caps:
+
+       edu.uci.ece.zen, java.lang, org.jacorb.poa  [GOOD]
+
+       MY.PACKAGE.rocks, org.COOLpakage.Magic      [BAD]
+
+
+    - Place particular attention to the access visibility that you give to
+
+

@@ -1,0 +1,16 @@
+#ifndef _BI_DIR_POLICY_IDL_
+#define _BI_DIR_POLICY_IDL_
+// Self contained module for Bi-directional GIOP policy
+#include <orb.idl>
+#pragma prefix "omg.org"
+module BiDirPolicy {
+    typedef unsigned short BidirectionalPolicyValue;
+	const BidirectionalPolicyValue NORMAL = 0;
+	const BidirectionalPolicyValue BOTH = 1;
+	const CORBA::PolicyType BIDIRECTIONAL_POLICY_TYPE = 36;
+	
+    interface BidirectionalPolicy : CORBA::Policy {
+	readonly attribute BidirectionalPolicyValue value;
+    };
+};
+#endif // _BI_DIR_POLICY_IDL_

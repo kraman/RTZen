@@ -1,0 +1,60 @@
+<!-- Helper file for Clover tasks. Must be called by main build file. -->
+<project default="clover">
+
+    <target name="clover" depends="with.clover, non_forking_compile"/>
+
+    <!-- *** Clover coverage tasks *** -->
+        
+    <target name="with.clover">
+        <taskdef resource="clovertasks"/>
+        <mkdir dir="${clover.temp}"/>
+       <clover-setup initString="${clover.temp}/coverage.db"
+        clovercompiler="org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter"
+        >
+
+         <files>
+           <exclude name="**/*Aspect.java"/>
+           <exclude name="**/*Debug.java"/>
+           <exclude name="**/omg/**/*.java"/>
+           <exclude name="**/oswego/**/*.java"/>
+         </files>
+              
+       </clover-setup>
+    </target>
+    
+    <!-- This is specifically for clover.  For some reason if the compilation forks,
+         clover doesn't recognize file exclusions
+    -->
+    <target name="non_forking_compile">
+        <echo message="Compiling OMG and Zen sources with the AspectJ compiler"/>
+      
+        <javac  
+            destdir="${zen.classdir}"          
+            srcdir="${zen.srcdir}"
+            failonerror = "true"
+            >  
+            
+            <patternset refid="sources"/>
+            
+            <classpath>
+                <pathelement location="${zen.classpath}"/> 
+            </classpath>
+            
+        </javac>  
+    </target>
+
+       <!--clovercompiler="iajc"-->
+    <target name="clover.swing" depends="with.clover">
+       <clover-view/>
+    </target>
+
+    <target name="clover.html" depends="with.clover">
+       <clover-report>
+          <current outfile="${clover.html}">
+             <format type="html"/> 
+          </current>     
+       </clover-report>
+    </target>    
+
+</project>
+
