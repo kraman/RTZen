@@ -81,7 +81,7 @@ public class RequestHeaderHelper {
      * @return the readed RequestHeader_1_0 value
      */
     public static RequestHeader read(org.omg.CORBA.portable.InputStream istream, RequestHeader new_one) {
-        //System.out.println( "In request header read" );
+        ZenProperties.logger.log( "Read RequestHeader_1_0" );
 
         new_one.service_context = edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper
                 .read(istream, FString.instance(new_one.service_context));
@@ -129,7 +129,7 @@ public class RequestHeaderHelper {
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream,
             RequestHeader value) {
-        //System.out.println("writing request header");
+        ZenProperties.logger.log("Write RequestHeader_1_0");
         //edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
         value.service_context.write(ostream);
         if (ZenProperties.dbg) ZenProperties.logger.log("sc len: " + value.service_context.length());

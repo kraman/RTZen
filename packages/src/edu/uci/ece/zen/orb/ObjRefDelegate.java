@@ -139,12 +139,13 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             ORBImpl orbImpl) {
         int tag = profile.tag;
         if (ZenProperties.dbg) ZenProperties.logger.log("processTaggedProfile " + tag);
-
+        ZenProperties.logger.log("ObjRefDel processTaggedProfile 1");
         switch (tag) {
             case TAG_INTERNET_IOP.value: //establish appropriate connections
             // and
             // register them
             {
+                ZenProperties.logger.log("ObjRefDel processTaggedProfile IIOP 1");
                 byte[] data = profile.profile_data;
 
                 CDRInputStream in = CDRInputStream.fromOctetSeq(data, orb);
@@ -158,6 +159,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 if (ZenProperties.dbg) ZenProperties.logger.log("iiop minor " + iiopMinor);
                 switch (iiopMinor) {
                     case 0: {
+                        ZenProperties.logger.log("ObjRefDel processTaggedProfile IIOPv1.0 1");                        
                         /*
                         TaggedProfileRunnable profRun = TaggedProfileRunnable.instance();
                         profRun.init(in);
@@ -193,7 +195,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                         } else {
                             FString.free(host);
                         }        
-
+                        ZenProperties.logger.log("ObjRefDel processTaggedProfile IIOPv1.0 2");
                         addLaneData(RealtimeThread.MIN_PRIORITY,
                                 99/* RealtimeThread.MAX_PRIORITY */,
                                 transportScope, object_key);
@@ -320,12 +322,13 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 ZenProperties.logger.log("TAG_MULTIPLE_COMPONENTS ignored");
                 break;
             case TAG_SERIAL.value: //process serial
+                ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 1");            
                 byte[] data = profile.profile_data;
                 CDRInputStream in = CDRInputStream.fromOctetSeq(data, orb);
                 FString object_key = in.getBuffer().readFString(false);
                 long connectionKey = -TAG_SERIAL.value;
                 ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
-        
+                ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 2");
                 if (transportScope == null) {
                     try{ 
                         transportScope = edu.uci.ece.zen.orb.transport.serial.Connector
@@ -339,6 +342,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                             99/* RealtimeThread.MAX_PRIORITY */,
                             transportScope, object_key);
                 }    
+                ZenProperties.logger.log("ObjRefDel processTaggedProfile SERIAL 3");
 
                 break;                
             default:

@@ -15,14 +15,17 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     public Transport(edu.uci.ece.zen.orb.ORB orb, edu.uci.ece.zen.orb.ORBImpl orbImpl, NativeSerialPort sock) {
         super(orb, orbImpl);
         try {
-            sock = sock;
+            ZenProperties.logger.log("++++++Serial Transport: Trying to get io streams");
+            this.sock = sock;
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
-            if (ZenProperties.dbg) ZenProperties.logger.log("Transport ready: " + istream + " " + ostream);
+            ZenProperties.logger.log("Serial Transport: Got io streams");
+            if (ZenProperties.dbg) ZenProperties.logger.
+                    log("Serial Transport ready: " + istream + " " + ostream);
             //setSockProps(sock, orb);
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
-                    getClass(), "<cinit>",
+                    getClass(), "<init>",
                     "Error connecting to remote location.", ex);
         }
     }

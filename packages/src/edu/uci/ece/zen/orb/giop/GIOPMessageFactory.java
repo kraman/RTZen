@@ -279,14 +279,11 @@ public final class GIOPMessageFactory {
         byte[] header = trans.getGIOPHeader();
         int read = 0;
         ZenProperties.logger.log("parseStreamForHeader: reading");
-        
-   
-        
-        while (read < 12) {
-            if(ZenProperties.devDbg) {
-                System.out.print("parseStreamForHeader bytes available: ");
-                System.out.println(in.available());
-            }               
+        if(ZenProperties.devDbg) {
+            System.out.print("parseStreamForHeader: buffer size");
+            System.out.println(header.length);
+        }          
+        while (read < 12) {          
             int tmp = in.read(header, 0, 12);
             //if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
@@ -294,10 +291,6 @@ public final class GIOPMessageFactory {
                 System.exit(0);
             }
             read += tmp;
-            if(ZenProperties.devDbg) {
-                System.out.print("tmp: ");
-                System.out.println(tmp);
-            }
         }
         ZenProperties.logger.log("parseStreamForHeader: done reading");
 

@@ -3,6 +3,7 @@ package edu.uci.ece.zen.orb.transport.serial;
 import java.io.*;
 import javax.realtime.*;
 import edu.oswego.cs.dl.util.concurrent.Mutex;
+import edu.uci.ece.zen.utils.ZenProperties;
 
 class NativeSerialPort
 {
@@ -11,7 +12,8 @@ class NativeSerialPort
     static
     {
         System.out.println("Loading libNativeSerialPort.so...");
-        System.load("/home/kraman/RTZen/packages/src/edu/uci/ece/zen/orb/transport/serial/jni/libNativeSerialPort.so");
+        //System.load("/home/mpanahi/RTZen/packages/src/edu/uci/ece/zen/orb/transport/serial/jni/libNativeSerialPort.so");
+        System.load(ZenProperties.getGlobalProperty( "serial.library.path" , "" ));
     }
 
     public synchronized static NativeSerialPort instance(){

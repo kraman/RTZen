@@ -17,15 +17,17 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             edu.uci.ece.zen.orb.ORBImpl orbImpl, java.net.Socket sock) {
         super(orb, orbImpl);
         try {
-            sock = sock;
+            ZenProperties.logger.log("*****IIOP Transport: Trying to get io streams");
+            this.sock = sock;
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
-            if (ZenProperties.dbg) ZenProperties.logger.log("Transport ready: "
+            ZenProperties.logger.log("IIOP Transport: Got io streams");
+            if (ZenProperties.dbg) ZenProperties.logger.log("IIOP Transport ready: "
                     + istream + " " + ostream);
             //setSockProps(sock, orb);
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
-                    getClass(), "<cinit>",
+                    getClass(), "<init>",
                     "Error connecting to remote location.", ex);
         }
     }
@@ -51,7 +53,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
                     + istream + " " + ostream);
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
-                    getClass(), "<cinit>",
+                    getClass(), "<init>",
                     "Error connecting to remote location.", ex);
         }
     }
