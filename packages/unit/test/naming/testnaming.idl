@@ -1,12 +1,15 @@
-module test
+module unit
 {
-	module nameservice
-	{
-		interface HelloWorld
-		{
-            attribute long id;
-			string getHelloMessage();
-		};
-	};
+    module test
+    {
+        module naming_JacORB
+        {
+            interface HelloWorld
+            {
+                attribute long id;
+                string getHelloMessage();
+            };
+        };
+    };
 };
 

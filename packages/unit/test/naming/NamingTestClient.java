@@ -1,4 +1,4 @@
-package unit.test.naming;
+package unit.test.naming_JacORB;
 
 import org.omg.CORBA.*;
 import javax.realtime.RealtimeThread;
@@ -12,7 +12,7 @@ import org.omg.CosNaming.NamingContextPackage.*;
 import org.omg.CosNaming.NamingContextExtPackage.*;
 
 /**
- * This class implements a simple Client for the CDR test
+ * This class implements a simple Naming test client
  *
  * @author <a href="mailto:yuez@doc.ece.uci.edu">Yue Zhang</a>
  * @version 1.0
@@ -21,13 +21,14 @@ import org.omg.CosNaming.NamingContextExtPackage.*;
 public class NamingTestClient extends RealtimeThread
 {
 
-	private HelloWorld stub;
+	//private HelloWorld stub;
 	protected NamingContextExt nameService;
+    //protected NamingTestServer server;
 
 	public static void main( String[] args ){
 		try{
 			//CDRTestClient rt = (CDRTestClient)( new RealtimeThread (null, null, null, new LTMemory( 3000, 300000), null, null));
-			RealtimeThread rt = (CDRTestClient) ImmortalMemory.instance().newInstance( CDRTestClient.class );
+			RealtimeThread rt = (NamingTestClient) ImmortalMemory.instance().newInstance( NamingTestClient.class );
 			rt.start();
 		}
 		catch(Exception ex){
@@ -42,15 +43,19 @@ public class NamingTestClient extends RealtimeThread
 
 			ORB orb = ORB.init((String[]) null, null);
 
-			BufferedReader br = new BufferedReader (new FileReader( "ior.txt" ));
-			String ior = br.readLine();
+//			BufferedReader br = new BufferedReader (new FileReader( "ior.txt" ));
+//			String ior = br.readLine();
 
-			org.omg.CORBA.Object obj = orb.string_to_object( ior );
-			stub = HelloWorldHelper.unchecked_narrow( obj );
+//			org.omg.CORBA.Object obj = orb.string_to_object( ior );
+//			stub = HelloWorldHelper.unchecked_narrow( obj );
 
-			nameService = orb.resolve_initial_references("NameService");
+			org.omg.CORBA.Object nameServiceObject = orb.resolve_initial_references("NameService");
+
+            nameService = NamingContextExtHelper.unchecked_narrow(nameServiceObject);
+      //      server = new NamingTestServer();
 
 			testToName();
+            testBind();
 
 
 
@@ -177,12 +182,51 @@ public class NamingTestClient extends RealtimeThread
 	        }
 	        catch (InvalidName e)
 	        {
-	            // Exception is supposed to happen; continue
-	        }*/
-       }
+                // Exception is supposed to happen; continue
+            }*/
+        }
+    public void testBind() throws Exception
+    {
+        String prefix = "hello";
+/*
+        // Bind three servants
+        for (int i = 0; i < 3; i++)
+        {
+            ((NamingTestServer)server).bindHello(nameService, prefix, i);
+        }
+*/
+        // Resolve the three servants and confirm that their identities are correct
+        for (int i = 0; i < 3; i++)
+        {
+            System.out.println("The naming is "+(nameService.to_name(prefix + i))[0]);
+            org.omg.CORBA.Object helloObject = nameService.resolve(nameService.to_name(prefix + i)); 
+            System.out.println("The object get is "+helloObject);
+            HelloWorld hello = HelloWorldHelper.unchecked_narrow( helloObject );
+            System.out.println(hello);
+            System.out.println(hello.id());            
+            if(hello.id() != i)
+                System.out.println("TestBind()failed!");
+            else{
+                System.out.println("TestBind() succeed with id "+i);
+            }
 
+        }
+        // Unbind the servants one at a time and check that they no longer exist in the name service
+        for (int i = 0; i < 3; i++)
+        {
+            nameService.unbind( nameService.to_name(prefix + i) );
 
+            try
+            {
+                nameService.resolve( nameService.to_name(prefix + i) );
 
+                System.err.println("The name service should have thrown a NotFound exception but didn't");
+            }
+            catch (NotFound e)
+            {
+                // Exception is supposed to happen; continue
+            }
+
+        }
+    }
 }
-
-

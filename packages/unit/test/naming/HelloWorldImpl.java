@@ -1,4 +1,4 @@
-package unit.test.naming;
+package unit.test.naming_JacORB;
 
 public class HelloWorldImpl extends HelloWorldPOA
 {
