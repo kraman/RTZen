@@ -40,7 +40,9 @@ class PlayerTableImpl extends PlayerTablePOA
 	}
     
 	public boolean addPlayer(String _name, int _xpos, int _ypos)
-	{  
+	{  	
+		// This is for the RTSJ (OVM) version:
+		/*
 	    // Copy name to the servant's scope
         String name = (String) MAUtils.buildInMA(
                 DoomServer.scope,
@@ -53,12 +55,16 @@ class PlayerTableImpl extends PlayerTablePOA
         System.out.println("getInitialMemoryAreaIndex = " + RealtimeThread.getInitialMemoryAreaIndex());
         System.out.println("PlayerTableImpl.addPlayer()");
         System.out.println("Current MA = " + RealtimeThread.getCurrentMemoryArea());
-
+		*/
+		
         if (players.size() == MAX_PLAYERS)
             return false;
 
-        if ( playerExists(name) )
+        if ( playerExists(_name) )
             return false;
+
+		// This is for the RTSJ (OVM) version:
+		/*
         Util.pln("Build in MA (Player), name = " + name);
         // Allocate player in servant's scope
         Player player = (Player) MAUtils.buildInMA(
@@ -66,9 +72,14 @@ class PlayerTableImpl extends PlayerTablePOA
                 Player.class,
                 new Class[] {String.class, Integer.TYPE, Integer.TYPE},
                 new Object[] {name, new Integer(_xpos), new Integer(_ypos)});
-        
+		        
         // Add player
         players.add( player );
+        */
+        
+        // And this is for the non-RT version:
+        players.add( new Player(_name, _xpos, _ypos) );
+        
         return true;
     }
 

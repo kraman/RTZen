@@ -33,23 +33,23 @@ public class CallServerImpl extends CallServerPOA
 
 	public DoomMap join(String name)
 	{
-	    System.out.println("CallServerImpl.join()");
-	    System.out.println("Current MA = " + RealtimeThread.getCurrentMemoryArea());
+//	    System.out.println("CallServerImpl.join()");
+//	    System.out.println("Current MA = " + RealtimeThread.getCurrentMemoryArea());
 		synchronized(playerTable)
 		{
 			if (playerTable.addPlayer(name, 8421376, 8421376))
 			{
 				doomServer.curMap.success = true;
 				doomServer.showPlayer();
-                 Util.pln("Going to return curMap");
-                 System.out.println("MA(curMap) = " + MemoryArea.getMemoryArea(doomServer.curMap));
+//                 Util.pln("Going to return curMap");
+//                 System.out.println("MA(curMap) = " + MemoryArea.getMemoryArea(doomServer.curMap));
 				return doomServer.curMap;
 			}
 
 			doomServer.curMap.success = false;
 			doomServer.showPlayer();
-            Util.pln("Going to return curMap");
-            System.out.println("MA(curMap) = " + MemoryArea.getMemoryArea(doomServer.curMap));
+//            Util.pln("Going to return curMap");
+//            System.out.println("MA(curMap) = " + MemoryArea.getMemoryArea(doomServer.curMap));
             
 			return doomServer.curMap;
 		}
