@@ -35,10 +35,12 @@ public abstract class Logger{
                 Class loggerClass = Class.forName( "edu.uci.ece.zen.utils."+loggerType+"Logger" );
                 instance = (Logger) loggerClass.newInstance();
             }catch( Exception e ){
+
                 System.err.println("Logger.instance(): " +
                     "Unable to load logger of type " + loggerType + ". Loading NullLogger.");
                 instance = new NullLogger();
                 e.printStackTrace();
+
             }
             instance.setLevel(level);
         }
@@ -67,8 +69,8 @@ public abstract class Logger{
 
     public static void printMemStats(int code){
 
-        MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
-        printMemStats(code, ma);
+        //MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
+        //printMemStats(code, ma);
 
     }
     public static void writeln(long a){
@@ -102,21 +104,22 @@ public abstract class Logger{
     }
 
     public static void printMemStats(int code, MemoryArea ma){
-        long mem = ma.memoryConsumed();
-        long rem = ma.memoryRemaining();
+
         //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());
         if(edu.uci.ece.zen.utils.ZenProperties.memDbg){
+            long mem = ma.memoryConsumed();
+            long rem = ma.memoryRemaining();
             write(code);
-        System.out.write( ',' );
-            write(mem);
-        System.out.write( ',' );
-            write(rem);
-        if(ma instanceof ScopedMemory){
             System.out.write( ',' );
-            write(((ScopedMemory)ma).getReferenceCount());
-        }
-        System.out.write( '\n' );
-        System.out.write( '\n' );
+            write(mem);
+            System.out.write( ',' );
+            write(rem);
+            if(ma instanceof ScopedMemory){
+                System.out.write( ',' );
+                write(((ScopedMemory)ma).getReferenceCount());
+            }
+            System.out.write( '\n' );
+            System.out.write( '\n' );
 
         /*
           mem = ma.memoryConsumed();
@@ -161,6 +164,7 @@ public abstract class Logger{
     }
 
     public static void printThreadStack(){
+
         if (edu.uci.ece.zen.utils.ZenProperties.dbgThreadStack)
         {
             System.out.println("Current thread is " + RealtimeThread.currentRealtimeThread());
@@ -201,6 +205,7 @@ class ConsoleLogger extends Logger
         if( level >= this.level ){
             printStream.print( Logger.levelLabels[level] );
             printStream.print(":");
+
 
             log(null, msg);
         }
