@@ -45,8 +45,8 @@
             optimize="${zen.optimization}"
             target="${javac.target}"
             includeJavaRuntime="yes"
-            bootclasspath="${zen.rtbootclasspath}"
-            classpath="${zen.classpath}"/>
+            bootclasspath="${zen.classpath};${java.home}/lib/rt.jar;${zen.rtbootclasspath}"
+            />
     </presetdef>
 
 </project>
