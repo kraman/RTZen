@@ -123,7 +123,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     public ScopedMemory orbImplRegion;
     public MemoryArea parentMemoryArea;
     private ORBImplRunnable orbImplRunnable;
-    private ORBStrToObjRunnable strToObjRunnable;
     private ConnectionRegistry connectionRegistry;
     private AcceptorRegistry acceptorRegistry;
     private WaiterRegistry waiterRegistry;
@@ -137,7 +136,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
 
     public ORB(){
         orbImplRunnable = new ORBImplRunnable(orbImplRegion);
-        strToObjRunnable = new ORBStrToObjRunnable();
         connectionRegistry = new ConnectionRegistry();//KLUDGE:ORB.maxSupportedConnections );
         connectionRegistry.init( 100 );
         acceptorRegistry = new AcceptorRegistry();
@@ -329,12 +327,16 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     public synchronized org.omg.CORBA.Object string_to_object(String str) {
         org.omg.IOP.IOR ior = IOR.parseString( this , str );
         org.omg.CORBA.portable.ObjectImpl objImpl = new ObjectImpl( ior );
-        strToObjRunnable.init( ior , objImpl );
-
-        ExecuteInRunnable r = getEIR();
+        ORBStrToObjRunnable strToObjRunnable = new ORBStrToObjRunnable();
+        strToObjRunnable.init( ior , objImpl ); 
+        System.out.println("yue1");
+        ExecuteInRunnable r = new ExecuteInRunnable();
+        System.out.println("yue2");
         r.init( strToObjRunnable , this.orbImplRegion );
+        System.out.println("yue3");
         try{
             parentMemoryArea.executeInArea( r );
+
         }catch( Exception e ){
             ZenProperties.logger.log(
                 Logger.SEVERE,
@@ -343,8 +345,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
                 "Could not get object due to exception: " + e.toString()
                 );
         }
-        freeEIR( r );
-
+        System.out.println("yue4");
+	System.out.println("yue5");
         return objImpl;
     }
 
@@ -624,6 +626,7 @@ class ORBInitRunnable implements Runnable{
 
 class ORBStrToObjRunnable implements Runnable{
     org.omg.IOP.IOR ior;
+
     org.omg.CORBA.portable.ObjectImpl objImpl;
 
     public ORBStrToObjRunnable(){

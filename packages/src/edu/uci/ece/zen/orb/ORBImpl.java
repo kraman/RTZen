@@ -25,6 +25,7 @@ public class ORBImpl{
         System.out.println( orbFacade.orbImplRegion );
         System.out.println( MemoryArea.getMemoryArea( orbImplRunnable ) );
         System.out.println( RealtimeThread.getCurrentMemoryArea() );
+        //NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null, null,null,(ScopedMemory)orbFacade.orbImplRegion,null,(java.lang.Runnable )orbImplRunnable );
         System.out.println( MemoryArea.getMemoryArea( new Integer(42)) );
         NoHeapRealtimeThread nhrt = new NoHeapRealtimeThread( null,null,null,orbFacade.orbImplRegion,null,orbImplRunnable );
         System.out.println( "======================starting nhrt in orb impl region=====================" );

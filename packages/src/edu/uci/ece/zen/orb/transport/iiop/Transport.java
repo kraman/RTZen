@@ -19,9 +19,10 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport{
     public Transport( edu.uci.ece.zen.orb.ORB orb , edu.uci.ece.zen.orb.ORBImpl orbImpl , String host , int port ){
         super( orb , orbImpl );
         try{
+            System.out.println( "Connecting to " + host + ":" + port );
             sock = new java.net.Socket( host , port );
-            setSockProps(sock, orb);
-            System.err.println( "sock = " + sock );
+            //setSockProps(sock, orb);
+            //             System.err.println( "sock = " + sock ); 
             istream = sock.getInputStream();
             ostream = sock.getOutputStream();
         }catch( Exception ex ){

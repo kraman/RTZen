@@ -100,7 +100,7 @@
                <patternset refid="sources"/>
             </fileset>
         </jRate>
-    -->
+	-->
         <jar 
         jarfile="${zen.libdir}/rteverything.jar" 
         basedir="${zen.classdir}" 
@@ -117,7 +117,6 @@
             failonerror = "true"
             fork = "true"
             maxmem="${build.maxmem}"
-            version="true"
             >  
             
             <patternset refid="sources"/>

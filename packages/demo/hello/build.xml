@@ -53,7 +53,7 @@
         includes="demo/hello/**"
         />
       <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate"/>
-      <jRate
+      <!-- <jRate
             optimizeLevel="2"
             libDirs="${zen.jRateLibDir}"
             additionalLinkOptions="-L${zen.libdir} -lZen"
@@ -71,7 +71,12 @@
                     <include name="demo/hello/**.java"/>
                 </patternset>
             </fileset>
-      </jRate>
+      </jRate>-->
+        <jar 
+        jarfile="${zen.libdir}/demo_hello.jar" 
+        basedir="${zen.classdir}" 
+        includes="demo/hello/**"
+        />
    </target>
 
     <target name="server">

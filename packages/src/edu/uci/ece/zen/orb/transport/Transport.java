@@ -29,11 +29,21 @@ public abstract class Transport implements Runnable{
      */
     public final void run(){
         messageProcessor = new MessageProcessor( this , orb );
-        NoHeapRealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,null,null,null,null,messageProcessor );
+        System.out.println("Transport.run() 1");
+
+        System.out.println( RealtimeThread.getCurrentMemoryArea() );
+        System.out.println( MemoryArea.getMemoryArea(messageProcessor) );
+        System.out.println( MemoryArea.getMemoryArea(this) );
+        
+        NoHeapRealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,messageProcessor );
+        System.out.println("Transport.run() 2");
         messageProcessorThr.setDaemon( true );
+        System.out.println("Transport.run() yue 3");
         messageProcessorThr.start();
+        System.out.println("Transport.run() 4");
         try{
             synchronized( waitObj ){
+                System.out.println("Transport.run() 5");
                 waitObj.wait();
             }
         }catch( InterruptedException ie ){
@@ -96,15 +106,30 @@ class MessageProcessor implements Runnable{
 
     public void run(){
         isActive = true;
+        System.out.println("Krishna noodle 1");
         GIOPMessageRunnable gmr = new GIOPMessageRunnable( orb , trans );
+         System.out.println("Krishna noodle 2");
+         
         ExecuteInRunnable eir = new ExecuteInRunnable();
+         System.out.println("Krishna noodle 3");
+         
 
         while( isActive ){
+             System.out.println("Krishna noodle 4");
+             
             ScopedMemory messageScope = ORB.getScopedRegion();
+             System.out.println("Krishna noodle 5");
+             
             gmr.setRequestScope( messageScope );
+             System.out.println("Krishna noodle 6");
+             
 
             eir.init( gmr , messageScope );
+             System.out.println("Krishna noodle 7");
+             
             try{
+             System.out.println("Krishna noodle 8");
+             
                 orb.orbImplRegion.executeInArea( eir );
             }catch( Exception e ){
                 ZenProperties.logger.log(
