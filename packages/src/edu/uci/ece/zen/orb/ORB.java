@@ -75,8 +75,8 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                 ZenProperties.logger.log(Logger.WARN, ORB.class, "static <init>", e);
             }
 
-            if(edu.uci.ece.zen.utils.ZenProperties.memDbg)
-                perf.cPrint.nativePrinter.print(0,0,0);
+//            if(edu.uci.ece.zen.utils.ZenProperties.memDbg)
+//                perf.cPrint.nativePrinter.print(0,0,0);
 
             imm = ImmortalMemory.instance();
             //Set up ORB Facades

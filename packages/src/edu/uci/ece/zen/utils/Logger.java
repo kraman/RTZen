@@ -65,17 +65,62 @@ public abstract class Logger{
         printMemStats(code, ma);
     
     }
+    public static void writeln(){
+        System.out.write( '\n' );
+        System.out.flush();
+    }
+    public static void write(long a){
+        for( long i = 10000000000L ; i > 0 ; i /= 10 ){
+            byte b = (byte) (a/i);
+            System.out.write( b + '0' );
+            a -= (b*i);
+        }
+        System.out.flush();
+    }
         
     public static void printMemStats(int code, MemoryArea ma){
 	    long mem = ma.memoryConsumed();
+	    long rem = ma.memoryRemaining();
         //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());            
         if(edu.uci.ece.zen.utils.ZenProperties.memDbg){
-             if(ma instanceof ScopedMemory)
-                perf.cPrint.nativePrinter.print(code,(int)mem,((ScopedMemory)ma).getReferenceCount());
-            else
-                perf.cPrint.nativePrinter.print(code,(int)mem,0);
+            write(code);
+        System.out.write( ',' );
+            write(mem);
+        System.out.write( ',' );
+            write(rem);
+        System.out.write( '\n' );
+        System.out.write( '\n' );
 
-
+        /*
+          mem = ma.memoryConsumed();
+	     rem = ma.memoryRemaining();
+  
+             write(code);
+        System.out.write( '\n' );
+            write(mem);
+        System.out.write( '\n' );
+            write(rem);
+        System.out.write( '\n' );
+        System.out.write( '\n' );
+          mem = ma.memoryConsumed();
+	     rem = ma.memoryRemaining();
+ 
+             write(code);
+        System.out.write( '\n' );
+            write(mem);
+        System.out.write( '\n' );
+            write(rem);
+        System.out.write( '\n' );
+        System.out.write( '\n' );
+          */ 
+        System.out.flush();
+           
+           /* 
+            if(ma instanceof ScopedMemory){
+               perf.cPrint.nativePrinter.print(code,(int)mem,((ScopedMemory)ma).getReferenceCount());
+            } else {
+               perf.cPrint.nativePrinter.print(code,(int)mem,0);
+            }*/
         }
     }
       
