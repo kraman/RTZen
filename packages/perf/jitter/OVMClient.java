@@ -37,7 +37,7 @@ public class OVMClient extends RealtimeThread
 		}
 
         System.out.println( "=====================Creating RT Thread in client==========================" );
-        RealtimeThread rt = (OVMClient) ImmortalMemory.instance().newInstance( Client.class );
+        RealtimeThread rt = (OVMClient) ImmortalMemory.instance().newInstance( OVMClient.class );
         System.out.println( "=====================Starting RT Thread in client==========================" );
         rt.start();
     }
