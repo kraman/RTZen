@@ -12,6 +12,7 @@ public abstract class Connector {
     public Connector() {
     }
 
+    private int statCount = 0;
     public final ScopedMemory connect(String host, short port,
             edu.uci.ece.zen.orb.ORB orb, ORBImpl orbImpl) {
 
@@ -35,7 +36,11 @@ public abstract class Connector {
         orbImpl.eirCache.enqueue(eir);
         orbImpl.eirCache.enqueue(eir2);
         orbImpl.crCache.enqueue(connRunnable);
-        return transportMem;
+        if (statCount % 100 == 0) {
+            edu.uci.ece.zen.utils.Logger.printMemStats(5);
+        }
+        statCount++;
+       return transportMem;
     }
 
     protected abstract Transport internalConnect(String host, int port,

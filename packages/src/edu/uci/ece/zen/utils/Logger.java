@@ -88,6 +88,10 @@ public abstract class Logger{
             write(mem);
         System.out.write( ',' );
             write(rem);
+        if(ma instanceof ScopedMemory){
+            System.out.write( ',' );
+            write(((ScopedMemory)ma).getReferenceCount());
+        }
         System.out.write( '\n' );
         System.out.write( '\n' );
 

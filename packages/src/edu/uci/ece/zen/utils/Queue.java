@@ -18,6 +18,8 @@ public class Queue {
     /** Object to synchronize the queue on. */
     private final Integer syncObject = new Integer(0);
 
+    private int size = 0;
+
     /**
      * Retrieve an empty queue node from the linked list
      * 
@@ -41,7 +43,15 @@ public class Queue {
         ret.next = null;
         return ret;
     }
-
+    
+    /**
+     * Return the size of the linked list
+     * 
+     */
+    public int size() {
+        return size;
+    }
+    
     /**
      * Return a QueueNode to the freee linked list
      * 
@@ -78,6 +88,7 @@ public class Queue {
      *            The object to enqueue
      */
     public void enqueue(Object data) {
+        size++;
         QueueNode node = getNode();
         node.value = data;
         synchronized (sObject) {
@@ -119,6 +130,7 @@ public class Queue {
      * @return The top value on the queue or null.
      */
     public Object dequeue() {
+        size--;
         QueueNode ret;
         synchronized (sObject) {
             if (allocListHead == null) return null;

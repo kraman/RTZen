@@ -22,7 +22,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             ostream = sock.getOutputStream();
             if (ZenProperties.dbg) ZenProperties.logger.log("Transport ready: "
                     + istream + " " + ostream);
-            setSockProps(sock, orb);
+            //setSockProps(sock, orb);
         } catch (Exception ex) {
             ZenProperties.logger.log(Logger.WARN,
                     getClass(), "<cinit>",

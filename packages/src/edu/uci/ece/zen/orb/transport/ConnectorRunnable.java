@@ -37,8 +37,13 @@ public class ConnectorRunnable implements Runnable {
         this.conn = conn;
         this.orb = orb;
     }
-
+    private int statCount = 0;
     public void run() {
+            statCount++;
+            if (statCount % 100 == 0) {
+                edu.uci.ece.zen.utils.Logger.printMemStats(5);
+            }
+
         int iport = 0;
         iport |= port & 0xffff;
         String host2 = new String(this.host.getTrimData());

@@ -551,13 +551,22 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
             return null;
         } else {
             mem = (ScopedMemory) unusedMemoryAreas.dequeue();
+            //Thread.dumpStack();
+            //Logger.write(900);
+            //System.out.write(',');
+            //Logger.write(unusedMemoryAreas.size());
+            //Logger.writeln();
         }
         return mem;
     }
 
     public static void freeScopedRegion(ScopedMemory sm) {
         unusedMemoryAreas.enqueue(sm);
-    };
+            //Logger.write(901);
+            //System.out.write(',');
+           // Logger.write(unusedMemoryAreas.size());
+            //Logger.writeln();
+   }
 
     public ConnectionRegistry getConnectionRegistry() {
         return connectionRegistry;

@@ -18,8 +18,14 @@ public class AcceptorRunnable implements Runnable {
         this.orb = orb;
     }
 
+    private int statCount = 0;
     public void run() {
-        ScopedMemory acceptorArea = (ScopedMemory) RealtimeThread
+            if (statCount % 100 == 0) {
+                edu.uci.ece.zen.utils.Logger.printMemStats(7);
+            }
+             statCount++;
+
+       ScopedMemory acceptorArea = (ScopedMemory) RealtimeThread
                 .getCurrentMemoryArea();
         orb.getAcceptorRegistry().addAcceptor(acceptorArea);
         Acceptor acceptor = new edu.uci.ece.zen.orb.transport.iiop.Acceptor(
