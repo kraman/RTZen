@@ -180,8 +180,17 @@ public class DataTypesImpl extends DataTypesPOA
 	}
 
 	public org.omg.CORBA.Object echoObject (org.omg.CORBA.Object objinVal, org.omg.CORBA.ObjectHolder objoutVal){
+         System.out.println("objinVal is "+objinVal);
+
+         
 
 		org.omg.CORBA.Object objretVal = objinVal;
+    //   System.out.println("objoutVal is "+objoutVal);
+
+        objoutVal.value = objinVal;
+       
+        System.out.println("objretVal is "+objretVal);
+        
 
 		return objretVal;
 	}

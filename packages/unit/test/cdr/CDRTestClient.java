@@ -18,7 +18,7 @@ public class CDRTestClient extends RealtimeThread
 {
 
 	private DataTypes stub;
-    private org.omg.CORBA.Object tempobj;
+    private org.omg.CORBA.Object obj;
 
 	public static void main( String[] args ){
 		try{
@@ -41,22 +41,24 @@ public class CDRTestClient extends RealtimeThread
 			BufferedReader br = new BufferedReader (new FileReader( "ior.txt" ));
 			String ior = br.readLine();
 
-			org.omg.CORBA.Object obj = orb.string_to_object( ior );
-            tempobj = obj;
-			stub = DataTypesHelper.unchecked_narrow( obj );
+			obj = orb.string_to_object( ior );
+            //tempobj = obj;
 
-			testShort();
-			testDouble();
+            stub = DataTypesHelper.unchecked_narrow( obj );
+            for(int i=0; i<10000;i++){
+                testShort();
+                testDouble();
 
-			testBoolean();
-			testString();
-			testOctet();
-			testOctetSeq();
-			testStructSeq();
-			testonewayShort();
-			//testShort();                        
-			//testObject();
-			testLongLong();
+                testBoolean();
+                testString();
+                testOctet();
+                testOctetSeq();
+                testStructSeq();
+                //testonewayShort();
+                //testShort();                        
+                testObject();
+                testLongLong();
+            }
 
 
 
@@ -360,11 +362,17 @@ public class CDRTestClient extends RealtimeThread
         System.out.println("Test Object");
         
 
-		org.omg.CORBA.Object objinVal = tempobj;
-		org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(tempobj);
+		org.omg.CORBA.Object objinVal = obj;
+		org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(obj);
 
+        System.out.println("The obj is "+obj);
+        System.out.println("The objoutVal is "+objoutVal);
 		org.omg.CORBA.Object objretVal = stub.echoObject(objinVal, objoutVal);
 
+        stub = DataTypesHelper.unchecked_narrow( objretVal );
+        
+        System.out.println("test testShort() in testObject()");
+        testShort();
 		return;
 
 	}
