@@ -32,11 +32,19 @@ package WITHIN regular Zen and execute:
 Copy the result files of the regular Zen named timeRecords.1.*.txt back to 
 the RTZen perf/jitter direcory for generating the graphs.
 
-
-For running the remote tests ssh has to be installed. Currently run_test is 
-setup to execute the remote part on node0.rtzen.pces.emulab.net. Modify the 
-script for a different hostname. Run the scripts as shown above but append a 
-zero '0' to the second argument (e.g. ./run_test both 20 2).
+The remote test execution is currently setup to run on node0.rtzen.pces.emulab.net and node1.rtzen.pces.emulab.net. It is required that ssh is installed. 
+Furthermore you need to be able to login from node1 to node0 via ssh WITHOUT
+entering a password (see "man ssh" for details). Plus you have to make
+sure that the evironment correct automatically after that login (only for
+execution, compilation is not required of course).
+Start the test from node1, for that run the scripts as shown above but append
+a 0 to the second argument. This shows that this particular implementation 
+has to be executed remote (e.g. ./run_tests both 20 2).
+Again the remote part will be executed on node0.rtzen.pces.emulab.net. 
+Modify the script for a different hostname. 
+NOTE: To be more accurate, the remote test can be originated from any node, 
+just the remote node is hard coded in the script (but up to now we only have 
+these two emulab nodes).
 
 
 2) Generating Graphs
