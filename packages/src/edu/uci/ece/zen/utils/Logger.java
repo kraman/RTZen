@@ -1,5 +1,6 @@
 package edu.uci.ece.zen.utils;
 
+import javax.realtime.*;
 public abstract class Logger{
     public static final int PEDANTIC=0;
     public static final int CONFIG=1;
@@ -32,6 +33,20 @@ public abstract class Logger{
     protected void setLevel( int level ){
         //this.level=level;
     }
+    
+    public static void printThreadStack(){
+
+
+        System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());            
+            
+        int curInd = RealtimeThread.getMemoryAreaStackDepth()-1;
+        System.out.println("cur mem stack pos: " + curInd);
+
+        for(int i = curInd; i >= 0; --i)
+            System.out.println("mem area at pos " + i + " is " + RealtimeThread.getOuterMemoryArea(i));
+ 
+    }
+
 }
 
 class ConsoleLogger extends Logger{

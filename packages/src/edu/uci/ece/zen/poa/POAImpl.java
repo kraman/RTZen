@@ -246,6 +246,11 @@ public class POAImpl{
             ScopedMemory tpRegion = this.orb.getThreadPoolRegion(tpId);
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 8" );
 
+            edu.uci.ece.zen.utils.Logger.printThreadStack();
+                       
+            System.out.println("requestScope  is " + requestScope);
+            System.out.println("req allocated in " + MemoryArea.getMemoryArea(req));
+            
             ExecuteInRunnable eir = (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             TPRunnable tpr = (TPRunnable) requestScope.newInstance( TPRunnable.class );
             if(ZenProperties.devDbg) System.out.println( "POAImpl.handled 10" );

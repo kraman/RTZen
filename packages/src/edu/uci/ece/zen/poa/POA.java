@@ -171,6 +171,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         r.addParam( sreq );
         r.addParam( RealtimeThread.getCurrentMemoryArea() );
 
+        edu.uci.ece.zen.utils.Logger.printThreadStack();
+        
         ExecuteInRunnable eir1 = new ExecuteInRunnable();
         eir1.init( r , poaMemoryArea );
         try{

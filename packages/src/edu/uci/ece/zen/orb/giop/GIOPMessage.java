@@ -41,7 +41,11 @@ public abstract class GIOPMessage{
 
     protected Transport transport;
     public void setTransport( Transport t ){
+
         System.out.println("GIOPMessage yuez 1");
+
+        edu.uci.ece.zen.utils.Logger.printThreadStack();
+
         System.out.println(javax.realtime.RealtimeThread.getCurrentMemoryArea());
         System.out.println(javax.realtime.MemoryArea.getMemoryArea(t));
         System.out.println(javax.realtime.MemoryArea.getMemoryArea(this));        

@@ -222,14 +222,19 @@ class GIOPMessageRunnable implements Runnable{
     public void run(){
         try{
             if(ZenProperties.devDbg) System.out.println( "GIOPMessageRunnable.run 1" );
+            
+            edu.uci.ece.zen.utils.Logger.printThreadStack();
+            
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
             if(ZenProperties.devDbg) System.out.println( "GIOPMessageRunnable.run 2" );
             if( message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage ){
+               
                 if(ZenProperties.devDbg) System.out.println( "GIOPMessageRunnable.run 3" );
                 if(ZenProperties.devDbg) System.out.println( trans );
                 if(ZenProperties.devDbg) System.out.println( trans.orbImpl );
                 if(ZenProperties.devDbg) System.out.println( trans.orbImpl.getServerRequestHandler() );
                 if(ZenProperties.devDbg) System.out.println( message );
+
                 trans.orbImpl.getServerRequestHandler().handleRequest( (edu.uci.ece.zen.orb.giop.type.RequestMessage) message );
                 if(ZenProperties.devDbg) System.out.println( "GIOPMessageRunnable.run 4" );
             }
