@@ -1,0 +1,35 @@
+<project name="iSoLeak" default="compile">
+    <import file="../../../init.xml"/>
+
+    <target name="run" depends="compile">
+        <java 
+            classname="IsoLeak"
+            classpath="${zen.libdir}/RTZen.jar;${java.home}/lib/rt.jar;${zen.rtbootclasspath};${zen.srcdir}/util/iSoLeak/bcel-5.1.jar:${zen.classdir}"
+            fork="true"
+            >
+            <arg line="${zen.libdir}/RTZen.jar iSoLeak.map"/>
+        </java>
+        <delete dir="${zen.classdir}/edu"/>
+        <delete dir="${zen.classdir}/org"/>       
+        <move todir="${zen.classdir}/edu">
+            <fileset dir="edu"/>
+        </move>        
+        <move todir="${zen.classdir}/org">
+            <fileset dir="org"/>
+        </move>  
+    </target>
+
+    <target name="compile">
+        <javac
+            destdir="${zen.classdir}"
+            srcdir="${zen.srcdir}/util/iSoLeak"
+            failonerror="true"
+            fork="true"
+            bootclasspath="${java.home}/lib/rt.jar;${zen.rtbootclasspath};${zen.srcdir}/util/iSoLeak/bcel-5.1.jar"
+            memoryMaximumSize="256m"
+            compiler="modern"
+            >
+            <include name="IsoLeak**.java"/>
+        </javac>
+    </target>
+</project>
