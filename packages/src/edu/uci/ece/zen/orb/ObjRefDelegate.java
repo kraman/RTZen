@@ -567,8 +567,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////Request / Reply
-    // stuff///////////////////////////
+    ///////////////////////////////Request / Reply stuff///////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -609,12 +608,9 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      * </p>
      */
     public org.omg.CORBA.portable.InputStream invoke(org.omg.CORBA.Object self, org.omg.CORBA.portable.OutputStream os)
-            throws org.omg.CORBA.portable.ApplicationException,
-            org.omg.CORBA.portable.RemarshalException {
+            throws org.omg.CORBA.portable.ApplicationException, org.omg.CORBA.portable.RemarshalException {
         try{
-            //        edu.uci.ece.zen.utils.Logger.printMemStats(302);
             org.omg.CORBA.portable.InputStream ret = ((ClientRequest) os).invoke();
-            //      edu.uci.ece.zen.utils.Logger.printMemStats(303);
             ((ClientRequest) os).free();
             return ret;
         }catch( NullPointerException npe ){
@@ -631,8 +627,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     ///////////////////////////////////DII // Stuff////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
 
-    public org.omg.CORBA.Request request(org.omg.CORBA.Object self,
-            String operation) {
+    public org.omg.CORBA.Request request(org.omg.CORBA.Object self, String operation) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
@@ -659,8 +654,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////Local
-    // Invocations///////////////////////////
+    ///////////////////////////////////Local Invocations///////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
 
     public org.omg.CORBA.portable.ServantObject servant_preinvoke(
@@ -673,36 +667,3 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 }
-/*
-class TaggedProfileRunnable implements Runnable{
-    private static Queue queue = Queue.fromImmortal();
-
-    public org.omg.IIOP.Version iiop_version;
-
-    public FString host;
-
-    public short port;
-
-    public FString object_key;
-
-
-    CDRInputStream in;
-
-    public static TaggedProfileRunnable instance() {
-        return (TaggedProfileRunnable)ORB.getQueuedInstance(TaggedProfileRunnable.class,queue);
-    }
-
-    public void init(CDRInputStream in){
-        this.in = in;
-    }
-
-    public void run(){
-        org.omg.IIOP.ProfileBody_1_0 profilebody =
-                org.omg.IIOP.ProfileBody_1_0Helper.read(in);
-
-
-        port = profilebody.port;
-    }
-
-}
-*/

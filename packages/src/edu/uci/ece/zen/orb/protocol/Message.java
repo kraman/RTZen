@@ -22,7 +22,8 @@ public abstract class Message {
     protected CDRInputStream istream;
     protected ScopedMemory scope;
     protected ReadBuffer messageBody;
-    private static final short defaultPriority = PriorityMappingImpl.toCORBA( (short) javax.realtime.PriorityScheduler.instance().getNormPriority() );
+    private static final short defaultPriority = 
+        PriorityMappingImpl.toCORBA( (short) javax.realtime.PriorityScheduler.instance().getNormPriority() );
     protected short priority;
         
 
@@ -38,6 +39,7 @@ public abstract class Message {
         this.istream = CDRInputStream.instance();
         this.istream.init(orb, stream);
         priority = defaultPriority;
+        ZenProperties.logger.log( "Setting default norm priority in Message.init()" );
     }
     
     public short getPriority(){

@@ -443,21 +443,14 @@ public final class GIOPMessageFactory extends MessageFactory{
                 rh.init(req.getRequestId(),org.omg.GIOP.ReplyStatusType_1_0._NO_EXCEPTION);
 
                 // add Reply service context here, should probably be factored out
-
                 //using these global variables still a hack for now
                 if (edu.uci.ece.zen.orb.transport.iiop.Acceptor.priorityModel == org.omg.RTCORBA.PriorityModel._CLIENT_PROPAGATED
                         && edu.uci.ece.zen.orb.transport.iiop.Acceptor.serverPriority >= 0) {
-
                     ZenProperties.logger.log("Sending CLIENT PROPAGATED service context");
-
                     rh.service_context.append(1); //list size
-
                     rh.service_context.append(org.omg.IOP.RTCorbaPriority.value);
-                    //contexts.append(0); //big endian
-
                     rh.service_context.append(4); //length of data
                     rh.service_context.append((int) orb.getRTCurrent().the_priority());
-
                 } else {
                     rh.service_context.append(0); //empty list
                 }
@@ -512,8 +505,7 @@ public final class GIOPMessageFactory extends MessageFactory{
         return out;
     }
 
-    public CDROutputStream constructExceptionMessageImpl(ORB orb,
-            RequestMessage req) {
+    public CDROutputStream constructExceptionMessageImpl(ORB orb, RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
 
@@ -530,8 +522,7 @@ public final class GIOPMessageFactory extends MessageFactory{
 
         switch (req.getVersion()) {
             case 10:
-                edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader
-                        .instance();
+                edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader.instance();
                 rh.init(req.getRequestId(), org.omg.GIOP.ReplyStatusType_1_0._USER_EXCEPTION);
                 rh.service_context.append(0);
                 edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeaderHelper.write(out, rh);
