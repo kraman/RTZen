@@ -44,11 +44,12 @@
         <java classname="IsoLeak"
               fork="yes"
               failonerror="yes"
-              classpath="utils:utils/bcel-5.1.jar:${zen.classpath}"
+              classpath="utils:utils/bcel-5.1.jar:lib/RTZen.jar"
               >
               <arg line="lib/RTZen.jar"/>
         </java>     
-        
+        <delete dir="classes/edu"/>
+        <delete dir="classes/org"/>       
           <move todir="classes/edu">
             <fileset dir="edu"/>
           </move>        

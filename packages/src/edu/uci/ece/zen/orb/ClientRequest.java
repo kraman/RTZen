@@ -148,7 +148,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
      */
     public CDRInputStream invoke() {
         //out.printWriteBuffer(); This will printout every byte in the OutputStream
-
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(311);
         ZenProperties.logger.log("ClientRequest invoke 1");
         out.updateLength();
         MessageComposerRunnable mcr = MessageComposerRunnable.instance();
@@ -160,7 +160,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
         erOrbMem.init(erMsgMem, orb.orbImplRegion);
         erMsgMem.init(mcr, messageScope);
         ZenProperties.logger.log("ClientRequest invoke 2");
-        //edu.uci.ece.zen.utils.Logger.printMemStats(312);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(312);
         try {
             if (orb.parentMemoryArea == RealtimeThread.getCurrentMemoryArea())
                 erOrbMem.run();
@@ -171,19 +171,25 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
                     getClass(), "invoke()",
                     "Could not invoke remote object", e);
         }
-        //edu.uci.ece.zen.utils.Logger.printMemStats(313);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(313);
         ZenProperties.logger.log("ClientRequest invoke 3");
         ORB.freeScopedRegion(messageScope);
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(315);
         orb.freeEIR( erOrbMem );
         orb.freeEIR( erMsgMem );
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(316);
         CDRInputStream reply = null;
         if (mcr.success){
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(317);
             reply = mcr.getReply();
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(318);
             mcr.release();
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(319);
         }else{
             mcr.release();
             throw new org.omg.CORBA.TRANSIENT();
         }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(3100);
         return reply;
     }
 

@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.zip.*;
 
 public class IsoLeak {
-    static int cntr=0;
+    static int cntr=50000;
     public static void main(String args[]) throws Exception{
 
         ZipInputStream zip = new ZipInputStream(new FileInputStream(args[0]));
@@ -27,7 +27,7 @@ public class IsoLeak {
     }
 
     static void changeMethods( JavaClass cls , String name ){
-        if( name.indexOf("uci") > -1 && name.indexOf("Logger") == -1 && !cls.isNative() ){
+        if( name.indexOf("uci") > -1 && name.indexOf("utils") == -1 && !cls.isNative() ){
             Type[] parameters = new Type[]{Type.INT};
             String methodSignature = Type.getMethodSignature(Type.VOID, parameters);
             ConstantPoolGen pool = new ConstantPoolGen( cls.getConstantPool() );

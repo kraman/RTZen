@@ -34,12 +34,12 @@ public final class GIOPMessageFactory extends MessageFactory{
 
     public Message parseStreamImpl(ORB orb, Transport trans)
             throws java.io.IOException {
-        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(330);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(330);
         ReadBuffer buffer = ReadBuffer.instance();
         
         buffer.init();
         
-        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(331);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(331);
 
         Object obj = trans.getObject(3);
         ProtocolHeaderInfo mainMsgHdr;
@@ -51,17 +51,17 @@ public final class GIOPMessageFactory extends MessageFactory{
             mainMsgHdr = (edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo)obj;
         }
 
- //       edu.uci.ece.zen.utils.Logger.printMemStats(333);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(332);
 
 
         edu.uci.ece.zen.orb.protocol.Message ret = null;
 
  //       edu.uci.ece.zen.utils.Logger.printMemStats(334);
-        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(332);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(333);
 
         do {
             java.io.InputStream in = trans.getInputStream();
- //           edu.uci.ece.zen.utils.Logger.printMemStats(335);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(334);
 
             boolean status = parseStreamForHeaderImpl(in, mainMsgHdr, trans);
             if( !status )
@@ -72,7 +72,7 @@ public final class GIOPMessageFactory extends MessageFactory{
             // Read the GIOP message (including any request/reply/etc headers)
             // into the variable "buffer"
             buffer.setEndian(mainMsgHdr.isLittleEndian);
- //           edu.uci.ece.zen.utils.Logger.printMemStats(337);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(335);
 
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
 
@@ -210,7 +210,7 @@ public final class GIOPMessageFactory extends MessageFactory{
 
         ScopedMemory transportScope = (ScopedMemory) javax.realtime.MemoryArea.getMemoryArea(trans);
 
- //       edu.uci.ece.zen.utils.Logger.printMemStats(340);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(338);
 
         transportScope.setPortal( trans );
 
@@ -224,6 +224,7 @@ public final class GIOPMessageFactory extends MessageFactory{
             System.out.print("parse stream messageId:");
             System.out.println(ret.getRequestId());
         }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(339);
         return ret;
     }
 
@@ -317,6 +318,7 @@ public final class GIOPMessageFactory extends MessageFactory{
             throws java.io.IOException {
         ZenProperties.logger.log("parseStreamForHeader");
         //byte[] header = new byte[12];
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(3340);
         byte[] header = trans.getGIOPHeader();
         int read = 0;
         ZenProperties.logger.log("parseStreamForHeader: reading");
@@ -325,6 +327,7 @@ public final class GIOPMessageFactory extends MessageFactory{
             System.out.println(header.length);
             System.out.println("inputstream: " + in);
         }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(3341);
         while (read < header.length) {
             int tmp = in.read(header, 0, header.length);
             //if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
@@ -333,6 +336,7 @@ public final class GIOPMessageFactory extends MessageFactory{
             }
             read += tmp;
         }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(3342);
         ZenProperties.logger.log("parseStreamForHeader: done reading");
 
         // Bytes 0,1,2,3 should equal 'GIOP'
@@ -383,6 +387,7 @@ public final class GIOPMessageFactory extends MessageFactory{
             headerInfo.messageSize <<= 8;
             headerInfo.messageSize |= header[11] & 0xFF;
         }
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(3342);
         //System.out.println( "Message size " + headerInfo.messageSize );
         return true;
     }
