@@ -8,6 +8,8 @@ import edu.uci.ece.zen.utils.ZenProperties;
 class NativeSerialPort
 {
     public static NativeSerialPort _instance;
+    public Mutex lock = new Mutex();
+    public Transport myTransport;
 
     static
     {
@@ -34,7 +36,6 @@ class NativeSerialPort
     }
 
     byte[] tmpBuffer;
-    public Mutex lock = new Mutex();
     public InputStream istream = new SerialPortInputStream();
     public OutputStream ostream = new SerialPortOutputStream();
     private NativeSerialPort(){
@@ -44,8 +45,6 @@ class NativeSerialPort
     public synchronized NativeSerialPort accept(){
         try{
             ZenProperties.logger.log( "++++++++++++Serial port: accept called() " );
-            lock.acquire();
-            ZenProperties.logger.log( "++++++++++++Serial port: accept called(); lock acquired" );
             while( true ){
                 int size = getMessage( tmpBuffer );
                 if (ZenProperties.dbg) {
@@ -54,7 +53,7 @@ class NativeSerialPort
                     System.out.println("");
                 }
                 if( tmpBuffer[0] == 2 && tmpBuffer[1] == 1 && tmpBuffer[2] == 7 && tmpBuffer[3] == 7 ){
-                    ZenProperties.logger.log( "Serial port: accept called(); lock acquired; magic recieved" );
+                    ZenProperties.logger.log( "Serial port: accept called(); magic recieved" );
                     return this;
                 }else{
                     ZenProperties.logger.log("Synchronization lost. port reset" );

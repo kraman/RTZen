@@ -75,7 +75,6 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     }
 
     public void finalize(){
-        NativeSerialPort.instance().lock.release();
     }
 }
 

@@ -4,32 +4,21 @@ import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 
 public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
-
-    byte[] magic = new byte[89];
-
     public Connector() {
-	magic[0]=2;
-	magic[1]=1;
-	magic[2]=7;
-	magic[3]=7;
     }
 
     protected edu.uci.ece.zen.orb.transport.Transport internalConnect(
             String host, int port, edu.uci.ece.zen.orb.ORB orb,
             edu.uci.ece.zen.orb.ORBImpl orbImpl) {
         System.err.println( "Serial transport: internalConnect() " );
-        
-        try{
-            if( !NativeSerialPort.instance().lock.attempt(0) ){
-                ZenProperties.logger.log("------------------------------ Returning null transport in SERIAL connector."); 
-                return null; 
-            }
-	    NativeSerialPort.instance().setMessage( magic , 89 );
-        }catch(Exception ie){
-            ie.printStackTrace();
-        }
-                    
-        return new Transport(orb, orbImpl);
+	try{
+		if( NativeSerialPort.instance().lock.attempt(0) ){
+		    return NativeSerialPort.instance().myTransport = new Transport(orb, orbImpl);
+		}else
+		    return NativeSerialPort.instance().myTransport;
+	}catch( Exception e ){
+	    return NativeSerialPort.instance().myTransport;
+	}
     }
 
     private static Connector _instance;

@@ -28,13 +28,14 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
     }
 
     protected void accept() {
-        //try {
+        try {
             System.err.println( "Serial transport: accept() " );
-            Transport t = new Transport(orb, orbImpl, sock.accept());
+            sock.lock.acquire();
+            Transport t = new Transport(orb, orbImpl, sock);
             registerTransport(t);
-        //} catch (java.io.IOException ioex) {
-        //    ZenProperties.logger.log(Logger.WARN, getClass(), "accept", ioex);
-        //}
+        } catch (Exception ioex) {
+            ZenProperties.logger.log(Logger.WARN, getClass(), "accept", ioex);
+        }
     }
 
     protected void internalShutdown() {
