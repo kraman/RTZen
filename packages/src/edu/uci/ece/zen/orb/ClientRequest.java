@@ -59,22 +59,14 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
             short priority = orb.getRTCurrent().the_priority();
             out1.write_short(priority);
 
-/*
-            contexts[0].context_data = new byte[4];
-
-            contexts[0].context_data[0] = (byte)0;
-            contexts[0].context_data[1] = (byte)0;
-            contexts[0].context_data[2] = (byte)0;
-            contexts[0].context_data[3] = (byte)priority;
-*/
             int lim = (int)out1.getBuffer().getLimit();
             contexts[0].context_data = new byte[lim];
-            out1.getBuffer().readByteArray(contexts[0].context_data, 0 , lim);
+            out1.getBuffer().getReadBuffer().readByteArray(contexts[0].context_data, 0 , lim);
 
-            System.out.println("data " + contexts[0].context_data[0] + "-" + contexts[0].context_data[1] + "-" +
-                                         contexts[0].context_data[2] + "-" + contexts[0].context_data[3]);
+            //System.out.println("data " + contexts[0].context_data[0] + "-" + contexts[0].context_data[1] + "-" +
+            //                             contexts[0].context_data[2] + "-" + contexts[0].context_data[3]);
 
-            System.out.println("________________Sending priority: " + priority);
+            System.out.println("CLIENT_PROPAGATED policy -- Sending priority: " + priority);
             out1.free();
         }else{
              contexts = new ServiceContext[0];
