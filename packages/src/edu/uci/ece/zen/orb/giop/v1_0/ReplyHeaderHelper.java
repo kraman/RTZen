@@ -39,7 +39,7 @@ public class ReplyHeaderHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, ReplyHeader value)
     {
-        System.out.println("writing REPLY 1.0 header");
+        if(ZenProperties.devDbg) System.out.println("writing REPLY 1.0 header");
 
         //ServiceContextListHelper.write(ostream,value.service_context);
 

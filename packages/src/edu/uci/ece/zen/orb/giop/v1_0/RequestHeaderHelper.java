@@ -144,8 +144,8 @@ public class RequestHeaderHelper
         //System.out.println("writing request header");
         //edu.uci.ece.zen.orb.giop.IOP.ServiceContextListHelper.write(ostream,value.service_context);
         value.service_context.write(ostream);
-        System.out.println("sc len: " + value.service_context.length());
-        System.out.println("sc: " + value.service_context.decode());
+        if(ZenProperties.devDbg) System.out.println("sc len: " + value.service_context.length());
+        if(ZenProperties.devDbg) System.out.println("sc: " + value.service_context.decode());
         //ostream.write_ulong(0);
 
         ostream.write_ulong(value.request_id);
