@@ -27,7 +27,7 @@ public abstract class SerialPort
     Sends the buffer through the serial port and blocks until all bytes
     in the buffer have been sent.
     */
-    abstract void setMessage(byte[] buffer, int messageLength) throws IOException;
+    public abstract void setMessage(byte[] buffer, int messageLength) throws IOException;
 
     /**
     Retrieves a message from the serial port, blocking until one is available.
@@ -37,7 +37,7 @@ public abstract class SerialPort
     the serial port.
     @return The number of bytes that were read into the buffer.
     */
-    abstract int getMessage(byte[] buffer) throws IOException;
+    public abstract int getMessage(byte[] buffer) throws IOException;
 
     public synchronized SerialPort accept(){
         try{
