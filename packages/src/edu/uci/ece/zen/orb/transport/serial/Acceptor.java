@@ -41,21 +41,16 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
 
     protected TaggedProfile getInternalProfile(byte iiopMajorVersion, byte iiopMinorVersion, byte[] objKey) {
         System.err.println( "Serial transport: getInternalProfile() " );
-        Version version = new Version(iiopMajorVersion, iiopMinorVersion);
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
         out.write_boolean(false); //BIGENDIAN
-        //edu.uci.ece.zen.utils.Logger.printThreadStack();
+        out.write_octet_array(objKey, 0, objKey.length);
 
         TaggedProfile tp = new TaggedProfile();
         tp.tag = TAG_SERIAL.value;
-        tp.profile_data = new byte[objKey.length];
-        //tp.profile_data[0] = iiopMinorVersion;
-        //tp.profile_data[1] = iiopMajorVersion;
-        out.write_octet_array(objKey, 0, objKey.length);
-
-        out.getBuffer().readByteArray(tp.profile_data, 0, 2);
-        out.free();        
+        tp.profile_data = new byte[(int)out.getBuffer().getLimit()];
+        out.getBuffer().readByteArray(tp.profile_data, 0, (int) out.getBuffer().getLimit());
+        out.free();
         
         return tp;
     }

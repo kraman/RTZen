@@ -40,6 +40,8 @@ public class ConnectorRunnable implements Runnable {
         this.orb = orb;
     }
     private int statCount = 0;
+    private boolean retVal;
+    public boolean getReturnStatus(){ return retVal; }
     public void run() {
         statCount++;
         if (statCount % 100 == 0) {
@@ -48,16 +50,24 @@ public class ConnectorRunnable implements Runnable {
 
         int iport = 0;
         iport |= port & 0xffff;
-        String host2 = new String(this.host.getTrimData());
-        FString.free(host);
+        String host2=null;
+        if( host != null ){
+            host2 = new String(this.host.getTrimData());
+            FString.free(host);
+        }
         
         Transport trans = conn.internalConnect(host2, iport, orb,
                 (ORBImpl) orb.orbImplRegion.getPortal());
-        RealtimeThread transportThread = new NoHeapRealtimeThread(null, null,
-                null, RealtimeThread.getCurrentMemoryArea(), null, trans);
-        //RealtimeThread transportThread = new
-        // RealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);
-        transportThread.start();
-        ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(trans);
+        if( trans != null ){
+            RealtimeThread transportThread = new NoHeapRealtimeThread(null, null,
+                    null, RealtimeThread.getCurrentMemoryArea(), null, trans);
+            //RealtimeThread transportThread = new
+            // RealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);
+            transportThread.start();
+            ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(trans);
+            retVal = true;
+        }else{
+            retVal = false;
+        }
     }
 }

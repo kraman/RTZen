@@ -14,9 +14,7 @@ public abstract class Connector {
     }
 
     private int statCount = 0;
-    public final ScopedMemory connect(FString host, short port,
-            edu.uci.ece.zen.orb.ORB orb, ORBImpl orbImpl) {
-
+    public final ScopedMemory connect(FString host, short port, edu.uci.ece.zen.orb.ORB orb, ORBImpl orbImpl) {
         ExecuteInRunnable eir = (ExecuteInRunnable) orbImpl.eirCache.dequeue();
         if (eir == null) eir = new ExecuteInRunnable();
         ExecuteInRunnable eir2 = (ExecuteInRunnable) orbImpl.eirCache.dequeue();
@@ -41,7 +39,11 @@ public abstract class Connector {
             edu.uci.ece.zen.utils.Logger.printMemStats(5);
         }
         statCount++;
-       return transportMem;
+        if( !connRunnable.getReturnStatus() ){
+            ORB.freeScopedRegion( transportMem );
+            return null;
+        }
+        return transportMem;
     }
 
     protected abstract Transport internalConnect(String host, int port,

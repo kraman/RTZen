@@ -29,7 +29,7 @@ public class Connector extends edu.uci.ece.zen.orb.transport.Connector {
                 _instance = (Connector) javax.realtime.ImmortalMemory
                         .instance()
                         .newInstance(
-                                edu.uci.ece.zen.orb.transport.iiop.Connector.class);
+                                edu.uci.ece.zen.orb.transport.serial.Connector.class);
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, Connector.class, "instance", e);
             }
