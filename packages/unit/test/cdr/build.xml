@@ -89,8 +89,8 @@
       <delete dir="${zen.classdir}/${package.dir}"/>
       <delete file="${package.dir}/CDRTestClient"/>
       <delete file="${package.dir}/CDRTestServer"/>
-      <delete quiet="true" defaultexcludes="no"> 
-          <fileset dir="${package.dir}" includes="*.o"/> 
+      <delete quiet="true" > 
+          <fileset dir="${package.dir}" includes="*.o" defaultexcludes="no"/> 
       </delete> 
     </target>
 </project>

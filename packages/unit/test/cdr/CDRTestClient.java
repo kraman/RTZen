@@ -53,7 +53,7 @@ public class CDRTestClient extends RealtimeThread
 			testStructSeq();
 			testonewayShort();
 			testShort();                        
-			//testObject();*/
+			testObject();
 			testLongLong();
 
 
