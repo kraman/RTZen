@@ -17,7 +17,7 @@ public class WriteBuffer {
     private static int LONG = 4;
 
     private static int LONGLONG = 8;
-    
+
     private static Object [] vectorArgTypes;
     private static java.lang.reflect.Constructor vectorConstructor;
     private static int maxCap = 10;
@@ -29,7 +29,7 @@ public class WriteBuffer {
             vectorArgTypes = new Object[1];
             maxCap = Integer.parseInt(ZenProperties
                 .getGlobalProperty( "writebuffer.size" , "10" ));
-            vectorArgTypes[0] = new Integer(maxCap);               
+            vectorArgTypes[0] = new Integer(maxCap);
             bufferCache = (Queue) ImmortalMemory.instance().newInstance(
                     Queue.class);
         } catch (Exception e) {
@@ -40,9 +40,10 @@ public class WriteBuffer {
     private static int numFree = 0;
     static int idgen = -1;
     int id;
+    boolean inUse = false;
     public static WriteBuffer instance() {
         try {
-            
+
             //Thread.dumpStack();
             idgen++;
             numFree--;
@@ -52,11 +53,13 @@ public class WriteBuffer {
                     .instance().newInstance(WriteBuffer.class);
                 //System.out.println("WWINST:" + idgen);
                 wb.id = idgen;
-                return wb;    
+                wb.inUse = true;
+                return wb;
             } else {
                 WriteBuffer wb = (WriteBuffer) bufferCache.dequeue();
                 //System.out.println("WWINST:" + idgen);
                 wb.id = idgen;
+                wb.inUse = true;
                 return wb;
             }
         } catch (Exception e) {
@@ -109,6 +112,15 @@ public class WriteBuffer {
     }
 
     public void free() {
+
+        if(!inUse){
+            ZenProperties.logger.log(Logger.WARN, WriteBuffer.class,
+                "free",
+                "Buffer already freed.");
+                //System.exit(-1);
+                //still deciding what to do here
+            return;
+        }
         //Thread.dumpStack();
         //System.out.println("WWFREE:" + id);
 
@@ -128,9 +140,11 @@ public class WriteBuffer {
         init();
         WriteBuffer.release(this);
         numFree++;
-        
+
         if(ZenProperties.memDbg1) System.out.write('w');
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(numFree);
+
+       inUse = false;
     }
 
     public void setEndian(boolean isLittleEndian) {
@@ -151,10 +165,10 @@ public class WriteBuffer {
             edu.uci.ece.zen.utils.Logger.printMemStatsImm(512);
             capacity += byteArray.length;
             if(buffers.size()+1 >= maxCap){
-                ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, 
+                ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class,
                     "ensureCapacity",
-                    "Reached maximum buffer capacity. Try adjusting " + 
-                    "writebuffer.size property. Current value is: " + maxCap); 
+                    "Reached maximum buffer capacity. Try adjusting " +
+                    "writebuffer.size property. Current value is: " + maxCap);
                     //still deciding what to do here
             }
             buffers.addElement(byteArray);
