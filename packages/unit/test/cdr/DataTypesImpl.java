@@ -154,6 +154,13 @@ public class DataTypesImpl extends DataTypesPOA
 		return;
 	}
 
+	public org.omg.CORBA.Object echoObject (org.omg.CORBA.Object objinVal, org.omg.CORBA.ObjectHolder objoutVal){
+
+		org.omg.CORBA.Object objretVal = objinVal;
+
+		return objretVal;
+	}
+
 
 
 
