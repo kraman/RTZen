@@ -6,6 +6,7 @@ import java.io.FileReader;
 
 import javax.realtime.ImmortalMemory;
 import javax.realtime.RealtimeThread;
+import javax.realtime.NoHeapRealtimeThread;
 
 import org.omg.CORBA.ORB;
 

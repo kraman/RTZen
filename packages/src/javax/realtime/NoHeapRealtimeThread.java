@@ -7,5 +7,10 @@ public class NoHeapRealtimeThread extends RealtimeThread {
     }
 
     public NoHeapRealtimeThread(Object o1, Object o2) {
+
+    }
+
+    public NoHeapRealtimeThread() {
+        super();
     }
 }

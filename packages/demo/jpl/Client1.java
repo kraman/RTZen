@@ -76,7 +76,11 @@ public class Client1 extends RealtimeThread
 
     private Object tmp;
     public void allocHeap(){
-        tmp = HeapMemory.newArray( byte.class , 100 );
+        try{
+            tmp = HeapMemory.instance().newArray( byte.class , 100 );
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void run()
@@ -84,7 +88,7 @@ public class Client1 extends RealtimeThread
         try
         {
             System.out.println("==============Calling ORB Init in client 1==============");
-        
+
             ORB orb = getORB();
             System.out.println("==============ORB Init complete in client 1==============");
             String ior = "";
@@ -103,7 +107,7 @@ public class Client1 extends RealtimeThread
             System.out.println( "===================NativeTimeStamp gets initialized 1================" );
 
             sleep(INITIAL_SLEEP);
-             
+
             System.out.println("==============Warm Up 1==============");
             for (int i=0; i<WARM_UP; i++){
                 NativeTimeStamp.RecordTime(20);
@@ -123,15 +127,15 @@ public class Client1 extends RealtimeThread
             long start = System.currentTimeMillis();
             for (int i = 0; i< RUN_NUM*3; i++)
             {
-                
+
                 //System.out.print("# ");
                 //System.out.println(server.getMessage(id, array1));
                 NativeTimeStamp.RecordTime(21);
                 server.getMessage(id, array1);
                 NativeTimeStamp.RecordTime(21);
-                    
+
                 sleep(REQUEST_SLEEP);
-                
+
                 if (i != 0 && i % 500 == 0)
                 {
                     Logger.write(id);

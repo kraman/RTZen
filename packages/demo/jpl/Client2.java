@@ -6,6 +6,7 @@ import java.io.FileReader;
 
 import javax.realtime.ImmortalMemory;
 import javax.realtime.NoHeapRealtimeThread;
+import javax.realtime.RealtimeThread;
 
 import org.omg.CORBA.ORB;
 
@@ -41,6 +42,8 @@ public class Client2 extends NoHeapRealtimeThread
     static String fileName;
 
     static int id;
+
+    //public Client2(){}
 
     /**
      * Main function.
@@ -96,7 +99,7 @@ public class Client2 extends NoHeapRealtimeThread
             sleep(INITIAL_SLEEP);
 
             System.out.println("==============Warm Up 2==============");
-            
+
             for (int i=0; i<WARM_UP; i++){
                 NativeTimeStamp.RecordTime(20);
                 server.getMessage(id, array1);
@@ -109,7 +112,7 @@ public class Client2 extends NoHeapRealtimeThread
                     Logger.writeln();
                 }
 
- 
+
             }
 
 
@@ -121,12 +124,12 @@ public class Client2 extends NoHeapRealtimeThread
                 //System.out.println(server.getMessage(id, array1));
                 NativeTimeStamp.RecordTime(22);
                 server.getMessage(id, array1);
-            
+
                 NativeTimeStamp.RecordTime(22);
-                 
+
                 sleep(REQUEST_SLEEP);
 
-                
+
 
                 if (i != 0 && i % 500 == 0)
                 {
@@ -134,7 +137,7 @@ public class Client2 extends NoHeapRealtimeThread
                     Logger.write(i);
                     Logger.writeln();
                 }
-                
+
             }
             long end = System.currentTimeMillis();
             System.err.println((double) RUN_NUM / ((end - start) / 1000.0));

@@ -66,6 +66,12 @@
         </java> 
     </target>   
     
+    <target name="client3">
+        <java fork="yes" classname="demo.jpl.Client3">
+            <jvmarg line="${zen.jvm.properties}"/>
+        </java> 
+    </target>     
+    
     <!-- set "jacorb.home" properly to use jacorb examples -->
     <!--
     <property name="jacorb.home" value="/project/workarea02/mpanahi/JacORB_2_2"/>
