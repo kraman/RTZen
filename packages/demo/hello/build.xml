@@ -20,8 +20,9 @@
     <target name="compile.jrate" if="compiler_jRate">
         <demo.compile.jrate main="demo.hello.Client" out="client">
             <fileset dir="${zen.srcdir}/${package.dir}">
-                <include name="Client.java"/>
-                <exclude name="Server.java"/>
+                <!--include name="Client.java"/-->
+                <!--include name="Server.java"/-->
+                <include name="*.java"/>
             </fileset>
             <fileset dir="${zen.gendir}/${package.dir}">
                 <include name="*.java"/>
