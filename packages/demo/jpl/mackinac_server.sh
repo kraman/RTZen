@@ -1,4 +1,4 @@
-export RTZEN_HOME=/home/yuez/RTZen_newrepo
+export RTZEN_HOME=/home/yuez/RTZen
 
 psradm -i 0
 psrset -d 1
