@@ -12,6 +12,7 @@ import org.omg.IOP.TaggedProfile;
 import edu.uci.ece.zen.orb.transport.Acceptor;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.WriteBuffer;
 
 /**
  * This is a registry for all Acceptor objects that are created for incomming
@@ -36,7 +37,8 @@ public class AcceptorRegistry {
      *            The memory area to create the profiles in.
      * @return A array containing the list of transport profiles.
      */
-    public TaggedProfile[] getProfiles(FString objKey, MemoryArea clientArea)
+    public TaggedProfile[] getProfiles(FString objKey, MemoryArea clientArea,
+             WriteBuffer taggedComponents, int tcLen)
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
         TaggedProfile[] tpList = (TaggedProfile[]) clientArea.newArray(
@@ -47,7 +49,7 @@ public class AcceptorRegistry {
 
         for (int i = 0; i < list.size(); ++i) {
             ScopedMemory sm = (ScopedMemory) (list.get(i));
-            ar.init(i, tempOKey, clientArea, tpList);
+            ar.init(i, tempOKey, clientArea, tpList, taggedComponents, tcLen);
             sm.enter(ar);
         }
 
@@ -96,15 +98,21 @@ class ARRunnable implements Runnable {
 
     TaggedProfile[] tpList;
 
+    WriteBuffer taggedComponents;
+
+    int tcLen;
+
     public ARRunnable() {
     }
 
     public void init(int ind, byte[] objKey, MemoryArea clientArea,
-            TaggedProfile[] tpList) {
+            TaggedProfile[] tpList, WriteBuffer taggedComponents, int tcLen) {
         index = ind;
         this.ma = clientArea;
         this.objKey = objKey;
         this.tpList = tpList;
+        this.taggedComponents = taggedComponents;
+        this.tcLen = tcLen;
     }
 
     public void run() {

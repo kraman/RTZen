@@ -28,6 +28,7 @@ import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.WriteBuffer;
 
 public class POAImpl {
 
@@ -208,7 +209,7 @@ public class POAImpl {
                 //                int parentDepth = RealtimeThread.getMemoryAreaStackDepth() - 1;
                 //                ScopedMemory orbImplMem =
                 //                    (ScopedMemory) RealtimeThread.getOuterMemoryArea(parentDepth);
-                //                
+                //
                 //                boolean isThreadPoolIDValid;
                 //                try
                 //                {
@@ -224,9 +225,9 @@ public class POAImpl {
                 //                            );
                 //                } catch (InaccessibleAreaException e)
                 //                {
-                //                    
+                //
                 //                }
-                //                
+                //
                 //                if (isThreadPoolIDValid)
                 //                {
                 //                 this.threadPoolId = id;
@@ -757,6 +758,10 @@ public class POAImpl {
 
         public ORB orb;
 
+        public WriteBuffer taggedComponents;
+
+        public int tcLen;
+
         public CreateReferenceWithObjectRunnable() {
         }
 
@@ -765,11 +770,14 @@ public class POAImpl {
             this.intf = intf;
             this.ma = ma;
             this.orb = orb;
+            this.taggedComponents = WriteBuffer.instance();
+            this.tcLen = 0;
         }
 
         public void run() {
             try {
-                retVal = edu.uci.ece.zen.orb.IOR.makeCORBAObject(orb, intf, ok, ma);
+                retVal = edu.uci.ece.zen.orb.IOR.makeCORBAObject(orb, intf, ok, ma,
+                        taggedComponents, tcLen);
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
             }
