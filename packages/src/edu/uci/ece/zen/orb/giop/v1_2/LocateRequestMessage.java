@@ -1,16 +1,15 @@
-package edu.uci.ece.zen.orb.giop.v1_0;
+package edu.uci.ece.zen.orb.giop.v1_2;
 
 import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.*;
 import edu.uci.ece.zen.orb.*;
 
 public class LocateRequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage {
-    protected LocateRequestHeader_1_0 header;
+    private LocateRequestHeader_1_2 header;
 
-
-    public LocateRequestMessage( ORB orb, ReadBuffer stream) {
+    public LocateRequestMessage(ORB orb, ReadBuffer stream) {
         super (orb, stream);
-        header = LocateRequestHeader_1_0Helper.read(istream);
+        header = LocateRequestHeader_1_2Helper.read(istream);
         messageBody = stream;
     }
 
@@ -20,7 +19,7 @@ public class LocateRequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage {
 
     // LocateRequest messages contain only a GIOP header then the LocateRequestHeader
     public void marshal(CDROutputStream out) {
-        LocateRequestHeader_1_0Helper.write(out, header);
+        LocateRequestHeader_1_2Helper.write(out, header);
     }
 
 }

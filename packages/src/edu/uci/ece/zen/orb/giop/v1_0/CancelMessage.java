@@ -22,7 +22,7 @@ public class CancelMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage {
 
     public boolean isRequest() { return false; }
     public boolean isReply() { return false; }
-    public int getRequestId(){ return header.request_id; }
+    public int getRequestId() { return header.request_id; }
 
     public void marshal (edu.uci.ece.zen.orb.CDROutputStream out) {
         CancelRequestHeaderHelper.write( out , header );
