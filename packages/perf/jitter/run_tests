@@ -10,8 +10,15 @@ function printUsage() {
 	echo "    stopServer  only stop the server"
 	echo "    client      run muliple tests on the client side"
 	echo ""
-	echo "    serverType  1 simulated RT Zen server"
-	echo "                2 TAO servant            "
+	echo "    serverType  1  simulated RT Zen server"
+	echo "                2  RTZen servant          "
+	echo "                20 RTZen servant remote  "
+	echo "                3  TAO servant            "
+	echo "                30 TAO servant remote     "
+	echo "    clientType  1  simulated RT Zen client"
+	echo "                2  TimeSys RTZen client"
+	echo "                3  TAO Client             "
+	echo "                30 RTZen servant remote  "
 
 	exit -1;
 
@@ -94,7 +101,7 @@ function startServer(){
 		echo $EXEC_CMD
 		$EXEC_CMD&
 		echo $! > $STOPFNAME
-	elif [ $1 -eq 2 ]; then
+	elif [ $1 -eq 3 ]; then
 		HOST_IP=`host -t A doc | awk ' { print $4 }'`
 		# TAO SERVANT
 		EXEC_CMD="tao/server -ORBListenEndpoints iiop://1.2@$HOST_IP/hostname_in_ior=$HOST_IP"
@@ -102,7 +109,14 @@ function startServer(){
 		echo $EXEC_CMD
 		$EXEC_CMD&
 		echo $! > $STOPFNAME
-	elif [ $1 -eq 3 ]; then
+	elif [ $1 -eq 30 ]; then
+		# TAO servant on node 0
+		EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 3 $1"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD&
+		#echo $! > $STOPFNAME	
+	elif [ $1 -eq 2]; then
 		# TimeSys JVM
 		# start ZEN server in simulated RT
 		EXEC_CMD="$TJVM_START perf.jitter.Server $1"
@@ -110,10 +124,10 @@ function startServer(){
 		echo $EXEC_CMD
 		$EXEC_CMD&
 		echo $! > $STOPFNAME
-	elif [ $1 -eq 30 ]; then
+	elif [ $1 -eq 20 ]; then
 		# TimeSys JVM on node 0
 		# start ZEN server in simulated RT
-		EXEC_CMD="ssh $REMNODE ~/RTZen/packages/perf/jitter/run_tests startServer 3 $1"
+		EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests startServer 2 $1"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
 		$EXEC_CMD&
@@ -143,10 +157,10 @@ function stopServer(){
 		else
 			printUsage "server was not stoped, can not find file '$STOPFNAME'"
 		fi
-    elif [ $1 -eq 30 ]; then
+    elif [ $1 -eq 20 ]; then
 		# TimeSys JVM on node 0
 		# start ZEN server in simulated RT
-		EXEC_CMD="ssh $REMNODE ~/RTZen/packages/perf/jitter/run_tests stopServer 3 $1"
+		EXEC_CMD="ssh $REMNODE $PROGDIR/run_tests stopServer 2 $1"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
 		$EXEC_CMD
@@ -156,7 +170,7 @@ function stopServer(){
 	fi
 }
 
-# startup function for the server
+# startup function for the client
 # parameters 
 #   type of rt system to start  ( 1 simulated rt, 2 timesys, 3 ovm )
 #   type of test (see client.java)
@@ -170,6 +184,11 @@ function startClient(){
 		$EXEC_CMD
 	elif [ $1 -eq 2 ]; then
 		EXEC_CMD="$TJVM_START perf.jitter.Client $2 $3"
+		echo "Exec cmd:"
+		echo $EXEC_CMD
+		$EXEC_CMD
+	elif [ $1 -eq 3 ]; then
+		EXEC_CMD="tao/client -l $3"
 		echo "Exec cmd:"
 		echo $EXEC_CMD
 		$EXEC_CMD

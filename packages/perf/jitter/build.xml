@@ -133,7 +133,15 @@
 		</exec>
 
 		<exec executable="g++" dir="${CORBA.dir}">
+			<arg line="-I../../TimeStamp ${compile.args} client.o client.cpp"/>
+		</exec>
+
+		<exec executable="g++" dir="${CORBA.dir}">
 			<arg line="${link.args} server jitterC.o jitterS.o jitterS_T.o server.o"/> 
+		</exec>
+
+		<exec executable="g++" dir="${CORBA.dir}">
+			<arg line="-L${zen.libdir} -lttimestampjni ${link.args} client jitterC.o client.o"/> 
 		</exec>
 
 	</target>
