@@ -1,0 +1,41 @@
+<project>
+
+    <fail
+        message="You need to import init.xml before importing this file."
+        unless="zen.classdir"/>
+
+    <fail
+        message="You need to define the package.dir property before importing this file."
+        unless="package.dir"/>
+
+    <presetdef name="demo.clean">
+        <delete includeEmptyDirs="true" failOnError="false">
+            <fileset dir="${zen.gendir}/${package.dir}"/>
+            <fileset dir="${zen.classdir}/${package.dir}"/>
+            <fileset dir="${zen.srcdir}/${package.dir}" includes="*.o"/>
+        </delete>
+        <delete file="${zen.srcdir}/${package.dir}/client"/>
+        <delete file="${zen.srcdir}/${package.dir}/server"/>
+    </presetdef>
+
+    <presetdef name="demo.run">
+        <java fork="yes">
+            <jvmarg line="${zen.jvm.properties}"/>
+        </java>
+    </presetdef>
+
+    <presetdef name="demo.compile">
+        <javac
+            srcdir="${zen.srcdir}:${zen.gendir}"
+            destdir="${zen.classdir}"
+            includes="${package.dir}/**.java"
+            debug="${zen.debug}"
+            optimize="${zen.optimization}"
+            target="1.1"
+            includeJavaRuntime="yes"
+            bootclasspath="${zen.rtbootclasspath}"
+            classpath="${zen.classpath}"/>
+    </presetdef>
+
+</project>
+
