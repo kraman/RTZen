@@ -16,19 +16,23 @@ public class Hashtable
 
     private Object[] table;
     private long[] keytable;
-    private long[] genCountTable;
 
     public Hashtable(){}
 
     public void init( int limit ){
-        //System.err.println( "ConnReg:   " + limit );
+        System.err.println( "ConnReg:   " + limit );
+        Thread.dumpStack();
         totObjects = limit;
         table = new Object[4*limit];
         keytable = new long[4*limit];
-        genCountTable = new long[4*limit];
+        for( int i=0;i<keytable.length;i++ )
+            keytable[i]=-1;
+    }
+
+    public void empty(){
         for( int i=0;i<keytable.length;i++ ){
             keytable[i]=-1;
-            genCountTable[i]=0;
+            table[i]=0;
         }
     }
 
@@ -40,12 +44,8 @@ public class Hashtable
         return this.get( key.hashCode() );
     }
 
-    protected int getTableEntry( Object key ){
-        return this.getTableEntry( key.hashCode() );
-    }
-
-    protected void setTableEntry( int index , Object key , Object obj , boolean incrGenCount ){
-        this.setTableEntry( index , key.hashCode() , obj , incrGenCount );
+    public Object[] getObjects(){
+        return table;
     }
 
     public void remove( Object key ){
@@ -64,7 +64,6 @@ public class Hashtable
                 if( keytable[pos] == -1 || keytable[pos] == key ){
                     table[pos] = obj;
                     keytable[pos] = key;
-                    genCountTable[pos]++;
                     numObjects++;
                     break;
                 }
@@ -85,40 +84,6 @@ public class Hashtable
         return null;
     }
 
-    protected int getTableEntry( long key ){
-        int hash = (int)(key % keytable.length);
-
-        synchronized( table ){
-            for( int i=0;i<keytable.length;i++ ){
-                int pos = (hash+i)%keytable.length;
-                if( keytable[pos] != -1 && keytable[pos] == key )
-                    return pos;
-            }
-        }
-        return -1;
-    }
-
-    protected Object getEntryAtIndex( int idx ){
-        synchronized( table ){
-            return table[idx];
-        }
-    }
-
-    protected void setTableEntry( int index , long key , Object obj , boolean incrGenCount ){
-        synchronized( table ){
-            keytable[index] = key;
-            table[index] = obj;
-            if( incrGenCount )
-                genCountTable[index]++;
-        }
-    }
-
-    public long getGenCount( int index ){
-        synchronized( table ){
-            return genCountTable[index];
-        }
-    }
-
     public void remove( long key ){
         int hash = (int)(key % keytable.length);
         synchronized( table ){
@@ -131,6 +96,6 @@ public class Hashtable
                 }
             }
         }
-    }
+    }   
 }
 

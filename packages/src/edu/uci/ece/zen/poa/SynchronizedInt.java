@@ -16,6 +16,10 @@ package edu.uci.ece.zen.poa;
 
 public class SynchronizedInt {
 
+    public void reset(){
+        value = 0;
+    }
+
     // PRE: Should be called from within a Synch Block
     public void increment() {
         ++value;
