@@ -53,6 +53,7 @@ int parse_args (int argc, char *argv[])
         switch (c)
         {
             case 'm': //mode {cp=Client propagated, sd=Server declared}
+{
                 char *whichMode = get_opts.opt_arg ();
                 if(whichMode[0] == 'c' && whichMode[1] == 'p')
                 {                   
@@ -77,11 +78,14 @@ int parse_args (int argc, char *argv[])
                     }
                 }
                 break;
+}
             case 'p': //p: priority for Client Propagated, the default value is 0
+{
                 char *in_priority = get_opts.opt_arg ();
                 client_priority = atoi(in_priority);
                 printf(" Using %s with priority %d\n", ior , client_priority);
                 break;            
+}
             case '?':
             default:
                 ACE_ERROR_RETURN ((LM_ERROR,

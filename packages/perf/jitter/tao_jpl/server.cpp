@@ -119,64 +119,70 @@ parse_args (int argc, char *argv[])
     int c, result;
 
     while ((c = get_opts ()) != -1)
-        switch (c)
-        {
+	    switch (c)
+	    {
 
-            case 'm':
-                char *whichMode = get_opts.opt_arg ();
-                if(whichMode[0] == 'c' && whichMode[1] == 'p')
-                {
-                    mode = 0;
-                    printf(" Client_Propagated mode\n");
-                }
-                else
-                {
-		    if(whichMode[0] == 's' && whichMode[1] == 'd' )
-		    {
-			    mode = 1;
-			    printf(" Server_Declared mode\n");
-		    }
-		    else{
+		    case 'm':
+			    {
+				    char *whichMode = get_opts.opt_arg ();
+				    if(whichMode[0] == 'c' && whichMode[1] == 'p')
+				    {
+					    mode = 0;
+					    printf(" Client_Propagated mode\n");
+				    }
+				    else
+				    {
+					    if(whichMode[0] == 's' && whichMode[1] == 'd' )
+					    {
+						    mode = 1;
+						    printf(" Server_Declared mode\n");
+					    }
+					    else{
+						    ACE_ERROR_RETURN ((LM_ERROR,
+									    "usage:  %s "
+									    "-m sd|cp Priority model(pm) of client-propagated(cp) or server declared(sd).\n"
+									    "-l <poa_priority> The priority value for low priority task. The default value is 0"
+									    "-h <object_priority> The priority value for high priority task. The default value is 32767"
+									    "\n",
+									    argv [0]),
+								    -1);
+
+					    }
+				    } 
+				    break;
+			    }
+
+		    case 'l':
+			    {
+				    result = ::sscanf (get_opts.opt_arg (),
+						    "%hd",
+						    &poa_priority);
+				    if (result == 0 || result == EOF)
+					    ACE_ERROR_RETURN ((LM_ERROR,
+								    "Unable to process <-l> option"),
+							    -1);
+				    break;
+			    }
+
+		    case 'h':
+			    {
+				    result = ::sscanf (get_opts.opt_arg (),
+						    "%hd",
+						    &object_priority);
+				    if (result == 0 || result == EOF)
+					    ACE_ERROR_RETURN ((LM_ERROR,
+								    "Unable to process <-h> option"),
+							    -1);
+				    break;
+			    }
+
+		    case '?':
+		    default:              
 			    ACE_ERROR_RETURN ((LM_ERROR,
-                            "usage:  %s "
-			    "-m sd|cp Priority model(pm) of client-propagated(cp) or server declared(sd).\n"
-                            "-l <poa_priority> The priority value for low priority task. The default value is 0"
-                            "-h <object_priority> The priority value for high priority task. The default value is 32767"
-                            "\n",
-                            argv [0]),
-                        -1);
-			    
-		    }
-                } 
-                break;
-
-            case 'l':
-                result = ::sscanf (get_opts.opt_arg (),
-                        "%hd",
-                        &poa_priority);
-                if (result == 0 || result == EOF)
-                    ACE_ERROR_RETURN ((LM_ERROR,
-                                "Unable to process <-l> option"),
-                            -1);
-                break;
-
-            case 'h':
-                result = ::sscanf (get_opts.opt_arg (),
-                        "%hd",
-                        &object_priority);
-                if (result == 0 || result == EOF)
-                    ACE_ERROR_RETURN ((LM_ERROR,
-                                "Unable to process <-h> option"),
-                            -1);
-                break;
-
-            case '?':
-            default:              
-	    ACE_ERROR_RETURN ((LM_ERROR,
-                            "usage:  %s "
-			    "-m sd|cp Priority model(pm) of client-propagated(cp) or server declared(sd).\n"
-                            "-l <poa_priority> The priority value for low priority task. The default value is 0"
-                            "-h <object_priority> The priority value for high priority task. The default value is 32767"
+						    "usage:  %s "
+						    "-m sd|cp Priority model(pm) of client-propagated(cp) or server declared(sd).\n"
+						    "-l <poa_priority> The priority value for low priority task. The default value is 0"
+						    "-h <object_priority> The priority value for high priority task. The default value is 32767"
                             "\n",
                             argv [0]),
                         -1);
