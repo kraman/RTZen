@@ -75,13 +75,13 @@ public class Client extends RealtimeThread
             br.close();
 
             System.out.println("Begin the loop to test on passing org.omg.CORBA.Object as the parameter...");
-            
+            org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(object2); //objoutVal will be changed to object1 after the echoObject call   
 
             for (int i = 0; i<runNum; i++){
 
                 //System.out.println("Begin to test on passing org.omg.CORBA.Object as the parameter...");
                 org.omg.CORBA.Object objinVal = object1;
-                org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(object2); //objoutVal will be changed to object1 after the echoObject call
+                objoutVal.value = object2; //objoutVal will be changed to object1 after the echoObject call
                 org.omg.CORBA.Object objretVal = server3.echoObject(objinVal, objoutVal); //objretVal should also be object1 after the echoObject call
 
                 TestObject server4 = TestObjectHelper.unchecked_narrow( objretVal );
@@ -95,6 +95,7 @@ public class Client extends RealtimeThread
                 if(!server5.getName().equals(name1)){ //objoutVal is not correct
                     System.out.println("objoutVal String Should be "+name1+" but get "+server5.getName());
                 }
+                objoutVal.value = object2; //objoutVal will be changed to object1 after the echoObject call
             }
             System.exit(0); //shutdown() hasn't been implemented yet
         }
