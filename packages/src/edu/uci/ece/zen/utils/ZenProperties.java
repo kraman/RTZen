@@ -25,10 +25,10 @@ public final class ZenProperties {
 
     /* set to true to allow printing about memory usage */
 
-    public static final boolean memDbg = true;
+    public static final boolean memDbg = false;
 
     /* configure the memory debugger   */
-    public static final float trim = (float)0.8; //To what extent we will trim the data
+    public static final float trim = (float)0.5; //To what extent we will trim the data
     public static final int groupSize = 7; //How many scopes we need to group
 
     public static final boolean memDbg1 = false;
