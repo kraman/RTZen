@@ -15,6 +15,7 @@ public class ORBImpl{
     public ThreadLocal rtCurrent;
     public ThreadLocal policyCurrent;
     public PolicyManagerImpl policyManager;
+    public RTORBImpl rtorb;
 
 
     public ORBImpl( String args[] , Properties props, edu.uci.ece.zen.orb.ORB orbFacade ){
@@ -44,6 +45,8 @@ public class ORBImpl{
             policyCurrent = (ThreadLocal)(orbFacade.parentMemoryArea.newInstance( ThreadLocal.class ));
             policyManager = (PolicyManagerImpl)(orbFacade.parentMemoryArea.newInstance( PolicyManagerImpl.class ));
             policyManager.init(orbFacade);
+            rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance( RTORBImpl.class ));
+            rtorb.init(orbFacade);
 
             cachedObjects.put( "ExecuteInRunnable" , new Queue() );
             cachedObjects.put( "ConnectorRunnable" , new Queue() );

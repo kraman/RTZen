@@ -128,7 +128,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
     private AcceptorRegistry acceptorRegistry;
     private WaiterRegistry waiterRegistry;
     private Queue executeInRunnableCache;
-    public RTORB rtorb;
+    //public RTORB rtorb;
     //public PolicyManager policyManager;
     public MemoryArea [] threadpoolList;
 
@@ -144,7 +144,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         waiterRegistry = new WaiterRegistry();
         waiterRegistry.init( 100 );
         executeInRunnableCache = new Queue();
-        rtorb = new RTORBImpl(this);
+        //rtorb = new RTORBImpl(this);
         //policyManager = new PolicyManagerImpl(this);
         threadpoolList = new MemoryArea[10];//KLUDGE: need to set up property for max TPs
         orbId = new byte[25];
@@ -311,7 +311,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         //return Resolver.resolve( object_name );
         System.out.println( "======================Getting " + object_name + "=============================" );
         if(object_name.equals("RTORB")){
-            return rtorb;
+            return getRTORB();
         }else if(object_name.equals("ORBPolicyManager")){
             return getPolicyManager();
         }else if(object_name.equals("PolicyCurrent")){
@@ -348,6 +348,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         }
     }
 
+    /**
+        logic to retrieve policy manger from client memory
+    */
     class PolicyManagerRunnable implements Runnable{
         public PolicyManagerImpl val;
         private ScopedMemory sm;
@@ -357,6 +360,29 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
         public void run(){
             val = ((ORBImpl)(sm.getPortal())).policyManager;
         }
+    }
+
+    public PolicyManager getPolicyManager(){
+        PolicyManagerRunnable runnable = new PolicyManagerRunnable(orbImplRegion);
+        internalResolve(runnable);
+        return runnable.val;
+    }
+
+    class RTORBRunnable implements Runnable{
+        public RTORBImpl val;
+        private ScopedMemory sm;
+        public RTORBRunnable(ScopedMemory sm){
+            this.sm = sm;
+        }
+        public void run(){
+            val = ((ORBImpl)(sm.getPortal())).rtorb;
+        }
+    }
+
+    public RTORB getRTORB(){
+        RTORBRunnable runnable = new RTORBRunnable(orbImplRegion);
+        internalResolve(runnable);
+        return runnable.val;
     }
 
     class RTCurrentRunnable implements Runnable{
@@ -380,17 +406,6 @@ public class ORB extends org.omg.CORBA_2_3.ORB{
             val = ((ORBImpl)(sm.getPortal())).getPolicyCurrent();
         }
     }
-
-    public RTORB getRTORB(){
-        return rtorb;
-    }
-
-    public PolicyManager getPolicyManager(){
-        PolicyManagerRunnable prun = new PolicyManagerRunnable(orbImplRegion);
-        internalResolve(prun);
-        return prun.val;
-    }
-
 
 
     public String object_to_string(org.omg.CORBA.Object obj) {

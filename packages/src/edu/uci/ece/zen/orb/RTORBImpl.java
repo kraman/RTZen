@@ -17,11 +17,9 @@ public class RTORBImpl
     private ORB orb;
     private ThreadPoolRunnable tpr;
 
-    public RTORBImpl(ORB orb){
+    public void init(ORB orb){
         this.orb = orb;
         tpr = new ThreadPoolRunnable();
-
-
     }
 
     /**
