@@ -53,7 +53,7 @@ public class Server extends RealtimeThread
             POAManager poaManager = rootPOA.the_POAManager ();
 
             RTORB rtorb = RTORBHelper.narrow(orb.resolve_initial_references ("RTORB"));
-            org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(orb.resolve_initial_references("RTCurrent"));
+            //org.omg.RTCORBA.Current rtcur = org.omg.RTCORBA.CurrentHelper.narrow(orb.resolve_initial_references("RTCurrent"));
 
             // Create POA with CLIENT_PROPAGATED PriorityModelPolicy,
             // and register Test object with it.
@@ -85,7 +85,7 @@ public class Server extends RealtimeThread
             bw.close();
 
             // Get the initial priority of the current thread.
-            short initial_thread_priority = rtcur.the_priority();
+            //short initial_thread_priority = rtcur.the_priority();
 
             // Run ORB Event loop.
             poaManager.activate();
@@ -93,7 +93,7 @@ public class Server extends RealtimeThread
             orb.run();
 
             System.out.println("Server ORB event loop finished.");
-
+/*
             // Get the final priority of the current thread.
             short final_thread_priority = rtcur.the_priority();
 
@@ -106,6 +106,7 @@ public class Server extends RealtimeThread
             else
                 System.out.println("Final priority of the servant thread" +
                         " = its initial priority");
+*/                        
 
         }
         catch (Exception e)

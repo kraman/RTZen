@@ -190,7 +190,7 @@ public class POAImpl {
         this.self = self;
         this.parent = parent;
         this.manager = manager;
-
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAIMpl init:0 ");
         try {
             serverRequestHandler =
                 (POAServerRequestHandler) ((ORBImpl) orb.orbImplRegion.getPortal()).getServerRequestHandler();
@@ -218,7 +218,7 @@ public class POAImpl {
         int numOfClientExposedPolicies = 0;
         boolean threadoolPolicyChecked = false;
         boolean priorityModelPolicyChecked = false;
-
+if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAIMpl init:1 ");
         for (int i = 0; i < policyList.length; i++) {
             this.policyList[i] = policies[i].copy();
 
@@ -244,7 +244,7 @@ public class POAImpl {
                  priorityModelPolicyChecked = true;
             }
         }
-
+if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAIMpl init:2 ");
         clientExposedPolicies = new Policy[numOfClientExposedPolicies];
         priorityModelPolicyChecked = false;
 
@@ -397,7 +397,11 @@ public class POAImpl {
             //    (ExecuteInRunnable) requestScope.newInstance( ExecuteInRunnable.class );
             ExecuteInRunnable eir = orb.getEIR();
 
-            short pr = orb.getRTCurrent().the_priority();
+            if(req.getPriority() != (short)serverPriority)
+                if (ZenBuildProperties.dbgIOR) 
+                    ZenProperties.logger.log(Logger.WARN, getClass(), "handleRequest", "server pr != msg pr");
+            //kludge, server pr for now
+            short pr = req.getPriority();//(short)serverPriority;//orb.getRTCurrent().the_priority();
             if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("handleRequest:4 pr:" + pr);
 
             tpr.init(self, req, pr);
@@ -452,7 +456,7 @@ public class POAImpl {
              * exception was being squelched here.
              */
 
-            FString okey = getFString();
+            FString okey = FString.instance();//getFString();
             FString oid = getFString();
             IntHolder ih = getIntHolder();
             org.omg.CORBA.Object retVal = null;
@@ -541,7 +545,7 @@ public class POAImpl {
                             ._all_interfaces(self, null)[0], clientMemoryArea);
                     }
             }
-            retFString(okey);
+            FString.free(okey);//retFString(okey);
             retFString(oid);
             retIntHolder(ih);
             if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("servant_to_reference " + retVal);
@@ -598,7 +602,7 @@ public class POAImpl {
               }
 
               IntHolder ih = getIntHolder();
-              FString okey = getFString();
+              FString okey = FString.instance();//getFString();
               FString oid = getFString();
 
               this.retentionStrategy.getObjectID(servant, oid, ih); // We know this is RetainStrategy
@@ -608,7 +612,8 @@ public class POAImpl {
               {
                   prun.exception = POARunnable.SERVANT_ALREADY_ACTIVE;
                   retIntHolder(ih);
-                  retFString(okey);
+                  //retFString(okey);
+                  FString.free(okey);
                   retFString(oid);
                   return;
               }
@@ -618,7 +623,8 @@ public class POAImpl {
               {
                   prun.exception = ih.value;
                   retIntHolder(ih);
-                  retFString(okey);
+                  //retFString(okey);
+                  FString.free(okey);
                   retFString(oid);
                   return;
               }
@@ -632,7 +638,8 @@ public class POAImpl {
                   prun.exception = ih.value;
                   freePOAHashMap(map);
                   retIntHolder(ih);
-                  retFString(okey);
+                  //retFString(okey);
+                  FString.free(okey);
                   retFString(oid);
                   return;
               }
@@ -643,13 +650,15 @@ public class POAImpl {
                   prun.exception = ih.value;
                   freePOAHashMap(map);
                   retIntHolder(ih);
-                  retFString(okey);
+                  //retFString(okey);
+                  FString.free(okey);
                   retFString(oid);
                   return;
               }
 
               retIntHolder(ih);
-              retFString(okey);
+              //retFString(okey);
+              FString.free(okey);
               retFString(oid);
               prun.exception = POARunnable.NoException;
 

@@ -133,31 +133,25 @@ public abstract class Acceptor {
 
     private TaggedComponent getPolicyComponent(POA poa) {
         ZenProperties.logger.log("getPolicyComponent()");
-        TaggedComponent tc = new TaggedComponent();
-        tc.tag = org.omg.IOP.TAG_POLICIES.value;
+        //CDROutputStream out = CDROutputStream.instance();
+        //out.init(orb);
+        //out.write_boolean(false); //BIGENDIAN
 
-        CDROutputStream out = CDROutputStream.instance();
-        out.init(orb);
-        out.write_boolean(false); //BIGENDIAN
+        //org.omg.CORBA.PolicyListHolder holder = new org.omg.CORBA.PolicyListHolder();
 
-        org.omg.CORBA.PolicyListHolder holder = new org.omg.CORBA.PolicyListHolder();
+        //holder.value = poa.getClientExposedPolicies();
 
-        holder.value = poa.getClientExposedPolicies();
-/*
-        poa.executeInPOAMemoryArea(
-            new Runnable(){
-                public void run(){
-                    holder.value = poa.poaMemoryArea.getPortal()
-
-                }
-
-            }
-        );
-*/
-        holder._write(out);
+        //holder._write(out);
 
         //org.omg.CORBA.PolicyListHelper.write(out, policies);
-
+        
+        CDROutputStream out = poa.getClientExposedPolicies();
+        
+        if(out == null)
+            return null;
+        
+        TaggedComponent tc = new TaggedComponent();
+        tc.tag = org.omg.IOP.TAG_POLICIES.value;
         tc.component_data = new byte[(int) out.getBuffer().getLimit()];
         out.getBuffer().getReadBuffer().readByteArray(tc.component_data, 0,
                 (int) out.getBuffer().getLimit());

@@ -34,6 +34,7 @@ import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
+import edu.uci.ece.zen.orb.CDROutputStream;
 
 /**
  * See section 11.3.9 in the CORBA Sepecification.
@@ -138,6 +139,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
     }
 
     public void initAsRootPOA(final edu.uci.ece.zen.orb.ORB orb) {
+        
         this.init(orb, rootPoaString, null, null, null);
     }
 
@@ -189,7 +191,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
 
         this.poaName.reset();
         this.poaName.append(poaName);
-
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAI init:0 ");
         this.poaPath.reset();
         if (parent == null) {
             this.poaPath.append('/');
@@ -198,23 +200,23 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
         }
         this.poaPath.append(this.poaName.getData(), 0, this.poaName.length());
         this.poaPath.append('/');
-
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAI init1 ");
         if (manager == null) manager = POAManager.instance();
         this.poaManager = manager;
         ((POAManager) poaManager).register((org.omg.PortableServer.POA) this);
 
         theChildren.clear();
         numberOfCurrentRequests.reset();
-
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAI init:2 ");
         POARunnable r = new POARunnable(POARunnable.INIT);
         r.addParam(orb);
         r.addParam(this);
         r.addParam(policies);
         r.addParam(parent);
         r.addParam(manager);
-        ExecuteInRunnable eir1 = orb.getEIR();
+        ExecuteInRunnable eir1 = new ExecuteInRunnable();//orb.getEIR();
         eir1.init(r, poaMemoryArea);
-        ExecuteInRunnable eir2 = orb.getEIR();
+        ExecuteInRunnable eir2 = new ExecuteInRunnable();//orb.getEIR();
         eir2.init(eir1, orb.orbImplRegion);
         try {
             orb.parentMemoryArea.executeInArea(eir2);
@@ -222,10 +224,10 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
             ZenProperties.logger.log(Logger.WARN, getClass(), "init", e2);
         }
         finally {
-            orb.freeEIR(eir1);
-            orb.freeEIR(eir2);
+            //orb.freeEIR(eir1);
+            //orb.freeEIR(eir2);
         }
-
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("---------------------POAI init:3 ");
         poaState = POA.CREATION_COMPLETE;
     }
 
@@ -376,9 +378,9 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
         r.addParam(RealtimeThread.getCurrentMemoryArea());
 
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("POA.servant_to_reference cur mem area: " + RealtimeThread.getCurrentMemoryArea());
-        ExecuteInRunnable eir1 = orb.getEIR();
+        ExecuteInRunnable eir1 = new ExecuteInRunnable();//orb.getEIR();
         eir1.init(r, this.poaMemoryArea);
-        ExecuteInRunnable eir2 = orb.getEIR();
+        ExecuteInRunnable eir2 = new ExecuteInRunnable();//orb.getEIR();
         eir2.init(eir1, orb.orbImplRegion);
         try {
             orb.parentMemoryArea.executeInArea(eir2);
@@ -386,8 +388,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
             ZenProperties.logger.log(Logger.WARN, getClass(), "servant_to_reference", e);
         }
         finally{
-            orb.freeEIR(eir1);
-            orb.freeEIR(eir2);
+            //orb.freeEIR(eir1);
+            //orb.freeEIR(eir2);
         }
         switch (r.exception) {
             case POARunnable.NoException:
@@ -964,11 +966,12 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
      * To store this references may cause IllegalAccessError. They come from POAImpl scope.
      * @return policies exposed to the client.
      */
-    public Policy[] getClientExposedPolicies()
+    public /*Policy[]*/ CDROutputStream getClientExposedPolicies()
     {
         POARunnable r = new POARunnable(POARunnable.GET_CLIENT_EXPOSED_POLICIES);
         executeInPOAMemoryArea(r);
-        return (Policy[]) r.retVal;
+        //return (Policy[]) r.retVal;
+        return (CDROutputStream)r.retVal;
     }
 
     /**
@@ -977,9 +980,9 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
      */
     private void executeInPOAMemoryArea(POARunnable r)
     {
-        ExecuteInRunnable eir1 = orb.getEIR();
+        ExecuteInRunnable eir1 = new ExecuteInRunnable();//TODO orb.getEIR();
         eir1.init(r, poaMemoryArea);
-        ExecuteInRunnable eir2 = orb.getEIR();
+        ExecuteInRunnable eir2 = new ExecuteInRunnable();//TODO orb.getEIR();
         eir2.init(eir1, orb.orbImplRegion);
 
         try {
@@ -988,8 +991,8 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.RTPortable
             ZenProperties.logger.log(Logger.WARN, getClass(), "executeInPOAMemoryArea", e);
         }
         finally{
-            orb.freeEIR(eir1);
-            orb.freeEIR(eir2);
+            //orb.freeEIR(eir1);
+            //orb.freeEIR(eir2);
         }
     }
 

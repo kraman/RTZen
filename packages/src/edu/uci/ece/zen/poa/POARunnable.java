@@ -11,6 +11,8 @@ import org.omg.PortableServer.Servant;
 import org.omg.PortableServer.ServantManager;
 
 import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.orb.CDROutputStream;
+import org.omg.CORBA.PolicyListHelper;
 
 //TODO Modify this class to be type safe.
 public class POARunnable implements Runnable {
@@ -93,11 +95,18 @@ public class POARunnable implements Runnable {
     public int exception; // add getException();
 
     public Object retVal;
+    
+    private ORB orb;
 
     public POARunnable(int op) {
         operation = op;
         args = new Vector();
     }
+    
+    public POARunnable(int op, ORB orb) {
+        this(op);
+        this.orb = orb;
+    }    
 
     public void addParam(Object arg) {
         args.addElement(arg);
@@ -197,7 +206,15 @@ public class POARunnable implements Runnable {
                     break;
                     
                 case GET_CLIENT_EXPOSED_POLICIES:
-                    retVal = pimpl.getClientExposedPolicies();
+                    if(pimpl.getClientExposedPolicies().length == 0)
+                        System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
+                    else{
+                        CDROutputStream out = CDROutputStream.instance();
+                        out.init(orb);   
+                        out.write_boolean(false); //BIGENDIAN                        
+                        PolicyListHelper.write(out, pimpl.getClientExposedPolicies());
+                        retVal = out;
+                    }
                     break;
             }
             args.clear();

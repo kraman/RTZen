@@ -60,7 +60,7 @@ public class MSGRunnable implements Runnable {
             int size = rb.readLong();
 
             if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable REPLY CONTEXT size: " + size);
-            orb.getRTCurrent().the_priority((short) javax.realtime.PriorityScheduler.instance().getNormPriority()); //kludge
+            //orb.getRTCurrent().the_priority((short) javax.realtime.PriorityScheduler.instance().getNormPriority()); //kludge
             for(int i = 0; i < size; ++i){
 
                 int id = rb.readLong();
@@ -68,17 +68,17 @@ public class MSGRunnable implements Runnable {
 
                 if(id == org.omg.IOP.RTCorbaPriority.value){
                     if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable REPLY CONTEXT id:RTCorbaPriority");
-                    if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable CUR thread priority: " + orb.getRTCurrent().the_priority());
+                    //if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable CUR thread priority: " + orb.getRTCurrent().the_priority());
 
                     rb.readLong(); //eat length
 
                     short priority = (short)rb.readLong();
 
                     if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable RECEIVED thread priority: " + priority);
+                    rm.setPriority(priority);
+                    //orb.getRTCurrent().the_priority(priority);
 
-                    orb.getRTCurrent().the_priority(priority);
-
-                    if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable NEW thread priority: " + orb.getRTCurrent().the_priority());
+                    //if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable NEW thread priority: " + orb.getRTCurrent().the_priority());
 
                 } else{ // just eat
                     if(ZenBuildProperties.dbgInvocations) System.out.println("MSGRunnable Skipping unknown service context " + id);

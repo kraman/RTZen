@@ -28,8 +28,7 @@
    <target name="compile">
       <javac srcdir="${zen.srcdir}:${zen.gendir}"
              destdir="${zen.classdir}"
-             bootclasspath="${zen.rtbootclasspath}"
-             classpath="${zen.classpath}"
+             bootclasspath="${zen.classpath};${java.home}/lib/rt.jar;${zen.rtbootclasspath}"
              debug="${zen.debug}"
              optimize="${zen.optimization}"
              >

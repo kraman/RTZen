@@ -7,6 +7,7 @@ import javax.realtime.InaccessibleAreaException;
 import javax.realtime.MemoryArea;
 //import javax.realtime.ScopedMemory;
 
+import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.poa.POA;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
@@ -14,6 +15,7 @@ import edu.uci.ece.zen.orb.transport.iiop.AcceptorRunnable;
 import edu.uci.ece.zen.orb.transport.Acceptor;
 import edu.uci.ece.zen.poa.HandleRequestRunnable;
 import org.omg.IOP.TaggedProfile;
+import org.omg.IOP.TaggedProfileHelper;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
 
@@ -136,50 +138,84 @@ public class ThreadPool {
      * @param clientArea
      *            The memory area to create the profiles in.
      * @return A array containing the list of transport profiles.
-     */
-    public /*TaggedProfile[]*/ void getProfiles(final FString objKey, final MemoryArea clientArea,
-                final POA poa, final org.omg.IOP.IOR ior)
-            throws IllegalAccessException, InstantiationException,
-            InaccessibleAreaException {
+     *///TODO Leaks mem
+    public /*TaggedProfile[]*/ void getProfiles(FString objKey, MemoryArea clientArea,
+                POA poa, org.omg.IOP.IOR ior, CDROutputStream out)
+            {
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("-----TP.getProfiles0");
 
-        ior.profiles = new TaggedProfile[lanes.length];
-        for(int i = 0; i < lanes.length; ++i){
-            final ScopedMemory accArea = lanes[i].getAcceptorArea();
-            final int j = i;
-            orb.executeInORBRegion(
-                new Runnable(){
-
-                    public void run(){
-                        //final int k = j;
-                        accArea.enter(
-                            new Runnable(){
-
-                                public void run(){
-                                    Acceptor acc = (Acceptor)(accArea.getPortal());
-                                    ior.profiles[j] = acc.getProfile((byte) 1, ZenProperties.iiopMinor, objKey.getTrimData(clientArea), clientArea, poa);
-
-                                }
-
-
-
-                            }
-
-                        );
-
-                    }
-
-
-                }
-            );
-
+        GetProfilesRunnable1 gpr1 = new GetProfilesRunnable1(); //TODO -- static? per TP?
+        out.write_ulong(lanes.length);
+        try{
+            for(int i = 0; i < lanes.length; ++i){
+                ScopedMemory accArea = lanes[i].getAcceptorArea();
+                gpr1.init(i, accArea, objKey, clientArea, poa, ior, out); 
+                orb.executeInORBRegion(gpr1);
+            }
+        }catch(Exception e){
+            e.printStackTrace();//TODO better exception handling
         }
-
-
-        //return tpList;
-
-
+        //if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("-----TP.getProfiles2:  " + out.toString());
     }
 }
+
+class GetProfilesRunnable1 implements Runnable{
+    
+    ScopedMemory accArea; 
+    FString objKey;
+    MemoryArea clientArea; 
+    POA poa;
+    org.omg.IOP.IOR ior;
+    int i;
+    CDROutputStream out;
+
+    public GetProfilesRunnable1() {
+    }
+
+    public void init(int i, ScopedMemory accArea, FString objKey, MemoryArea clientArea, 
+            POA poa, org.omg.IOP.IOR ior, CDROutputStream out) {
+         this.i = i; this.accArea = accArea; this.clientArea = clientArea;
+         this.poa = poa; this.ior = ior; this.objKey = objKey; this.out = out;
+    }
+
+    public void run() {
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable1 6");
+        GetProfilesRunnable2 gpr2 = new GetProfilesRunnable2();//TODO -- static? per TP?
+        gpr2.init(i, objKey, clientArea, poa, ior, out); 
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable1 7");
+        accArea.enter(gpr2);
+    }    
+}
+
+class GetProfilesRunnable2 implements Runnable{
+    
+    FString objKey;
+    MemoryArea clientArea; 
+    POA poa;
+    org.omg.IOP.IOR ior;
+    int i;
+    CDROutputStream out;
+    
+    public GetProfilesRunnable2() {
+    }   
+
+    public void init(int i, FString objKey, MemoryArea clientArea, 
+            POA poa, org.omg.IOP.IOR ior, CDROutputStream out) {
+         this.clientArea = clientArea; this.poa = poa; this.ior = ior;
+         this.objKey = objKey; this.out = out;
+    }
+
+    public void run() {
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 6");
+        Acceptor acc = (Acceptor)((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 7");
+        //ior.profiles[i] = 
+        TaggedProfileHelper.write(out, acc.getProfile((byte) 1, ZenProperties.iiopMinor, 
+                objKey.getTrimData(clientArea), clientArea, poa));
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 8");
+    }    
+}
+
 
 class Lane {
     int stackSize; //ignored. No such provision in RTSJ 2.0
