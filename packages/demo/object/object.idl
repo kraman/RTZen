@@ -3,8 +3,8 @@ module demo{
         interface TestObject{
             string getName();            
         };
-        interface ExchangeObject{
-            Object exchange(in Object inVal, out Object outVal);
+        interface HandleObject{
+            Object echoObject(in Object inVal, out Object outVal);
         };
     };
 };

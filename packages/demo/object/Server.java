@@ -43,11 +43,12 @@ public class Server extends RealtimeThread
 
             TestObjectImpl impl1 = new TestObjectImpl("Mary");
             TestObjectImpl impl2 = new TestObjectImpl("Roby");
-            ExchangeObjectImpl impl3 = new ExchangeObjectImpl();
+            HandleObjectImpl impl3 = new HandleObjectImpl();
+
             org.omg.CORBA.Object obj1 = rootPOA.servant_to_reference(impl1);
             org.omg.CORBA.Object obj2 = rootPOA.servant_to_reference(impl2);
             org.omg.CORBA.Object obj3 = rootPOA.servant_to_reference(impl3);
-                                   
+
             
             //System.out.println( "=================== Servant registered, getting IOR ========================" );
             String ior1 = zen.object_to_string(obj1);
@@ -58,7 +59,7 @@ public class Server extends RealtimeThread
             System.out.println("Running Test Object Example... ");
             System.out.println( "[TestObject Server1] " + ior1 );
             System.out.println( "[TestObject Server2] " + ior2 );
-            System.out.println( "[ExchangeObject Server2] " + ior3 );      
+            System.out.println( "[HandleObject Server] " + ior3 );      
             
 
             BufferedWriter bw = new BufferedWriter( new FileWriter("ior1.txt") );
