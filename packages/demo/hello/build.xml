@@ -22,7 +22,7 @@
             <fileset dir="${zen.srcdir}/${package.dir}">
                 <!--include name="Client.java"/-->
                 <!--include name="Server.java"/-->
-                <include name="*.java"/>
+               <include name="*.java"/>               
             </fileset>
             <fileset dir="${zen.gendir}/${package.dir}">
                 <include name="*.java"/>
@@ -32,7 +32,7 @@
             <fileset dir="${zen.srcdir}/${package.dir}">
                 <!--include name="Client.java"/-->
                 <!--include name="Server.java"/-->
-                <include name="*.java"/>
+                <include name="*.java"/>                
             </fileset>
             <fileset dir="${zen.gendir}/${package.dir}">
                 <include name="*.java"/>
