@@ -64,7 +64,9 @@ public class OVMClient extends RealtimeThread
 				// System.out.println( server.getMsg() );
 
 
-                AbsoluteTime[] timeStampsArray = new AbsoluteTime[iterations];                         
+                AbsoluteTime[] timeStampsArray = new AbsoluteTime[iterations];                        
+                AbsoluteTime startClock = new AbsoluteTime();
+ 
                 javax.realtime.Clock clock = javax.realtime.Clock.getRealtimeClock();			
                 RelativeTime frequency = clock.getResolution();
                 
@@ -118,6 +120,8 @@ public class OVMClient extends RealtimeThread
 					System.out.println( "====================== Performance benchmark BYTE =========================" );
 					// repeat the call 
 					start = System.currentTimeMillis();
+
+                        startClock = clock.getTime();
 				
 					for(j=0; j<iterations;j++ ) {
 						//NativeTimeStamp.RecordTime(20);
@@ -127,6 +131,7 @@ public class OVMClient extends RealtimeThread
                         }
 						//NativeTimeStamp.RecordTime(21);
                         timeStampsArray[j] = clock.getTime();
+                        
 					}
 					end = System.currentTimeMillis();
 
@@ -181,6 +186,7 @@ public class OVMClient extends RealtimeThread
 				//NativeTimeStamp.OutputLogRecords();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("timeRecords.txt")));
                 for(int m = 0; m<timeStampsArray.length; m++){
+                    timeStampsArray[m].subtract(startClock);
                     String temp = timeStampsArray[m].toString();
                     StringTokenizer st = new StringTokenizer(temp," ");
                     String msString = st.nextToken();
