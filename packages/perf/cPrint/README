@@ -1,0 +1,9 @@
+Printing in java involves memory allocation and deallocation 
+because everything to be printed will cause a new string creation.
+To avoid this, use JNI/CNI wrapper which uses C++ printing facilities.
+It is unkown if this will destroy real time capabilities
+
+
+requires that you set the LD_LIBRARY_PATH to include your <ZEN basedir>/lib
+
+

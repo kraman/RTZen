@@ -1,0 +1,118 @@
+<project name="Zen ORB Perf Demo" default="all" basedir="../../..">
+    <property file="zen-build-bootstrap.properties"/>
+    <property file="zen-build.properties"/>
+    <import file="${zen.srcdir}/property_processor.xml"/>
+    
+    <property name="package.dir" value="${zen.srcdir}/perf/cPrint"/>
+    <property name="idl.src" value="cPrint.idl"/>
+
+    <target name="all" depends="compile, jRate"/>
+
+    <target name="openorb">
+       <antcall target="idl">
+           <param name="idl.flags" value="-all -d"/>
+           <param name="gendir" value="${zen.gendir}"/>
+           <param name="classpath" value="${openorb.class.path}"/>
+           <param name="idl.dir" value="${package.dir}"/>
+       </antcall>
+    </target>
+
+    <target name="idl">
+      <java classpath="${classpath}"
+            dir="${zen.gendir}"
+            classname="${idl2java.compiler}"
+            fork="yes">
+            <arg line="${idl.flags} ${gendir} ${idl.dir}/${idl.src}"/>
+      </java>
+   </target>
+
+   <target name="compile">
+      <javac srcdir="${zen.srcdir}:${zen.gendir}"
+             destdir="${zen.classdir}"
+             classpath="${classpath}"
+             debug="${zen.debug}"
+             optimize="${zen.optimization}"
+             includes="perf/cPrint/**.java"
+             target="1.1"
+             bootclasspath="${zen.rtbootclasspath}"
+             includeJavaRuntime="yes"
+             >
+      </javac>
+
+      <jar 
+        jarfile="${zen.libdir}/perf_world.jar" 
+        basedir="${zen.classdir}" 
+        includes="perf/cPrint/**"
+        />
+    </target>
+
+  <target name="jni">
+	<exec executable="javah" dir="${package.dir}">
+	  <arg line="-jni -classpath ${zen.classpath} perf.cPrint.nativePrinter" />
+	</exec>
+  </target>
+
+    <target name="jRate" if="compiler_jRate">
+      <taskdef name="jRate" classname="edu.uci.ece.doc.tools.ant.taskdefs.compilers.jRate" classpath="${zen.classpath}" onError="ignore"/>
+      <jRate
+            optimizeLevel="2"
+            libDirs="${zen.jRateLibDir}"
+            additionalLinkOptions="-L${zen.libdir} -lZen"
+            destdir="${zen.libdir}"
+            bootclasspath="${zen.rtbootclasspath}"
+            classpath="${jRate_classpath}:${zen.classdir}"
+            out="${package.dir}/client"
+            main="perf.cPrint.Client"
+            debug="true">
+            <fileset dir="${zen.srcdir}">
+                <patternset>
+                    <include name="perf/cPrint/**.java"/>
+                    <exclude name="perf/cPrint/Server.java"/>
+                </patternset>
+            </fileset>
+            <fileset dir="${zen.gendir}">
+                <patternset>
+                    <include name="perf/cPrint/**.java"/>
+                </patternset>
+            </fileset>
+       </jRate>
+   </target>
+
+    <target name="server">
+        <java classname="perf.cPrint.Server" fork="yes">
+            <jvmarg line="${zen.jvm.properties}"/>
+        </java>
+    </target> 
+
+    <target name="client">
+        <java classname="perf.cPrint.Client" fork="yes">
+            <jvmarg line="${zen.jvm.properties} -Xms200M -Xmx500M"/>
+        </java>
+    </target> 
+
+    <target name="clean">
+      <delete dir="${zen.gendir}/${package.dir}"/>
+      <delete dir="${zen.classdir}/${package.dir}"/>
+      <delete file="${package.dir}/client"/>
+      <delete file="${package.dir}/server"/>
+      <delete quiet="true" defaultexcludes="no"> 
+	     <fileset dir="${package.dir}" includes="*.o"/> 
+      </delete> 
+    </target>
+
+
+	<target name="compileC">
+	
+		<property environment="env"/>
+		<property name="compile.flags" value="-shared -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/include/linux -I${package.dir}"/>
+		<property name="link.flags" value="-L/usr/lib -lstdc++"/>
+	
+		<exec executable="gcc" dir="${package.dir}">
+			<arg line="-o ${zen.libdir}/libCPrinter.so ${compile.flags}  perf_cPrint_nativePrinter.c ${link.flags}"/>
+		</exec>
+	
+	</target>
+
+</project>
+
+
