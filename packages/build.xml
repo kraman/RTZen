@@ -83,7 +83,7 @@
     </target>
 
     <target name="compile">
-        <echo message="Compiling OMG and Zen sources with the AspectJ compiler."/>
+        <echo message="Compiling OMG and Zen sources."/>
         <echo message=""/>
 
         <!--echo message="Current rt classpath is: ${zen.rtbootclasspath}"/-->
