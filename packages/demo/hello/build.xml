@@ -57,12 +57,11 @@
     </target>    
     
     <!-- set "jacorb.home" properly to use jacorb examples -->
-
+    
     <property name="jacorb.home" value="/JacORB_2_2"/>
-
     
     <property name="jacorb.jvmarg" value="-Xbootclasspath/p:${jacorb.home}/lib/jacorb.jar${path.separator}${zen.classdir}${path.separator}${jacorb.home}/lib/logkit-1.2.jar${path.separator}${jacorb.home}/lib/avalon-framework-4.1.5.jar -Djacorb.home=${jacorb.home} -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB -Dorg.omg.CORBA.ORBSingletonClass=orb.jacorb.orb.ORBSingleton"/>    
-    
+        
     <target name="server_jacorb">
         <java classname="demo.hello.Server" fork="yes">
              <jvmarg line="-Xrunjmp ${jacorb.jvmarg}"/>
