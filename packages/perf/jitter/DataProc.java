@@ -22,7 +22,7 @@ class DataProc{
 
     public static void main(String[] args){
         try{
-            final int[] messageSizes = new int[]{4, 32, 128, 512, 1024, 4096};
+            final int[] messageSizes = new int[]{4, 32, 128, 256, 512, 1024};
             int testType = 1; //default value
             int orbNum = 3;
 	    String localOrRemote = "local";

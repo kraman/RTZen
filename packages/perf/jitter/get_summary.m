@@ -7,7 +7,7 @@ close all;
 typeNr = 1;
 % 1  - local calls 
 % 10 - remote calls
-localNr  = 10;
+localNr  = 1;
 
 fNameBase = 'timeRecords.1.';
 
@@ -18,16 +18,16 @@ stepNotThere = 0.00000000001;
 
 barWidth = 0.1;
 
-xIndexArray = [4 32 128 512 2048 8192];
-for localNr = [1 10]
+xIndexArray = [4 32 128 512 1024 4096];
+for localNr = [1]
 if (localNr == 1) 
   file = fopen('rawOutput.local.txt','w');
 else
   file = fopen('rawOutput.remote.txt','w');
 end
 
-fprintf(file,'ORB, min latency [ms], avg latency [ms], max latency [ms], std deviation [ms], throughput [calls/sec]\n');
-for testNr = 1:1:3
+fprintf(file,'ORB, size, min latency [us], avg latency [us], max latency [us], std deviation [us], throughput [calls/sec]\n');
+for testNr = 1:1:4
   minZen = [];
   maxZen = [];
   avgZen = [];
@@ -42,7 +42,7 @@ for testNr = 1:1:3
     fileName = strcat(fNameBase,num2str(round(testNr*localNr)),'.', num2str(round(testNr)),'.',num2str(round((xIndexArray([index])))), '.txt');
     % read the file and compute the difference
     s = load(fileName);
-	s = diff(s(:, 3));
+	%s = diff(s(:, 3));
     
     minZen = [minZen min(s)];
     maxZen = [maxZen max(s)];
@@ -51,62 +51,51 @@ for testNr = 1:1:3
 
     %text(xIndexArray([index], avgZen, num2str(avgZEn));
 
-  end
+  %end
 
-  % compute what to output
-  if (typeNr == 1)
-     yValA = 1 ./ avgZen;
-  end
-  if (typeNr == 2)
-     yValA = avgZen;
-
-  end
 
   hold on;
-  if ( testNr == 1 ) 
-    %loglog(xIndexArray, yValA, '-@;Zen;');
-  end
-  if ( testNr == 2 ) 
-    %loglog(xIndexArray, yValA, '-@;RTZen;');
-  end
-  if ( testNr == 3 ) 
-    %loglog(xIndexArray, yValA, '-@;TAO;');
-  end
 
   if ( testNr == 1 ) 
-	orbName='Zen';
+	orbName='RTZen on jRate';
   end
   if ( testNr == 2 ) 
-	orbName='RTZen';
-  end
-  if ( testNr == 3 ) 
 	orbName='TAO';
   end
+  if ( testNr == 3 ) 
+	orbName='JacORB';
+  end
 
-  i=4;
-  fprintf(file,'%s,%f,%f,%f,%f, %d\n',orbName, 1000 * minZen(i), 1000* avgZen(i), 1000*maxZen(i), 1000* stdZen(i), 1/avgZen(i));
+  if ( testNr == 4 )
+    orbName='Simulated RTZen on JVM';
+    end
+        
+
+  %i=4;
+  fprintf(file,'%s,%d,%f,%f,%f,%f, %d\n',orbName, xIndexArray([index]), minZen(index), avgZen(index), maxZen(index), stdZen(index), 1000000/avgZen(index));
+  end
   
-end
 
 
-if (typeNr == 1)
-  myTitle = 'Average Throughput';
-  ylabel('Number of calls / second');
 end
+%if (typeNr == 1)
+ % myTitle = 'Average Throughput';
+ % ylabel('Number of calls / second');
+%end
 
-if (typeNr == 2)
-  myTitle = 'Average Latency';
-  ylabel('Roundtrip latency [sec]');
-end
+%if (typeNr == 2)
+ % myTitle = 'Average Latency';
+ % ylabel('Roundtrip latency [sec]');
+%end
 
-if (localNr == 1) 
-  myTitle = strcat(myTitle, ' on Single Host Emulab');
-else
-  myTitle = strcat(myTitle, ' between Two Emulab Hosts');
-end
+%if (localNr == 1) 
+ % myTitle = strcat(myTitle, ' on Single Host Emulab');
+%else
+%  myTitle = strcat(myTitle, ' between Two Emulab Hosts');
+%end
  
-title(myTitle);
-xlabel('Message size [bytes]');
+%title(myTitle);
+%xlabel('Message size [bytes]');
 %set(gca, 'xtick', xIndexArray);
 
 fclose(file);

@@ -33,15 +33,15 @@ STOPFNAME=$PROGNAME.stopToken
 
 
 # startup types 
-TESTSIZES="4 32 128 512 1024 4096"
+TESTSIZES="4 32 128 256 512 1024"
 #TESTSIZES="128"
 SERVERTYPE=1
 CLIENTTYPE=1
 TESTTYPE=1
 
 
-REMNODE="borommir.ece.uci.edu" 
-HOST="amras.ece.uci.edu"
+REMNODE="boromir.ece.uci.edu" 
+HOST="boromir.ece.uci.edu"
 # used by startServer and stopServer 
 STOPTOKEN=0
 

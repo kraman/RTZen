@@ -30,11 +30,12 @@ stepNotThere = 0.00000000001;
 
 barWidth = 0.1;
 
-xIndexArray = [4 32 128 512 2048 8192];
+xIndexArray = [4 32 128 512 1024 4096];
 
 for typeNr = [1]
-  for localNr = [1 10]
-    for testNr = 1:1:3
+  %for localNr = [1 10]
+  for localNr = [1]
+    for testNr = 1:1:4
       close all;
       minZen = [];
       maxZen = [];
@@ -50,7 +51,7 @@ for typeNr = [1]
         fileName = strcat(fNameBase,num2str(round(testNr*localNr)),'.', num2str(round(testNr)),'.',num2str(round((xIndexArray([index])))), '.txt');
         % read the file and compute the difference
         s = load(fileName);
-	    s = diff(s(:, 3));
+	    %s = diff(s(:, 3));
     
 		minS = min(s);
 		maxS = max(s);
@@ -87,14 +88,18 @@ for typeNr = [1]
 
 
      if (testNr == 1)
-       myTitle = 'Zen';
+       myTitle = 'RTZen on jRate';
      end
      if (testNr == 2)
-       myTitle = 'RTZen';
-     end
-     if (testNr == 3)
        myTitle = 'TAO';
      end
+     if (testNr == 3)
+       myTitle = 'JacORB';
+     end
+    if (testNr == 4)
+       myTitle = 'Simulated RTZen on JVM';
+    end
+
 
      if (localNr == 1) 
 	   myTitle = strcat('Roundtrip Latency, ', myTitle, ', Single Host Emulab');
@@ -109,29 +114,37 @@ for typeNr = [1]
 	 % set the output filename according to test and location
 	 % I did not make it so that gset output would accept a 
 	 % variable name as input :-((
+     automatic_replot = 0
+     gset term postscript color
+         
 	 if (localNr == 10)
         if (testNr == 1)
-    	  gset output 'jitter_Zen_remote.png';
+    	  gset output 'jitter_RTZen_remote.eps';
         end
         if (testNr == 2)
-    	  gset output 'jitter_RTZen_remote.png';
+    	  gset output 'jitter_TAO_remote.eps';
         end
         if (testNr == 3)
-    	  gset output 'jitter_TAO_remote.png';
+    	  gset output 'jitter_JacORB_remote.eps';
         end
 	 else
         if (testNr == 1)
-    	  gset output 'jitter_Zen_local.png';
+    	  gset output 'jitter_RTZen_local.eps';
         end
         if (testNr == 2)
-    	  gset output 'jitter_RTZen_local.png';
+    	  gset output 'jitter_TAO_local.eps';
         end
         if (testNr == 3)
-    	  gset output 'jitter_TAO_local.png';
-        end
+    	  gset output 'jitter_JacORB_local.eps';
+          end
+          if (testNr == 4)
+    gset output 'jitter_Simu_RTZen_local.eps';
+    end
+                          
 	 end	
 	 %set the term type and redraw to file
-     gset term png;
+
+     %gset term png;
      replot;
 	 gset output 'empty';
 	 gset term x11;
