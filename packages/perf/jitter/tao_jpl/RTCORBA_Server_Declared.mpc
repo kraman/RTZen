@@ -1,0 +1,24 @@
+// -*- MPC -*-
+// RTCORBA_Server_Declared.mpc,v 1.5 2003/12/23 21:04:50 dhinton Exp
+
+project(*Server): rt_server {
+idlflags += -GA
+  Source_Files {
+    server.cpp
+    testS.cpp
+    testC.cpp
+    //../check_supported_priorities.cpp
+  }
+}
+
+project(*Client): rt_client {
+idlflags += -GA
+  Source_Files {
+    testC.cpp
+    Client_ORBInitializer.cpp
+    interceptors.cpp
+    //../check_supported_priorities.cpp
+    client.cpp
+  }
+}
+

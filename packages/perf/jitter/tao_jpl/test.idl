@@ -1,0 +1,20 @@
+//
+// test.idl,v 1.1 2000/10/16 21:00:02 marina Exp
+
+//
+typedef sequence<long> MyArray;
+ interface Test
+ {
+	//New method for JPL Test
+	//typedef long MyArray[100];
+        //typedef sequence<long> MyArray;
+        long getMessage(in long id, in MyArray array);
+	
+  void test_method (in short priority);
+  // Print out the CORBA priority of the servant thread and check that
+  // it is equal to the <priority> argument.
+
+  oneway void shutdown ();
+  // Shut down the ORB.
+ };
+
