@@ -12,6 +12,7 @@ import edu.uci.ece.zen.utils.ZenProperties;
 
 public class ConnectorRunnable implements Runnable {
     public ConnectorRunnable() {
+        /*
         host = new FString();
         try {
             host.init(1024);
@@ -19,7 +20,7 @@ public class ConnectorRunnable implements Runnable {
             ZenProperties.logger.log(Logger.SEVERE,
                     getClass(), "<init>",
                     "Could not initialize Connector", e2);
-        }
+        }*/
     }
 
     private FString host;
@@ -30,23 +31,26 @@ public class ConnectorRunnable implements Runnable {
 
     private ORB orb;
 
-    public void init(String host, short port, Connector conn, ORB orb) {
-        this.host.reset();
-        this.host.append(host);
+    public void init(FString host, short port, Connector conn, ORB orb) {
+        //this.host.reset();
+        //this.host.append(host);
+        this.host = host;
         this.port = port;
         this.conn = conn;
         this.orb = orb;
     }
     private int statCount = 0;
     public void run() {
-            statCount++;
-            if (statCount % 100 == 0) {
-                edu.uci.ece.zen.utils.Logger.printMemStats(5);
-            }
+        statCount++;
+        if (statCount % 100 == 0) {
+            edu.uci.ece.zen.utils.Logger.printMemStats(5);
+        }
 
         int iport = 0;
         iport |= port & 0xffff;
         String host2 = new String(this.host.getTrimData());
+        FString.free(host);
+        
         Transport trans = conn.internalConnect(host2, iport, orb,
                 (ORBImpl) orb.orbImplRegion.getPortal());
         RealtimeThread transportThread = new NoHeapRealtimeThread(null, null,

@@ -54,6 +54,12 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         if(!self.released){
             objRefDelegateCache.enqueue(self);
             self.ior.free();
+            //FString.free(self.priorityLanes[0].objectKey);
+            for(int i = 0; i < self.priorityLanes.length; ++i)
+                if(self.priorityLanes[i].objectKey != null)
+                    FString.free(self.priorityLanes[i].objectKey);
+       
+            //System.out.println("RELEASEEEEEEEEEEEEEEEEEEEEEEEEE");
         }
         self.released = true;
     }
@@ -100,7 +106,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     public synchronized void addLaneData(int min, int max,
-            ScopedMemory transport, byte[] objectKey) {
+            ScopedMemory transport, FString objectKey) {
         if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread
                 .currentThread()
                 + " "
@@ -156,41 +162,45 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                         profScope.enter(profRun);
 
                         ORB.freeScopedRegion(profScope);
-
+*/
 
                         /////////////////////////
 
+                        //edu.uci.ece.zen.utils.Logger.printMemStats(400);
+                        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(500);
                         in.read_octet();
                         in.read_octet();
 
                         FString host = in.getBuffer().readFString(true);
-                        int port = in.read_ushort();
+                        short port = in.read_ushort();
 
-                        FString objKey = in.getBuffer().readFString(false);
+                        FString object_key = in.getBuffer().readFString(false);
+                        //edu.uci.ece.zen.utils.Logger.printMemStats(402);
+                        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(502);
 
                         ///////////////////
 
 
-
-                        */
-
-
-
-                        org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read(in);
-                        long connectionKey = ConnectionRegistry.ip2long(profilebody.host, profilebody.port);
+                        //org.omg.IIOP.ProfileBody_1_0 profilebody = org.omg.IIOP.ProfileBody_1_0Helper.read(in);
+                        
+                        
+                        long connectionKey = ConnectionRegistry.ip2long(host, port);
                         ScopedMemory transportScope = orb.getConnectionRegistry().getConnection(connectionKey);
 
                         if (transportScope == null) {
                             transportScope = edu.uci.ece.zen.orb.transport.iiop.Connector
-                                    .instance().connect(profilebody.host, profilebody.port, orb, orbImpl);
+                                    .instance().connect(host, port, orb, orbImpl);
                             orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
+                        } else {
+                            FString.free(host);
                         }
 
                         addLaneData(RealtimeThread.MIN_PRIORITY,
                                 99/* RealtimeThread.MAX_PRIORITY */,
-                                transportScope, profilebody.object_key);
+                                transportScope, object_key);
                     }
                         break;
+                    /*
                     case 1:
                     case 2: {
                         org.omg.IIOP.ProfileBody_1_1 profilebody = org.omg.IIOP.ProfileBody_1_1Helper
@@ -281,10 +291,12 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                         // appropriate
                         // lanes
                         addLaneData(RealtimeThread.MIN_PRIORITY,
-                                99/* RealtimeThread.MAX_PRIORITY */,
+                                99,
+//                                 RealtimeThread.MAX_PRIORITY 
+                                
                                 transportScope, profilebody.object_key);
                     }
-                        break;
+                        break;*/
                 }
                 in.free();
             }

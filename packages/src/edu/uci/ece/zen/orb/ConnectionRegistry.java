@@ -1,6 +1,7 @@
 package edu.uci.ece.zen.orb;
 
 import javax.realtime.ScopedMemory;
+import edu.uci.ece.zen.utils.FString;
 
 /**
  * Based on edu.uci.ece.zen.utils.Hashtable but the keytable is different
@@ -14,7 +15,7 @@ public class ConnectionRegistry extends edu.uci.ece.zen.utils.ActiveDemuxTable {
         return (ScopedMemory) super.mapEntry(super.find(key));
     }
 
-    public static long ip2long(String ip, short port) {
+    public static long ip2long(FString ip, short port) {
         long lip = 0;
         short b = 0;
         for (int i = 0; i < ip.length(); i++) {

@@ -8,6 +8,7 @@ import edu.uci.ece.zen.utils.ZenProperties;
 
 class LaneInfo {
     public LaneInfo() {
+        /*
         try {
             objectKey = new FString();
             objectKey.init(1024);
@@ -16,6 +17,7 @@ class LaneInfo {
                     getClass(), "<init>",
                     "Could not initialize Lane", e2);
         }
+        */
     }
 
     public int minPri;
@@ -24,15 +26,16 @@ class LaneInfo {
 
     public ScopedMemory transpScope;
 
-    private FString objectKey;
+    public FString objectKey;
 
     public void init(int minPri, int maxPri, ScopedMemory transpScope,
-            byte[] objKey) {
+            FString objKey) {
         this.minPri = minPri;
         this.maxPri = maxPri;
         this.transpScope = transpScope;
-        objectKey.reset();
-        objectKey.append(objKey, 0, objKey.length);
+        //objectKey.reset();
+        //objectKey.append(objKey, 0, objKey.length);
+        this.objectKey = objKey;
     }
 
     /*

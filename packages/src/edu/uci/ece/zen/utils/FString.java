@@ -4,6 +4,7 @@ import javax.realtime.ImmortalMemory;
 import javax.realtime.InaccessibleAreaException;
 import javax.realtime.MemoryArea;
 import javax.realtime.RealtimeThread;
+import edu.uci.ece.zen.utils.ZenProperties;
 
 /**
  * A class that provides a way to represent a mutable String of fixed size. This
@@ -15,6 +16,7 @@ import javax.realtime.RealtimeThread;
 public class FString {
 
     private static Queue queue = Queue.fromImmortal();
+    private boolean free = false;
 
     public static FString instance(){
         FString ret = null;
@@ -23,11 +25,16 @@ public class FString {
             ret.reset();
         }
         else ret = fromImmortal();
-
+        ret.free = false;
         return ret;
     }
 
     public static void free(FString fs){
+        if(fs.free) {
+            ZenProperties.logger.log(Logger.WARN, FString.class, "free", "FString already freed.");
+            return;
+        }
+        fs.free = true;
         queue.enqueue(fs);
     }
 
@@ -297,8 +304,10 @@ public class FString {
      * @return A byte array with a copy of the data.
      */
     public byte[] getTrimData() {
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(328);
         byte[] ret = new byte[currentSize];
         System.arraycopy(data, 0, ret, 0, currentSize);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(329);
         return ret;
     }
 
@@ -329,8 +338,21 @@ public class FString {
      * @return The converted string.
      */
     public String toString() {
-        return new String(getTrimData());
-
+        StringBuffer sb = new StringBuffer(currentSize);
+        
+        for(int i = 0; i < currentSize; ++i)
+            sb.append((char)data[i]);
+        
+        return sb.toString();
+        
+        /*
+        NOTE: The code below would be simpler but it somehow leaks into immortal
+        on Timesys RI even when allocated in scoped memory
+        
+        String s = new String(getTrimData());
+        
+        return s;
+*/
     }
 
 /*

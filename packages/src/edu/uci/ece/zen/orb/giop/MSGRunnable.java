@@ -49,9 +49,9 @@ public class MSGRunnable implements Runnable {
             _output.write_boolean(_result);
             reply = (CDROutputStream) _output;
         } else {
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(324);
-           String op = rm.getOperation().toString();
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(325);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(324);
+            String op = rm.getOperation().toString();
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(325);
            
             reply = (CDROutputStream) ((InvokeHandler) servant)
                     ._invoke(op,

@@ -7,13 +7,14 @@ import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.FString;
 
 public abstract class Connector {
     public Connector() {
     }
 
     private int statCount = 0;
-    public final ScopedMemory connect(String host, short port,
+    public final ScopedMemory connect(FString host, short port,
             edu.uci.ece.zen.orb.ORB orb, ORBImpl orbImpl) {
 
         ExecuteInRunnable eir = (ExecuteInRunnable) orbImpl.eirCache.dequeue();
