@@ -1,7 +1,7 @@
-package edu.uci.ece.zen.orb.giop.type;
+package edu.uci.ece.zen.orb.protocol.type;
 
 import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.orb.giop.GIOPMessage;
+import edu.uci.ece.zen.orb.protocol.Message;
 import edu.uci.ece.zen.utils.ReadBuffer;
 
 /**
@@ -11,7 +11,7 @@ import edu.uci.ece.zen.utils.ReadBuffer;
  * 
  * @author bmiller
  */
-public abstract class CancelRequestMessage extends GIOPMessage {
+public abstract class CancelRequestMessage extends Message {
     public CancelRequestMessage() {
     }
 
@@ -23,6 +23,9 @@ public abstract class CancelRequestMessage extends GIOPMessage {
         super.init(orb, stream);
     }
 
+    public boolean getResponseExpected(){
+        return false;
+    }
     // Abstract declarations in addition to those in GIOPMessage
     // NONE
 }

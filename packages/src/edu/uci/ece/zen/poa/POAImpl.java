@@ -11,7 +11,7 @@ import org.omg.PortableServer.ServantManager;
 
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.ORBImpl;
-import edu.uci.ece.zen.orb.giop.type.RequestMessage;
+import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;

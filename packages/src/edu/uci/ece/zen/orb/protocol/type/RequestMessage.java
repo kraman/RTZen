@@ -1,7 +1,7 @@
-package edu.uci.ece.zen.orb.giop.type;
+package edu.uci.ece.zen.orb.protocol.type;
 
 import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.orb.giop.GIOPMessage;
+import edu.uci.ece.zen.orb.protocol.Message;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 
@@ -10,12 +10,9 @@ import edu.uci.ece.zen.utils.ReadBuffer;
  * CORBA v3.0 spec, section 15.4.2
  * 
  * @author bmiller
+ * @author Krishna Raman
  */
-public abstract class RequestMessage extends GIOPMessage {
-    protected static final byte reserved[] = {
-            0x00, 0x00, 0x00
-    };
-
+public abstract class RequestMessage extends Message {
     public RequestMessage() {
         super();
     }

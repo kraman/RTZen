@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.standard.v1_0;
+package edu.uci.ece.zen.orb.protocol.giop.v1_0;
 
 import javax.realtime.ImmortalMemory;
 
@@ -7,9 +7,7 @@ import org.omg.GIOP.LocateRequestHeader_1_0Helper;
 
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.utils.ReadBuffer;
-import edu.uci.ece.zen.utils.ZenProperties;
-import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.*;
 
 /**
  * GIOP v1.0 LocateRequest Message as discussed in section 15.4.6 of the CORBA
@@ -18,7 +16,7 @@ import edu.uci.ece.zen.utils.Logger;
  * @author bmiller
  */
 public class LocateRequestMessage extends
-        edu.uci.ece.zen.orb.giop.type.LocateRequestMessage {
+        edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage {
     protected LocateRequestHeader_1_0 header;
 
     private static LocateRequestMessage lrm;
@@ -71,9 +69,9 @@ public class LocateRequestMessage extends
         LocateRequestHeader_1_0Helper.write(out, header);
     }
 
-    public int getGiopVersion() {
+    public int getVersion() {
         return 10;
     }
-    
-     public void internalFree(){}
+
+    public void internalFree(){}
 }

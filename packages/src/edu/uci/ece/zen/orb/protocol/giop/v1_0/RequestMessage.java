@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.standard.v1_0;
+package edu.uci.ece.zen.orb.protocol.giop.v1_0;
 
 import javax.realtime.ImmortalMemory;
 
@@ -15,7 +15,7 @@ import edu.uci.ece.zen.utils.Queue;
  * @author Bruce Miller
  */
 public class RequestMessage extends
-        edu.uci.ece.zen.orb.giop.type.RequestMessage {
+        edu.uci.ece.zen.orb.protocol.type.RequestMessage {
     private RequestHeader header;
 
     //private static RequestMessage rm;
@@ -101,7 +101,7 @@ public class RequestMessage extends
         RequestHeaderHelper.write(out, header);
     }
 
-    public int getGiopVersion() {
+    public int getVersion() {
         return 10;
     }
 

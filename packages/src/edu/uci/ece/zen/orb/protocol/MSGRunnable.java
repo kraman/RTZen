@@ -6,7 +6,7 @@ import org.omg.PortableServer.Servant;
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.ResponseHandler;
-import edu.uci.ece.zen.orb.giop.type.RequestMessage;
+import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
@@ -14,11 +14,8 @@ import edu.uci.ece.zen.utils.Logger;
 
 public class MSGRunnable implements Runnable {
     RequestMessage rm;
-
     Servant servant;
-
     CDROutputStream reply;
-
     ORB orb;
 
     public MSGRunnable() {

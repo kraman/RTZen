@@ -1,6 +1,6 @@
 package edu.uci.ece.zen.orb;
 
-import edu.uci.ece.zen.orb.giop.GIOPMessage;
+import edu.uci.ece.zen.orb.protocol.Message;
 
 /**
  * A reply received by a Transport object is forwarded to a WaitingStrategy for
@@ -18,7 +18,7 @@ public abstract class WaitingStrategy {
      * closed connections and other failures, it may be necessary to add new
      * methods for those cases.
      */
-    public abstract void replyReceived(GIOPMessage reply);
+    public abstract void replyReceived(Message reply);
 
     /**
      * Invoked by the waiting thread to block until the replyReceived method is

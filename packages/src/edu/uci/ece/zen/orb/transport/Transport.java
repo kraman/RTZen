@@ -14,16 +14,10 @@ import edu.uci.ece.zen.utils.ZenProperties;
 
 public abstract class Transport implements Runnable {
     private Object waitObj;
-
     protected edu.uci.ece.zen.orb.ORB orb;
-
     protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
-
     private MessageProcessor messageProcessor;
-    
     public Object objectTable[]; //used to store misc
-
-    public int giopType;
     
     // objects with
     // 1instance
@@ -48,13 +42,8 @@ public abstract class Transport implements Runnable {
         objectTable[2] = new byte[12];
         if (ZenProperties.dbg) ZenProperties.logger.log("Transport being created "
                 + RealtimeThread.getCurrentMemoryArea());
-        giopType = edu.uci.ece.zen.orb.giop.standard.GIOPMessageFactory.TYPE;
     }
     
-    public void setGIOPType( int type ){
-        this.giopType = type;
-    }
-
     public byte[] getGIOPHeader() {
         return (byte[]) objectTable[2];
     }
@@ -125,6 +114,10 @@ public abstract class Transport implements Runnable {
             ZenProperties.logger.log(Logger.WARN, getClass(), "send", ioex);
         }
     }
+
+    private Class protocolFactory;
+    public void setProtocolFactory( Class pf ){ this.protocolFactory = pf; }
+    public Class getProtocolFactory(){ return this.protocolFactory; }
 }
 
 /**
@@ -229,7 +222,7 @@ class GIOPMessageRunnable implements Runnable {
 
     //private static final String name = "Trans: ";
     public void run() {
-        edu.uci.ece.zen.orb.giop.GIOPMessage message = null;
+        edu.uci.ece.zen.orb.protocol.Message message = null;
 
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(2220);
         try {
@@ -242,22 +235,22 @@ class GIOPMessageRunnable implements Runnable {
             }
             ZenProperties.logger.log("Inside GMR run");
             if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread.getCurrentMemoryArea().toString());
-            message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream(orb, trans);
-            if (message instanceof edu.uci.ece.zen.orb.giop.type.RequestMessage) {
+            message = edu.uci.ece.zen.orb.protocol.MessageFactory.parseStream(orb, trans);
+            if (message instanceof edu.uci.ece.zen.orb.protocol.type.RequestMessage) {
                 ZenProperties.logger.log("Inside GMR run: RequestMessage");
                 trans.orbImpl.getServerRequestHandler().handleRequest(
-                        (edu.uci.ece.zen.orb.giop.type.RequestMessage) message);
+                        (edu.uci.ece.zen.orb.protocol.type.RequestMessage) message);
             
-            }else if (message instanceof edu.uci.ece.zen.orb.giop.type.LocateRequestMessage) {
+            }else if (message instanceof edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage) {
                 //this is provisional until we get it working right
                 //just return OBJECT_HERE for now
-                CDROutputStream out = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.
+                CDROutputStream out = edu.uci.ece.zen.orb.protocol.MessageFactory.
                          constructLocateReplyMessage(orb, 
-                         (edu.uci.ece.zen.orb.giop.type.LocateRequestMessage)message);
+                         (edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage)message);
                 trans.send(out.getBuffer());
                 out.free();
                 
-            }else if (message instanceof edu.uci.ece.zen.orb.giop.type.ReplyMessage) {
+            }else if (message instanceof edu.uci.ece.zen.orb.protocol.type.ReplyMessage) {
                 ZenProperties.logger.log("Inside GMR run: ReplyMessage");                
                 ScopedMemory waiterRegion = orb.getWaiterRegion(message
                         .getRequestId());
@@ -296,7 +289,7 @@ class GIOPMessageRunnable implements Runnable {
 }
 
 class WaitingStrategyNotifyRunnable implements Runnable {
-    edu.uci.ece.zen.orb.giop.GIOPMessage message;
+    edu.uci.ece.zen.orb.protocol.Message message;
 
     ScopedMemory waiterRegion;
 
@@ -318,7 +311,7 @@ class WaitingStrategyNotifyRunnable implements Runnable {
     public WaitingStrategyNotifyRunnable() {
     }
 
-    public void init(edu.uci.ece.zen.orb.giop.GIOPMessage message,
+    public void init(edu.uci.ece.zen.orb.protocol.Message message,
             ScopedMemory waiterRegion) {
         this.message = message;
         this.waiterRegion = waiterRegion;

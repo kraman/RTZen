@@ -3,7 +3,7 @@ package edu.uci.ece.zen.orb;
 import javax.realtime.ImmortalMemory;
 
 import edu.oswego.cs.dl.util.concurrent.Semaphore;
-import edu.uci.ece.zen.orb.giop.GIOPMessage;
+import edu.uci.ece.zen.orb.protocol.Message;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 
@@ -30,7 +30,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
         clientSem = new Semaphore(0);
     }
 
-    public void replyReceived(GIOPMessage reply) {
+    public void replyReceived(Message reply) {
         this.replyMsg = reply.getCDRInputStream();
         //reply.free();
         //TODO:handle service contexts here ... fix this... you can demarshall
@@ -54,7 +54,7 @@ public class TwoWayWaitingStrategy extends WaitingStrategy {
          */
         //TODO:remember to release the message....u only have 1
         clientSem.release();
-        ((edu.uci.ece.zen.orb.giop.type.ReplyMessage)reply).release();
+        ((edu.uci.ece.zen.orb.protocol.type.ReplyMessage)reply).release();
     }
 
     public CDRInputStream waitForReply() {

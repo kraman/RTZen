@@ -6,7 +6,7 @@ import org.omg.CORBA.IntHolder;
 
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ResponseHandler;
-import edu.uci.ece.zen.orb.giop.type.RequestMessage;
+import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.poa.ObjectKeyHelper;
 import edu.uci.ece.zen.poa.POA;
 import edu.uci.ece.zen.poa.POACurrent;

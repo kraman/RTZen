@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop;
+package edu.uci.ece.zen.orb.protocol;
 
 import javax.realtime.ScopedMemory;
 
@@ -8,41 +8,34 @@ import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.utils.ReadBuffer;
 
 /**
- * Parent of all GIOP Message types. Put functionality to be common to all types
- * of GIOP Messages here. However, functionality for any particular message type
- * goes in edu.uci.ece.zen.ocb.giop.types.* classes. functionality for each
+ * Parent of all Message types. Put functionality to be common to all types
+ * of Messages here. However, functionality for any particular message type
+ * goes in edu.uci.ece.zen.orb.protocol.types.* classes. functionality for each
  * type.
  *
  * @author Bruce Miller
  */
 
-public abstract class GIOPMessage {
+public abstract class Message {
     protected CDRInputStream istream;
-
     protected ScopedMemory scope;
-
     protected ReadBuffer messageBody;
 
-    protected GIOPMessage() {
-    }
+    protected Message() { }
 
-    protected GIOPMessage(ORB orb, ReadBuffer stream) {
+    public Message(ORB orb, ReadBuffer stream) {
         this.istream = CDRInputStream.instance();
         this.istream.init(orb, stream);
     }
 
-    protected void init(ORB orb, ReadBuffer stream) {
+    public  void init(ORB orb, ReadBuffer stream) {
         this.istream = CDRInputStream.instance();
         this.istream.init(orb, stream);
     }
 
     public abstract int getRequestId();
-
     public abstract void marshal(CDROutputStream out);
-
-    public abstract int getGiopVersion();
-    
-    public abstract int getGiopType();
+    public abstract int getVersion();
 
     public CDRInputStream getCDRInputStream() {
         return istream;
@@ -57,7 +50,6 @@ public abstract class GIOPMessage {
     }
 
     protected ScopedMemory transport;
-
     public void setTransport(ScopedMemory t) {
         transport = t;
     }
@@ -74,4 +66,8 @@ public abstract class GIOPMessage {
     }
     
     public abstract void internalFree();
+
+    private Class protocolFactory;
+    public void setProtocolFactory( Class pf ){ this.protocolFactory = pf; }
+    public Class getProtocolFactory(){ return this.protocolFactory; }
 }

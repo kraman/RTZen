@@ -1,22 +1,22 @@
 /*******************************************************************************
  * --------------------------------------------------------------------------
- * $Id: GIOPMessageFactory.java,v 1.7 2004/02/25 08:15:19 kraman Exp $
+ * $Id: MessageFactory.java,v 1.7 2004/02/25 08:15:19 kraman Exp $
  * --------------------------------------------------------------------------
  */
 
-package edu.uci.ece.zen.orb.giop.standard;
+package edu.uci.ece.zen.orb.protocol.giop;
 
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ClientRequest;
 import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.orb.giop.type.RequestMessage;
+import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.orb.transport.Transport;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 import javax.realtime.*;
-import edu.uci.ece.zen.orb.giop.*;
+import edu.uci.ece.zen.orb.protocol.*;
 
 /**
  * This class is a factory for creating GIOP messages for marshalling or
@@ -27,54 +27,52 @@ import edu.uci.ece.zen.orb.giop.*;
  * @author Yue Zhang
  * @version $Revision: 1.8 $ $Date: 2004/08/01 09:25:19 $
  */
-public final class GIOPMessageFactory {
-    public static final int TYPE = 1;
-    
+public final class GIOPMessageFactory extends MessageFactory{
     private static final byte magic[] = {
             0x47, 0x49, 0x4f, 0x50
     }; // GIOP
 
-    public static GIOPMessage parseStream(ORB orb, Transport trans)
+    public Message parseStreamImpl(ORB orb, Transport trans)
             throws java.io.IOException {
         ReadBuffer buffer = ReadBuffer.instance();
         buffer.init();
 
-        GIOPHeaderInfo mainMsgHdr = (GIOPHeaderInfo) GIOPHeaderInfoHelper.instance();
+        ProtocolHeaderInfo mainMsgHdr = (ProtocolHeaderInfo) new ProtocolHeaderInfo();
 
-        edu.uci.ece.zen.orb.giop.GIOPMessage ret = null;
+        edu.uci.ece.zen.orb.protocol.Message ret = null;
 
         do {
             java.io.InputStream in = trans.getInputStream();
-            parseStreamForHeader(in, mainMsgHdr, trans);
+            parseStreamForHeaderImpl(in, mainMsgHdr, trans);
             // Read the GIOP message (including any request/reply/etc headers)
             // into the variable "buffer"
             buffer.setEndian(mainMsgHdr.isLittleEndian);
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
             if (ZenProperties.dbg) ZenProperties.logger.log
-                            ("In GIOPMessageFactory, the message size is "
+                            ("In MessageFactory, the message size is "
                             + mainMsgHdr.messageSize);
 
             if (ZenProperties.dbg) ZenProperties.logger.log
-                            ("Inside GIOPMessageFactory and mainMsgHdr: "
+                            ("Inside MessageFactory and mainMsgHdr: "
                             + mainMsgHdr.toString() + " and giopMajorVersion: "
-                            + mainMsgHdr.giopMajorVersion
+                            + mainMsgHdr.majorVersion
                             + " and minorversion: "
-                            + mainMsgHdr.giopMinorVersion
+                            + mainMsgHdr.minorVersion
                             + " and messageType: " + mainMsgHdr.messageType);
-            switch (mainMsgHdr.giopMajorVersion) { //GIOP major version (byte
+            switch (mainMsgHdr.majorVersion) { //GIOP major version (byte
                 // 4)
                 case 1:
-                    switch (mainMsgHdr.giopMinorVersion) { //GIOP minor version
+                    switch (mainMsgHdr.minorVersion) { //GIOP minor version
                         // (byte 5)
                         case 0:
                             switch (mainMsgHdr.messageType) {
                                 case org.omg.GIOP.MsgType_1_0._Request:
-                                    ret = edu.uci.ece.zen.orb.giop.standard.v1_0.RequestMessage
+                                    ret = edu.uci.ece.zen.orb.protocol.giop.v1_0.RequestMessage
                                             .getMessage();
                                     ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._Reply:
-                                    ret = edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyMessage
+                                    ret = edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyMessage
                                             .getMessage();
                                     ret.init(orb, buffer);
                                     break;
@@ -85,17 +83,17 @@ public final class GIOPMessageFactory {
                                     
                                     //this is provisional until we get it working right
                                     //just return OBJECT_HERE for now
-                                    ret = new edu.uci.ece.zen.orb.giop.standard.v1_0.
+                                    ret = new edu.uci.ece.zen.orb.protocol.giop.v1_0.
                                             LocateRequestMessage(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._LocateReply:
-                                    ret = edu.uci.ece.zen.orb.giop.standard.v1_0.LocateReplyMessage
+                                    ret = edu.uci.ece.zen.orb.protocol.giop.v1_0.LocateReplyMessage
                                             .getMessage();
                                     ret.init(orb, buffer);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._CloseConnection:
                                 case org.omg.GIOP.MsgType_1_0._CancelRequest:
-                                    ret = edu.uci.ece.zen.orb.giop.standard.v1_0.CancelRequestMessage
+                                    ret = edu.uci.ece.zen.orb.protocol.giop.v1_0.CancelRequestMessage
                                             .getMessage();
                                     ret.init(orb, buffer);
 
@@ -203,15 +201,15 @@ public final class GIOPMessageFactory {
      *            ReadBuffer of the first fragment in set of fragments from a
      *            v1_1 Request or Reply
      */
-    public static void collectFragmentsv1_1(Transport trans,
-            GIOPHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer)
+    public void collectFragmentsImpl(Transport trans,
+            ProtocolHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer)
             throws java.io.IOException {
 
         ReadBuffer prevMessageBuffer = firstFragmentBuffer;
         boolean moreFragments = true;
         while (moreFragments) {
             java.io.InputStream in = trans.getInputStream();
-            parseStreamForHeader(in, headerInfo, trans);
+            parseStreamForHeaderImpl(in, headerInfo, trans);
 
             // Create the ReadBuffer to store the data of the fragment
             ReadBuffer buffer = ReadBuffer.instance();
@@ -236,9 +234,9 @@ public final class GIOPMessageFactory {
      * @param firstFragmentBuffer
      *            ReadBuffer of the first fragment in set of fragments from a
      *            v1_2 Request or Reply
-     */
-    public static void collectFragmentsv1_2(Transport trans,
-            GIOPHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer,
+     * /
+    public void collectFragmentsv1_2(Transport trans,
+            ProtocolHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer,
             int requestId) throws java.io.IOException {
         // Read the fragment header
 
@@ -264,17 +262,17 @@ public final class GIOPMessageFactory {
             moreFragments = headerInfo.nextMessageIsFragment;
         }
     }
-
+    */
     /**
      * Read the GIOP Message header from the Transport's stream.
      * 
      * @param trans
      *            Transport stream
      * @param headerInfo
-     *            GIOPHeaderInfo object to fill with data read from header
+     *            ProtocolHeaderInfo object to fill with data read from header
      */
-    public static void parseStreamForHeader(java.io.InputStream in,
-            GIOPHeaderInfo headerInfo, Transport trans)
+    public void parseStreamForHeaderImpl(java.io.InputStream in,
+            ProtocolHeaderInfo headerInfo, Transport trans)
             throws java.io.IOException {
         ZenProperties.logger.log("parseStreamForHeader");
         //byte[] header = new byte[12];
@@ -289,7 +287,7 @@ public final class GIOPMessageFactory {
             int tmp = in.read(header, 0, 12);
             //if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
-                ZenProperties.logger.log(Logger.FATAL, GIOPMessageFactory.class, "parseStreamForHeader(InputStream, GIOPHeaderInfo, Transport)", "RTZen doesnt support closing connection yet :-P ... shutting down");
+                ZenProperties.logger.log(Logger.FATAL, MessageFactory.class, "parseStreamForHeader(InputStream, ProtocolHeaderInfo, Transport)", "RTZen doesnt support closing connection yet :-P ... shutting down");
                 System.exit(0);
             }
             read += tmp;
@@ -301,18 +299,18 @@ public final class GIOPMessageFactory {
         //System.err.write( header , 0 , 12 );
         //System.err.println( "\n---- ----" );
 
-        if (header[0] != magic[0] || header[1] != magic[1]
-                || header[2] != magic[2] || header[3] != magic[3]) { throw new RuntimeException(
+        if (header[0] != GIOPMessageFactory.magic[0] || header[1] != GIOPMessageFactory.magic[1]
+                || header[2] != GIOPMessageFactory.magic[2] || header[3] != GIOPMessageFactory.magic[3]) { throw new RuntimeException(
                 ""); //THROW GIOP Error here
         }
-        headerInfo.giopMajorVersion = header[4];
-        headerInfo.giopMinorVersion = header[5];
+        headerInfo.majorVersion = header[4];
+        headerInfo.minorVersion = header[5];
         headerInfo.isLittleEndian = (header[6] & 0x01) == 1; //Endian byte
         // (byte 6)
 
         headerInfo.nextMessageIsFragment = false;
-        if (headerInfo.giopMajorVersion == 1
-                && headerInfo.giopMinorVersion == 1) {
+        if (headerInfo.majorVersion == 1
+                && headerInfo.minorVersion == 1) {
             headerInfo.nextMessageIsFragment = ((header[6] & 0x02) == 1);
         }
 
@@ -354,7 +352,7 @@ public final class GIOPMessageFactory {
      * Immortal --&gt; Transport scope
      * </p>
      */
-    public static void constructMessage(ClientRequest req, int messageId,
+    public void constructMessageImpl(ClientRequest req, int messageId,
             CDROutputStream out) {
         //edu.uci.ece.zen.utils.Logger.printMemStats(304);
         out.write_octet_array(magic, 0, 4);
@@ -370,14 +368,14 @@ public final class GIOPMessageFactory {
         //(new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( req , messageId
         // )).marshal( out );
 
-        edu.uci.ece.zen.orb.giop.standard.v1_0.RequestMessage rm = edu.uci.ece.zen.orb.giop.standard.v1_0.RequestMessage
+        edu.uci.ece.zen.orb.protocol.giop.v1_0.RequestMessage rm = edu.uci.ece.zen.orb.protocol.giop.v1_0.RequestMessage
                 .getMessage();
         rm.init(req, messageId);
         rm.marshal(out);
         rm.free();
     }
 
-    public static CDROutputStream constructReplyMessage(ORB orb,
+    public CDROutputStream constructReplyMessageImpl(ORB orb,
             RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
@@ -398,15 +396,15 @@ public final class GIOPMessageFactory {
         out.setLocationMemento();
         out.write_long(0);
 
-        switch (req.getGiopVersion()) {
+        switch (req.getVersion()) {
             case 10:
-                edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeader
+                edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader
                         .instance();
                 rh.init(FString.instance(rh.service_context), req
                         .getRequestId(),
                         org.omg.GIOP.ReplyStatusType_1_0._NO_EXCEPTION);
                 rh.service_context.append(0);
-                edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeaderHelper.write(out, rh);
+                edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeaderHelper.write(out, rh);
                 break;
             /*
              * case 11: org.omg.GIOP.ReplyHeader_1_1Helper.write( out , new
@@ -419,15 +417,15 @@ public final class GIOPMessageFactory {
              * org.omg.IOP.ServiceContext[0] )); break;
              */
             default:
-                ZenProperties.logger.log(Logger.WARN, GIOPMessageFactory.class, "constructReplyMessage", "giop version not supported");
+                ZenProperties.logger.log(Logger.WARN, MessageFactory.class, "constructReplyMessage", "giop version not supported");
         }
         return out;
     }
     /**.
      */
      
-    public static CDROutputStream constructLocateReplyMessage(ORB orb,
-            edu.uci.ece.zen.orb.giop.type.LocateRequestMessage req)
+    public CDROutputStream constructLocateReplyMessageImpl(ORB orb,
+            edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage req)
     {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
@@ -443,19 +441,19 @@ public final class GIOPMessageFactory {
         out.setLocationMemento();
         out.write_long(0);
 
-        switch (req.getGiopVersion()) {
+        switch (req.getVersion()) {
             case 10:
                 out.write_ulong(req.getRequestId());
                 out.write_ulong(org.omg.GIOP.LocateStatusType_1_0._OBJECT_HERE);
                 out.updateLength();
                 break;
             default:
-                ZenProperties.logger.log(Logger.WARN, GIOPMessageFactory.class, "constructLocateReplyMessage", "giop version not supported");
+                ZenProperties.logger.log(Logger.WARN, MessageFactory.class, "constructLocateReplyMessage", "giop version not supported");
         }
         return out;
     }
     
-    public static CDROutputStream constructExceptionMessage(ORB orb,
+    public CDROutputStream constructExceptionMessageImpl(ORB orb,
             RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
@@ -471,15 +469,15 @@ public final class GIOPMessageFactory {
         out.setLocationMemento();
         out.write_long(0);
 
-        switch (req.getGiopVersion()) {
+        switch (req.getVersion()) {
             case 10:
-                edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeader
+                edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader rh = edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeader
                         .instance();
                 rh.init(FString.instance(rh.service_context), req
                         .getRequestId(),
                         org.omg.GIOP.ReplyStatusType_1_0._USER_EXCEPTION);
                 rh.service_context.append(0);
-                edu.uci.ece.zen.orb.giop.standard.v1_0.ReplyHeaderHelper.write(out, rh);
+                edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeaderHelper.write(out, rh);
                 break;
             /*
              * case 11: org.omg.GIOP.ReplyHeader_1_1Helper.write( out , new
@@ -492,7 +490,7 @@ public final class GIOPMessageFactory {
              * org.omg.IOP.ServiceContext[0] )); break;
              */
             default:
-                ZenProperties.logger.log(Logger.WARN, GIOPMessageFactory.class, "constructExceptionMessage", "giop version not supported");
+                ZenProperties.logger.log(Logger.WARN, MessageFactory.class, "constructExceptionMessage", "giop version not supported");
         }
         return out;
     }
@@ -505,11 +503,11 @@ public final class GIOPMessageFactory {
      * @param in
      *            InputStream to read four bytes from
      * @param headerInfo
-     *            GIOPHeaderInfo object whose isLittleEndian member will be used
+     *            ProtocolHeaderInfo object whose isLittleEndian member will be used
      *            to determine how to treat input stream
      */
-    public static int read_long(java.io.InputStream in,
-            GIOPHeaderInfo headerInfo) throws java.io.IOException {
+    public int read_long(java.io.InputStream in,
+            ProtocolHeaderInfo headerInfo) throws java.io.IOException {
         byte[] bytesOfLong = new byte[4];
         in.read(bytesOfLong, 0, 4);
         int readLong = 0;

@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.standard.v1_2;
+package edu.uci.ece.zen.orb.protocol.giop.v1_2;
 
 import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.*;
@@ -8,7 +8,7 @@ import javax.realtime.ImmortalMemory;
 /**
  * @author Bruce Miller
  */
-public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage {
+public class RequestMessage extends edu.uci.ece.zen.orb.protocol.type.RequestMessage {
     private RequestHeader_1_2 header;
     private static RequestMessage rm;
 
@@ -27,7 +27,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
         header = new RequestHeader_1_2 (
                                         messageId,
                                         responseFlag,
-                                        edu.uci.ece.zen.orb.giop.type.RequestMessage.reserved,
+                                        edu.uci.ece.zen.orb.protocol.type.RequestMessage.reserved,
                                         targetAddress,
                                         clr.operation,
                                         clr.contexts
@@ -42,7 +42,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
 
     public int getRequestId() { return header.request_id; }
 
-    public String getServiceContexts() { return header.service_context; }
+    public org.omg.IOP.ServiceContext[] getServiceContexts() { return header.service_context; }
     public void getObjectKey( FString id_out ){ id_out.reset(); id_out.append( header.target.object_key() ); }
     public String getOperation(){ return header.operation; }
     public int getResponseExpected(){ return header.response_flags; }
@@ -64,5 +64,5 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
         RequestHeader_1_2Helper.write( out, header );
     }
 
-    public int getGiopVersion(){ return 12; }
+    public int getVersion(){ return 12; }
 }

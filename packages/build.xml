@@ -39,7 +39,7 @@
             <include name="src/edu/uci/ece/zen/orb/transport/**"/>
             <include name="src/edu/uci/ece/zen/orb/**.java"/>
             <include name="src/edu/uci/ece/zen/orb/policies/**.java"/>
-            <include name="src/edu/uci/ece/zen/orb/giop/**"/>
+            <include name="src/edu/uci/ece/zen/orb/protocol/**"/>
             <exclude name="src/edu/uci/ece/zen/orb/ServerRequest.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
             <exclude name="src/edu/uci/ece/zen/orb/ExceptionHandler.java"/>
@@ -47,8 +47,8 @@
             <exclude name="src/edu/uci/ece/zen/orb/TypeCodeAspect.java"/>
 
             <include name="src/edu/uci/ece/zen/poa/**"/>
-            <exclude name="src/edu/uci/ece/zen/orb/giop/v1_1/**"/>
-            <exclude name="src/edu/uci/ece/zen/orb/giop/v1_2/**"/>
+            <exclude name="src/edu/uci/ece/zen/orb/protocol/giop/v1_1/**"/>
+            <exclude name="src/edu/uci/ece/zen/orb/protocol/giop/v1_2/**"/>
 
             <exclude name="src/edu/uci/ece/zen/orb/resolvers/**"/>
 

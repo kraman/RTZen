@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.standard.v1_0;
+package edu.uci.ece.zen.orb.protocol.giop.v1_0;
 
 import javax.realtime.ImmortalMemory;
 
@@ -18,7 +18,7 @@ import edu.uci.ece.zen.utils.Logger;
  * @author bmiller
  */
 public class LocateReplyMessage extends
-        edu.uci.ece.zen.orb.giop.type.LocateReplyMessage {
+        edu.uci.ece.zen.orb.protocol.type.LocateReplyMessage {
     private LocateReplyHeader_1_0 header;
 
     private static LocateReplyMessage lrm;
@@ -70,7 +70,7 @@ public class LocateReplyMessage extends
         return null;
     }
 
-    public int getGiopVersion() {
+    public int getVersion() {
         return 10;
     }
     

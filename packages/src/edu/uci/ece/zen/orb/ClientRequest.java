@@ -157,7 +157,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
             System.out.print("ClientRequest messageId:");
             System.out.println(messageId);
         }
-        edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructMessage(this,
+        edu.uci.ece.zen.orb.protocol.MessageFactory.constructMessage(this,
                 messageId, out);
         ZenProperties.logger.log("ClientRequest 9");
         //edu.uci.ece.zen.utils.Logger.printMemStats(311);

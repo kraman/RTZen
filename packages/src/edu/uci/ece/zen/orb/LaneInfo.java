@@ -6,7 +6,7 @@ import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.ZenProperties;
 
-class LaneInfo {
+public class LaneInfo {
     public LaneInfo() {
         /*
         try {
@@ -21,21 +21,19 @@ class LaneInfo {
     }
 
     public int minPri;
-
     public int maxPri;
-
     public ScopedMemory transpScope;
-
     public FString objectKey;
+    private Class protocolfactory;
 
-    public void init(int minPri, int maxPri, ScopedMemory transpScope,
-            FString objKey) {
+    public void init(int minPri, int maxPri, ScopedMemory transpScope, FString objKey, Class pf ) {
         this.minPri = minPri;
         this.maxPri = maxPri;
         this.transpScope = transpScope;
         //objectKey.reset();
         //objectKey.append(objKey, 0, objKey.length);
         this.objectKey = objKey;
+        this.protocolfactory = pf;
     }
 
     /*
@@ -45,4 +43,7 @@ class LaneInfo {
         return objectKey;
     }
 
+    public Class getProtocolFactory(){
+        return protocolfactory;
+    }
 }

@@ -1,6 +1,6 @@
 package edu.uci.ece.zen.orb;
 
-import edu.uci.ece.zen.orb.giop.type.RequestMessage;
+import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 
 public class ResponseHandler implements org.omg.CORBA.portable.ResponseHandler {
     private RequestMessage req;
@@ -34,7 +34,7 @@ public class ResponseHandler implements org.omg.CORBA.portable.ResponseHandler {
      *         <code>CDROutputStream</code>.
      */
     public org.omg.CORBA.portable.OutputStream createReply() {
-        return edu.uci.ece.zen.orb.giop.GIOPMessageFactory
+        return edu.uci.ece.zen.orb.protocol.MessageFactory
                 .constructReplyMessage(orb, req);
     }
 
@@ -46,7 +46,7 @@ public class ResponseHandler implements org.omg.CORBA.portable.ResponseHandler {
      *         <code>CDROutputStream</code>.
      */
     public org.omg.CORBA.portable.OutputStream createExceptionReply() {
-        return edu.uci.ece.zen.orb.giop.GIOPMessageFactory
+        return edu.uci.ece.zen.orb.protocol.MessageFactory
                 .constructExceptionMessage(orb, req);
     }
 }

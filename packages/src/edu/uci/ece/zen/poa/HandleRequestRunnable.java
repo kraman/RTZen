@@ -2,7 +2,7 @@ package edu.uci.ece.zen.poa;
 
 import org.omg.CORBA.IntHolder;
 
-import edu.uci.ece.zen.orb.giop.type.RequestMessage;
+import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 

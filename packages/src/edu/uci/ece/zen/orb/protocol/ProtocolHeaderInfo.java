@@ -11,7 +11,7 @@ import edu.uci.ece.zen.utils.Logger;
  * @author Bruce Miller
  * @author Krishna Raman
  */
-public class HeaderInfo {
+public class ProtocolHeaderInfo {
     public boolean nextMessageIsFragment = false;
     public int messageSize = 0;
     public boolean isLittleEndian;

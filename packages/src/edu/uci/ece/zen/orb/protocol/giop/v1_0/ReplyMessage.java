@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.standard.v1_0;
+package edu.uci.ece.zen.orb.protocol.giop.v1_0;
 
 import javax.realtime.ImmortalMemory;
 
@@ -16,7 +16,7 @@ import edu.uci.ece.zen.utils.Queue;
  * @author bmiller
  */
 
-public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
+public class ReplyMessage extends edu.uci.ece.zen.orb.protocol.type.ReplyMessage {
     private ReplyHeader header;
 
     private static ReplyMessage rm;
@@ -76,7 +76,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.type.ReplyMessage {
         ReplyHeaderHelper.write(out, header);
     }
 
-    public int getGiopVersion() {
+    public int getVersion() {
         return 10;
     }
 

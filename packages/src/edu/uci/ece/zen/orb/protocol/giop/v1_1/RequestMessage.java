@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.standard.v1_1;
+package edu.uci.ece.zen.orb.protocol.giop.v1_1;
 
 import org.omg.GIOP.*;
 import edu.uci.ece.zen.utils.*;
@@ -8,7 +8,7 @@ import javax.realtime.ImmortalMemory;
 /**
  * @author Bruce Miller
  */
-public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage {
+public class RequestMessage extends edu.uci.ece.zen.orb.protocol.type.RequestMessage {
     private RequestHeader_1_1 header; //mark needs to fix
     private static RequestMessage rm;
 
@@ -19,7 +19,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
                                         clr.contexts,
                                         messageId,
                                         clr.responseExpected,
-                                        edu.uci.ece.zen.orb.giop.type.RequestMessage.reserved,
+                                        edu.uci.ece.zen.orb.protocol.type.RequestMessage.reserved,
                                         clr.objectKey,
                                         clr.operation,
                                         new byte[0]
@@ -56,5 +56,5 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.type.RequestMessage
         RequestHeaderHelper.write( out, header );
     }
 
-    public int getGiopVersion(){ return 11; }
+    public int getVersion(){ return 11; }
 }

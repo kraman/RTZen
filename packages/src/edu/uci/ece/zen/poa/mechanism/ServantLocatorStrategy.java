@@ -8,7 +8,7 @@ package edu.uci.ece.zen.poa.mechanism;
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.portable.InvokeHandler;
 import edu.uci.ece.zen.orb.*;
-import edu.uci.ece.zen.orb.giop.type.*;
+import edu.uci.ece.zen.orb.protocol.type.*;
 import edu.uci.ece.zen.poa.*;
 import edu.uci.ece.zen.utils.*;
 import org.omg.CORBA.IntHolder;

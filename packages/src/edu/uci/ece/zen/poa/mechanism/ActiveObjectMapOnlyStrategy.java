@@ -115,7 +115,7 @@ public final class ActiveObjectMapOnlyStrategy extends
      */
 
     public void handleRequest(
-            edu.uci.ece.zen.orb.giop.type.RequestMessage request, POA poa,
+            edu.uci.ece.zen.orb.protocol.type.RequestMessage request, POA poa,
             SynchronizedInt requests, IntHolder exceptionValue) {
         exceptionValue.value = POARunnable.NoException;
         FString okey = request.getObjectKey();

@@ -1,7 +1,8 @@
-package edu.uci.ece.zen.orb.giop.type;
+package edu.uci.ece.zen.orb.protocol.type;
 
 import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.orb.giop.GIOPMessage;
+import edu.uci.ece.zen.orb.protocol.Message;
+import edu.uci.ece.zen.orb.protocol.type.*;
 import edu.uci.ece.zen.utils.ReadBuffer;
 
 /**
@@ -11,7 +12,7 @@ import edu.uci.ece.zen.utils.ReadBuffer;
  * 
  * @author bmiller
  */
-public abstract class LocateRequestMessage extends RequestMessage {
+public abstract class LocateRequestMessage extends Message {
     public LocateRequestMessage() {
     }
 
@@ -21,6 +22,10 @@ public abstract class LocateRequestMessage extends RequestMessage {
 
     public void init(ORB orb, ReadBuffer stream) {
         super.init(orb, stream);
+    }
+
+    public int getResponseExpected(){
+        return 1;
     }
 
     // Abstract declarations in addition to those in GIOPMessage

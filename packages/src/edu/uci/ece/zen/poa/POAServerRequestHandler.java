@@ -1,9 +1,9 @@
 package edu.uci.ece.zen.poa;
 
-import edu.uci.ece.zen.orb.giop.type.CancelRequestMessage;
-import edu.uci.ece.zen.orb.giop.type.LocateReplyMessage;
-import edu.uci.ece.zen.orb.giop.type.LocateRequestMessage;
-import edu.uci.ece.zen.orb.giop.type.RequestMessage;
+import edu.uci.ece.zen.orb.protocol.type.CancelRequestMessage;
+import edu.uci.ece.zen.orb.protocol.type.LocateReplyMessage;
+import edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage;
+import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;
 

@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.giop.standard.v1_0;
+package edu.uci.ece.zen.orb.protocol.giop.v1_0;
 
 import javax.realtime.ImmortalMemory;
 
@@ -17,7 +17,7 @@ import edu.uci.ece.zen.utils.Logger;
  */
 
 public class CancelRequestMessage extends
-        edu.uci.ece.zen.orb.giop.type.CancelRequestMessage {
+        edu.uci.ece.zen.orb.protocol.type.CancelRequestMessage {
     private org.omg.GIOP.CancelRequestHeader header;
 
     private static CancelRequestMessage crm;
@@ -55,7 +55,7 @@ public class CancelRequestMessage extends
         return null;
     }
 
-    public int getGiopVersion() {
+    public int getVersion() {
         return 10;
     }
     

@@ -114,7 +114,7 @@ public class POARunnable implements Runnable {
                 // RealtimeThread.getCurrentMemoryArea() + " and this: " +
                 // this);
                 pimpl.handleRequest(
-                        (edu.uci.ece.zen.orb.giop.type.RequestMessage) args
+                        (edu.uci.ece.zen.orb.protocol.type.RequestMessage) args
                                 .elementAt(0), this);
                 break;
             case SERVANT_TO_ID:

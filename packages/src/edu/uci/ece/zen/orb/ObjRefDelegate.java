@@ -114,7 +114,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
     }
 
     public synchronized void addLaneData(int min, int max,
-            ScopedMemory transport, FString objectKey) {
+            ScopedMemory transport, FString objectKey, Class protocolFactory ) {
         if (ZenProperties.dbg) ZenProperties.logger.log(RealtimeThread
                 .currentThread()
                 + " "
@@ -126,7 +126,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 + max
                 + "  :  "
                 + transport);
-        priorityLanes[numLanes++].init(min, max, transport, objectKey);
+        priorityLanes[numLanes++].init(min, max, transport, objectKey, protocolFactory);
     }
 
     public LaneInfo getLane() {
@@ -210,7 +210,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                             orb.getConnectionRegistry().putConnection(connectionKey, transportScope);
                             addLaneData(RealtimeThread.MIN_PRIORITY,
                                     99/* RealtimeThread.MAX_PRIORITY */,
-                                    transportScope, object_key);
+                                    transportScope, object_key,
+                                    edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
                         } else {
                             FString.free(host);
                         }
@@ -322,11 +323,9 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                         //TODO: process priority policies here and add the
                         // appropriate
                         // lanes
-                        addLaneData(RealtimeThread.MIN_PRIORITY,
-                                99,
-//                                 RealtimeThread.MAX_PRIORITY
-
-                                transportScope, object_key);
+                        addLaneData(RealtimeThread.MIN_PRIORITY, 99,
+                                transportScope, object_key,
+                                edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
                     }
                         break;
                 }
@@ -377,7 +376,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                     System.out.println( "Serial connection succesful" );
                     addLaneData(RealtimeThread.MIN_PRIORITY,
                     99/* RealtimeThread.MAX_PRIORITY */,
-                    transportScope, object_key);
+                    transportScope, object_key,
+                    edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
                 }else{
                     System.out.println( "Serial connection unsuccesful" );
                 }

@@ -1,7 +1,7 @@
-package edu.uci.ece.zen.orb.giop.type;
+package edu.uci.ece.zen.orb.protocol.type;
 
 import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.orb.giop.GIOPMessage;
+import edu.uci.ece.zen.orb.protocol.Message;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ReadBuffer;
 
@@ -12,7 +12,7 @@ import edu.uci.ece.zen.utils.ReadBuffer;
  * 
  * @author bmiller
  */
-public abstract class ReplyMessage extends GIOPMessage {
+public abstract class ReplyMessage extends Message {
     public ReplyMessage() {
     }
 
@@ -24,7 +24,7 @@ public abstract class ReplyMessage extends GIOPMessage {
         super.init(orb, stream);
     }
 
-    // Abstract declarations in addition to those in GIOPMessage
+    // Abstract declarations in addition to those in Message
     public abstract int getReplyStatus();
     public abstract FString getServiceContexts();
     public abstract void release();

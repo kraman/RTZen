@@ -1,7 +1,7 @@
-package edu.uci.ece.zen.orb.giop.type;
+package edu.uci.ece.zen.orb.protocol.type;
 
 import edu.uci.ece.zen.orb.ORB;
-import edu.uci.ece.zen.orb.giop.GIOPMessage;
+import edu.uci.ece.zen.orb.protocol.Message;
 import edu.uci.ece.zen.utils.ReadBuffer;
 
 /**
@@ -11,7 +11,7 @@ import edu.uci.ece.zen.utils.ReadBuffer;
  * 
  * @author bmiller
  */
-public abstract class LocateReplyMessage extends GIOPMessage {
+public abstract class LocateReplyMessage extends Message {
     public LocateReplyMessage() {
     }
 
@@ -80,7 +80,7 @@ public abstract class LocateReplyMessage extends GIOPMessage {
      * message that it is. Called by constructors.
      */
     protected void readBody() {
-        if (this.getGiopVersion() == 10 ) { //||
+        if (this.getVersion() == 10 ) { //||
             // this
             // instanceof
             // edu.uci.ece.zen.orb.giop.v1_1.LocateReplyMessage)
@@ -112,4 +112,6 @@ public abstract class LocateReplyMessage extends GIOPMessage {
                     + this);
         }
     }
+
+    public void internalFree(){};
 }
