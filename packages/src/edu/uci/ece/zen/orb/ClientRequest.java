@@ -78,7 +78,9 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
 
         //TODO:Assemble and write message header and policies here
 
-        contexts = ServiceContext.instance();
+        contexts = ServiceContext.instance(contexts);
+
+        //ZenProperties.logger.log("Sending CLIENT PROPAGATED service context" + contexts);
 
         //contexts.append(0); //empty list
         if (del.priorityModel == PriorityModel._CLIENT_PROPAGATED
@@ -260,6 +262,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     public void free() {
         //out.free();
         queue.enqueue(this);
+        //ServiceContext.release(contexts);
         //Thread.dumpStack();
     }
 
