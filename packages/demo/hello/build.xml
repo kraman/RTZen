@@ -13,6 +13,7 @@
             jarfile="${zen.libdir}/hello_world.jar"
             basedir="${zen.classdir}"
             includes="${package.dir}/**"/>
+        <antcall target="compile.jrate"/>
     </target>
 
     <target name="compile.jrate" if="compiler_jRate">
