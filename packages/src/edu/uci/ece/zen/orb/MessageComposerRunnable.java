@@ -5,25 +5,21 @@ import edu.uci.ece.zen.utils.*;
 
 public class MessageComposerRunnable implements Runnable {
     ClientRequest clr;
-
     CDRInputStream reply;
-
     boolean success;
-
-    private static MessageComposerRunnable inst;
-
-    public MessageComposerRunnable(){}
-
+    private static Queue queue = Queue.fromImmortal();
+    SendMessageRunnable smr;
     public static MessageComposerRunnable instance() {
-        if (inst == null) {
-            try {
-                inst = (MessageComposerRunnable) ImmortalMemory.instance()
-                        .newInstance(MessageComposerRunnable.class);
-            } catch (Exception e) {
-                ZenProperties.logger.log(Logger.FATAL, MessageComposerRunnable.class, "instance", e);
-            }
-        }
-        return inst;
+        MessageComposerRunnable mcr = (MessageComposerRunnable)ORB.getQueuedInstance(MessageComposerRunnable.class,queue);
+        return mcr;
+    }
+
+    public void release(){
+        MessageComposerRunnable.queue.enqueue( this );
+    }
+
+    public MessageComposerRunnable(){
+        smr = new SendMessageRunnable();
     }
 
     /**
@@ -46,49 +42,41 @@ public class MessageComposerRunnable implements Runnable {
      */
     private int statCount = 0;
     public void run() {
-            if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
-                edu.uci.ece.zen.utils.Logger.printMemStats(6);
-            }
-            statCount++;
+        if (statCount % ZenProperties.MEM_STAT_COUNT == 0) {
+            edu.uci.ece.zen.utils.Logger.printMemStats(6);
+        }
+        statCount++;
 
         //setup waiting straterg
         WaitingStrategy waitingStrategy = null;
         if (clr.responseExpected) {
-            //waitingStrategy = TwoWayWaitingStrategy.instance();//new
-            // TwoWayWaitingStrategy();
-            //TODO: Krishna, make sure this is correct, had to do this to solve
-            // mem leak
-            waitingStrategy = (WaitingStrategy) (((ScopedMemory) RealtimeThread
-                    .getCurrentMemoryArea()).getPortal());
+            waitingStrategy = (WaitingStrategy) (((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal());
             if (waitingStrategy == null) {
                 waitingStrategy = new TwoWayWaitingStrategy();
-                ((ScopedMemory) RealtimeThread.getCurrentMemoryArea())
-                        .setPortal(waitingStrategy);
+                ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).setPortal(waitingStrategy);
             }
             clr.registerWaiter();
         }
 
         ExecuteInRunnable eir = clr.orb.getEIR();//new ExecuteInRunnable();
-        SendMessageRunnable smr = SendMessageRunnable.instance();
         smr.init(clr.transportScope);
         smr.init(clr.out.getBuffer());
         eir.init(smr, clr.transportScope);
         success = true;
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(383);
         try {
             ZenProperties.logger.log("MCR run 1");
             clr.orb.orbImplRegion.executeInArea(eir);
         } catch (Exception e) {
-            ZenProperties.logger.log(Logger.SEVERE,
-                    getClass(), "run",
-                    "Could not sent message on transport", e);
+            ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", "Could not sent message on transport", e);
             clr.releaseWaiter();
             waitingStrategy = null;
             success = false;
         } finally {
             clr.out.free();
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(384);
         }
         ZenProperties.logger.log("MCR run 2");
-
         if (waitingStrategy != null) {
             reply = waitingStrategy.waitForReply();
             clr.releaseWaiter();

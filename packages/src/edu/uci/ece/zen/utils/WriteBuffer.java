@@ -30,10 +30,9 @@ public class WriteBuffer {
                     .getConstructor(new Class [] {int.class});
             vectorArgTypes = new Object[1];
             maxCap = Integer.parseInt(ZenProperties
-                .getGlobalProperty( "writebuffer.size" , "10" ));
+                .getGlobalProperty( "writebuffer.size" , "20" ));
             vectorArgTypes[0] = new Integer(maxCap);
-            bufferCache = (Queue) ImmortalMemory.instance().newInstance(
-                    Queue.class);
+	    bufferCache = (Queue) ImmortalMemory.instance().newInstance(Queue.class);
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "static <init>", e);
             System.exit(-1);
@@ -49,22 +48,20 @@ public class WriteBuffer {
             //Thread.dumpStack();
             idgen++;
             numFree--;
-            if (bufferCache.isEmpty()){
-                WriteBuffer wb =
-                (WriteBuffer) ImmortalMemory
-                    .instance().newInstance(WriteBuffer.class);
+	    WriteBuffer wb = (WriteBuffer) bufferCache.dequeue();
+            if ( wb == null){
+                wb = (WriteBuffer) ImmortalMemory.instance().newInstance(WriteBuffer.class);
                 //System.out.println("WWINST:" + idgen);
                 wb.id = idgen;
                 wb.inUse = true;
                 return wb;
             } else {
-                WriteBuffer wb = (WriteBuffer) bufferCache.dequeue();
                 //System.out.println("WWINST:" + idgen);
                 wb.id = idgen;
                 wb.inUse = true;
                 return wb;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             ZenProperties.logger.log(Logger.FATAL, WriteBuffer.class, "instance", e);
             System.exit(-1);
         }
@@ -87,8 +84,8 @@ public class WriteBuffer {
 
     public WriteBuffer() {
         try {
-            buffers = (Vector) ImmortalMemory.instance().newInstance(
-                    vectorConstructor, vectorArgTypes);
+            //buffers = (Vector) ImmortalMemory.instance().newInstance(vectorConstructor, vectorArgTypes);
+	    buffers = new Vector( WriteBuffer.maxCap );
         } catch (Exception e) {
             ZenProperties.logger.log(Logger.FATAL, getClass(), "<init>", e);
             System.exit(-1);
@@ -109,16 +106,17 @@ public class WriteBuffer {
     }
 */
     public void init() {
+	//System.out.println( "WriteBuffer.init()" );
         position = limit = capacity = 0;
         buffers.removeAllElements();
         enableAllignment = true;
     }
 
     public void free() {
+	//System.out.println( "WriteBuffer.free()" );
         if(!inUse){
-            ZenProperties.logger.log(Logger.WARN, WriteBuffer.class,
-                "free",
-                "Buffer already freed.");
+	Thread.dumpStack();
+            ZenProperties.logger.log(Logger.WARN, WriteBuffer.class, "free", "Buffer already freed.");
                 //System.exit(-1);
                 //still deciding what to do here
             return;
@@ -231,9 +229,9 @@ public class WriteBuffer {
     }
 
     public void writeByteArray(byte[] v, int offset, int length) {
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(505);
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(505);
         ensureCapacity(length);
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(506);
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(506);
         while (length > 0) {
             byte[] buffer = (byte[]) buffers.elementAt((int) (position / 1024));
             int curBufPos = (int) (position % 1024);

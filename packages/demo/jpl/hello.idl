@@ -1,0 +1,12 @@
+module demo
+{
+	module jpl
+	{
+		interface HelloWorld
+		{
+		    typedef sequence<long> unbounded_seq;
+			long getMessage(in long id, in unbounded_seq mySeq);
+		};
+	};
+};
+

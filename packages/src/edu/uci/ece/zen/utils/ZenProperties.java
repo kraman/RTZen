@@ -21,13 +21,15 @@ public final class ZenProperties {
 
     public static final boolean dbgThreadStack = false;
 
+    public static final boolean CAN_USE_STRINGS = false;
+
     /* set to true to allow printing about memory usage */
-  
-    public static final boolean memDbg = false;
+
+    public static final boolean memDbg = true;
 
     /* configure the memory debugger   */
-    public static final float trim = (float)0.9; //To what extent we will trim the data
-    public static final int groupSize = 7; //How many scopes we need to group 
+    public static final float trim = (float)0.8; //To what extent we will trim the data
+    public static final int groupSize = 7; //How many scopes we need to group
 
     public static final boolean memDbg1 = false;
     public static final int MEM_STAT_COUNT = 1;

@@ -10,22 +10,7 @@ import edu.uci.ece.zen.utils.Logger;
 
 public class SendMessageRunnable implements Runnable {
     WriteBuffer msg;
-
     ScopedMemory transScope;
-
-    private static SendMessageRunnable inst;
-
-    public static SendMessageRunnable instance() {
-        if (inst == null) {
-            try {
-                inst = (SendMessageRunnable) ImmortalMemory.instance()
-                        .newInstance(SendMessageRunnable.class);
-            } catch (Exception e) {
-                ZenProperties.logger.log(Logger.WARN, SendMessageRunnable.class, "instance", e);
-            }
-        }
-        return inst;
-    }
 
     public void init(ScopedMemory transScope) {
         this.transScope = transScope;
@@ -54,9 +39,11 @@ public class SendMessageRunnable implements Runnable {
         // (edu.uci.ece.zen.orb.transport.Transport) transScope.getPortal();
         edu.uci.ece.zen.orb.transport.Transport trans = (edu.uci.ece.zen.orb.transport.Transport) ((ScopedMemory) RealtimeThread
                 .getCurrentMemoryArea()).getPortal();
-        if (trans != null && msg != null)
+        if (trans != null && msg != null){
+	    //System.out.println( "sending message" );
             trans.send(msg);
-        else
+	    //System.out.println( "msg sent" );
+        }else
             ZenProperties.logger.log(Logger.SEVERE, "---------------------------------------Transport null or write buffer null");
     }
 }

@@ -66,11 +66,17 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
                                 + javax.realtime.RealtimeThread
                                         .currentRealtimeThread());
 
-                sock = new java.net.Socket( InetAddress.getByAddress( new byte[]{ 
-			((byte)(128&0xFF)),
-			((byte)(195&0xFF)),
-			((byte)(174&0xFF)),
-			((byte)(20&0xFF))})  , port );
+                if(ZenProperties.CAN_USE_STRINGS)
+                    sock = new java.net.Socket(host, port);
+                else{
+                    sock = new java.net.Socket( InetAddress.getByAddress( new byte[]{
+                        ((byte)(128&0xFF)),
+                        ((byte)(195&0xFF)),
+                        ((byte)(174&0xFF)),
+                        ((byte)(20&0xFF))})  , port );
+                }
+
+
                 ZenProperties.logger.log("Connected");
                 //setSockProps(sock, orb);
                 //             System.err.println( "sock = " + sock );
@@ -98,6 +104,10 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
 
     public java.io.OutputStream getOutputStream() {
         return ostream;
+    }
+
+    public String toString(){
+        return sock.toString();
     }
 
     //hook method to weave in TCPProtocolProperties

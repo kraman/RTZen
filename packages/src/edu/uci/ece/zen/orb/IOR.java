@@ -81,7 +81,7 @@ public class IOR {
 
     /**
      * Factory method to create a CORBA object.
-     * 
+     *
      * @param orb
      *            The ORB reference used to create this object. This orb
      *            reference contains the connector and acceptor registries used
@@ -91,15 +91,15 @@ public class IOR {
      * @return The CORBA object.
      */
     public static org.omg.CORBA.Object makeCORBAObject(ORB orb, String typeID,
-            FString objKey, MemoryArea clientArea)
+            FString objKey, MemoryArea clientArea, WriteBuffer taggedComponents, int tcLen,
+            int threadPoolId)
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
         if (ZenProperties.dbg) ZenProperties.logger.log("makeCORBAObject 1 -- client area: " + clientArea);
         org.omg.IOP.IOR ior = (org.omg.IOP.IOR) clientArea
                 .newInstance(org.omg.IOP.IOR.class);
         ior.type_id = typeID;
-        ior.profiles = orb.getAcceptorRegistry()
-                .getProfiles(objKey, clientArea);
+        ior.profiles = orb.getAcceptorRegistry().getProfiles(objKey, clientArea, taggedComponents, tcLen, threadPoolId);
         ZenProperties.logger.log("makeCORBAObject 2");
 
         ObjectImpl objectImpl = (ObjectImpl) clientArea

@@ -40,13 +40,13 @@
         <javac
             srcdir="${zen.srcdir}:${zen.gendir}"
             destdir="${zen.classdir}"
-            includes="${package.dir}/**.java"
+            includes="${package.dir}/**"
             debug="${zen.debug}"
             optimize="${zen.optimization}"
             target="${javac.target}"
             includeJavaRuntime="yes"
-            bootclasspath="${zen.rtbootclasspath}"
-            classpath="${zen.classpath}"/>
+            bootclasspath="${zen.classpath};${java.home}/lib/rt.jar;${zen.rtbootclasspath}"
+            />
     </presetdef>
 
 </project>

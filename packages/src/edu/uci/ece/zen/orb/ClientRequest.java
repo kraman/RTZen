@@ -15,50 +15,24 @@ import edu.uci.ece.zen.utils.Queue;
 
 public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     public String operation;
-
     public boolean responseExpected;
-
     public ObjRefDelegate del;
-
     public CDROutputStream out;
-
     public byte giopMajor;
-
     public byte giopMinor;
-
     public ScopedMemory transportScope;
-
     public FString objectKey;
-
     //public byte[] objectKey;
     //public FString objectKey;
     public ORB orb;
-
     private int messageId;
-
     public FString contexts;
-
     //private static ClientRequest inst;
-
     private static Queue queue = Queue.fromImmortal();
 
     public static ClientRequest instance() {
-
         ClientRequest cr = (ClientRequest)ORB.getQueuedInstance(ClientRequest.class,queue);
-
         return cr;
-/*
-        if (inst == null) {
-            try {
-                inst = (ClientRequest) ImmortalMemory.instance().newInstance(
-                        ClientRequest.class);
-            } catch (Exception e) {
-                ZenProperties.logger.log(Logger.WARN, ClientRequest.class, "instance", e);
-            }
-        }
-        return inst;
-*/
-        //return new ClientRequest();
     }
 
     /**
@@ -92,7 +66,9 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
 
         //TODO:Assemble and write message header and policies here
 
-        contexts = ServiceContext.instance();
+        contexts = ServiceContext.instance(contexts);
+
+        //ZenProperties.logger.log("Sending CLIENT PROPAGATED service context" + contexts);
 
         //contexts.append(0); //empty list
         if (del.priorityModel == PriorityModel._CLIENT_PROPAGATED
@@ -171,23 +147,20 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
      * </p>
      */
     public CDRInputStream invoke() {
-        //out.printWriteBuffer(); This will printout every byte in the
-        // OutputStream
-
-        //edu.uci.ece.zen.utils.Logger.printMemStats(310);
-
+        //out.printWriteBuffer(); This will printout every byte in the OutputStream
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(311);
         ZenProperties.logger.log("ClientRequest invoke 1");
         out.updateLength();
         MessageComposerRunnable mcr = MessageComposerRunnable.instance();
         mcr.init(this);
         ScopedMemory messageScope = ORB.getScopedRegion();
-
         ExecuteInRunnable erOrbMem = orb.getEIR();//new ExecuteInRunnable();
         ExecuteInRunnable erMsgMem = orb.getEIR();//new ExecuteInRunnable();
 
         erOrbMem.init(erMsgMem, orb.orbImplRegion);
         erMsgMem.init(mcr, messageScope);
         ZenProperties.logger.log("ClientRequest invoke 2");
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(312);
         try {
             if (orb.parentMemoryArea == RealtimeThread.getCurrentMemoryArea())
                 erOrbMem.run();
@@ -198,14 +171,26 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
                     getClass(), "invoke()",
                     "Could not invoke remote object", e);
         }
-        //edu.uci.ece.zen.utils.Logger.printMemStats(310);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(313);
         ZenProperties.logger.log("ClientRequest invoke 3");
         ORB.freeScopedRegion(messageScope);
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(315);
         orb.freeEIR( erOrbMem );
         orb.freeEIR( erMsgMem );
-        //edu.uci.ece.zen.utils.Logger.printMemStats(311);
-        if (mcr.success) return mcr.getReply();
-        else throw new org.omg.CORBA.TRANSIENT();
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(316);
+        CDRInputStream reply = null;
+        if (mcr.success){
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(317);
+            reply = mcr.getReply();
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(318);
+            mcr.release();
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(319);
+        }else{
+            mcr.release();
+            throw new org.omg.CORBA.TRANSIENT();
+        }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(3100);
+        return reply;
     }
 
     public void registerWaiter() {
@@ -277,6 +262,7 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream {
     public void free() {
         //out.free();
         queue.enqueue(this);
+        //ServiceContext.release(contexts);
         //Thread.dumpStack();
     }
 

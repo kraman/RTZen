@@ -143,6 +143,7 @@ public class Queue {
      */
     public Object dequeue() {
         QueueNode ret;
+	Object obj = null;
         synchronized (sObject) {
             if (allocListHead == null) return null;
             else {
@@ -150,9 +151,9 @@ public class Queue {
                 ret = allocListHead;
                 allocListHead = allocListHead.next;
             }
+	    obj = ret.value;
+	    freeNode(ret);
         }
-        Object obj = ret.value;
-        freeNode(ret);
         return obj;
     }
 }

@@ -21,7 +21,7 @@ import edu.uci.ece.zen.orb.protocol.*;
 /**
  * This class is a factory for creating GIOP messages for marshalling or
  * demarshalling messages.
- * 
+ *
  * @author Krishna Raman
  * @author Bruce Miller
  * @author Yue Zhang
@@ -34,15 +34,15 @@ public final class GIOPMessageFactory extends MessageFactory{
 
     public Message parseStreamImpl(ORB orb, Transport trans)
             throws java.io.IOException {
-//        edu.uci.ece.zen.utils.Logger.printMemStats(330);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(330);
         ReadBuffer buffer = ReadBuffer.instance();
-  //      edu.uci.ece.zen.utils.Logger.printMemStats(331);
+        
         buffer.init();
-    //    edu.uci.ece.zen.utils.Logger.printMemStats(332);
-
+        
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(331);
 
         Object obj = trans.getObject(3);
-        ProtocolHeaderInfo mainMsgHdr; 
+        ProtocolHeaderInfo mainMsgHdr;
         if(obj == null){
             mainMsgHdr = new edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo();
             trans.setObject(mainMsgHdr, 3);
@@ -51,30 +51,31 @@ public final class GIOPMessageFactory extends MessageFactory{
             mainMsgHdr = (edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo)obj;
         }
 
- //       edu.uci.ece.zen.utils.Logger.printMemStats(333);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(332);
 
 
         edu.uci.ece.zen.orb.protocol.Message ret = null;
 
  //       edu.uci.ece.zen.utils.Logger.printMemStats(334);
-
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(333);
 
         do {
             java.io.InputStream in = trans.getInputStream();
- //           edu.uci.ece.zen.utils.Logger.printMemStats(335);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(334);
 
-            parseStreamForHeaderImpl(in, mainMsgHdr, trans);
+            boolean status = parseStreamForHeaderImpl(in, mainMsgHdr, trans);
+            if( !status )
+                return null;
 
  //           edu.uci.ece.zen.utils.Logger.printMemStats(336);
-
+            //edu.uci.ece.zen.utils.Logger.printMemStatsImm(333);
             // Read the GIOP message (including any request/reply/etc headers)
             // into the variable "buffer"
             buffer.setEndian(mainMsgHdr.isLittleEndian);
- //           edu.uci.ece.zen.utils.Logger.printMemStats(337);
+            edu.uci.ece.zen.utils.Logger.printMemStatsImm(335);
 
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
 
- //           edu.uci.ece.zen.utils.Logger.printMemStats(338);
 
             if (ZenProperties.dbg) ZenProperties.logger.log
                             ("In MessageFactory, the message size is "
@@ -103,12 +104,13 @@ public final class GIOPMessageFactory extends MessageFactory{
                                     ret = edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyMessage
                                             .getMessage();
                                     ret.init(orb, buffer);
+                                    //edu.uci.ece.zen.utils.Logger.printMemStatsImm(336);
                                     break;
                                 case org.omg.GIOP.MsgType_1_0._LocateRequest:
                                     //ret = edu.uci.ece.zen.orb.giop.v1_0.LocateRequestMessage
                                     //        .getMessage();
                                     //ret.init(orb, buffer);
-                                    
+
                                     //this is provisional until we get it working right
                                     //just return OBJECT_HERE for now
                                     ret = new edu.uci.ece.zen.orb.protocol.giop.v1_0.
@@ -204,13 +206,11 @@ public final class GIOPMessageFactory extends MessageFactory{
                     throw new RuntimeException(""); //throw GIOP error here
             }
         } while (false);
- //       edu.uci.ece.zen.utils.Logger.printMemStats(339);
-
         ZenProperties.logger.log("GMF parse stream 1");
-        
+
         ScopedMemory transportScope = (ScopedMemory) javax.realtime.MemoryArea.getMemoryArea(trans);
 
- //       edu.uci.ece.zen.utils.Logger.printMemStats(340);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(338);
 
         transportScope.setPortal( trans );
 
@@ -223,16 +223,15 @@ public final class GIOPMessageFactory extends MessageFactory{
         if(ZenProperties.devDbg) {
             System.out.print("parse stream messageId:");
             System.out.println(ret.getRequestId());
-        }        
- //       edu.uci.ece.zen.utils.Logger.printMemStats(343);
-
+        }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(339);
         return ret;
     }
 
     /**
      * Collects all fragments following the initial one in a request or a reply
      * in GIOP v1_1.
-     * 
+     *
      * @param trans
      *            Transport (e.g. iiop) where the inputstream should be found.
      * @param headerInfo
@@ -250,7 +249,10 @@ public final class GIOPMessageFactory extends MessageFactory{
         boolean moreFragments = true;
         while (moreFragments) {
             java.io.InputStream in = trans.getInputStream();
-            parseStreamForHeaderImpl(in, headerInfo, trans);
+            boolean status = parseStreamForHeaderImpl(in, headerInfo, trans);
+            if( !status ){
+                return;
+            }
 
             // Create the ReadBuffer to store the data of the fragment
             ReadBuffer buffer = ReadBuffer.instance();
@@ -266,7 +268,7 @@ public final class GIOPMessageFactory extends MessageFactory{
     /**
      * Collects all fragments following the initial one in a request or a reply
      * in GIOP v1_2.
-     * 
+     *
      * @param trans
      *            Transport (e.g. iiop) where the inputstream should be found.
      * @param headerInfo
@@ -306,33 +308,35 @@ public final class GIOPMessageFactory extends MessageFactory{
     */
     /**
      * Read the GIOP Message header from the Transport's stream.
-     * 
+     *
      * @param trans
      *            Transport stream
      * @param headerInfo
      *            ProtocolHeaderInfo object to fill with data read from header
      */
-    public void parseStreamForHeaderImpl(java.io.InputStream in,
-            ProtocolHeaderInfo headerInfo, Transport trans)
+    public boolean parseStreamForHeaderImpl(java.io.InputStream in, ProtocolHeaderInfo headerInfo, Transport trans)
             throws java.io.IOException {
         ZenProperties.logger.log("parseStreamForHeader");
         //byte[] header = new byte[12];
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(3340);
         byte[] header = trans.getGIOPHeader();
         int read = 0;
         ZenProperties.logger.log("parseStreamForHeader: reading");
         if(ZenProperties.devDbg) {
             System.out.print("parseStreamForHeader: buffer size");
             System.out.println(header.length);
-        }          
-        while (read < header.length) {          
+            System.out.println("inputstream: " + in);
+        }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(3341);
+        while (read < header.length) {
             int tmp = in.read(header, 0, header.length);
             //if (ZenProperties.dbg) ZenProperties.logger.log(tmp + "");
             if (tmp < 0) {
-                ZenProperties.logger.log(Logger.FATAL, MessageFactory.class, "parseStreamForHeader(InputStream, ProtocolHeaderInfo, Transport)", "RTZen doesnt support closing connection yet :-P ... shutting down");
-                System.exit(0);
+                return false;
             }
             read += tmp;
         }
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(3342);
         ZenProperties.logger.log("parseStreamForHeader: done reading");
 
         // Bytes 0,1,2,3 should equal 'GIOP'
@@ -383,7 +387,9 @@ public final class GIOPMessageFactory extends MessageFactory{
             headerInfo.messageSize <<= 8;
             headerInfo.messageSize |= header[11] & 0xFF;
         }
+        //edu.uci.ece.zen.utils.Logger.printMemStatsImm(3342);
         //System.out.println( "Message size " + headerInfo.messageSize );
+        return true;
     }
 
     /**
@@ -420,11 +426,11 @@ public final class GIOPMessageFactory extends MessageFactory{
             RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
-        
+
         if(ZenProperties.devDbg) {
             System.out.print("construct reply for messageId:");
             System.out.println(req.getRequestId());
-        }            
+        }
 
         out.write_octet_array(magic, 0, 4);
         //giop version
@@ -466,6 +472,7 @@ public final class GIOPMessageFactory extends MessageFactory{
                 }
 
                 edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeaderHelper.write(out, rh);
+                rh.free();
                 break;
             /*
              * case 11: org.omg.GIOP.ReplyHeader_1_1Helper.write( out , new
@@ -484,7 +491,7 @@ public final class GIOPMessageFactory extends MessageFactory{
     }
     /**.
      */
-     
+
     public CDROutputStream constructLocateReplyMessageImpl(ORB orb,
             edu.uci.ece.zen.orb.protocol.type.LocateRequestMessage req)
     {
@@ -513,7 +520,7 @@ public final class GIOPMessageFactory extends MessageFactory{
         }
         return out;
     }
-    
+
     public CDROutputStream constructExceptionMessageImpl(ORB orb,
             RequestMessage req) {
         CDROutputStream out = CDROutputStream.instance();
@@ -539,6 +546,7 @@ public final class GIOPMessageFactory extends MessageFactory{
                         org.omg.GIOP.ReplyStatusType_1_0._USER_EXCEPTION);
                 rh.service_context.append(0);
                 edu.uci.ece.zen.orb.protocol.giop.v1_0.ReplyHeaderHelper.write(out, rh);
+                rh.free();
                 break;
             /*
              * case 11: org.omg.GIOP.ReplyHeader_1_1Helper.write( out , new
@@ -560,7 +568,7 @@ public final class GIOPMessageFactory extends MessageFactory{
      * Read a CORBA long (Java int) from the input stream, using
      * headerInfo.isLittleEndian to decide if it should be treated as little
      * endian or big endian.
-     * 
+     *
      * @param in
      *            InputStream to read four bytes from
      * @param headerInfo

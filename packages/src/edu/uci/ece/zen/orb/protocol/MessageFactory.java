@@ -70,21 +70,16 @@ public abstract class MessageFactory {
      * Method to create a message based on an incomming stream.
      */
     public final static Message parseStream(ORB orb, Transport trans) throws java.io.IOException {
-        
         //edu.uci.ece.zen.utils.Logger.printMemStats(320);
         MessageFactory mf = MessageFactory.getFactoryInstance( trans.getProtocolFactory() );
- 
  //       edu.uci.ece.zen.utils.Logger.printMemStats(321);
-
         Message msg = mf.parseStreamImpl( orb , trans );
-
+	if( msg == null )
+	    return null;
         //Message msg = MessageFactory.getFactoryInstance( trans.getProtocolFactory() ).parseStreamImpl( orb , trans );
-
  //       edu.uci.ece.zen.utils.Logger.printMemStats(322);
-
         msg.setProtocolFactory( trans.getProtocolFactory() );
  //       edu.uci.ece.zen.utils.Logger.printMemStats(323);
-
         return msg;
     }
     public abstract Message parseStreamImpl( ORB orb , Transport trans ) throws java.io.IOException;

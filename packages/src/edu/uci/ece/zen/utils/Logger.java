@@ -65,7 +65,7 @@ public abstract class Logger{
     }
 
     public static void printMemStatsImm(int code){
-       // printMemStats(code, ImmortalMemory.instance());
+        if(ZenProperties.memDbg1) printMemStats(code, ImmortalMemory.instance());
     }
 
     public static void printMemStats(int code){
@@ -237,7 +237,8 @@ class ConsoleLogger extends Logger
     public void log(int level, Class thisClass, String thisFunction, String msg, Throwable e)
     {
         log(level, thisClass, thisFunction, msg);
-        e.printStackTrace(printStream);
+        //e.printStackTrace(printStream);
+        printStream.println(e);
     }
 
     public void log(int level, Class thisClass, String thisFunction, Throwable e)

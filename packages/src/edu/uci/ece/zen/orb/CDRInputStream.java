@@ -17,7 +17,7 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     ReadBuffer buffer;
 
     public edu.uci.ece.zen.orb.ORB orb;
-
+    private static int drawn = 0; //just to debug the number of free buffers
     private static edu.uci.ece.zen.utils.Queue cdrInputStreamCache;
 
     private boolean inUse = false;
@@ -34,17 +34,15 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
 
     public static CDRInputStream instance() {
         try {
-            if (cdrInputStreamCache.isEmpty()){
-                CDRInputStream cdr = (CDRInputStream) ImmortalMemory
-                    .instance().newInstance(CDRInputStream.class);
+        drawn++;
+	    CDRInputStream cdr = (CDRInputStream) cdrInputStreamCache.dequeue();
+            if ( cdr == null ){
+                cdr = (CDRInputStream) ImmortalMemory.instance().newInstance(CDRInputStream.class);
                 cdr.inUse = true;
                 return cdr;
             } else {
-                CDRInputStream cdr = (CDRInputStream) cdrInputStreamCache.dequeue();
                 if(cdr.inUse)
-                    ZenProperties.logger.log(Logger.FATAL, CDRInputStream.class,
-                        "instance",
-                        "Stream already in use.");
+                    ZenProperties.logger.log(Logger.FATAL, CDRInputStream.class, "instance", "Stream already in use.");
                 cdr.inUse = true;
                 return cdr;
             }
@@ -549,6 +547,10 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
         buffer = null;
         CDRInputStream.release(this);
         inUse = false;
+        drawn--;
+        if(ZenProperties.memDbg1) System.out.write('c');
+        if(ZenProperties.memDbg1) System.out.write('i');
+        if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(drawn);        
     }
 
     // Needs to be implemented

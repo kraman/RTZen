@@ -12,6 +12,7 @@ import org.omg.IOP.TaggedProfile;
 import edu.uci.ece.zen.orb.transport.Acceptor;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.WriteBuffer;
 
 /**
  * This is a registry for all Acceptor objects that are created for incomming
@@ -36,18 +37,27 @@ public class AcceptorRegistry {
      *            The memory area to create the profiles in.
      * @return A array containing the list of transport profiles.
      */
-    public TaggedProfile[] getProfiles(FString objKey, MemoryArea clientArea)
+    public TaggedProfile[] getProfiles(FString objKey, MemoryArea clientArea,
+             WriteBuffer taggedComponents, int tcLen , int threadPoolId )
             throws IllegalAccessException, InstantiationException,
             InaccessibleAreaException {
+        AcceptorCountRunnable acr = new AcceptorCountRunnable( threadPoolId );
+        for (int i = 0; i < list.size(); ++i) {
+            ScopedMemory sm = (ScopedMemory) (list.get(i));
+            sm.enter(acr);
+        }
+                
         TaggedProfile[] tpList = (TaggedProfile[]) clientArea.newArray(
-                org.omg.IOP.TaggedProfile.class, list.size());
+                org.omg.IOP.TaggedProfile.class, acr.count);
         byte[] tempOKey = objKey.getTrimData(clientArea);
         //System.out.println( "okey fstr len: " + objKey.length() + " barray len: " + tempOKey.length );
         ARRunnable ar = new ARRunnable();
 
+        int index=0;
         for (int i = 0; i < list.size(); ++i) {
             ScopedMemory sm = (ScopedMemory) (list.get(i));
-            ar.init(i, tempOKey, clientArea, tpList);
+            ar.init(index, tempOKey, clientArea, tpList, taggedComponents, tcLen , threadPoolId );
+            if( tpList[index] != null ) index++;
             sm.enter(ar);
         }
 
@@ -57,7 +67,7 @@ public class AcceptorRegistry {
     /**
      * This method adds the acceptor to the registry.
      */
-    public void addAcceptor(ScopedMemory acceptorArea) {
+    public void addAcceptor(ScopedMemory acceptorArea, int threadPoolId ) {
         list.add(acceptorArea);
     }
 
@@ -86,6 +96,21 @@ class ARShutdownRunnable {
     }
 }
 
+class AcceptorCountRunnable implements Runnable {
+    int threadPoolId;
+    public int count;
+    AcceptorCountRunnable( int threadPoolId ){
+        this.threadPoolId = threadPoolId;
+        this.count =0;
+    }
+
+    public void run(){
+        Acceptor acc = (Acceptor) ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
+        if( acc.threadPoolId == threadPoolId )
+            count ++;
+    }
+}
+
 class ARRunnable implements Runnable {
 
     private int index;
@@ -96,20 +121,28 @@ class ARRunnable implements Runnable {
 
     TaggedProfile[] tpList;
 
+    WriteBuffer taggedComponents;
+
+    int tcLen;
+
+    int threadPoolId;
+
     public ARRunnable() {
     }
 
     public void init(int ind, byte[] objKey, MemoryArea clientArea,
-            TaggedProfile[] tpList) {
+            TaggedProfile[] tpList, WriteBuffer taggedComponents, int tcLen, int threadPoolId) {
         index = ind;
         this.ma = clientArea;
         this.objKey = objKey;
         this.tpList = tpList;
+        this.taggedComponents = taggedComponents;
+        this.tcLen = tcLen;
+        this.threadPoolId = threadPoolId;
     }
 
     public void run() {
-        Acceptor acc = (Acceptor) ((ScopedMemory) RealtimeThread
-                .getCurrentMemoryArea()).getPortal();
-        tpList[index] = acc.getProfile((byte) 1, ZenProperties.iiopMinor, objKey, ma);
+        Acceptor acc = (Acceptor) ((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
+        tpList[index] = acc.getProfile((byte) 1, ZenProperties.iiopMinor, objKey, ma, threadPoolId);
     }
 }

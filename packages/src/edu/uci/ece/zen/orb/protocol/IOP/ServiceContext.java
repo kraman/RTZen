@@ -1,10 +1,15 @@
 package edu.uci.ece.zen.orb.protocol.IOP;
 
 import edu.uci.ece.zen.utils.FString;
+import javax.realtime.ImmortalMemory;
+import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.utils.Queue;
+import edu.uci.ece.zen.orb.ORB;
 
 /**
  * Struct definition : ServiceContext
- * 
+ *
  * @author OpenORB Compiler
  */
 public final class ServiceContext implements org.omg.CORBA.portable.IDLEntity {
@@ -21,11 +26,19 @@ public final class ServiceContext implements org.omg.CORBA.portable.IDLEntity {
      * ImmortalMemory.instance().newInstance( ServiceContext.class );
      * }catch(Exception e){ e.printStackTrace(); } return scList[pos]; }
      */
-    private static FString sc;
+    //private static FString sc1;
 
-    public static FString instance() {
-        sc = FString.instance(sc);
+    //private static Queue queue = Queue.fromImmortal();
+/*
+    public static FString instance1() {
+        FString sc = (FString)ORB.getQueuedInstance(FString.class,queue);
         return sc;
+    }
+*/
+
+    public static FString instance(FString fs) {
+        fs = FString.instance(fs);
+        return fs;
     }
 
     /**
@@ -42,7 +55,7 @@ public final class ServiceContext implements org.omg.CORBA.portable.IDLEntity {
 
     /**
      * Constructor with fields initialization
-     * 
+     *
      * @param context_id
      *            context_id struct member
      * @param context_data
@@ -51,5 +64,9 @@ public final class ServiceContext implements org.omg.CORBA.portable.IDLEntity {
      *            this.context_id = context_id; this.context_data =
      *            context_data; this.context_data_length = context_data_length; }
      */
+
+    //public static void release(FString fs){
+    //    queue.enqueue(fs);
+    //}
 
 }

@@ -3,6 +3,7 @@ package edu.uci.ece.zen.poa;
 import javax.realtime.MemoryArea;
 import javax.realtime.NoHeapRealtimeThread;
 import javax.realtime.ScopedMemory;
+import javax.realtime.ImmortalMemory;
 
 import org.omg.CORBA.IntHolder;
 import org.omg.CORBA.Policy;
@@ -28,6 +29,7 @@ import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ZenProperties;
+import edu.uci.ece.zen.utils.WriteBuffer;
 
 public class POAImpl {
 
@@ -208,7 +210,7 @@ public class POAImpl {
                 //                int parentDepth = RealtimeThread.getMemoryAreaStackDepth() - 1;
                 //                ScopedMemory orbImplMem =
                 //                    (ScopedMemory) RealtimeThread.getOuterMemoryArea(parentDepth);
-                //                
+                //
                 //                boolean isThreadPoolIDValid;
                 //                try
                 //                {
@@ -224,9 +226,9 @@ public class POAImpl {
                 //                            );
                 //                } catch (InaccessibleAreaException e)
                 //                {
-                //                    
+                //
                 //                }
-                //                
+                //
                 //                if (isThreadPoolIDValid)
                 //                {
                 //                 this.threadPoolId = id;
@@ -335,7 +337,15 @@ public class POAImpl {
      * </p>
      * </p>
      */
-    public void handleRequest(RequestMessage req, POARunnable prun) {
+    TPRunnable tpr = null;	//KLUDGE..leaks memory to IMM, 3am..wll fix later
+    public synchronized void handleRequest(RequestMessage req, POARunnable prun) {
+	if( tpr == null ){
+		try{
+		 	tpr= (TPRunnable) ImmortalMemory.instance().newInstance( TPRunnable.class );//orb.getTPR();
+		}catch( Throwable e ){
+			System.out.println( "handleRequest: e" + e );
+		}
+	}
         ZenProperties.logger.log("POAImpl.handled 1");
         IntHolder ih = getIntHolder();
 
@@ -387,7 +397,6 @@ public class POAImpl {
             // requestScope.newInstance( ExecuteInRunnable.class );
             ExecuteInRunnable eir = orb.getEIR();
             ZenProperties.logger.log("POAImpl.handled 9.5");
-            TPRunnable tpr = orb.getTPR();
 
             ZenProperties.logger.log("POAImpl.handled 10");
             tpr.init(self, req);
@@ -721,7 +730,7 @@ public class POAImpl {
             ZenProperties.logger.log("create_reference_with_object_key 1");
             if (crwor == null) crwor = new CreateReferenceWithObjectRunnable();
             ZenProperties.logger.log("create_reference_with_object_key 2");
-            crwor.init(ok, intf, clientArea, orb);
+            crwor.init(ok, intf, clientArea, orb, threadPoolId);
             ZenProperties.logger.log("create_reference_with_object_key 3");
             try {
                 orb.orbImplRegion.executeInArea(crwor);
@@ -757,19 +766,28 @@ public class POAImpl {
 
         public ORB orb;
 
+        public WriteBuffer taggedComponents;
+
+        public int tcLen;
+
+        public int threadPoolId;
+
         public CreateReferenceWithObjectRunnable() {
         }
 
-        public void init(FString ok, String intf, MemoryArea ma, ORB orb) {
+        public void init(FString ok, String intf, MemoryArea ma, ORB orb, int threadPoolId ) {
             this.ok = ok;
             this.intf = intf;
             this.ma = ma;
             this.orb = orb;
+            this.taggedComponents = WriteBuffer.instance();
+            this.tcLen = 0;
+            this.threadPoolId = threadPoolId;
         }
 
         public void run() {
             try {
-                retVal = edu.uci.ece.zen.orb.IOR.makeCORBAObject(orb, intf, ok, ma);
+                retVal = edu.uci.ece.zen.orb.IOR.makeCORBAObject(orb, intf, ok, ma, taggedComponents, tcLen, threadPoolId);
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
             }

@@ -19,20 +19,13 @@ import edu.uci.ece.zen.utils.Queue;
 public class ReplyMessage extends edu.uci.ece.zen.orb.protocol.type.ReplyMessage {
     private ReplyHeader header;
 
-    private static ReplyMessage rm;
+    //private static ReplyMessage rm;
 
     private static  Queue queue = Queue.fromImmortal();
 
     public ReplyMessage() {
     }
-/*
-    public ReplyMessage(ORB orb, ReadBuffer stream) {
-        super(orb, stream);
-        header = ReplyHeaderHelper.read(istream); // read method initializes
-        // header variable
-        messageBody = stream;
-    }
-*/
+
     public void init(ORB orb, ReadBuffer stream) {
         super.init(orb, stream);
         header = ReplyHeaderHelper.read(istream); // read method initializes
@@ -42,22 +35,11 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.protocol.type.ReplyMessage
 
     static int drawn = 0;
     public static ReplyMessage getMessage() {
-         drawn++;
+        drawn++;
         if(ZenProperties.memDbg1) System.out.write('d');
         if(ZenProperties.memDbg1) System.out.write('r');
         if(ZenProperties.memDbg1) edu.uci.ece.zen.utils.Logger.writeln(drawn);
-       return (ReplyMessage)ORB.getQueuedInstance(ReplyMessage.class,queue);
-
-/*
-        try {
-            if (rm == null) rm = (ReplyMessage) ImmortalMemory.instance()
-                    .newInstance(ReplyMessage.class);
-            return rm;
-        } catch (Exception e) {
-            ZenProperties.logger.log(Logger.WARN, ReplyMessage.class, "getMessage", e);
-        }
-        return null;
-        */
+        return (ReplyMessage)ORB.getQueuedInstance(ReplyMessage.class,queue);
     }
 
     public int getRequestId() {
@@ -87,6 +69,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.protocol.type.ReplyMessage
     public void release(){
         drawn--;
         queue.enqueue(this);
+        header.free();
     }
 
     public void internalFree(){

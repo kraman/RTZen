@@ -2,9 +2,11 @@ package edu.uci.ece.zen.utils;
 
 import javax.realtime.NoHeapRealtimeThread;
 import javax.realtime.RealtimeThread;
+import javax.realtime.ScopedMemory;
 
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.orb.protocol.type.RequestMessage;
+import edu.uci.ece.zen.orb.transport.iiop.AcceptorRunnable;
 import edu.uci.ece.zen.poa.HandleRequestRunnable;
 
 public class ThreadPool {
@@ -20,42 +22,58 @@ public class ThreadPool {
 
     ORB orb;
 
+    AcceptorRunnable acceptorRunnable;
+
+    int threadPoolId;
+
     public ThreadPool(int stackSize, int staticThreads, int dynamicThreads,
             short defaultPriority, boolean allowRequestBuffering,
-            int maxBufferedRequests, int requestBufferSize, ORB orb) {
+            int maxBufferedRequests, int requestBufferSize, ORB orb,
+            AcceptorRunnable acceptorRunnable , int threadPoolId ) {
         //stackSize; //KLUDGE: ignored
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
         this.requestBufferSize = requestBufferSize;
         this.allowBorrowing = false;
+        this.acceptorRunnable = acceptorRunnable;
 
         this.lanes = new Lane[1];
+        acceptorRunnable.init( orb , defaultPriority , threadPoolId );
+        orb.setUpORBChildRegion( acceptorRunnable );
         this.lanes[0] = new Lane(stackSize, staticThreads, dynamicThreads,
                 defaultPriority, this, allowBorrowing, allowRequestBuffering,
-                maxBufferedRequests);
+                maxBufferedRequests, acceptorRunnable.acceptorArea);
         this.lanes[0].setLaneId(0);
         this.orb = orb;
+        this.threadPoolId = threadPoolId;
     }
 
     public ThreadPool(int stackSize, boolean allowRequestBuffering,
             int maxBufferedRequests, int requestBufferSize,
             org.omg.RTCORBA.ThreadpoolLane[] lanes, boolean allowBorrowing,
-            ORB orb) {
+            ORB orb, AcceptorRunnable acceptorRunnable , int threadPoolId ) {
         //stackSize; //KLUDGE: ignored
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
         this.requestBufferSize = requestBufferSize;
         this.allowBorrowing = allowBorrowing;
+        this.acceptorRunnable = acceptorRunnable;
 
         this.lanes = new Lane[lanes.length];
-        for (int i = 0; i < lanes.length; i++)
+        for (int i = 0; i < lanes.length; i++){
+            acceptorRunnable.init( orb , lanes[i].lane_priority , threadPoolId );
+            orb.setUpORBChildRegion( acceptorRunnable );
             this.lanes[i] = new Lane(stackSize, lanes[i].static_threads,
                     lanes[i].dynamic_threads, lanes[i].lane_priority, this,
-                    allowBorrowing, allowRequestBuffering, maxBufferedRequests);
+                    allowBorrowing, allowRequestBuffering, maxBufferedRequests,
+                    acceptorRunnable.acceptorArea);
+            orb.setUpORBChildRegion(acceptorRunnable);
+        }
         java.util.Arrays.sort(this.lanes, 0, lanes.length);
         for (int i = 0; i < this.lanes.length; i++)
             this.lanes[i].setLaneId(i);
         this.orb = orb;
+        this.threadPoolId = threadPoolId;
     }
 
     public boolean borrowThreadAndExecute(RequestMessage task, int laneId) {
@@ -107,9 +125,12 @@ class Lane {
 
     int numBuffered;
 
+    ScopedMemory acceptorArea;
+
     public Lane(int stackSize, int numStaticThreads, int numDynamicThreads,
             short priority, ThreadPool tp, boolean allowBorrowing,
-            boolean allowRequestBuffering, int maxBufferedRequests) {
+            boolean allowRequestBuffering, int maxBufferedRequests,
+            ScopedMemory acceptorArea) {
         this.stackSize = stackSize;
         this.maxStaticThreads = numStaticThreads;
         this.maxDynamicThreads = numDynamicThreads;
@@ -121,6 +142,7 @@ class Lane {
         this.numBuffered = 0;
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
+        this.acceptorArea = acceptorArea;
 
         for (numThreads = 0; numThreads < maxStaticThreads; numThreads++) {
             newThread();
@@ -141,8 +163,7 @@ class Lane {
 
     private void newThread() {
         ThreadSleepRunnable r = new ThreadSleepRunnable(this);
-        NoHeapRealtimeThread thr = new NoHeapRealtimeThread(null, null, null,
-                RealtimeThread.getCurrentMemoryArea(), null, r);
+        NoHeapRealtimeThread thr = new NoHeapRealtimeThread(null, null, null, RealtimeThread.getCurrentMemoryArea(), null, r);
         thr.setPriority(priority);
         r.setThread(thr);
         r.setNativePriority(priority);
@@ -297,9 +318,7 @@ class ThreadSleepRunnable implements Runnable {
                 //System.out.println( "HandleRequestRunnable finished in
                 // ThreadPool" );
                 //System.out.println( task.getAssociatedPOA() );
-                eir
-                        .init(ir, ((edu.uci.ece.zen.poa.POA) task
-                                .getAssociatedPOA()).poaMemoryArea);
+                eir.init(ir, ((edu.uci.ece.zen.poa.POA) task.getAssociatedPOA()).poaMemoryArea);
                 //System.out.println( "Calling executeInArea on
                 // HandleRequestRunnable" );
                 try {
@@ -317,7 +336,7 @@ class ThreadSleepRunnable implements Runnable {
                     "Recieved an Interrupt exception. Shutting down.");
             //Ignore. Expected while shutting down.
         } catch (Throwable e1) {
-	    e1.printStackTrace();
+	    //e1.printStackTrace();
             ZenProperties.logger.log(Logger.WARN, getClass(), "run", e1);
         }
     }
