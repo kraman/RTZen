@@ -54,6 +54,8 @@ public class DoomServer extends RealtimeThread
             // - with the CORBA Naming Service
             // NamingContextExt nameService = NamingContextExtHelper.narrow(zen.resolve_initial_references("NameService"));
 
+            CallServerImpl callServerImpl = new CallServerImpl(this);
+            org.omg.CORBA.Object callServerObj = rootPOA.servant_to_reference(callServerImpl);
             System.out.println( "=================== CallServer registered ========================" );
             PlayerTableImpl playerTableImpl = new PlayerTableImpl();
             System.out.println("rootPOA.servant_to_reference(playerTableImpl)");
@@ -61,9 +63,6 @@ public class DoomServer extends RealtimeThread
 	    //            System.out.println("PlayerTableHelper.narrow(" + playerTableObj + ")");
             playerTable = PlayerTableHelper.unchecked_narrow(playerTableObj);
             System.out.println( "=================== PlayerTable registered ========================" );
-	    CallServerImpl callServerImpl = new CallServerImpl(this);
-            org.omg.CORBA.Object callServerObj = rootPOA.servant_to_reference(callServerImpl);
-            System.out.println( "=================== CallServer registered ========================" );
 
 
             // Register
