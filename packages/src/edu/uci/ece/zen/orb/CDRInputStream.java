@@ -7,8 +7,10 @@ import javax.realtime.ImmortalMemory;
 
 import edu.uci.ece.zen.utils.Queue;
 import edu.uci.ece.zen.utils.ReadBuffer;
+import edu.uci.ece.zen.utils.WriteBuffer;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
+import edu.uci.ece.zen.orb.IOR;
 
 public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
     ReadBuffer buffer;
@@ -424,7 +426,17 @@ public class CDRInputStream extends org.omg.CORBA.portable.InputStream {
      * @return Read object
      */
     public final org.omg.CORBA.Object read_Object() {
-        return null;
+        org.omg.IOP.IOR ior = org.omg.IOP.IORHelper.read(this);
+
+        WriteBuffer iorWB = WriteBuffer.instance();
+        iorWB.init();
+
+        CDROutputStream out = CDROutputStream.instance();
+        out.init(orb);
+        org.omg.IOP.IORHelper.write(out, ior);
+        out.getBuffer().dumpBuffer(iorWB);
+        out.free();
+        return orb.string_to_object(IOR.makeIOR(iorWB));
     }
 
     /**
