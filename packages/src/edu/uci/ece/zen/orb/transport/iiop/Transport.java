@@ -16,6 +16,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     public Transport(edu.uci.ece.zen.orb.ORB orb,
             edu.uci.ece.zen.orb.ORBImpl orbImpl, java.net.Socket sock) {
         super(orb, orbImpl);
+        setProtocolFactory( edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
         try {
             ZenProperties.logger.log("*****IIOP Transport: Trying to get io streams");
             this.sock = sock;
@@ -36,6 +37,7 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
     public Transport(edu.uci.ece.zen.orb.ORB orb,
             edu.uci.ece.zen.orb.ORBImpl orbImpl, String host, int port) {
         super(orb, orbImpl);
+        setProtocolFactory( edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
 
 
 /*
