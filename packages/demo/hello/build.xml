@@ -29,6 +29,7 @@
 	    <demo.compile.jrate main="demo.hello.Server" out="server">
             <fileset dir="${zen.srcdir}/${package.dir}">
                 <include name="Server.java"/>                
+                <include name="HelloWorldImpl.java"/>
             </fileset>
             <fileset dir="${zen.gendir}/${package.dir}">
                 <include name="*.java"/>
