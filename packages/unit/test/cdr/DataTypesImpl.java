@@ -72,28 +72,28 @@ public class DataTypesImpl extends DataTypesPOA
 		ooutVal.value = (byte)102;
 		return oretVal;
 	}
-	
-	
+
+
 	public byte[] echoOctetSeq(byte[] oseqinVal , unit.test.cdr.DataTypesPackage.octetSeqHolder oseqoutVal)
     {
-    	
+
     	if(oseqinVal.length != 2){
-		System.out.println("in value length wrong in testOctetSeq");
-		System.out.println("The expected lenght is 2 and the actual lenght is "+oseqinVal.length); 
+		System.out.println("in value length wrong in echoOctetSeq");
+		System.out.println("The expected lenght is 2 and the actual lenght is "+oseqinVal.length);
 	}
-	
+
 	if(oseqinVal[0] != 100){
 		System.out.println("in value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 0 is 100 and the actual lenght is "+oseqinVal[0]); 
+		System.out.println("The expected value at positon 0 is 100 and the actual value is "+oseqinVal[0]);
 	}
-	
+
 	if(oseqinVal[1] != 101){
 		System.out.println("in value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 1 is 101 and the actual lenght is "+oseqinVal[1]); 
+		System.out.println("The expected value at positon 1 is 101 and the actual value is "+oseqinVal[1]);
 	}
 
 	    byte[] oseqoutArr = {105,106,107};
-        
+
         byte[] oseqretVal = oseqinVal;
 
         oseqoutVal.value = oseqoutArr;
@@ -101,6 +101,52 @@ public class DataTypesImpl extends DataTypesPOA
         return oseqretVal;
 
     }
+
+    publich unit.test.cdr.DataTypesPackage.str[] echoStructSeq(unit.test.cdr.DataTypesPackage.str[] strseqinVal, unit.test.cdr.DataTypesPackage.strSeqHolder strseqoutVal){
+
+		if(strseqinVal.length ! = 2){
+			System.out.println("in value length wrong in echoStructSeq");
+			System.out.println("The expected lenght is 2 and the actual lenght is "+strseqinVal.length);
+		}
+
+		if(strseqinVal[0].a != 100){
+				System.out.println("in value wrong in echoStructSeq");
+				System.out.println("The expected a value at positon 0 is 100 and the actual value is "+strseqinVal[0].a);
+		}
+
+		if(strseqinVal[0].b != true){
+			System.out.println("in value wrong in echoStructSeq");
+			System.out.println("The expected b value at positon 0 is true and the actual value is "+strseqinVal[0].b);
+		}
+
+		if(strseqinVal[1].a != 101){
+						System.out.println("in value wrong in echoStructSeq");
+						System.out.println("The expected a value at positon 1 is 101 and the actual value is "+strseqinVal[1].a);
+				}
+
+				if(strseqinVal[1].b != true){
+					System.out.println("in value wrong in echoStructSeq");
+					System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqinVal[1].b);
+		}
+
+		unit.test.cdr.DataTypes.str str1= new unit.test.cdr.DataTypes.str(104,true);
+		unit.test.cdr.DataTypes.str str2= new unit.test.cdr.DataTypes.str(105,true);
+
+		unit.test.cdr.DataTypes.str strArr[] = new unit.test.cdr.DataTypes.str[2];
+		strArr[0] = str1;
+		strArr[1] = str2;
+
+		unit.test.cdr.DataTypes.str strseqretVal[] = strseqInVal;
+
+		strseqoutVal.value = strArr;
+
+		return strseqretVal;
+
+	}
+
+
+
+
 
 
 	/*

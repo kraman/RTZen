@@ -23,7 +23,7 @@ module unit{
 */            
             struct str {
                 octet  a;
-                short  b;
+                boolean  b;
             };
 	    	    
 	    typedef sequence<str> strSeq;
@@ -37,7 +37,7 @@ module unit{
             octet echoOctet( in octet inVal ,  out octet outVal ); 
             
             octetSeq echoOctetSeq ( in octetSeq inVal, out octetSeq outVal );
-            strSeq echoStrSeq ( in strSeq inVal, out strSeq outVal );       
+            strSeq echoStructSeq ( in strSeq inVal, out strSeq outVal );       
 
             
             

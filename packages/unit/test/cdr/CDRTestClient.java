@@ -48,7 +48,8 @@ public class CDRTestClient extends RealtimeThread
 			testBoolean();
 			testString();
 			testOctet();
-                        testOctetSeq();
+			testOctetSeq();
+			testStructSeq();
 			//test();
 			//testUShort();
 
@@ -161,7 +162,7 @@ public class CDRTestClient extends RealtimeThread
 
 		    }
 	}
-	
+
 	public void testOctetSeq()
     {
         byte[] oseqinVal = {100, 101};
@@ -169,45 +170,123 @@ public class CDRTestClient extends RealtimeThread
 
         unit.test.cdr.DataTypesPackage.octetSeqHolder oseqoutVal =
                new unit.test.cdr.DataTypesPackage.octetSeqHolder(oseqoutArr);
-        
+
         byte[] oseqretVal = stub.echoOctetSeq( oseqinVal, oseqoutVal);
-      
+
 	if(oseqretVal.length != 2){
 		System.out.println("return value length wrong in testOctetSeq");
-		System.out.println("The expected lenght is 2 and the actual lenght is "+oseqretVal.length); 
+		System.out.println("The expected lenght is 2 and the actual lenght is "+oseqretVal.length);
 	}
-	
+
 	if(oseqretVal[0] != 100){
 		System.out.println("return value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 0 is 100 and the actual lenght is "+oseqretVal[0]); 
+		System.out.println("The expected value at positon 0 is 100 and the actual lenght is "+oseqretVal[0]);
 	}
-	
+
 	if(oseqretVal[1] != 101){
 		System.out.println("return value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 1 is 101 and the actual lenght is "+oseqretVal[1]); 
+		System.out.println("The expected value at positon 1 is 101 and the actual lenght is "+oseqretVal[1]);
 	}
-	
+
 	if(oseqoutVal.value.length != 3){
 		System.out.println("out value length wrong in testOctetSeq");
-		System.out.println("The expected lenght is 3 and the actual lenght is "+oseqoutVal.value.length); 
+		System.out.println("The expected lenght is 3 and the actual lenght is "+oseqoutVal.value.length);
 	}
-	
+
 	if(oseqoutVal.value[0] != 105){
 
 		System.out.println("out value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 0 is 105 and the actual lenght is "+oseqoutVal.value[0]); 
+		System.out.println("The expected value at positon 0 is 105 and the actual lenght is "+oseqoutVal.value[0]);
 	}
-	
+
 	if(oseqoutVal.value[1] != 106){
 		System.out.println("out value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 1 is 106 and the actual lenght is "+oseqoutVal.value[1]); 
+		System.out.println("The expected value at positon 1 is 106 and the actual lenght is "+oseqoutVal.value[1]);
 	}
-	
+
 	if(oseqoutVal.value[2] != 107){
 		System.out.println("out value wrong in testOctetSeq");
-		System.out.println("The expected value at positon 2 is 107 and the actual lenght is "+oseqoutVal.value[2]); 
+		System.out.println("The expected value at positon 2 is 107 and the actual lenght is "+oseqoutVal.value[2]);
 	}
     }
+
+    public void testStructSeq(){
+
+		unit.test.cdr.DataTypes.str str1= new unit.test.cdr.DataTypes.str(100,true);
+		unit.test.cdr.DataTypes.str str2= new unit.test.cdr.DataTypes.str(101,true);
+
+	    unit.test.cdr.DataTypes.str strseqinVal[] = new unit.test.cdr.DataTypes.str[2];
+		strseqinVal[0] = str1;
+		strseqinVal[1] = str2;
+
+			unit.test.cdr.DataTypes.str str1= new unit.test.cdr.DataTypes.str(102,false);
+				unit.test.cdr.DataTypes.str str2= new unit.test.cdr.DataTypes.str(103,false);
+
+			    unit.test.cdr.DataTypes.str strseqArr[] = new unit.test.cdr.DataTypes.str[2];
+				strseqArr[0] = str1;
+				strseqArr[1] = str2;
+
+				unit.test.cdr.DataTypes.strSeqHolder strseqoutVal=  new unit.test.cdr.DataTypes.strSeqHolder(strseqArr);
+
+				unit.test.cdr.DataTypes.str strseqretVal[] = echoStructSeq( strseqinVal, strseqoutVal);
+
+				if(strseqretVal.length ! = 2){
+							System.out.println("return value length wrong in echoStructSeq");
+							System.out.println("The expected lenght is 2 and the actual lenght is "+strseqretVal.length);
+		}
+
+          if(strseqretVal[0].a != 100){
+		  				System.out.println("return value wrong in echoStructSeq");
+		  				System.out.println("The expected a value at positon 0 is 100 and the actual value is "+strseqretVal[0].a);
+		  		}
+
+		  		if(strseqretVal[0].b != true){
+		  			System.out.println("return value wrong in echoStructSeq");
+		  			System.out.println("The expected b value at positon 0 is true and the actual value is "+strseqretVal[0].b);
+		  		}
+
+		  		if(strseqretVal[1].a != 101){
+		  						System.out.println("return value wrong in echoStructSeq");
+		  						System.out.println("The expected a value at positon 1 is 101 and the actual value is "+strseqretVal[1].a);
+		  				}
+
+		  				if(strseqretVal[1].b != true){
+		  					System.out.println("return value wrong in echoStructSeq");
+		  					System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqretVal[1].b);
+		  		}
+
+		  		if(strseqoutVal.length ! = 2){
+							System.out.println("out value length wrong in echoStructSeq");
+							System.out.println("The expected lenght is 2 and the actual lenght is "+strseqoutVal.length);
+		}
+
+
+		  		      if(strseqoutVal[0].a != 104){
+						  				System.out.println("out value wrong in echoStructSeq");
+						  				System.out.println("The expected a value at positon 0 is 104 and the actual value is "+strseqoutVal[0].a);
+						  		}
+
+						  		if(strseqoutVal[0].b != true){
+						  			System.out.println("out value wrong in echoStructSeq");
+						  			System.out.println("The expected b value at positon 0 is true and the actual value is "+strseqoutVal[0].b);
+						  		}
+
+						  		if(strseqoutVal[1].a != 105){
+						  						System.out.println("out value wrong in echoStructSeq");
+						  						System.out.println("The expected a value at positon 1 is 105 and the actual value is "+strseqoutVal[1].a);
+						  				}
+
+						  				if(strseqoutVal[1].b != true){
+						  					System.out.println("out value wrong in echoStructSeq");
+						  					System.out.println("The expected b value at positon 1 is true and the actual value is "+strseqoutVal[1].b);
+		  		}
+			}
+
+
+
+
+
+
 
 
 	/*
