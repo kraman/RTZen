@@ -27,6 +27,10 @@
       <ant antfile="${zen.srcdir}/build.xml"/>
       <antcall target="track_size"/>
    </target>
+   
+   <target name="compile" depends="init">
+      <ant antfile="${zen.srcdir}/build.xml" target="compile"/>
+   </target>   
 
    <target name="track_size" if="track_size_prop">
     <echo>Tracking Size of rteverything.jar</echo>
