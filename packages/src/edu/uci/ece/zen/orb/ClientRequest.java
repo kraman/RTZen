@@ -40,8 +40,6 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
         //TODO:Assemble and write message header and policies here
         messageId = WaitingStrategy.newMessageId();
         edu.uci.ece.zen.orb.giop.GIOPMessageFactory.constructMessage( this , messageId , out );
-        if( ZenProperties.dbg )
-            System.err.println( "Message header assembled" );
     }
 
     /**
@@ -51,16 +49,9 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
      * </p>
      */
     public CDRInputStream invoke(){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "In client memory: " + RealtimeThread.getCurrentMemoryArea() );
         out.updateLength();
-        if( ZenProperties.dbg )
-            System.err.println( "Sending message" );
         MessageComposerRunnable mcr = new MessageComposerRunnable( this );
         ScopedMemory messageScope = orb.getScopedRegion();
-
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ORBImpl perent memory: " + orb.parentMemoryArea );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "ORBImpl memory: " + orb.orbImplRegion );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "message memory: " + messageScope );
 
         ExecuteInRunnable erOrbMem = new ExecuteInRunnable();
         ExecuteInRunnable erMsgMem = new ExecuteInRunnable();
@@ -90,14 +81,10 @@ public class ClientRequest extends org.omg.CORBA.portable.OutputStream{
     }
 
     public void registerWaiter(){
-        if( ZenProperties.dbg )
-            System.err.println( "Waiter registered for req id: " + messageId );
         orb.registerWaiter( messageId );
     }
 
     public void releaseWaiter(){
-        if( ZenProperties.dbg )
-            System.err.println( "Waiter released for req id: " + messageId );
         orb.releaseWaiter( messageId );
     }
 
@@ -161,16 +148,12 @@ class MessageComposerRunnable implements Runnable{
      * </p>
      */
     public void run(){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "In memory: " + RealtimeThread.getCurrentMemoryArea() );
         //setup waiting stratergy
         WaitingStrategy waitingStrategy = null;
         if( clr.responseExpected )
             waitingStrategy = new TwoWayWaitingStrategy();
         ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( waitingStrategy );
         clr.registerWaiter();
-        if( ZenProperties.dbg )
-            System.err.println( "Waiter registered" );
-
         ExecuteInRunnable eir = new ExecuteInRunnable();
         SendMessageRunnable smr = new SendMessageRunnable();
         smr.init( clr.out.getBuffer() );
@@ -190,17 +173,11 @@ class MessageComposerRunnable implements Runnable{
             success = false;
         }finally{
             clr.out.free();
-            if( ZenProperties.dbg )
-                System.err.println( "Message sent" );
         }
 
         if( waitingStrategy != null ){
-            if( ZenProperties.dbg )
-                System.err.println( "Waiting for a reply" );
             reply = waitingStrategy.waitForReply();
             clr.releaseWaiter();
-            if( ZenProperties.dbg )
-                System.err.println( "Got a reply...woohoo: " + reply );
         }
     }
 

@@ -26,27 +26,17 @@ public abstract class Transport implements Runnable{
      * </p>
      */
     public final void run(){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.Transport.run 1" );
         messageProcessor = new MessageProcessor( this , orb );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.Transport.run 2" );
         NoHeapRealtimeThread messageProcessorThr = new NoHeapRealtimeThread( messageProcessor );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.Transport.run 3" );
         messageProcessorThr.setDaemon( true );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.Transport.run 4" );
         messageProcessorThr.start();
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.Transport.run 5" );
         try{
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.Transport.run 6" );
             synchronized( waitObj ){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.Transport.run 7" );
                 waitObj.wait();
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.Transport.run 8" );
             }
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.Transport.run 9" );
         }catch( InterruptedException ie ){
             ie.printStackTrace();
         }
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.Transport.run 10" );
     }
     
     /**
@@ -70,8 +60,6 @@ public abstract class Transport implements Runnable{
      * </p>
      */
     public synchronized final void send( WriteBuffer msg ){
-        if( ZenProperties.dbg )
-            System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "Sending message" );
         try{
             java.io.OutputStream out = getOutputStream();
             msg.dumpBuffer( out );
@@ -105,32 +93,17 @@ class MessageProcessor implements Runnable{
     }
 
     public void run(){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "transport.MessageProcessor.run 1" );
         isActive = true;
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "transport.MessageProcessor.run 2" );
         GIOPMessageRunnable gmr = new GIOPMessageRunnable( orb , trans );
         ExecuteInRunnable eir = new ExecuteInRunnable();
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "transport.MessageProcessor.run 3" );
 
         while( isActive ){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "transport.MessageProcessor.run 4" );
-            if( ZenProperties.dbg )
-                System.err.println( "Waiting for message to come in..." );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "transport.MessageProcessor.run 5" );
             ScopedMemory messageScope = ORB.getScopedRegion();
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "transport.MessageProcessor.run 6" );
             gmr.setRequestScope( messageScope );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "transport.MessageProcessor.run 7" );
 
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " + "transport.MessageProcessor.run 8" );
             eir.init( gmr , messageScope );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.MessageProcessor.run 9" );
             try{
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.MessageProcessor.run 10" );
-        System.out.println( "orbImplRegion = " + orb.orbImplRegion + " eir=" + eir + " gmr = " + gmr + " messageScope=" + messageScope + "parent of message scope =" + MemoryArea.getMemoryArea( messageScope ));
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.MessageProcessor.run 10-2" );
                 orb.orbImplRegion.executeInArea( eir );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.MessageProcessor.run 11" );
             }catch( Exception e ){
                 ZenProperties.logger.log(
                     Logger.SEVERE,
@@ -139,11 +112,8 @@ class MessageProcessor implements Runnable{
                     "Could not process message due to exception: " + e.toString()
                     );
             }
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.MessageProcessor.run 12" );
             gmr.setRequestScope( null );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.MessageProcessor.run 12-1" );
             ORB.freeScopedRegion( messageScope );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "transport.MessageProcessor.run 13" );
         }
         synchronized( this ){
             this.notifyAll();
@@ -217,42 +187,21 @@ class GIOPMessageRunnable implements Runnable{
      */
     public void run(){
         try{
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 1" );
             edu.uci.ece.zen.orb.giop.GIOPMessage message = edu.uci.ece.zen.orb.giop.GIOPMessageFactory.parseStream( orb , trans );
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 2" );
-            if( ZenProperties.dbg )
-                System.err.println( "Got a new message....." );
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 3" );
             //message.setScope( requestScope );
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 4" );
             //((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).setPortal( message );
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 5" );
             if( message.isRequest() ){
                 //ThreadPoolProcessor tpProc = new ThreadPoolProcessor();
                 //POADispatchRunnable pdispatcher = new POADispatchRunnable( message , tpProc , orb );
                 //ImmortalMemory.instance().executeInArea( pdispatcher );
             }
             if( message.isReply() ){
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 6" );
-                if( ZenProperties.dbg )
-                    System.err.println( "Message received w/ id: " + message.getRequestId() );
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 7" );
                 ScopedMemory waiterRegion = orb.getWaiterRegion( message.getRequestId() );
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 8" );
-                if( ZenProperties.dbg )
-                    System.err.println( "Waiter region determined to be: " + waiterRegion );
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 9" );
                 WaitingStratergyNotifyRunnable wsnr = new WaitingStratergyNotifyRunnable( message , waiterRegion );
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 10" );
                 ExecuteInRunnable eir = new ExecuteInRunnable();
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 11" );
                 eir.init( wsnr , waiterRegion );
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 12" );
                 try{
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 13" );
-                    System.out.println( "orb=" + orb + " orbImplRegion=" + orb.orbImplRegion + " eir=" + eir + " wsnr = " + wsnr + " message=" + message + " waiterRegion=" + waiterRegion );
                     orb.orbImplRegion.executeInArea( eir );
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 14" );
                 }catch( Exception e ){
                     ZenProperties.logger.log(
                         Logger.SEVERE,
@@ -262,7 +211,6 @@ class GIOPMessageRunnable implements Runnable{
                         );
                 }
             }
-                                System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " GIOPMessageRunnable.run() 15" );
         }catch( java.io.IOException ioex ){
             //TODO: do something here    
         }
@@ -306,10 +254,6 @@ class WaitingStratergyNotifyRunnable implements Runnable{
      */   
     public void run(){
         edu.uci.ece.zen.orb.WaitingStrategy waitingStrategy = ((edu.uci.ece.zen.orb.WaitingStrategy) waiterRegion.getPortal());
-        if( ZenProperties.dbg ){
-            System.err.println( "Waiter found: " + waitingStrategy );
-            System.err.println( "Reply is " + message );
-        }
         CDRInputStream inp = message.getCDRInputStream();
         waitingStrategy.replyReceived( message );
     }

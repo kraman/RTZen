@@ -40,13 +40,9 @@ public class ORBImpl{
     }
 
     public void string_to_object( org.omg.IOP.IOR ior , org.omg.CORBA.portable.ObjectImpl objImpl ){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImpl.string_to_object 1" );
         ObjRefDelegate delegate = ObjRefDelegate.instance();
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImpl.string_to_object 2" );
         delegate.init( ior , (edu.uci.ece.zen.orb.ObjectImpl) objImpl , orbFacade , this );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImpl.string_to_object 3" );
         objImpl._set_delegate( delegate );
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImpl.string_to_object 4" );
     }
 }
 
@@ -66,18 +62,12 @@ class ORBImplRunnable implements Runnable{
     }
 
     public void run(){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImplRunnable.run 1" );
         ORBImpl orbImpl = (ORBImpl) ((ScopedMemory)RealtimeThread.getCurrentMemoryArea()).getPortal();
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImplRunnable.run 2 "+orbImpl );
         synchronized( orbImpl ){
             try{
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImplRunnable.run 3" );
                 while( active ){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImplRunnable.run 3-1" );
                     orbImpl.wait();
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImplRunnable.run 3-2" );
                 }
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImplRunnable.run 4" );
             }catch( InterruptedException ie ){
                 ZenProperties.logger.log(
                         Logger.INFO ,
@@ -87,7 +77,6 @@ class ORBImplRunnable implements Runnable{
             }
             active=false;
         }
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  "OrbImplRunnable.run 5" );
     }
 
 }

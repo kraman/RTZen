@@ -31,17 +31,12 @@ public class ByteArrayCache{
     }
 
     public byte[] getByteArray(){
-        System.out.println( "byteArrayCache.getByteArray 1" );
         try{
-        System.out.println( "byteArrayCache.getByteArray 2");
-            if( byteBuffers.isEmpty() ){
-        System.out.println( "byteArrayCache.getByteArray 3");
-                //imm.executeInArea( bac );
+            byte[] ret = (byte[]) byteBuffers.dequeue();
+            if( ret == null ){
                 return (byte[]) imm.newArray( byte.class , 1024 );
-                //return bac.getByteArray();
             }else{
-        System.out.println( "byteArrayCache.getByteArray 4");
-                return (byte[]) byteBuffers.dequeue();
+                return ret;
             }
         }catch( Exception e ){
             e.printStackTrace();

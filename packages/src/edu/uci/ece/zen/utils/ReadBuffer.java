@@ -309,30 +309,18 @@ public class ReadBuffer{
     }
 
     public String readString() {
-        System.out.println( "ReadBuffer.readString 1" );
         if( peekString != null && peekStringPos == getPosition() ){
-        System.out.println( "ReadBuffer.readString 2" );
             String tmp = peekString;
-        System.out.println( "ReadBuffer.readString 3" );
             peekString = null;
-        System.out.println( "ReadBuffer.readString 4" );
             peekStringPos = -1;
-        System.out.println( "ReadBuffer.readString 5" );
             return tmp;
         }
-        System.out.println( "ReadBuffer.readString 6" );
         int len = readLong();
-        System.out.println( "ReadBuffer.readString 7" );
         len--;
-        System.out.println( "ReadBuffer.readString 8" );
         byte buf[] = new byte[len];
-        System.out.println( "ReadBuffer.readString 9" );
         readByteArray( buf , 0 , len );
-        System.out.println( "ReadBuffer.readString 10" );
         readByte();
-        System.out.println( "ReadBuffer.readString 11" );
         //System.err.println( "Long is " + new String( buf ) );
-        System.out.println( "ReadBuffer.readString 12" );
         StringBuffer strbuf = new StringBuffer();
         for( int i=0;i<len;i++ )
             strbuf.append( (char) buf[i] );

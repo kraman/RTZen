@@ -14,21 +14,16 @@ public class TwoWayWaitingStrategy extends WaitingStrategy{
     }
     
     public void replyReceived( GIOPMessage reply ){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " TwoWayWaitingStrategy.replyReceived 1" );
         this.replyMsg = reply.getCDRInputStream();
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " TwoWayWaitingStrategy.replyReceived 2" );
         clientSem.release();
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " TwoWayWaitingStrategy.replyReceived 4" );
     }
 
     public CDRInputStream waitForReply(){
-        System.out.println( Thread.currentThread() + " " + RealtimeThread.getCurrentMemoryArea() + " " +  " TwoWayWaitingStrategy.waitForReply 1" );
         try{
             clientSem.acquire();
         }catch( InterruptedException ie ){
             ie.printStackTrace();
         }
-        System.out.println( Thread.currentThread() + " TwoWayWaitingStrategy.waitForReply 5" );
         return replyMsg;
     }
 }

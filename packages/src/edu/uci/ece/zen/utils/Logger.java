@@ -38,7 +38,7 @@ class ConsoleLogger extends Logger{
     protected ConsoleLogger(){}
     public void log( int level , String thisClass , String thisFunction , String msg ){
         if( level >= this.level ){
-            System.out.println( Logger.levelLabels[level] + ":" + thisClass + " : " + thisFunction + " : " + msg );
+            System.err.println( Logger.levelLabels[level] + ":" + thisClass + " : " + thisFunction + " : " + msg );
         }
     }
 }

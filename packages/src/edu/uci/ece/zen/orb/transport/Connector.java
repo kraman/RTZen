@@ -24,26 +24,18 @@ public abstract class Connector{
         if( connRunnable == null )
             connRunnable = new ConnectorRunnable();
         
-        System.out.println( Thread.currentThread() + "transport.Connector.connect 1" );
         ScopedMemory transportMem = orb.getScopedRegion();
-        System.out.println( Thread.currentThread() + "transport.Connector.connect 2" );
         connRunnable.init( host , port , this , orb );
-        System.out.println( Thread.currentThread() + "transport.Connector.connect 2-1" );
         eir.init( eir2 , orb.orbImplRegion );
         eir2.init( connRunnable , transportMem );
-        System.out.println( Thread.currentThread() + "transport.Connector.connect 2-3" );
         try{
-        System.out.println( Thread.currentThread() + "transport.Connector.connect 2-4" );
             orb.parentMemoryArea.executeInArea( eir );
-        System.out.println( Thread.currentThread() + "transport.Connector.connect 2-5" );
         }catch( Exception e ){
             e.printStackTrace();
         }
-        System.out.println( Thread.currentThread() + "transport.Connector.connect 2-6" );
         eirCache.enqueue( eir );
         eirCache.enqueue( eir2 );
         crCache.enqueue( connRunnable );
-        System.out.println( Thread.currentThread() + "transport.Connector.connect 3" );
         return transportMem;
     }
 
