@@ -1,4 +1,4 @@
-package demo.rtcorba.serverDeclared;
+package demo.rtcorba.threadpool;
 
 import java.io.*;
 
@@ -19,13 +19,17 @@ import org.omg.Messaging.*;
 public class Client implements Runnable
 {
     String [] args;
+    int iterations = 6;
+    int id = 0;
 
     public static void main(String[] args)
     {
         if(args.length < 2){
-            System.out.println("need to pass in two iors");
+            System.out.println("need to pass in an ior and an id");
             System.exit(-1);
         }
+
+
 
         System.out.println( "[client] =====================Creating RT Thread in client==========================" );
         RealtimeThread rt = new RealtimeThread((java.lang.Object)null,(java.lang.Object)null,(java.lang.Object)null,
@@ -40,29 +44,25 @@ public class Client implements Runnable
 
     public void run()
     {
+
         try
         {
+            id = Integer.parseInt(args[1]);
             System.out.println( "[client] =====================Calling ORB Init in client============================" );
             ORB orb = ORB.init((String[])null, null);
 
-            // Test object 1.
+            // Test object
             //File iorfile = new File( "C:/ACE_wrappers/TAO/tests/RTCORBA/Server_Declared/Release/iorfile1");
             File iorfile = new File(args[0]);
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
             String ior = br.readLine();
 
-            Test server1 = TestHelper.unchecked_narrow(orb.string_to_object(ior));
+            test server1 = testHelper.unchecked_narrow(orb.string_to_object(ior));
 
-            // Test object 2.
-            iorfile = new File(args[1]);
-            br = new BufferedReader( new FileReader(iorfile) );
-            ior = br.readLine();
-
-            Test server2 = TestHelper.unchecked_narrow(orb.string_to_object(ior));
 
             // Check that test objects are configured with SERVER_DECLARED
             // PriorityModelPolicy, and get their server priorities.
-
+/*
             // Test object 1
             PriorityModelPolicy pmp = PriorityModelPolicyHelper.narrow(server1._get_policy(PRIORITY_MODEL_POLICY_TYPE.value));
             PriorityModel pm = pmp.priority_model();
@@ -82,13 +82,13 @@ public class Client implements Runnable
 
             short server2_priority = pmp.server_priority();
             System.out.println("[client] PriorityModelPolicy server2 priority: " + server2_priority);
-
+*/
             // Testing: make several invocations on test objects.
-            for (int i = 0; i < 5; ++i)
-            {
-              server1.test_method (server1_priority);
+            for (int i = 0; i < iterations; ++i){
+              int j = server1.method(id,i);
+              if(i != j)
+                System.out.println("[client] ERROR: Iterations don't match.");
 
-              server2.test_method (server2_priority);
             }
 
             System.exit(0);

@@ -4,13 +4,14 @@
     <property file="zen-build.properties"/>
     
 
-    <property name="example.name" value="clientPropagated"/>
+    <property name="demo.name" value="clientPropagated"/>
+    <property name="ior1" value="C:/ACE_wrappers/TAO/tests/RTCORBA/Client_Propagated/Release/test.ior"/>
     
-    <property name="package.rel.dir" value="demo/rtcorba/${example.name}"/>
+    <property name="package.rel.dir" value="demo/rtcorba/${demo.name}"/>
     <property name="package.dir" value="${zen.srcdir}/${package.rel.dir}"/>
     <property name="idl.src" value="test.idl"/>
-    <property name="server.class" value="demo.rtcorba.${example.name}.Server"/>
-    <property name="client.class" value="demo.rtcorba.${example.name}.Client"/>
+    <property name="server.class" value="demo.rtcorba.${demo.name}.Server"/>
+    <property name="client.class" value="demo.rtcorba.${demo.name}.Client"/>
 
    <target name="IdlCheck" depends="zen, openorb"/>
    
@@ -68,10 +69,10 @@
          </java>
     </target>   
     
-
     <target name="client">
         <java classname="${client.class}" fork="yes">
             <jvmarg line="${zen.jvm.properties} -Xms200M -Xmx500M"/>
+            <arg line="${ior1}"/>
         </java>
     </target> 
 

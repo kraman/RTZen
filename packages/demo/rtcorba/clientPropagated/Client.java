@@ -22,6 +22,11 @@ public class Client implements Runnable
 
     public static void main(String[] args)
     {
+        if(args.length < 1){
+            System.out.println("need to pass in an ior");
+            System.exit(-1);
+        }
+
         System.out.println( "[client] =====================Creating RT Thread in client==========================" );
         RealtimeThread rt = new RealtimeThread((java.lang.Object)null,(java.lang.Object)null,(java.lang.Object)null,
                             new LTMemory(3000,30000),(java.lang.Object)null,new Client(args));
@@ -40,14 +45,11 @@ public class Client implements Runnable
             System.out.println( "[client] =====================Calling ORB Init in client============================" );
             ORB orb = ORB.init((String[])null, null);
 
-            String ior = "";
-            //File iorfile = new File( "ior.txt" );
-            //File iorfile = new File( "C:\\ACE_wrappers\\TAO\\tests\\RTCORBA\\Client_Propagated\\Release\\test.ior");
-            File iorfile = new File( "C:/ACE_wrappers/TAO/tests/RTCORBA/Client_Propagated/Release/test.ior");
+            File iorfile = new File(args[0]);
             BufferedReader br = new BufferedReader( new FileReader(iorfile) );
-            ior = br.readLine();
-            org.omg.CORBA.Object object = orb.string_to_object(ior);
-            Test server = TestHelper.unchecked_narrow(object);
+            String ior = br.readLine();
+
+            Test server = TestHelper.unchecked_narrow(orb.string_to_object(ior));
 
             PriorityModelPolicy pmp = PriorityModelPolicyHelper.narrow(server._get_policy(PRIORITY_MODEL_POLICY_TYPE.value));
             PriorityModel pm = pmp.priority_model();
