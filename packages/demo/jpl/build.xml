@@ -40,10 +40,15 @@
         <java classname="demo.jpl.Server" fork="yes">
             <jvmarg line="${zen.jvm.properties}"/>
             <!--arg line="-ORBListenEndpoints"/-->
+            <arg line="-pm cp -st 1 -lp 0 -hp 32767"/>
         </java>
     </target>
 
-    <!-- target name="giop_lite_server">
+    <!-- 
+    
+    
+    
+    target name="giop_lite_server">
         <java classname="demo.poa.POATestServer" fork="yes">
             <jvmarg line="${zen.jvm.properties}"/>
             <arg line="-ZENLoadProtocoledu.uci.ece.zen.orb.protocol.giop_lite.GLiteMessageFactory"/>
