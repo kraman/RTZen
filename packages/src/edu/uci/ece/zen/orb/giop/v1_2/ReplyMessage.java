@@ -12,6 +12,11 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.v1_1.ReplyMessage {
     public ReplyMessage( ORB orb , ReadBuffer stream ) {
         super( orb , stream );
         header = ReplyHeader_1_2Helper.read( istream );
+        messageBody = stream;
+    }
+
+    public int getRequestId() {
+        return header.request_id;
     }
 
 }

@@ -40,6 +40,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.v1_0.RequestMessage
     public RequestMessage( ORB orb, ReadBuffer stream ) {
         super( orb, stream );
         header = RequestHeader_1_1Helper.read( istream );
+        messageBody = stream;
     }
 
     public void marshall( CDROutputStream out ) {

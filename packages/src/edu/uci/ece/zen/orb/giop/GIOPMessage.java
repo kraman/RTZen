@@ -8,6 +8,7 @@ import javax.realtime.*;
 public abstract class GIOPMessage{
     protected CDRInputStream istream;
     protected ScopedMemory scope;
+    protected ReadBuffer messageBody;
 
     protected GIOPMessage(){
     }

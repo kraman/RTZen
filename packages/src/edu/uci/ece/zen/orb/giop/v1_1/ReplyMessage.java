@@ -13,6 +13,7 @@ public class ReplyMessage extends edu.uci.ece.zen.orb.giop.v1_0.ReplyMessage {
     public ReplyMessage( ORB orb , ReadBuffer stream ) {
         super( orb , stream );
         header = ReplyHeader_1_0Helper.read( istream );
+        messageBody = stream;
     }
 
 }

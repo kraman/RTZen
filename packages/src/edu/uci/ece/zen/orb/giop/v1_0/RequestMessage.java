@@ -33,6 +33,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage{
     public RequestMessage( ORB orb , ReadBuffer stream ){
         super( orb , stream );
         header = RequestHeader_1_0Helper.read( istream );
+        messageBody = stream;
     }
 
     public int getRequestId(){ return header.request_id; }

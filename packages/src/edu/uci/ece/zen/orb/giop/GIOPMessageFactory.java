@@ -18,57 +18,26 @@ import edu.uci.ece.zen.orb.transport.*;
 public final class GIOPMessageFactory
 {
     private static final byte magic[] = { 0x47, 0x49, 0x4f, 0x50 }; // GIOP
-    
+
     public static GIOPMessage parseStream( ORB orb , Transport trans ) throws java.io.IOException{
         ReadBuffer buffer = ReadBuffer.instance();
-        boolean nextMessageIsFragment = false;
-        byte[] header = ByteArrayCache.instance().getByteArray();
+
+        GIOPHeaderInfo mainMsgHdr = new GIOPHeaderInfo();
+    
         GIOPMessage ret = null;
 
         do{
-            int read = 0;
-            while( read < 12 ){
-                read += trans.getInputStream().read( header , 0 , 12 );
-            }
+            java.io.InputStream in = trans.getInputStream();
+            parseStreamForHeader(in, mainMsgHdr);
             
-            // Bytes 0,1,2,3 should equal 'GIOP'
-            if (   header[0] != magic[0]
-                || header[1] != magic[1]
-                || header[2] != magic[2]
-                || header[3] != magic[3])
-            {
-                throw new RuntimeException(""); //THROW GIOP Error here
-            }
+            buffer.setEndian( mainMsgHdr.isLittleEndian );
+            buffer.appendFromStream( in , mainMsgHdr.messageSize );
 
-            int messageSize = 0;
-            boolean isLittleEndian;
-
-            byte giopMajorVersion = header[4];
-            byte giopMinorVersion = header[5];
-            isLittleEndian = (header[6] & 0x01) == 1;   //Endian byte (byte 6)
-            
-            byte messageType = header[7];      //Message type (byte 7)
-            buffer.setEndian( isLittleEndian );
-            if( !isLittleEndian ){
-                messageSize += ((short)(header[8] & 0xFF)) << 24;
-                messageSize += ((short)(header[9] & 0xFF)) << 16;
-                messageSize += ((short)(header[10] & 0xFF)) << 8;
-                messageSize += ((short)(header[11] & 0xFF)) << 0;
-            }else{
-                messageSize += ((short)(header[11] & 0xFF)) << 24;
-                messageSize += ((short)(header[10] & 0xFF)) << 16;
-                messageSize += ((short)(header[9] & 0xFF)) << 8;
-                messageSize += ((short)(header[8] & 0xFF)) << 0;
-            }
-            nextMessageIsFragment=false;
-            
-            buffer.appendFromStream( trans.getInputStream() , messageSize );
-
-            switch( giopMajorVersion ){                   //GIOP major version (byte 4)
+            switch( mainMsgHdr.giopMajorVersion ){                   //GIOP major version (byte 4)
                 case 1:
-                    switch( giopMinorVersion ){           //GIOP minor version (byte 5)
+                    switch( mainMsgHdr.giopMinorVersion ){           //GIOP minor version (byte 5)
                         case 0:
-                            switch( messageType ){
+                            switch( mainMsgHdr.messageType ){
                                 case org.omg.GIOP.MsgType_1_0._Request:
                                     ret = new edu.uci.ece.zen.orb.giop.v1_0.RequestMessage( orb , buffer );
                                     break;
@@ -85,12 +54,20 @@ public final class GIOPMessageFactory
                             }
                             break;
                         case 1:
-                            switch( messageType ){
+                            switch( mainMsgHdr.messageType ){
                                 case org.omg.GIOP.MsgType_1_1._Request:
                                     ret = new edu.uci.ece.zen.orb.giop.v1_1.RequestMessage( orb , buffer );
+                                    if (mainMsgHdr.nextMessageIsFragment) {
+                                        System.err.println("reading fragment");
+                                        collectFragmentsv1_1( trans, mainMsgHdr, buffer );
+                                    }
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._Reply :
                                     ret = new edu.uci.ece.zen.orb.giop.v1_1.ReplyMessage( orb , buffer );
+                                    if (mainMsgHdr.nextMessageIsFragment) {
+                                        System.err.println("reading fragment");
+                                        collectFragmentsv1_1( trans, mainMsgHdr, buffer );
+                                    }
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._LocateRequest :
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
@@ -98,17 +75,26 @@ public final class GIOPMessageFactory
                                 case org.omg.GIOP.MsgType_1_1._CloseConnection :
                                 case org.omg.GIOP.MsgType_1_1._MessageError :
                                 case org.omg.GIOP.MsgType_1_1._Fragment :
-                                    break;
+                                    throw new org.omg.CORBA.NO_IMPLEMENT("Fragment read out of order"); //BM
                             }
-                            break;
                         case 2: // No newer version than MsgType_1_1 is generated for RTZen
                         case 3:
-                            switch( messageType ){
+                            switch( mainMsgHdr.messageType ){
                                 case org.omg.GIOP.MsgType_1_1._Request:
                                     ret = new edu.uci.ece.zen.orb.giop.v1_2.RequestMessage( orb , buffer );
+                                    if (mainMsgHdr.nextMessageIsFragment) {
+                                        System.err.println("reading fragment");
+                                        int requestId = ((edu.uci.ece.zen.orb.giop.v1_2.RequestMessage) ret).getRequestId();
+                                        collectFragmentsv1_2( trans, mainMsgHdr, buffer, requestId );
+                                    }
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._Reply :
                                     ret = new edu.uci.ece.zen.orb.giop.v1_2.ReplyMessage( orb , buffer );
+                                    if (mainMsgHdr.nextMessageIsFragment) {
+                                        System.err.println("reading fragment");
+                                        int requestId = ((edu.uci.ece.zen.orb.giop.v1_2.RequestMessage) ret).getRequestId();
+                                        collectFragmentsv1_2( trans, mainMsgHdr, buffer, requestId );
+                                    }
                                     break;
                                 case org.omg.GIOP.MsgType_1_1._LocateRequest :
                                 case org.omg.GIOP.MsgType_1_1._LocateReply :
@@ -126,9 +112,131 @@ public final class GIOPMessageFactory
                 default:
                     throw new RuntimeException(""); //throw GIOP error here
             }   
-        }while( nextMessageIsFragment );
+        }while( false );
         return ret;
     }
+
+
+
+    /** Collects all fragments following the initial one in request or reply in v1_1.
+     * @param trans Transport (e.g. iiop) where the inputstream should be found.
+     * @param headerInfo is a reference to the header object that this method can use and modify.
+     * @param firstFragmentBuffer ReadBuffer of the first fragment in set of fragments from a v1_1 Request or Reply
+     */
+    private static void collectFragmentsv1_1( Transport trans, GIOPHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer ) throws java.io.IOException {
+
+        ReadBuffer prevMessageBuffer = firstFragmentBuffer;
+        boolean moreFragments = true;
+        while (moreFragments) {
+            java.io.InputStream in = trans.getInputStream();
+            parseStreamForHeader(in, headerInfo);
+
+            // Create the ReadBuffer to store the data of the fragment
+            ReadBuffer buffer = ReadBuffer.instance();
+            buffer.setEndian( headerInfo.isLittleEndian );
+            buffer.appendFromStream( in , headerInfo.messageSize );
+            prevMessageBuffer.setNextBuffer(buffer);
+            
+            moreFragments = headerInfo.nextMessageIsFragment;
+            prevMessageBuffer = buffer;
+       }
+    }
+
+
+
+    private static void collectFragmentsv1_2( Transport trans, GIOPHeaderInfo headerInfo, ReadBuffer firstFragmentBuffer, int requestId ) throws java.io.IOException { 
+        // Read the fragment header
+
+        boolean moreFragments = true;
+        byte [] fragRequestIdBytes = new byte [4];
+        while (moreFragments) {
+            java.io.InputStream in = trans.getInputStream();
+            parseStreamForHeader(in, headerInfo);
+
+            // Read the GIOP v1_2 fragment header, which is composed
+            // of a single long.
+            int fragRequestId = 0;
+            in.read(fragRequestIdBytes, 0, 4);
+
+            if( !headerInfo.isLittleEndian ){
+                fragRequestId += ((short)(fragRequestIdBytes[8] & 0xFF)) << 24;
+                fragRequestId += ((short)(fragRequestIdBytes[9] & 0xFF)) << 16;
+                fragRequestId += ((short)(fragRequestIdBytes[10] & 0xFF)) << 8;
+                fragRequestId += ((short)(fragRequestIdBytes[11] & 0xFF)) << 0;
+            } else{
+                fragRequestId += ((short)(fragRequestIdBytes[11] & 0xFF)) << 24;
+                fragRequestId += ((short)(fragRequestIdBytes[10] & 0xFF)) << 16;
+                fragRequestId += ((short)(fragRequestIdBytes[9] & 0xFF)) << 8;
+                fragRequestId += ((short)(fragRequestIdBytes[8] & 0xFF)) << 0;
+            }
+
+            // If the request id in the fragment is not the request id
+            // that we were collecting fragments regarding, throw an
+            // exception.
+            if (fragRequestId != requestId) {
+                throw new org.omg.CORBA.MARSHAL("Tried to read fragment; fragment request id doesn't match expected request id");
+            }
+
+            // Now that we've read the four byte v1_2 fragment header,
+            // there are 4 bytes less in the message.
+            int fragmentSize = headerInfo.messageSize - 4;
+            firstFragmentBuffer.appendFromStream( in , fragmentSize );
+            moreFragments = headerInfo.nextMessageIsFragment;
+        }
+    }
+
+
+
+    /**
+     * Read the GIOP Message header from the Transport's stream.
+     * 
+     * @param trans Transport stream
+     * @param headerInfo GIOPHeaderInfo object to fill with data read from header
+    */
+    public static void parseStreamForHeader(java.io.InputStream in, GIOPHeaderInfo headerInfo)  throws java.io.IOException{
+        byte[] header = new byte[12];
+        
+        int read = 0;
+        while( read < 12 )
+            read += in.read( header , 0 , 12 );
+        
+        // Bytes 0,1,2,3 should equal 'GIOP'
+        if (  header[0] != magic[0]
+              || header[1] != magic[1]
+              || header[2] != magic[2]
+              || header[3] != magic[3])
+            {
+                throw new RuntimeException(""); //THROW GIOP Error here
+            }
+        
+        headerInfo.giopMajorVersion = header[4];
+        headerInfo.giopMinorVersion = header[5];
+        headerInfo.isLittleEndian = (header[6] & 0x01) == 1;   //Endian byte (byte 6)
+        
+        headerInfo.nextMessageIsFragment=false;
+        if ( headerInfo.giopMajorVersion == 1 && headerInfo.giopMinorVersion == 1) {
+            headerInfo.nextMessageIsFragment = ( (header[6] & 0x02) == 1);
+        }
+        
+        headerInfo.messageType = header[7];      //Message type (byte 7)
+        
+        if( !headerInfo.isLittleEndian ){
+            headerInfo.messageSize += ((short)(header[8] & 0xFF)) << 24;
+            headerInfo.messageSize += ((short)(header[9] & 0xFF)) << 16;
+            headerInfo.messageSize += ((short)(header[10] & 0xFF)) << 8;
+            headerInfo.messageSize += ((short)(header[11] & 0xFF)) << 0;
+        }else{
+            headerInfo.messageSize += ((short)(header[11] & 0xFF)) << 24;
+            headerInfo.messageSize += ((short)(header[10] & 0xFF)) << 16;
+            headerInfo.messageSize += ((short)(header[9] & 0xFF)) << 8;
+            headerInfo.messageSize += ((short)(header[8] & 0xFF)) << 0;
+        }
+        System.err.println( "----GIOP Message Header ----" );
+        System.err.write( header , 0 , 12 );
+        System.err.println( "---- ----" );
+    }
+
+
 
     /**
      * Client upcall:
