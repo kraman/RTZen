@@ -33,7 +33,11 @@ public abstract class Logger{
     protected void setLevel( int level ){
         //this.level=level;
     }
-   
+    public static void printMemStats(){
+        MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
+	    System.out.println(ma+","+ma.memoryConsumed()+","+ma.memoryRemaining());            
+
+    }  
     public static void printMemStats(edu.uci.ece.zen.orb.ORB orb){
         MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
 	    System.out.println(ma+","+ma.memoryConsumed()+","+ma.memoryRemaining());            

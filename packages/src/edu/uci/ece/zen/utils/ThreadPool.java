@@ -49,7 +49,17 @@ public class ThreadPool{
         return false;
     }
 
+    private int statCount = 0;
+    private static final String name = "TP: ";
     public void execute( RequestMessage task , short minPriority , short maxPriority ){
+
+
+        statCount++;
+        if(statCount % 100 == 0){
+            System.out.print(name);
+            edu.uci.ece.zen.utils.Logger.printMemStats();
+        }
+
         //TODO: Have to improve performance here
         for( int i=0;i<lanes.length;i++ ){
             if( lanes[i].getPriority() > minPriority && lanes[i].getPriority() < maxPriority )
