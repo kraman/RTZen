@@ -207,6 +207,11 @@ public class WriteBuffer {
         ensureCapacity((int) (capacity - limit));
     }
 
+    public String toString(){
+
+        return FString.byteArrayToString((byte[]) buffers.elementAt((int) (position / 1024)));
+    }
+
     public void writeByte(byte v) {
         ensureCapacity(1);
         byte[] buffer = (byte[]) buffers.elementAt((int) (position / 1024));

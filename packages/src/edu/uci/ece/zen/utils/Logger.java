@@ -10,7 +10,7 @@ import javax.realtime.*;
  */
 public abstract class Logger{
 
-	// Logging levels
+    // Logging levels
     public static final int PEDANTIC=0;
     public static final int CONFIG=1;
     public static final int INFO=2;
@@ -35,18 +35,19 @@ public abstract class Logger{
                 Class loggerClass = Class.forName( "edu.uci.ece.zen.utils."+loggerType+"Logger" );
                 instance = (Logger) loggerClass.newInstance();
             }catch( Exception e ){
-				System.err.println("Logger.instance(): " +
-					"Unable to load logger of type " + loggerType + ". Loading NullLogger.");
-				instance = new NullLogger();		
-				e.printStackTrace();
+                System.err.println("Logger.instance(): " +
+                    "Unable to load logger of type " + loggerType + ". Loading NullLogger.");
+                instance = new NullLogger();
+                e.printStackTrace();
             }
             instance.setLevel(level);
         }
         return instance;
     }
 
-	public abstract void log(String msg);
-	public abstract void log(String thisFunction, String msg);
+    public abstract void log(String msg);
+    public abstract void log(int level, String msg);
+    public abstract void log(String thisFunction, String msg);
     public abstract void log(int level, Class thisClass, String thisFunction, String msg);
     public abstract void log(int level, Class thisClass, String thisFunction, String msg, Throwable e);
     public abstract void log(int level, Class thisClass, String thisFunction, Throwable e);
@@ -61,7 +62,7 @@ public abstract class Logger{
     }
 
     public static void printMemStatsImm(int code){
-        //printMemStats(code, ImmortalMemory.instance());
+       // printMemStats(code, ImmortalMemory.instance());
     }
 
     public static void printMemStats(int code){
@@ -101,8 +102,8 @@ public abstract class Logger{
     }
 
     public static void printMemStats(int code, MemoryArea ma){
-	    long mem = ma.memoryConsumed();
-	    long rem = ma.memoryRemaining();
+        long mem = ma.memoryConsumed();
+        long rem = ma.memoryRemaining();
         //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());
         if(edu.uci.ece.zen.utils.ZenProperties.memDbg){
             write(code);
@@ -119,7 +120,7 @@ public abstract class Logger{
 
         /*
           mem = ma.memoryConsumed();
-	     rem = ma.memoryRemaining();
+         rem = ma.memoryRemaining();
 
              write(code);
         System.out.write( '\n' );
@@ -129,7 +130,7 @@ public abstract class Logger{
         System.out.write( '\n' );
         System.out.write( '\n' );
           mem = ma.memoryConsumed();
-	     rem = ma.memoryRemaining();
+         rem = ma.memoryRemaining();
 
              write(code);
         System.out.write( '\n' );
@@ -151,88 +152,98 @@ public abstract class Logger{
     }
 
     public static void printMemStats(edu.uci.ece.zen.orb.ORB orb){
-	    printMemStats(0,orb.parentMemoryArea);
-	    printMemStats(1,orb.orbImplRegion);
-	    printMemStats();
+        printMemStats(0,orb.parentMemoryArea);
+        printMemStats(1,orb.orbImplRegion);
+        printMemStats();
         //System.out.println("orb,"+orb.orbImplRegion.memoryConsumed()+","+orb.orbImplRegion.memoryRemaining());
-	    //System.out.println("client,"+orb.parentMemoryArea.memoryConsumed()+","+orb.parentMemoryArea.memoryRemaining());
+        //System.out.println("client,"+orb.parentMemoryArea.memoryConsumed()+","+orb.parentMemoryArea.memoryRemaining());
 
     }
 
     public static void printThreadStack(){
-		if (edu.uci.ece.zen.utils.ZenProperties.dbgThreadStack) 
+        if (edu.uci.ece.zen.utils.ZenProperties.dbgThreadStack)
         {
-			System.out.println("Current thread is " + RealtimeThread.currentRealtimeThread());
-			System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());
+            System.out.println("Current thread is " + RealtimeThread.currentRealtimeThread());
+            System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());
 
-			int curInd = RealtimeThread.getMemoryAreaStackDepth()-1;
-			System.out.println("cur mem stack pos: " + curInd);
+            int curInd = RealtimeThread.getMemoryAreaStackDepth()-1;
+            System.out.println("cur mem stack pos: " + curInd);
 
-			for(int i = curInd; i >= 0; --i)
-				System.out.println("mem area at pos " + i + " is " + RealtimeThread.getOuterMemoryArea(i));
-		}
+            for(int i = curInd; i >= 0; --i)
+                System.out.println("mem area at pos " + i + " is " + RealtimeThread.getOuterMemoryArea(i));
+        }
     }
 
 }
 
 class ConsoleLogger extends Logger
 {
-	protected PrintStream printStream;
+    protected PrintStream printStream;
 
     protected ConsoleLogger()
-	{
-		printStream = System.err;
-	}
+    {
+        printStream = System.err;
+    }
 
     protected ConsoleLogger(PrintStream printStream)
-	{
-		this.printStream = printStream;
-	}
+    {
+        this.printStream = printStream;
+    }
 
     public void log(String msg) {
-		log(null, msg);
-	}
+        log(null, msg);
+    }
 
-	public void log(String thisFunction, String msg) {
-		log(Logger.INFO, null, thisFunction, msg);
-	}
+    public void log(String thisFunction, String msg) {
+        log(Logger.INFO, null, thisFunction, msg);
+    }
+    public void log(int level, String msg) {
+        if( level >= this.level ){
+            printStream.print( Logger.levelLabels[level] );
+            printStream.print(":");
+
+            log(null, msg);
+        }
+
+    }
 
     public void log(int level, Class thisClass, String thisFunction, String msg) {
         if( level >= this.level ){
             printStream.print( Logger.levelLabels[level] );
-			printStream.print(":");
+            printStream.print(":");
 
-			if (thisClass != null)
-			{
-				printStream.print(thisClass.getName());
-				printStream.print(" : ");
-			}
+            if (thisClass != null)
+            {
+                printStream.print(thisClass.getName());
+                printStream.print(" : ");
+            }
 
-			if (thisFunction != null)
-			{
-				printStream.print(thisFunction);
-				printStream.print(" : ");
-			}
+            if (thisFunction != null)
+            {
+                printStream.print(thisFunction);
+                printStream.print(" : ");
+            }
 
-			printStream.println(msg);
+            printStream.println(msg);
         }
     }
 
     public void log(int level, Class thisClass, String thisFunction, String msg, Throwable e)
-	{
-		log(level, thisClass, thisFunction, msg);
-		e.printStackTrace(printStream);
-	}
+    {
+        log(level, thisClass, thisFunction, msg);
+        e.printStackTrace(printStream);
+    }
 
     public void log(int level, Class thisClass, String thisFunction, Throwable e)
-	{
-		log(level, thisClass, thisFunction, "", e);
-	}
+    {
+        log(level, thisClass, thisFunction, "", e);
+    }
 }
 
 class NullLogger extends Logger{
     protected NullLogger(){}
     public void log(String msg) {}
+    public void log(int level, String msg) {}
     public void log(String thisFunction, String msg) {}
     public void log(int level, Class thisClass, String thisFunction, String msg) {}
     public void log(int level, Class thisClass, String thisFunction, String msg, Throwable e) {}
