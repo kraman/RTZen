@@ -15,7 +15,7 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.v1_0.RequestMessage
 
     /** Do not directly call this method It is provided only to give
      * access to the default constructor of GIOPMessage.
-    */
+     */
     public RequestMessage() {
         super();
     };

@@ -11,6 +11,14 @@ public class RequestMessage extends edu.uci.ece.zen.orb.giop.GIOPMessage{
     ////////////////////////////// Message Read ///////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
 
+
+    /** Do not directly call this method It is provided only to give
+     * access to the default constructor of GIOPMessage.
+     */
+    public RequestMessage() {
+        super();
+    };
+
     public RequestMessage( ClientRequest clr , int messageId ){
         super();
         header = new RequestHeader_1_0(
