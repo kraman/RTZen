@@ -43,23 +43,31 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         }
     }
 
-    protected static ObjRefDelegate instance() {
-        if (objRefDelegateCache.isEmpty()) {
+    public static ObjRefDelegate instance() {
+        ZenProperties.logger.log("ObjRefDelegate.instance()");
+        ObjRefDelegate ret = (ObjRefDelegate)objRefDelegateCache.dequeue();
+
+        if ( ret == null ) {
             try {
-                return (ObjRefDelegate) ImmortalMemory.instance().newInstance(
-                        ObjRefDelegate.class);
+                ZenProperties.logger.log("Allocating brand new ObjRefDelegate");
+                //Thread.dumpStack();
+                ObjRefDelegate ord = (ObjRefDelegate) ImmortalMemory.instance().newInstance(ObjRefDelegate.class);
+                ord.id = idGen++;
+                return ord;
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.FATAL, ObjRefDelegate.class, "instance", e);
                 System.exit(-1);
             }
-        } else return (ObjRefDelegate) objRefDelegateCache.dequeue();
-        return null;
+        }
+        return ret;
     }
 
     private static void release(ObjRefDelegate self) {
+        if( ZenBuildProperties.dbgIOR ) ZenProperties.logger.log("Trying to free ObjRefDelegate " + self.id);
         if(!self.released){
             objRefDelegateCache.enqueue(self);
             self.ior.free();
+            self.objImpl = null;
             //FString.free(self.priorityLanes[0].objectKey);
             for(int i = 0; i < self.priorityLanes.length; ++i)
                 if(self.priorityLanes[i].objectKey != null)
@@ -79,16 +87,24 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
     private WriteBuffer ior;
 
+    private static int idGen = 0;
+    private int id;
+
     private ORB orb;
 
     private LaneInfo priorityLanes[];
 
     private int numLanes;
 
+    public int id(){
+        return id;
+    }
+
     protected void init(org.omg.IOP.IOR ior, ObjectImpl obj, ORB orb, ORBImpl orbImpl) {
         init( ior, obj, orb, orbImpl, false );
     }
 
+    ObjectImpl objImpl;
     protected void init(org.omg.IOP.IOR ior, ObjectImpl obj, ORB orb, ORBImpl orbImpl , boolean isCollocated ) {
         released = false;
         referenceCount = 1;
@@ -97,6 +113,12 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         this.ior = WriteBuffer.instance();
         this.ior.init();
 
+        ////////////////////////////////
+        //TODO: Krishna (a.k.a. Boss), this line below has to be enabled in JVM so the
+        //ObjectImpl is not collected prematurely
+        //objImpl = obj;
+        ////////////////////////////////
+
         CDROutputStream out = CDROutputStream.instance();
         out.init(orb);
         org.omg.IOP.IORHelper.write(out, ior);
@@ -104,7 +126,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         out.free();
         ZenProperties.logger.log("ObjRefDel init 1");
         if( ZenBuildProperties.dbgIOR )
-            System.out.println("++++++++++++++++++++++++++++++++++ObjRefDel no of prof:" + ior.profiles.length);
+            ZenProperties.logger.log("++++++++++++++++++++++++++++++++++ObjRefDel no of prof:" + ior.profiles.length);
         //process all the tagged profiles
         for (int i = 0; i < ior.profiles.length; i++) { //go through each
             // tagged profile
@@ -135,7 +157,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             LaneInfo ln = (LaneInfo) priorityLanes[i];
             if (ZenBuildProperties.dbgTP) ZenProperties.logger.log("Checking if "
                     + priority + " is within " + ln.minPri + " <--> "
-                    + ln.maxPri);
+                    + ln.maxPri + " objkey: " + ln.getObjectKey().decode());
             if (ln.minPri <= priority && ln.maxPri >= priority) return ln;
         }
         return null;
@@ -245,7 +267,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
                         int numComp = in.read_ulong();
 
-                        if (ZenBuildProperties.dbgIOR) System.out.println(in.toString());
+                        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log(in.toString());
                         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("number of components: " + numComp);
 
                         short minSupportedPriority = org.omg.RTCORBA.minPriority.value;
@@ -491,7 +513,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
      */
     public boolean is_a(org.omg.CORBA.Object self, String repository_id) {
         //TODO: Send _is_a message
-        return false;
+        return true;
     }
 
     private int referenceCount;
@@ -628,7 +650,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                     //TODO: throw some soft of exception here?
                     return ret;
             }
-            
+
         }catch( NullPointerException npe ){
             npe.printStackTrace();
             return null;
