@@ -4,6 +4,7 @@ import java.util.Vector;
 import javax.realtime.*;
 
 public class ReadBuffer{
+
     private static Queue bufferCache;
     private static int BYTE=1;
     private static int SHORT=2;

@@ -1,6 +1,3 @@
-/* --------------------------------------------------------------------------*
- * $Id: EventVariable.java,v 1.1 2004/02/05 01:11:56 kraman Exp $
- *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.utils;
 
 
@@ -11,7 +8,6 @@ package edu.uci.ece.zen.utils;
  * @author <a href="mailto:corsaro@doc.ece.uci.edu">Angelo Corsaro</a>
  * @version 1.0
  */
-
 public class EventVariable {
 
     private boolean signaled;   // = false;

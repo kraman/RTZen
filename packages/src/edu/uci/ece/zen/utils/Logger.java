@@ -1,16 +1,30 @@
 package edu.uci.ece.zen.utils;
 
 import javax.realtime.*;
+
+/** Class to enable loggin in RTZen
+ * @author Krishna Raman
+ * @author Mark Panahi
+ * @author Gunar Schirne
+ */
 public abstract class Logger{
+    //Loggin levels
     public static final int PEDANTIC=0;
     public static final int CONFIG=1;
     public static final int INFO=2;
     public static final int WARN=3;
     public static final int SEVERE=4;
     public static final int FATAL=5;
-    protected static final String levelLabels[] = new String[]{ "PEDANTIC" , "CONFIG" , "INFO" , "WARNING" , "SEVERE" , "FATAL" };
+    protected static final String levelLabels[] = 
+        new String[]{ "PEDANTIC" ,
+            "CONFIG" , "INFO" , 
+            "WARNING" , "SEVERE" , 
+            "FATAL" };
 
+    /** Static instance of the logger */
     private static Logger _instance;
+
+    /** Return an instance of the logger. */
     public static Logger instance(){
         if( _instance == null ){
             String loggerType = ZenProperties.getGlobalProperty( "edu.uci.ece.zen.logger.type" , "Console" );
@@ -27,6 +41,7 @@ public abstract class Logger{
         }
         return _instance;
     }
+
     public abstract void log( int level , String thisClass , String thisFunction , String msg );
 
     protected int level=0;

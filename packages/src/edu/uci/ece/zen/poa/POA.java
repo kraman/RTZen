@@ -108,7 +108,7 @@ public class POA extends org.omg.CORBA.LocalObject implements org.omg.PortableSe
         this.poaManager = manager;
         ((POAManager)poaManager).register( (org.omg.PortableServer.POA) this );
 
-        theChildren.removeAll();
+        theChildren.clear();
         numberOfCurrentRequests.reset();
 
         POARunnable r = new POARunnable(POARunnable.INIT);

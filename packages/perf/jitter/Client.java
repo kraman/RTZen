@@ -112,6 +112,9 @@ public class Client extends RealtimeThread
 					for(j=0; j<iterations;j++ ) {
 						//NativeTimeStamp.RecordTime(20);
 						server.putOctetSeq(inOctetSeq);
+                        if( j % 100 == 0 ){
+                            edu.uci.ece.zen.utils.Logger.printMemStats( j );
+                        }
 						NativeTimeStamp.RecordTime(21);
 					}
 					end = System.currentTimeMillis();
