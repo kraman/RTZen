@@ -13,10 +13,6 @@ public abstract class ReplyMessage extends GIOPMessage {
 		super(orb, stream);
 	}
 
-    // Concrete implementations 
-    public boolean isRequest() { return false; }
-	public boolean isReply() { return true; }
-
     // Abstract declarations in addition to those in GIOPMessage 
     public abstract int getReplyStatus();
     public abstract org.omg.IOP.ServiceContext[] getServiceContexts();

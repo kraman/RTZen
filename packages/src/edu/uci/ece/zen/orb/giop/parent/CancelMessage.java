@@ -13,13 +13,6 @@ public abstract class CancelMessage extends GIOPMessage {
 		super(orb, stream);
 	}
 
-    // Replacement for implementation in GIOPMessage
-    public boolean isCancelRequest() { return true; }
-
-    // Concrete implementations 
-    public boolean isRequest() { return false; }
-	public boolean isReply() { return false; }
-
     // Abstract declarations in addition to those in GIOPMessage 
     // NONE
 }
