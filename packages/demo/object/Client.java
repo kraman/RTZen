@@ -30,7 +30,7 @@ public class Client extends RealtimeThread
         //super(null,new LTMemory(3000,300000));
     }
 */
-    public static int runNum = 10000;
+    public static int runNum = 3;
 
     public void run()
     {
@@ -74,16 +74,19 @@ public class Client extends RealtimeThread
             final HandleObject server3 = HandleObjectHelper.unchecked_narrow(object3);
             br.close();
 
+            System.out.println("Begin the loop to test on passing org.omg.CORBA.Object as the parameter...");
+            
+
             for (int i = 0; i<runNum; i++){
 
-                System.out.println("Begin to test on passing org.omg.CORBA.Object as the parameter...");
+                //System.out.println("Begin to test on passing org.omg.CORBA.Object as the parameter...");
                 org.omg.CORBA.Object objinVal = object1;
                 org.omg.CORBA.ObjectHolder objoutVal = new org.omg.CORBA.ObjectHolder(object2); //objoutVal will be changed to object1 after the echoObject call
                 org.omg.CORBA.Object objretVal = server3.echoObject(objinVal, objoutVal); //objretVal should also be object1 after the echoObject call
 
                 TestObject server4 = TestObjectHelper.unchecked_narrow( objretVal );
                 TestObject server5 = TestObjectHelper.unchecked_narrow(objoutVal.value);                    if(server4.getName().equals(name1) && server5.getName().equals(name1)){ //Check if objoutVal and objretVal are set to correct value
-                    System.out.println("Pass the test");
+                    //System.out.println("Pass the test");
                 }
                 if(!server4.getName().equals(name1)){ //objretVal is not correct
 
