@@ -177,7 +177,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
 
                         FString object_key = in.getBuffer().readFString(false);
                         object_key_table.put(new Integer(object_key.hashCode()), object_key);
-                        System.out.println("ObjRefDelegate: processTaggedProfile: adding object key to table, hashCode=" + object_key.hashCode() + ", decode=" + object_key.decode());
+                        // System.out.println("ObjRefDelegate: processTaggedProfile: adding object key to table, hashCode=" + object_key.hashCode() + ", decode=" + object_key.decode());
                         //edu.uci.ece.zen.utils.Logger.printMemStats(402);
                         //edu.uci.ece.zen.utils.Logger.printMemStatsImm(502);
 

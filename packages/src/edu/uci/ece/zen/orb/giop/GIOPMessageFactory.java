@@ -47,7 +47,7 @@ public final class GIOPMessageFactory {
             // Read the GIOP message (including any request/reply/etc headers)
             // into the variable "buffer"
             buffer.setEndian(mainMsgHdr.isLittleEndian);
-            System.out.println("GIOPMessageFactory: parseStream: got header, reading messageSize of " + mainMsgHdr.messageSize);
+            // System.out.println("GIOPMessageFactory: parseStream: got header, reading messageSize of " + mainMsgHdr.messageSize);
             buffer.appendFromStream(in, mainMsgHdr.messageSize);
             if (ZenProperties.dbg) ZenProperties.logger.log
                             ("In GIOPMessageFactory, the message size is "
