@@ -33,11 +33,25 @@ public class Server extends RealtimeThread
     private static final int ITERATION_FACTOR_2 = 1;
     private static final int ITERATION_FACTOR_1 = 20;
     public String[] args;
-    private static boolean isClientPropagated = false;
+    private static boolean isClientPropagated = true;
     ORB orb;
     
     public static void main(String[] args) throws Exception
     {
+        if(args.length == 0){
+            System.out.println( "Need to specify \"sd\" for server declared or \"cp\" for client propagated." );
+            System.exit(-1);
+        }
+        
+        if(args[0].equals("sd"))
+            isClientPropagated = false;
+        else if (args[0].equals("cp"))
+            isClientPropagated = true;
+        else{
+            System.out.println( "Need to specify \"sd\" for server declared or \"cp\" for client propagated." );
+            System.out.println( "You passed in: " + args[0]);
+            System.exit(-1);
+        }
         // System.out.println( "=====================Creating RT Thread in server==========================" );
         Server rt = (Server) ImmortalMemory.instance().newInstance( Server.class );
         // System.out.println( "=====================Starting RT Thread in server==========================" );
