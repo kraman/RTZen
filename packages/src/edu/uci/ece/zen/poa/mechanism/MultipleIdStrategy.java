@@ -1,8 +1,6 @@
-/* --------------------------------------------------------------------------*
- * $Id: MultipleIdStrategy.java,v 1.5 2003/08/05 23:37:28 nshankar Exp $
- *--------------------------------------------------------------------------*/
 package edu.uci.ece.zen.poa.mechanism; 
 
+import org.omg.CORBA.IntHolder;
 
 public final class MultipleIdStrategy extends
             IdUniquenessStrategy {
@@ -11,11 +9,11 @@ public final class MultipleIdStrategy extends
      * @param policy policy value
      * @return boolean ture if same, else false
      */
-    public boolean validate(int policy) {
+    public void  validate(int policy, IntHolder exceptionValue) {
             if (IdUniquenessStrategy.MULTIPLE_ID == policy) {
-                return true;
+                exceptionValue.value = POARunnable.NoException;
             } else {
-                return false;
+                exceptionValue.value = POARunnable.FalseException;
             }
     }
 }
