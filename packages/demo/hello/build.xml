@@ -43,6 +43,14 @@
             <!--arg line="-ORBListenEndpoints"/-->
         </java>
     </target>
+
+    <target name="giop_lite_server">
+        <java classname="demo.hello.Server" fork="yes">
+            <jvmarg line="${zen.jvm.properties}"/>
+            <arg line="-ZENLoadProtocoledu.uci.ece.zen.orb.protocol.giop_lite.GLiteMessageFactory"/>
+        </java>
+    </target>
+
     
     <target name="client">
         <demo.run classname="demo.hello.Client"/>

@@ -275,8 +275,25 @@ public final class ZenProperties {
                     }
                     props.setProperty("org.omg.CORBA.ORBDefaultInitRef", value
                             + "");
-                } else if (arg.startsWith("-ORB")) { throw new org.omg.CORBA.BAD_PARAM(
-                        "Bad parameter " + arg); }
+                } else if (arg.startsWith("-ZENLoadProtocol")) {
+                    Object propActVal = props.getProperty( "org.omg.CORBA.ORBNoProprietaryActivation" );
+                    if( propActVal != null && ((String)propActVal).trim().equalsIgnoreCase( "true" ) ){
+                        System.err.println( "ZenLoadProtocol cannot be used in conjunction with ORBNoProprietaryActivation" );
+                        System.exit(-1);
+                    }
+                    if (arg.length() > 16) {
+                        value = arg.substring(16).trim();
+                    } else {
+                        value = args[++i].trim();
+                    }
+                    try{
+                        System.out.println( "Loading protocol " + value );
+                        edu.uci.ece.zen.orb.protocol.MessageFactory.registerProtocolFactory( Class.forName( value ) );
+                    }catch( Exception e ){
+                        System.err.println( "Unable to proceed due to excetion: " + e + " while trying to load protocol" );
+                        System.exit(-1);
+                    }
+                } else if (arg.startsWith("-ORB")) { throw new org.omg.CORBA.BAD_PARAM( "Bad parameter " + arg); }
             }
         }
     }

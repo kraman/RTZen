@@ -1,4 +1,4 @@
-package edu.uci.ece.zen.orb.protocol.giop;
+package edu.uci.ece.zen.orb.protocol.giop_lite;
 
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ClientRequest;

@@ -26,34 +26,33 @@ import javax.realtime.*;
  * @version $Revision: 1.8 $ $Date: 2004/08/01 09:25:19 $
  */
 public abstract class MessageFactory {
+    /** Register default giop message factory */
+    static{
+        MessageFactory.registerProtocolFactory( edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
+    }
 
     /**
      * Hashtable to store instances of protocol message factory.
      */
     private static java.util.Hashtable protocolFactoryMap;
-    static{
-        try{
-            protocolFactoryMap = (java.util.Hashtable) ImmortalMemory.instance().newInstance( java.util.Hashtable.class );
-        }catch( Exception e ){
-            e.printStackTrace();
-            System.exit(-1);
-        }
-    }
-    /**
+        /**
      * Method for pluggable protocols to register their message factory with the ORB.
      * @param protocolFactory The Message factory to register
      */
     public static void registerProtocolFactory( Class protocolFactory ){
+        if( protocolFactoryMap == null ){
+            try{
+                protocolFactoryMap = (java.util.Hashtable) ImmortalMemory.instance().newInstance( java.util.Hashtable.class );
+            }catch( Exception e ){
+                e.printStackTrace();
+                System.exit(-1);
+            }
+        }
         try{
             protocolFactoryMap.put( protocolFactory , ImmortalMemory.instance().newInstance( protocolFactory ) );
         }catch( Exception e ){
-            System.err.println( "Unable to add protocol: " + protocolFactory );
+            System.err.println( "Unable to add protocol: " + protocolFactory + e );
         }
-    }
-
-    /** Register default giop message factory */
-    static{
-        MessageFactory.registerProtocolFactory( edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
     }
     
 
