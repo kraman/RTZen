@@ -25,8 +25,8 @@ public final class TransientStrategy extends LifespanStrategy {
         timeStamp[nextFreeByte++] = (byte) ((value >>> 8) & 0xFF);
         timeStamp[nextFreeByte++] = (byte) (value & 0xFF);
 
-        this.ftimeStamp = new FString(8);
-        ftimeStamp.append(timeStamp);
+        this.ftimeStamp = new FString(0);
+        //ftimeStamp.append(timeStamp);
     }
 
     /**
@@ -85,11 +85,12 @@ public final class TransientStrategy extends LifespanStrategy {
      */
     public void validate(FString ok, IntHolder exceptionHolder) {
         exceptionHolder.value = POARunnable.NoException;
+	/*
         if (!ObjectKeyHelper.compareTimeStamps(this.ftimeStamp, ok)
                 && ObjectKeyHelper.isPersistent(ok)) {
             // if (this.value != ok.timeStamp())
             exceptionHolder.value = POARunnable.ObjNotExistException;
-        }
+        }*/
     }
 
     protected long value; // contains the time stamp of the POA

@@ -11,7 +11,7 @@ public class HelloWorldImpl extends HelloWorldPOA
     /**
      * Gets a message from the Hello World Server.
      */
-    public int getMessage()
+    public int aa()
     {
         //System.out.println( "******************  WOOHOO! Request got here....now sending back. ********************" );
         //return "Hello To the Zen World!!!";

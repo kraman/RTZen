@@ -32,6 +32,7 @@ final public class IdHintStrategy {
     public static void create(char prefix, FString objectId, FString time,
             int poaIndex, int poaGenCount, int servIndex, int servGenCount,
             FString ok_out) {
+	System.out.println( "blah" );
 
         // length = prefix + <no of bytes that poaPathName occupies> +
         // poaPathName + length of the time stamp <8 bytes>
@@ -42,17 +43,23 @@ final public class IdHintStrategy {
         ok_out.append((byte) (prefix & 0xFF));
         ok_out.append((byte) 1);
         // write out the time
-        ok_out.append(time.getData(), 0, time.length());
+        //ok_out.append(time.getData(), 0, time.length());
         // write out the active Object Map index
-        write_int(ok_out, poaIndex);
-        write_int(ok_out, poaGenCount);
+        //write_int(ok_out, poaIndex);
+        //write_int(ok_out, poaGenCount);
+	ok_out.append((byte) (poaIndex & 0xFF));
+	ok_out.append((byte) (poaGenCount & 0xFF));
 
         // write out the servant index
-        write_int(ok_out, servIndex);
-        write_int(ok_out, servGenCount);
+        //write_int(ok_out, servIndex);
+        //write_int(ok_out, servGenCount);
+	ok_out.append((byte) (servIndex & 0xFF));
+	ok_out.append((byte) (servGenCount & 0xFF));
+
 
         // copy the Object Id
         ok_out.append(objectId.getData(), 0, objectId.length());
+	//System.out.println( "POA index: " + poaIndex + " POA gen: " + poaGenCount + " Servant index: " + servIndex + " Servant Gen count: " + servGenCount + " oid: " + objectId.toString() );
         // Logger.debug("Okey Created: Transient Hint Strategy = "
         // + new String(temp));
         // Logger.debug("Start = " + start);

@@ -481,6 +481,7 @@ public class POAImpl {
                         ._all_interfaces(self, null)[0], clientMemoryArea);
             }
         }
+        System.out.println( "object key length: " + okey.length() );
         retFString(okey);
         retFString(oid);
         retIntHolder(ih);

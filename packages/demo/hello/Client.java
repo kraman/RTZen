@@ -49,21 +49,21 @@ public class Client extends RealtimeThread
             org.omg.CORBA.Object object = orb.string_to_object(ior);
             System.out.println( "===================Trying to establish connection==========================" );
             final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
-            System.out.println( server.getMessage() );
+            System.out.println( server.aa() );
 
 /*
             // Create a scope for running requests in, so that we don't waste the scope we are in.
             ScopedMemory sm = new LTMemory(32000, 100000);
             Runnable r = new Runnable() {
                 public void run() {
-                    server.getMessage();
+                    server.aa();
                 }
             };
 */
             System.out.println( "====================== Performance warmup =================================" );
             for( int i=0;i<warmupNum;i++ ){
                 
-                server.getMessage();
+                server.aa();
                 //sleep(500);
                 //sm.enter(r);
                 if(i % 100 == 0){        
@@ -75,7 +75,7 @@ public class Client extends RealtimeThread
             System.out.println( "====================== Performance benchmark ==============================" );
             long start = System.currentTimeMillis();
             for( int i=0;i<runNum;i++ ){
-                server.getMessage();
+                server.aa();
                 //sleep(500);
                 //sm.enter(r);
                 if(i % 500 == 0){

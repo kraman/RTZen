@@ -43,8 +43,8 @@ public class ObjectKeyHelper {
      * @return int
      */
     public static int getPOAIndex(FString objKey) {
-        int start = 10; // first two are prefix and hints followed by time
-        int index = read_int(objKey.getData(), start);
+        int start = 2; // first two are prefix and hints followed by time
+        int index = objKey.getData()[start];    //read_int(objKey.getData(), start);
         return index;
     }
 
@@ -54,8 +54,8 @@ public class ObjectKeyHelper {
      * @return int
      */
     public static int getPOAGeneration(FString objKey) {
-        int start = 14;
-        int count = read_int(objKey.getData(), start);
+        int start = 3;
+        int count = objKey.getData()[start]; //read_int(objKey.getData(), start);
 
         return count;
     }
@@ -63,13 +63,15 @@ public class ObjectKeyHelper {
     // /////////////////////////////////////////////////////////////////////
 
     public static int servDemuxIndex(FString objKey) {
-        int start = 18; // place where the servant index will start
-        return read_int(objKey.getData(), start);
+        int start = 4; // place where the servant index will start
+        int index = objKey.getData()[start]; //read_int(objKey.getData(), start);
+	return index;
     }
 
     public static int servDemuxGenCount(FString objKey) {
-        int start = 18; // place where the servant index will start
-        return read_int(objKey.getData(), start + 4);
+        int start = 5; // place where the servant index will start
+        int count = objKey.getData()[start]; //read_int(objKey.getData(), start + 4);
+	return count;
     }
 
     // /////////////////////////////////////////////////////////////////
@@ -116,9 +118,9 @@ public class ObjectKeyHelper {
     public static boolean compareTimeStamps(FString timeStamp, FString objKey) {
         int i = 0, j = 2; // First two bytes are the hints and the prefix
 
-        while (i < 8) {
-            if (timeStamp.getData()[j++] != objKey.getData()[i++]) { return false; }
-        }
+        //while (i < 8) {
+        //    if (timeStamp.getData()[j++] != objKey.getData()[i++]) { return false; }
+        //}
         return true;
     }
 
@@ -137,7 +139,7 @@ public class ObjectKeyHelper {
         byte[] buffer;
 
         if (hasHints(objKey)) {
-            start = 26;
+            start = 6;
         } else {
             start = 18;
         }
@@ -150,8 +152,8 @@ public class ObjectKeyHelper {
             oidOut.append(objKey.getData(), begin, length);
         } else {
             int length = objKey.length() - start;
-
             oidOut.append(objKey.getData(), start, length);
+	    System.out.println( "read oid: " + oidOut.toString() );
         }
     }
 }

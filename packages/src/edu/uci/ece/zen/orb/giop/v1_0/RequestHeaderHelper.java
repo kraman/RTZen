@@ -87,15 +87,14 @@ public class RequestHeaderHelper {
                 .read(istream, FString.instance(new_one.service_context));
 
         new_one.request_id = istream.read_ulong();
-        //System.out.println("RequestHeader read -- req id: " + new_one.request_id);
+        System.out.println("RequestHeader read -- req id: " + new_one.request_id);
         new_one.response_expected = istream.read_boolean();
-        //System.out.println("RequestHeader read -- response_expected: " +
-        // new_one.response_expected);
+        System.out.println("RequestHeader read -- response_expected: " + new_one.response_expected);
 
         new_one.object_key = FString.instance(new_one.object_key);
         int object_key_length = istream.read_ulong();
         //new_one.object_key.append(object_key_length);
-        //System.out.println("RequestHeader read -- ok len: " + object_key_length);
+        System.out.println("RequestHeader read -- ok len: " + object_key_length);
         new_one.object_key.read(istream, object_key_length);
 
         new_one.operation = FString.instance(new_one.operation);

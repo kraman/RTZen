@@ -408,14 +408,14 @@ public class WriteBuffer {
     private long mementoPosition;
 
     public void setLocationMemento() {
-        pad(WriteBuffer.LONG);
+        pad(WriteBuffer.BYTE);
         mementoPosition = position;
     }
 
     public void writeLongAtLocationMemento(int val) {
         long tmp = position;
         position = mementoPosition;
-        writeLong(val);
+        writeByte((byte) (val & 0xff));
         position = tmp;
     }
 }
