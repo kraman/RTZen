@@ -946,7 +946,7 @@ public final class Any extends edu.uci.ece.zen.orb.any.AnyStrategy {
               name = name.substring (name.lastIndexOf ('/') + 1);
            }
         }
-        type(orb.create_interface_tc( typeId , name ));
+        typeCode = orb.create_interface_tc( typeId , name );
     }
 
 
