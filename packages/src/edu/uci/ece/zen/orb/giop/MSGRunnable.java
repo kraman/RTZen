@@ -33,7 +33,9 @@ public class MSGRunnable implements Runnable {
     }
 
     public void run() {
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(322);
         ResponseHandler rh = new ResponseHandler(orb, rm);
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(323);
 
         if (rm.getOperation().equals("_is_a")) {
             boolean _result = servant._is_a(rm.getCDRInputStream()
@@ -48,7 +50,7 @@ public class MSGRunnable implements Runnable {
             reply = (CDROutputStream) _output;
         } else {
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(324);
-           String op = rm.getOperation().toCachedString();
+           String op = rm.getOperation().toString();
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(325);
            
             reply = (CDROutputStream) ((InvokeHandler) servant)

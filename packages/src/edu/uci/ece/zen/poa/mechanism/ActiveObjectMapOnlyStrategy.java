@@ -172,10 +172,10 @@ public final class ActiveObjectMapOnlyStrategy extends
         ScopedMemory sm = poa.getORB().getScopedRegion();
         MSGRunnable msgr = getMSGR();
         msgr.init(request, myServant, reply, poa.getORB());
+        edu.uci.ece.zen.utils.Logger.printMemStatsImm(35);
         sm.enter(msgr);
         retMSGR(msgr);
         poa.getORB().freeScopedRegion(sm);
-        edu.uci.ece.zen.utils.Logger.printMemStatsImm(38);
         request.free();
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(39);
 

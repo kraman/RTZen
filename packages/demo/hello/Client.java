@@ -30,7 +30,7 @@ public class Client extends RealtimeThread
         //super(null,new LTMemory(3000,300000));
     }
 
-    public static int warmupNum = 500;
+    public static int warmupNum = 5000;
     public static int runNum = 50000;
 
     public void run()
@@ -64,9 +64,9 @@ public class Client extends RealtimeThread
             for( int i=0;i<warmupNum;i++ ){
                 
                 server.getMessage();
+                //sleep(500);
                 //sm.enter(r);
-                if(i % 100 == 0){
-                
+                if(i % 100 == 0){        
                     Logger.write(i);
                     Logger.writeln();
                 }
@@ -76,6 +76,7 @@ public class Client extends RealtimeThread
             long start = System.currentTimeMillis();
             for( int i=0;i<runNum;i++ ){
                 server.getMessage();
+                //sleep(500);
                 //sm.enter(r);
                 if(i % 500 == 0){
                     Logger.write(i);

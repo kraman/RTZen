@@ -159,7 +159,8 @@ public abstract class Logger{
     }
 
     public static void printThreadStack(){
-		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) {
+		if (edu.uci.ece.zen.utils.ZenProperties.devDbg) 
+        {
 			System.out.println("Current thread is " + RealtimeThread.currentRealtimeThread());
 			System.out.println("cur mem area: " +  RealtimeThread.getCurrentMemoryArea());
 

@@ -3,6 +3,7 @@ package edu.uci.ece.zen.utils;
 import javax.realtime.ImmortalMemory;
 import javax.realtime.InaccessibleAreaException;
 import javax.realtime.MemoryArea;
+import javax.realtime.RealtimeThread;
 
 /**
  * A class that provides a way to represent a mutable String of fixed size. This
@@ -302,6 +303,40 @@ public class FString {
      */
     public String toString() {
         return new String(getTrimData());
+
+    }
+
+/*
+    static java.lang.reflect.Constructor c;
+    //static Object [] objArr;
+
+    static {
+        try{
+            c = String.class.getConstructor(new Class [] {byte[].class});
+        }catch(Exception e){
+
+        }
+        //objArr = new Object[1];
+    }
+    public String toString1() {
+         edu.uci.ece.zen.utils.Logger.printMemStatsImm(386);
+         //edu.uci.ece.zen.utils.Logger.printThreadStack();
+             try{
+                Object [] objArr = new Object[1];
+                objArr[0] = getTrimData();
+                edu.uci.ece.zen.utils.Logger.printMemStatsImm(387);
+                String s = 
+                    (String) RealtimeThread.getCurrentMemoryArea().newInstance(c,objArr);
+                edu.uci.ece.zen.utils.Logger.printMemStatsImm(388);
+                return s;
+            }catch(Exception e){
+                ZenProperties.logger.log(Logger.SEVERE,
+                        getClass(), "getTrimdata",
+                        "Could not initialize cached String", e);
+
+            }      
+        return null;
+        //return new String(getTrimData());
     }
     private String cachedString;
     public String toCachedString() {
@@ -318,7 +353,7 @@ public class FString {
             }
         }
         return cachedString;
-    }
+    }*/
     /**
      * Convert this FString into a string, using the inverse algorithm as in
      * stringToCDRByteArray
