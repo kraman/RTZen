@@ -507,10 +507,18 @@ public class CDROutputStream extends org.omg.CORBA.portable.OutputStream {
     public void setLocationMemento() {
         buffer.setLocationMemento();
     }
+    
+    public void setProfileLengthMemento() {
+        buffer.setProfileLengthMemento();
+    }    
 
     public void updateLength() {
         buffer.writeLongAtLocationMemento((int) buffer.getPosition() - 12);
     }
+    
+    public void updateProfileLength(int val) {
+        buffer.writeLongAtProfileLengthMemento(val);
+    }    
 
     /**
      * Writes an any object from the the CDROutputStream. This processes

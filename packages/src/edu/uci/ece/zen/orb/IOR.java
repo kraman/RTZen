@@ -142,6 +142,7 @@ public class IOR {
             ior.profiles[i] = (TaggedProfile)clientArea.newInstance(org.omg.IOP.TaggedProfile.class);
             ior.profiles[i].tag = in.read_ulong();
             int size = in.read_ulong();
+            if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("makeCORBAObject 4.5, size: " + size);
             ior.profiles[i].profile_data = (byte[]) clientArea.newArray(
                 byte.class, size);
             in.read_octet_array(ior.profiles[i].profile_data, 0, ior.profiles[i].profile_data.length);

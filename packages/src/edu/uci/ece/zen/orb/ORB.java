@@ -74,6 +74,9 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                 //sockAddr = new
                 // java.net.InetSocketAddress(java.net.InetAddress.getLocalHost().getHostAddress(),0);
                 sockAddr = java.net.InetAddress.getLocalHost();
+                //java.net.InetAddress [] arr = java.net.InetAddress.getAllByName( sockAddr.getHostName() );
+                //for(int i = 0; i<arr.length; ++i)
+                //    System.out.println("ADDR: " + arr[i].toString());
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, ORB.class, "static <init>", e);
             }

@@ -52,7 +52,7 @@ public class ConnectorRunnable implements Runnable {
 
             Transport trans = conn.internalConnect(host2, iport, orb,
                     (ORBImpl) orb.orbImplRegion.getPortal());
-            if( trans != null ){
+            if( trans != null && trans.success ){
                 RealtimeThread transportThread = new NoHeapRealtimeThread( new PriorityParameters( PriorityScheduler.instance().getMaxPriority() ) , null, null, RealtimeThread.getCurrentMemoryArea(), null, trans);
                 //RealtimeThread transportThread = new
                 // RealtimeThread(null,null,null,RealtimeThread.getCurrentMemoryArea(),null,trans);

@@ -91,7 +91,7 @@ public abstract class Acceptor {
 
     private ProfileRunnable prunnable;
 
-    public synchronized TaggedProfile getProfile(byte iiopMajorVersion,
+    public synchronized TaggedProfile [] getProfiles(byte iiopMajorVersion,
             byte iiopMinorVersion, byte[] objKey, MemoryArea clientRegion, POA poa) {
         //if( this.threadPoolId == threadPoolId )
         {
@@ -109,7 +109,7 @@ public abstract class Acceptor {
         return null;
     }
 
-    protected abstract TaggedProfile getInternalProfile(byte iiopMajorVersion,
+    protected abstract TaggedProfile [] getInternalProfiles(byte iiopMajorVersion,
             byte iiopMinorVersion, byte[] objKey, POA poa);
 
     public void finalize() {
@@ -302,7 +302,7 @@ class ProfileRunnable implements Runnable {
 
     private Acceptor acc;
 
-    private TaggedProfile retVal;
+    private TaggedProfile [] retVal;
 
     private POA poa;
 
@@ -317,12 +317,12 @@ class ProfileRunnable implements Runnable {
         this.poa = poa;
     }
 
-    public TaggedProfile getRetVal() {
+    public TaggedProfile [] getRetVal() {
         return retVal;
     }
 
     public void run() {
-        retVal = acc.getInternalProfile(major, minor, objKey, poa);
+        retVal = acc.getInternalProfiles(major, minor, objKey, poa);
     }
 }
 

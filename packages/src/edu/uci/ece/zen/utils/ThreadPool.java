@@ -195,9 +195,11 @@ public class ThreadPool {
                 POA poa, CDROutputStream out)
             {
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("-----TP.getProfiles0");
-
+        
         GetProfilesRunnable1 gpr1 = GetProfilesRunnable1.instance();//new GetProfilesRunnable1(); //TODO -- static? per TP?
-        out.write_ulong(lanes.length);
+        //out.write_ulong(lanes.length);
+        out.setProfileLengthMemento();
+        //System.out.println("prof: " + out.toString());
         try{
             for(int i = 0; i < lanes.length; ++i){
                 ScopedMemory accArea = lanes[i].getAcceptorArea();
@@ -207,6 +209,9 @@ public class ThreadPool {
         }catch(Exception e){
             e.printStackTrace();//TODO better exception handling
         }
+        //System.out.println("prof: " + out.toString());
+        
+        //System.out.println("prof: " + out.toString());
         //if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("-----TP.getProfiles2:  " + out.toString());
     }
     
@@ -292,9 +297,13 @@ class GetProfilesRunnable2 implements Runnable{
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 6");
         Acceptor acc = (Acceptor)((ScopedMemory) RealtimeThread.getCurrentMemoryArea()).getPortal();
         if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 7");
-        TaggedProfileHelper.write(out, acc.getProfile((byte) 1, ZenProperties.iiopMinor, 
-                objKey.getTrimData(clientArea), clientArea, poa));
-        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 8");
+        TaggedProfile [] tparr = acc.getProfiles((byte) 1, ZenProperties.iiopMinor, 
+                objKey.getTrimData(clientArea), clientArea, poa);
+        for(int j = 0; j < tparr.length; ++j)
+            TaggedProfileHelper.write(out, tparr[j]);
+        out.updateProfileLength(tparr.length);
+        if (ZenBuildProperties.dbgIOR) ZenProperties.logger.log("GetProfilesRunnable2 8, length:" + tparr.length);
+        //System.out.println("prof: " + out.toString());
     }    
 }
 

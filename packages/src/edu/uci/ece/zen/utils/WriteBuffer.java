@@ -105,6 +105,7 @@ public class WriteBuffer {
         position = limit = capacity = 0;
         buffers.removeAllElements();
         enableAllignment = true;
+        profileLength = 0;
     }
 
     public void free() {
@@ -434,6 +435,23 @@ public class WriteBuffer {
         long tmp = position;
         position = mementoPosition;
         writeLong(val);
+        position = tmp;
+    }
+    
+    private long profileLengthPosition;
+    private int profileLength;
+
+    public void setProfileLengthMemento() {
+        //pad(WriteBuffer.LONG);
+        profileLengthPosition = position;
+        writeLong(0);
+    }
+
+    public void writeLongAtProfileLengthMemento(int val) {
+        profileLength += val;
+        long tmp = position;
+        position = profileLengthPosition;
+        writeLong(profileLength);
         position = tmp;
     }
 }
