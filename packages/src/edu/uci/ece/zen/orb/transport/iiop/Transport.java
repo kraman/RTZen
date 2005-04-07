@@ -126,4 +126,12 @@ public class Transport extends edu.uci.ece.zen.orb.transport.Transport {
             ZenProperties.logger.log(Logger.WARN, getClass(), "setSockProps", se);
         }
     }
+
+    protected void internalShutdown(){
+        try{
+            sock.close();
+        }catch( Exception e ){
+            e.printStackTrace();
+        }
+    }
 }

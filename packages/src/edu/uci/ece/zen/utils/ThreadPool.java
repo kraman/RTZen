@@ -19,6 +19,8 @@ import javax.realtime.ImmortalMemory;
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.CDRInputStream;
 import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.orb.ORBComponent;
+import edu.uci.ece.zen.orb.ShutdownRunnable;
 import edu.uci.ece.zen.orb.GetProfilesRunnable1;
 import edu.uci.ece.zen.orb.GetProfilesRunnable2;
 import edu.uci.ece.zen.orb.PriorityMappingImpl;
@@ -36,7 +38,7 @@ import org.omg.RTCORBA.ThreadpoolLanesHelper;
 import org.omg.RTCORBA.PriorityModel;
 
 
-public class ThreadPool {
+public class ThreadPool implements ORBComponent{
     Lane lanes[];
 
     boolean allowRequestBuffering;
@@ -75,7 +77,7 @@ public class ThreadPool {
                 " dynamic_threads: " + dynamicThreads);              
         this.lanes[0] = new Lane(stackSize, staticThreads, dynamicThreads,
                 defaultPriority, this, allowBorrowing, allowRequestBuffering,
-                maxBufferedRequests, acceptorRunnable.acceptorArea);
+                maxBufferedRequests, acceptorRunnable.acceptorArea, orb);
         this.lanes[0].setLaneId(0);
         this.orb = orb;
         this.threadPoolId = threadPoolId;
@@ -109,7 +111,7 @@ public class ThreadPool {
             this.lanes[i] = new Lane(stackSize, static_threads,
                     dynamic_threads, lane_priority, this,
                     allowBorrowing, allowRequestBuffering, maxBufferedRequests,
-                    acceptorRunnable.acceptorArea);
+                    acceptorRunnable.acceptorArea, orb);
             orb.setUpORBChildRegion(acceptorRunnable);
         }
         in.free();
@@ -140,7 +142,7 @@ public class ThreadPool {
                     lanes[i].dynamic_threads, 
                     lane_priority, this,
                     allowBorrowing, allowRequestBuffering, maxBufferedRequests,
-                    acceptorRunnable.acceptorArea);
+                    acceptorRunnable.acceptorArea, orb);
             orb.setUpORBChildRegion(acceptorRunnable);
         }
         java.util.Arrays.sort(this.lanes, 0, lanes.length);
@@ -240,9 +242,16 @@ public class ThreadPool {
         ThreadpoolLanesHelper.write(out, lanes);
         return out;
     }
+
+    public void shutdown( boolean wait_for_completion ){
+        for( int i=0;i<lanes.length;i++ ){
+            //System.out.println( "Shutting down lane " + i );
+            lanes[i].shutdown( wait_for_completion );
+        }
+    }
 }
 
-class Lane implements Comparable{
+class Lane implements Comparable,ORBComponent{
     int stackSize; //ignored. No such provision in RTSJ 2.0
 
     int maxStaticThreads;
@@ -271,10 +280,12 @@ class Lane implements Comparable{
 
     ScopedMemory acceptorArea;
 
+    ORB orb;
+
     public Lane(int stackSize, int numStaticThreads, int numDynamicThreads,
             short priority, ThreadPool tp, boolean allowBorrowing,
             boolean allowRequestBuffering, int maxBufferedRequests,
-            ScopedMemory acceptorArea) {
+            ScopedMemory acceptorArea, ORB orb ) {
         this.stackSize = stackSize;
         this.maxStaticThreads = numStaticThreads;
         this.maxDynamicThreads = numDynamicThreads;
@@ -287,6 +298,7 @@ class Lane implements Comparable{
         this.allowRequestBuffering = allowRequestBuffering;
         this.maxBufferedRequests = maxBufferedRequests;
         this.acceptorArea = acceptorArea;
+        this.orb = orb;
 
         for (numThreads = 0; numThreads < maxStaticThreads; numThreads++) {
             newThread();
@@ -395,7 +407,20 @@ class Lane implements Comparable{
     }
 
     public void shutdown(boolean waitForCompletion) {
+        //System.out.println( "Shutting down Acceptor.." );
+        ExecuteInRunnable eir = orb.getEIR();
+        eir.init( ShutdownRunnable.instance() , acceptorArea );
+        try{
+            orb.orbImplRegion.executeInArea( eir );
+        }catch( javax.realtime.InaccessibleAreaException iee ){
+            iee.printStackTrace();
+        }
+        orb.freeEIR( eir );
+
+        //TODO:Need to shut down POA and all transports
+
         while (!threads.isEmpty()) {
+            //System.out.println( "Shutting down ThreadSleepRunnable.." );
             ThreadSleepRunnable r = (ThreadSleepRunnable) threads.dequeue();
             r.shutdown(waitForCompletion);
         }
@@ -467,25 +492,16 @@ class ThreadSleepRunnable implements Runnable {
 
                 //process the task in the portal of the scoped region
                 ir.init(task);
-                //System.out.println( "HandleRequestRunnable finished in
-                // ThreadPool" );
-                //System.out.println( task.getAssociatedPOA() );
                 eir.init(ir, ((edu.uci.ece.zen.poa.POA) task.getAssociatedPOA()).poaMemoryArea);
-                //System.out.println( "Calling executeInArea on
-                // HandleRequestRunnable" );
                 try {
                     lane.tp.orb.orbImplRegion.executeInArea(eir);
                 } catch (Exception e) {
                     ZenProperties.logger.log(Logger.WARN, getClass(), "run", e);
                 }
-                //System.out.println( "Returned executeInArea on
-                // HandleRequestRunnable" );
                 task = null;
             }
         } catch (InterruptedException e) {
-            ZenProperties.logger.log(Logger.INFO,
-                    getClass(), "run",
-                    "Recieved an Interrupt exception. Shutting down.");
+            ZenProperties.logger.log(Logger.INFO, getClass(), "run", "Recieved an Interrupt exception. Shutting down.");
             //Ignore. Expected while shutting down.
         } catch (Throwable e1) {
         //e1.printStackTrace();

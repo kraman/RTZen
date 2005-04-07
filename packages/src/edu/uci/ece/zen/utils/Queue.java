@@ -189,7 +189,7 @@ public class Queue {
         if( ret == null ){
             try {
                 ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", "Creating new instance.");
-                ret = ImmortalMemory.instance().newInstance(cls);
+                ret = MemoryArea.getMemoryArea(q).newInstance(cls);
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.WARN, cls, "getQueuedInstance", e);
             }

@@ -14,6 +14,7 @@ import javax.realtime.NoHeapRealtimeThread;
 import javax.realtime.RealtimeThread;
 import javax.realtime.ScopedMemory;
 import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.orb.ORBComponent;
 import edu.uci.ece.zen.poa.POA;
 
 import org.omg.IOP.TaggedProfile;
@@ -43,7 +44,7 @@ import edu.uci.ece.zen.utils.ZenBuildProperties;
 
 import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
 
-public abstract class Acceptor {
+public abstract class Acceptor implements ORBComponent {
     protected edu.uci.ece.zen.orb.ORB orb;
 
     protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
@@ -75,16 +76,20 @@ public abstract class Acceptor {
         acceptorLogicThread.start();
     }
 
-    public final void shutdown() {
-        isActive = false;
-        internalShutdown();
-        acceptorLogicThread.interrupt();
-        synchronized (acceptorLogic) {
-            try {
-                acceptorLogic.wait();
-            } catch (Exception e) {
-                ZenProperties.logger.log(Logger.WARN, getClass(), "shutdown", e);
+    public final void shutdown( boolean waitForCompletion ) {
+        try{
+            isActive = false;
+            internalShutdown();
+            acceptorLogicThread.interrupt();
+            synchronized (acceptorLogic) {
+                try {
+                    acceptorLogic.wait();
+                } catch (Exception e) {
+                    ZenProperties.logger.log(Logger.WARN, getClass(), "shutdown", e);
+                }
             }
+        }catch(java.lang.IllegalThreadStateException itse ){
+            ZenProperties.logger.log(Logger.INFO, getClass(), "shutdown", itse);
         }
     }
 
@@ -143,18 +148,6 @@ public abstract class Acceptor {
 
     private TaggedComponent getPolicyComponent(POA poa) {
         ZenProperties.logger.log("getPolicyComponent()");
-        //CDROutputStream out = CDROutputStream.instance();
-        //out.init(orb);
-        //out.write_boolean(false); //BIGENDIAN
-
-        //org.omg.CORBA.PolicyListHolder holder = new org.omg.CORBA.PolicyListHolder();
-
-        //holder.value = poa.getClientExposedPolicies();
-
-        //holder._write(out);
-
-        //org.omg.CORBA.PolicyListHelper.write(out, policies);
-
         CDROutputStream out = poa.getClientExposedPolicies(priority);
 
         if(out == null)
@@ -200,81 +193,7 @@ public abstract class Acceptor {
         return pv;
     }
 
-    /*
-    //trust me, this is just a temporary hack
-    public static boolean enableComponents = false;
-    public static short serverPriority = -1; //initial value, not a valid priority
-    public static int priorityModel = 0;
-
-    protected TaggedComponent[] getComponents() {
-        ZenProperties.logger.log("getComponents()");
-        TaggedComponent[] tcarr;
-
-        if(enableComponents){
-            tcarr = new TaggedComponent[1];
-            //tcarr[0].tag = SERVER_PROTOCOL_POLICY_TYPE.value;
-            tcarr[0] = getPolicyComponent();
-        }else{
-            tcarr = new TaggedComponent[0];
-        }
-        return tcarr;
-    }
-
-    private TaggedComponent getPolicyComponent() {
-        ZenProperties.logger.log("getPolicyComponent()");
-        TaggedComponent tc = new TaggedComponent();
-        tc.tag = org.omg.IOP.TAG_POLICIES.value;
-
-        CDROutputStream out = CDROutputStream.instance();
-        out.init(orb);
-        out.write_boolean(false); //BIGENDIAN
-        out.write_ulong((int)1); //just one policy for now
-
-        PolicyValueHelper.write(out, createPriorityModelValue());
-
-        tc.component_data = new byte[(int) out.getBuffer().getLimit()];
-        out.getBuffer().getReadBuffer().readByteArray(tc.component_data, 0,
-                (int) out.getBuffer().getLimit());
-        out.free();
-
-        return tc;
-    }
-
-    private PolicyValue createPriorityModelValue() {
-        ZenProperties.logger.log("createPriorityModelValue()");
-        PolicyValue pv = new PolicyValue();
-        pv.ptype = priorityModel;
-
-        CDROutputStream out = CDROutputStream.instance();
-        out.init(orb);
-        out.write_boolean(false); //BIGENDIAN
-
-        out.write_long(priorityModel);
-        out.write_short(serverPriority);
-
-        pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
-        pv.ptype = PRIORITY_MODEL_POLICY_TYPE.value;
-
-        out.getBuffer().getReadBuffer().readByteArray(pv.pvalue, 0 ,
-                (int)out.getBuffer().getLimit());
-
-        out.free();
-
-        return pv;
-    }
-*/
     private PolicyValue createServerProtocolPolicyValue() {
-        /*
-         * ServerProtocolPolicy spp = ((RTORBImpl)(orb.getRTORB())).spp;
-         * PolicyValue pv = new PolicyValue(); pv.ptype = spp.policy_type();
-         * CDROutputStream out = CDROutputStream.instance(); out.init(orb);
-         * out.write_boolean(false); //BIGENDIAN org.omg.CORBA.Any value =
-         * edu.uci.ece.zen.orb.ORB.init().create_any();
-         * ServerProtocolPolicyHelper.insert(value, spp); out.write_any(value);
-         * pv.pvalue = new byte[(int)out.getBuffer().getLimit()];
-         * out.getBuffer().readByteArray(pv.pvalue, 0 ,
-         * (int)out.getBuffer().getLimit()); out.free(); return pv;
-         */
         return null;
     }
 }

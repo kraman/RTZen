@@ -17,6 +17,7 @@ import javax.realtime.ScopedMemory;
 import edu.uci.ece.zen.orb.CDRInputStream;
 import edu.uci.ece.zen.orb.CDROutputStream;
 import edu.uci.ece.zen.orb.ORB;
+import edu.uci.ece.zen.orb.ORBComponent;
 import edu.uci.ece.zen.utils.ExecuteInRunnable;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.WriteBuffer;
@@ -27,13 +28,16 @@ import edu.uci.ece.zen.orb.protocol.ProtocolHeaderInfo;
 import edu.uci.ece.zen.utils.ReadBuffer;
 import edu.uci.ece.zen.utils.FString;
 
-public abstract class Transport implements Runnable {
+import edu.oswego.cs.dl.util.concurrent.Semaphore;
+
+public abstract class Transport implements Runnable,ORBComponent {
     private Object waitObj;
     protected edu.uci.ece.zen.orb.ORB orb;
     protected edu.uci.ece.zen.orb.ORBImpl orbImpl;
     private MessageProcessor messageProcessor;
     public Object objectTable[]; //used to store misc
     public boolean success = true;
+    private RealtimeThread messageProcessorThr;
 
     // objects with
     // 1instance
@@ -95,26 +99,18 @@ public abstract class Transport implements Runnable {
      * </p>
      */
     public final void run() {
-
         messageProcessor = new MessageProcessor(this, orb);
 
-        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(RealtimeThread
-                .getCurrentMemoryArea().toString());
-        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(MemoryArea
-                .getMemoryArea(messageProcessor).toString());
-        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(MemoryArea
-                .getMemoryArea(this).toString());
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(RealtimeThread .getCurrentMemoryArea().toString());
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(MemoryArea .getMemoryArea(messageProcessor).toString());
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(MemoryArea .getMemoryArea(this).toString());
 
-        RealtimeThread messageProcessorThr = new NoHeapRealtimeThread(null,
-                null, null, RealtimeThread.getCurrentMemoryArea(), null,
-                messageProcessor);
+        messageProcessorThr = new NoHeapRealtimeThread(null, null, null, RealtimeThread.getCurrentMemoryArea(), null, messageProcessor);
         messageProcessorThr.setDaemon(true);
 
 
-        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(javax.realtime.RealtimeThread
-                    .getCurrentMemoryArea().toString());
-        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(javax.realtime.MemoryArea
-                    .getMemoryArea(messageProcessorThr).toString());
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(javax.realtime.RealtimeThread .getCurrentMemoryArea().toString());
+        if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(javax.realtime.MemoryArea .getMemoryArea(messageProcessorThr).toString());
         messageProcessorThr.start();
         try {
             synchronized (waitObj) {
@@ -125,6 +121,8 @@ public abstract class Transport implements Runnable {
             ZenProperties.logger.log(Logger.WARN, getClass(), "run", ie);
         }
         edu.uci.ece.zen.orb.ORB.freeScopedRegion( (ScopedMemory) RealtimeThread.getCurrentMemoryArea() );
+        messageProcessor.shutdown( messageProcessorThr );
+        //System.out.println( "Transport has been released" );
     }
 
     /**
@@ -133,15 +131,19 @@ public abstract class Transport implements Runnable {
      * </p>
      */
     public final void shutdown(boolean waitForCompletion) {
+        //System.out.println( "Shutting down transport" );
         if (waitForCompletion) {
-            messageProcessor.shutdown();
+            messageProcessor.shutdown( messageProcessorThr );
         }
-        waitObj.notifyAll();
+        synchronized(waitObj){
+            waitObj.notifyAll();
+        }
+        //System.out.println( "Shutting down end" );
     }
 
     public abstract java.io.InputStream getInputStream();
-
     protected abstract java.io.OutputStream getOutputStream();
+    protected abstract void internalShutdown();
 
     /**
      * <p>
@@ -185,16 +187,16 @@ public abstract class Transport implements Runnable {
 
 class MessageProcessor implements Runnable {
     private Transport trans;
-
     private edu.uci.ece.zen.orb.ORB orb;
-
     private boolean isActive;
+    private Semaphore shutdownSem;
 
     public MessageProcessor(Transport trans, edu.uci.ece.zen.orb.ORB orb) {
         if (ZenBuildProperties.dbgORB) ZenProperties.logger.log("Transport.java/MessageProcessor, the current memory scope is: "
                         + RealtimeThread.getCurrentMemoryArea());
         this.trans = trans;
         this.orb = orb;
+        this.shutdownSem = new Semaphore(0);
     }
 
     public void run() {
@@ -202,18 +204,8 @@ class MessageProcessor implements Runnable {
         if (ZenBuildProperties.dbgORB) ZenProperties.logger.log(javax.realtime.RealtimeThread.getCurrentMemoryArea().toString());
         GIOPMessageRunnable gmr = new GIOPMessageRunnable(orb, trans);
 
-        //ExecuteInRunnable eir = new ExecuteInRunnable();
-
         while (isActive) {
-            //ScopedMemory messageScope = ORB.getScopedRegion();
-            // Check here to see if we allocate the memmory here
-            //ImmortalMemory messageScope = ORB.getScopedRegion();
-            //gmr.setRequestScope( messageScope );
-            //eir.init( gmr , messageScope );
-
             try {
-                //messageScope.enter(gmr);
-                //messageScope.enter(gmr);
                 gmr.run();
             } catch (Exception e) {
                 ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", "Could not process message", e);
@@ -221,19 +213,17 @@ class MessageProcessor implements Runnable {
             }
             gmr.setRequestScope(null);
         }
-        synchronized (this) {
-            this.notifyAll();
-        }
+        shutdownSem.release();
+        //System.out.println( "MessageProcessor has exited" );
     }
 
-    public void shutdown() {
+    public void shutdown( Thread thisThread ) {
         isActive = false;
-        try {
-            synchronized (this) {
-                this.wait();
-            }
-        } catch (InterruptedException ie) {
-            //Ignore
+        trans.internalShutdown();
+        try{
+            shutdownSem.acquire();
+        }catch( InterruptedException ie ){
+            //ignore
         }
     }
 }
@@ -261,29 +251,15 @@ class GIOPMessageRunnable implements Runnable {
     }
 
     private int statCount = 0;
-
     private int count = 300;
-
-    //private static final String name = "Trans: ";
     public void run() {
-        //edu.uci.ece.zen.utils.Logger.printMemStats(301);
-
         edu.uci.ece.zen.orb.protocol.Message message = null;
-
-        //edu.uci.ece.zen.utils.Logger.printMemStats(302);
-
-
         edu.uci.ece.zen.utils.Logger.printMemStatsImm(2220);
-
- //       edu.uci.ece.zen.utils.Logger.printMemStats(303);
 
         try {
 
             statCount++;
- //         edu.uci.ece.zen.utils.Logger.printMemStats(304);
-
             if (statCount % ZenBuildProperties.MEM_STAT_COUNT == 0) {
-                //System.out.print(name);
                 edu.uci.ece.zen.utils.Logger.printMemStats(ZenBuildProperties.dbgORBScopeId);
                 edu.uci.ece.zen.utils.Logger.printMemStats(orb);
             }
@@ -294,7 +270,7 @@ class GIOPMessageRunnable implements Runnable {
             message = edu.uci.ece.zen.orb.protocol.MessageFactory.parseStream(orb, trans);
             if( message == null )   //connection closed
             {
-                trans.shutdown(true);
+                trans.shutdown(false);
                 return;
             }
 
@@ -382,12 +358,9 @@ class GIOPMessageRunnable implements Runnable {
                     ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", "Message type not supported.");
             }
             //edu.uci.ece.zen.utils.Logger.printMemStatsImm(2223);
+        }catch( java.io.InterruptedIOException iie ){
+            ZenProperties.logger.log(Logger.INFO, "Transport is shutting down");
         } catch (java.io.IOException ioex) {
-            try{
-                Thread.currentThread().sleep(1000);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
             ZenProperties.logger.log(Logger.SEVERE, getClass(), "run", ioex);
         }
     }

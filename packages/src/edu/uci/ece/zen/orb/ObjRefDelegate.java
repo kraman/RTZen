@@ -79,8 +79,10 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
             self.objImpl = null;
             //FString.free(self.priorityLanes[0].objectKey);
             for(int i = 0; i < self.priorityLanes.length; ++i)
-                if(self.priorityLanes[i].objectKey != null)
+                if(self.priorityLanes[i].objectKey != null){
                     FString.free(self.priorityLanes[i].objectKey);
+                    self.priorityLanes[i].releaseTransport();
+                }
         }
         self.released = true;
     }
@@ -145,7 +147,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
         numLanes = 0;
     }
 
-    public synchronized void addLaneData(int min, int max, ScopedMemory transport, FString objectKey, Class protocolFactory ) {
+    public synchronized void addLaneData(int min, int max, ScopedMemory transport, FString objectKey, Class protocolFactory , ORB orb ) {
         if (ZenBuildProperties.dbgTP) ZenProperties.logger.log(RealtimeThread
                 .currentThread()
                 + " "
@@ -157,7 +159,7 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                 + max
                 + "  :  "
                 + transport);
-        priorityLanes[numLanes++].init(min, max, transport, objectKey, protocolFactory);
+        priorityLanes[numLanes++].init(min, max, transport, objectKey, protocolFactory , orb );
     }
 
     public LaneInfo getLane() {
@@ -239,7 +241,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                             addLaneData( org.omg.RTCORBA.minPriority.value ,
                                     org.omg.RTCORBA.maxPriority.value,
                                     transportScope, object_key,
-                                    edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
+                                    edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class ,
+                                    orb );
                         } else {
                             FString.free(host);
                         }
@@ -430,7 +433,8 @@ public final class ObjRefDelegate extends org.omg.CORBA_2_3.portable.Delegate {
                         addLaneData( minSupportedPriority,
                                 maxSupportedPriority,
                                 transportScope, object_key,
-                                edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class );
+                                edu.uci.ece.zen.orb.protocol.giop.GIOPMessageFactory.class ,
+                                orb);
                     }
                         break;
                 }

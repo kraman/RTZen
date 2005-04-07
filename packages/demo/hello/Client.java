@@ -29,10 +29,12 @@ public class Client extends RealtimeThread
     {
         if(args.length > 0)
             runNum = Integer.parseInt(args[0]);
-        System.out.println( "=====================Creating RT Thread in client==========================" );
+        //System.out.println( "=====================Creating RT Thread in client==========================" );
         RealtimeThread rt = (Client) ImmortalMemory.instance().newInstance( Client.class );
-        System.out.println( "=====================Starting RT Thread in client==========================" );
+        //System.out.println( "=====================Starting RT Thread in client==========================" );
         rt.start();
+        rt.join();
+        System.exit(0);
     }
 
     public Client(){
@@ -47,41 +49,32 @@ public class Client extends RealtimeThread
         try
         {
 
-           System.out.println( "=====================Calling ORB Init in client============================" );
-            ORB orb = ORB.init((String[])null, null);
-            System.out.println( "=====================ORB Init complete in client===========================" );
-            String ior = "";
-            File iorfile = new File( "ior.txt" );
-            BufferedReader br = new BufferedReader( new FileReader(iorfile) );
-            ior = br.readLine();
-            System.out.println( "===========================IOR read========================================" );
-            org.omg.CORBA.Object object = orb.string_to_object(ior);
-            System.out.println( "===================Trying to establish connection==========================" );
-            final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
-            System.out.println( "===================Connection established...sending request================" );
-            System.out.println( "Servant returned: " + server.getMessage() );
-
-/*
-            // Create a scope for running requests in, so that we don't waste the scope we are in.
-            ScopedMemory sm = new LTMemory(32000, 100000);
-            Runnable r = new Runnable() {
-                public void run() {
-                    server.getMessage();
-                }
-            };
-*/
+           //System.out.println( "=====================Calling ORB Init in client============================" );
+           ORB orb = ORB.init((String[])null, null);
+           //System.out.println( "=====================ORB Init complete in client===========================" );
+           String ior = "";
+           File iorfile = new File( "ior.txt" );
+           BufferedReader br = new BufferedReader( new FileReader(iorfile) );
+           ior = br.readLine();
+           //System.out.println( "===========================IOR read========================================" );
+           org.omg.CORBA.Object object = orb.string_to_object(ior);
+           //System.out.println( "===================Trying to establish connection==========================" );
+           final HelloWorld server = HelloWorldHelper.unchecked_narrow(object);
+           //System.out.println( "===================Connection established...sending request================" );
+           System.out.println( "Servant returned: " + server.getMessage() );
+            /*
             System.out.println( "====================== Performance warmup =================================" );
             for( int i=0;i<warmupNum;i++ ){
                 
                 server.getMessage();
-                //sleep(500);
-                //sm.enter(r);
                 if(i % 100 == 0){        
                     Logger.write(i);
                     Logger.writeln();
                 }
             }
 
+            //iSoLeak.IsoLeakHelper.__iSoLeak_beginLeakMeasurement();
+            server.beginMeasurement();
             System.out.println( "====================== Performance benchmark ==============================" );
             long start = System.currentTimeMillis();
             for( int i=0;i<runNum;i++ ){
@@ -96,7 +89,14 @@ public class Client extends RealtimeThread
             long end = System.currentTimeMillis();
 
             System.err.println( (double)runNum/((end-start)/1000.0));
-            System.exit(0);
+            */
+
+            server.shutdown();
+
+            server._release();
+            object._release();
+            orb.shutdown( true );
+            System.out.println( "Client thread is exiting" );
         }
         catch (Exception e)
         {

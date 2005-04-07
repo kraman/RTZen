@@ -208,8 +208,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public ExecuteInRunnable getEIR() {
-        ExecuteInRunnable ret = (ExecuteInRunnable) executeInRunnableCache
-                .dequeue();
+        ExecuteInRunnable ret = (ExecuteInRunnable) executeInRunnableCache.dequeue();
         if (ret == null) {
             try {
                 ret = (ExecuteInRunnable) ImmortalMemory.instance()
@@ -292,11 +291,57 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
                 ZenProperties.logger.log(Logger.WARN, getClass(), "run", ie);
             }
         }
+        //System.out.println( "ORB.run() has exited" );
     }
 
     public void shutdown(boolean wait_for_completion) {
         isActive();
-        this.acceptorRegistry.shutdown();
+        
+        //System.out.println( "Shutting down TP's" );
+        ExecuteInRunnable eir = getEIR();
+        for( int i=0;i<threadpoolList.length;i++ ){
+            if( threadpoolList[i] != null ){
+                eir.init( ShutdownRunnable.instance() , threadpoolList[i] );
+                executeInORBRegion( eir );
+            }
+        }
+        freeEIR( eir );
+
+        //System.out.println( "Shutting down ORBImpl" );
+        ShutdownRunnable osr = ShutdownRunnable.instance();
+        executeInORBRegion( osr );
+        
+        /*Print all active threads* /
+        ThreadGroup system = null;
+        ThreadGroup tg = Thread.currentThread ().getThreadGroup ();
+
+        while (tg != null)
+        {
+            system = tg;
+            tg = tg.getParent ();
+        }
+
+        // Display a list of all system and application threads, and their
+        // daemon status
+
+        if (system != null)
+        {
+            Thread [] thds = new Thread [system.activeCount ()];
+            int nthds = system.enumerate (thds);
+            for (int i = 0; i < nthds; i++){
+                System.out.println (thds [i] + " " + thds [i].isDaemon ());
+                thds[i].dumpStack();
+            }
+        }*/
+
+        //System.out.println( "Shutdown complete" );
+        synchronized(orbRunningLock){
+            orbRunningLock.notify();
+        }
+    
+
+        
+        
     }
 
     public boolean work_pending() {
@@ -359,8 +404,7 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
         } else if (object_name.equals("ORBPolicyManager")) {
             return getPolicyManager();
         } else if (object_name.equals("PolicyCurrent")) {
-            PolicyCurrentRunnable prun = new PolicyCurrentRunnable(
-                    orbImplRegion);
+            PolicyCurrentRunnable prun = new PolicyCurrentRunnable( orbImplRegion);
             executeInORBRegion(prun);
             return prun.val;
         } else if (object_name.equals("RTCurrent")) {
@@ -546,28 +590,16 @@ public class ORB extends org.omg.CORBA_2_3.ORB {
     }
 
     public static ScopedMemory getScopedRegion() {
-        ScopedMemory mem = null;
-        if (unusedMemoryAreas.isEmpty()) {
-            ZenProperties.logger.log(Logger.SEVERE, ORB.class,
-                    "getScopedRegion()", "Out of memory areas");
+        ScopedMemory mem = (ScopedMemory) unusedMemoryAreas.dequeue();
+        if ( mem == null) {
+            ZenProperties.logger.log(Logger.SEVERE, ORB.class, "getScopedRegion()", "Out of memory areas");
             return null;
-        } else {
-            mem = (ScopedMemory) unusedMemoryAreas.dequeue();
-            //Thread.dumpStack();
-            //Logger.write(900);
-            //System.out.write(',');
-            //Logger.write(unusedMemoryAreas.size());
-            //Logger.writeln();
         }
         return mem;
     }
 
     public static void freeScopedRegion(ScopedMemory sm) {
         unusedMemoryAreas.enqueue(sm);
-        //Logger.write(901);
-        //System.out.write(',');
-        // Logger.write(unusedMemoryAreas.size());
-        //Logger.writeln();
    }
 
     public ConnectionRegistry getConnectionRegistry() {

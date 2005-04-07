@@ -9,6 +9,8 @@
 
 package demo.hello;
 
+import org.omg.CORBA.*;
+
 /**
  * This class implements the simple Hello World server.
  * @author Angelo Corsaro
@@ -17,14 +19,26 @@ package demo.hello;
 
 public class HelloWorldImpl extends HelloWorldPOA
 {
+    private ORB orb;
+
+    public HelloWorldImpl( ORB orb ){
+        this.orb = orb;
+    }
+    
+    public void beginMeasurement(){
+//        iSoLeak.IsoLeakHelper.__iSoLeak_beginLeakMeasurement();
+    }
+    
     /**
      * Gets a message from the Hello World Server.
      */
     public int getMessage()
     {
-        //System.out.println( "******************  WOOHOO! Request got here....now sending back. ********************" );
-        //return "Hello To the Zen World!!!";
         return 42;
+    }
+
+    public void shutdown(){
+        orb.shutdown(false);
     }
 }
 

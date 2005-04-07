@@ -98,8 +98,7 @@ public class ThreadPoolRunnable implements Runnable {
                     allowBorrowing, orb, rtorb.acceptorRunnable, rtorb.tpID );
                 lanes.free();
             }
-            orb.threadpoolList[rtorb.tpID] = (ScopedMemory) RealtimeThread
-                    .getCurrentMemoryArea();
+            orb.threadpoolList[rtorb.tpID] = (ScopedMemory) RealtimeThread.getCurrentMemoryArea();
 
             ((ScopedMemory) orb.threadpoolList[rtorb.tpID]).setPortal(tp);
             stacksize = -1;

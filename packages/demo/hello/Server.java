@@ -34,6 +34,8 @@ public class Server extends RealtimeThread
         //System.out.println( "=====================Starting RT Thread in server==========================" );
         rt.init( args );
         rt.start();
+        rt.join();
+        System.exit(0);
     }
 
     public Server(){
@@ -56,7 +58,7 @@ public class Server extends RealtimeThread
             rootPOA.the_POAManager().activate();
             //System.out.println( "=================== RootPOA resolved, starting servant_to_ref ==============" );
 
-            HelloWorldImpl impl = new HelloWorldImpl();
+            HelloWorldImpl impl = new HelloWorldImpl( zen );
             org.omg.CORBA.Object obj = rootPOA.servant_to_reference(impl);
             //System.out.println( "=================== Servant registered, getting IOR ========================" );
             String ior = zen.object_to_string(obj);
@@ -70,6 +72,7 @@ public class Server extends RealtimeThread
 
             //System.out.println( "============================ ZEN.run() ====================================" );
 			zen.run();
+            System.out.println( "Server thread is exiting" );
         }
         catch (Exception e)
         {

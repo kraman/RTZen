@@ -28,7 +28,7 @@ import edu.uci.ece.zen.utils.ZenBuildProperties;
 //import edu.uci.ece.zen.utils.ThreadLocal;
 import org.omg.RTCORBA.minPriority;
 
-public class ORBImpl {
+public class ORBImpl implements ORBComponent {
     ZenProperties properties;
 
     edu.uci.ece.zen.orb.ORB orbFacade;
@@ -42,8 +42,6 @@ public class ORBImpl {
     public ThreadLocal policyCurrent;
 
     public PolicyManagerImpl policyManager;
-
-    //public RTORBImpl rtorb;
 
     public Queue eirCache;
 
@@ -77,19 +75,6 @@ public class ORBImpl {
         nhrt.setName("ORB Scope");
         nhrt.start();
         try {
-            //rtCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
-
-            //rtCurrent = new ThreadLocal();
-
-/*            policyCurrent = (ThreadLocal) (orbFacade.parentMemoryArea.newInstance(ThreadLocal.class));
-
-            policyManager = (PolicyManagerImpl) (orbFacade.parentMemoryArea.newInstance(PolicyManagerImpl.class));
-            policyManager.init(orbFacade);
-*/
-            /*
-             * rtorb = (RTORBImpl)(orbFacade.parentMemoryArea.newInstance(RTORBImpl.class ));
-             * rtorb.init(orbFacade);
-             */
             orbFacade.getRTORB().create_threadpool(0,//stacksize,
                     1,//static_threads,
                     0,//dynamic_threads,
@@ -108,16 +93,6 @@ public class ORBImpl {
 
         ZenProperties.logger.log("======================Performing post initialization steps====================");
         boolean startSerialTransportAcceptor = this. properties.getProperty( "edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
-        //boolean startSerialTransportAcceptor = ZenProperties.getGlobalProperty("edu.uci.ece.zen.orb.transport.serial" , "" ).equals("1");
-        /*
-        if( startSerialTransportAcceptor ){
-            ZenProperties.logger.log("**** STARTING SERIAL ACCEPTOR ****");
-            edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable r =
-                new edu.uci.ece.zen.orb.transport.serial.AcceptorRunnable();
-            r.init(this.orbFacade);
-            orbFacade.setUpORBChildRegion( r );
-        }*/
-
     }
 
     public PolicyCurrent getPolicyCurrent() {
@@ -168,8 +143,7 @@ public class ORBImpl {
     public void registerTransport(ScopedMemory mem) {
     }
 
-    public void string_to_object(org.omg.IOP.IOR ior,
-            org.omg.CORBA.portable.ObjectImpl objImpl) {
+    public void string_to_object(org.omg.IOP.IOR ior, org.omg.CORBA.portable.ObjectImpl objImpl) {
         //System.out.println("ORBImpl string_to_object 1");
         ObjRefDelegate delegate = ObjRefDelegate.instance();
         delegate.init(ior, (edu.uci.ece.zen.orb.ObjectImpl) objImpl, orbFacade, this);
@@ -182,6 +156,16 @@ public class ORBImpl {
 
     public ServerRequestHandler getServerRequestHandler() {
         return serverRequestHandler;
+    }
+
+    public void shutdown( boolean wait_for_completion ){
+        orbImplRunnable.setActive(false);
+
+        //TODO: need to shutdown POA,threadpool,acceptors,transports,objects,objRefDelegates
+        
+        synchronized(this){
+            this.notifyAll();
+        }
     }
 }
 
@@ -214,9 +198,7 @@ class ORBImplRunnable implements Runnable {
                     orbImpl.wait();
                 }
             } catch (InterruptedException ie) {
-                ZenProperties.logger.log(Logger.INFO,
-                        getClass(), "run()",
-                        "ORB is shutting down.");
+                ZenProperties.logger.log(Logger.INFO, getClass(), "run()", "ORB is shutting down.");
             }
             active = false;
         }

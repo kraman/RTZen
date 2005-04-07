@@ -80,30 +80,6 @@ public class AcceptorRegistry {
     public void addAcceptor(ScopedMemory acceptorArea, int threadPoolId ) {
         list.add(acceptorArea);
     }
-
-    /**
-     * Method to shutdown all acceptors.
-     */
-    public void shutdown() {
-        ARShutdownRunnable r = new ARShutdownRunnable();
-
-        for (int i = 0; i < list.size(); ++i) {
-            ScopedMemory sm = (ScopedMemory) (list.get(i));
-            //sm.enter( ar );
-            ORB.freeScopedRegion(sm);
-        }
-    }
-}
-
-class ARShutdownRunnable {
-    public ARShutdownRunnable() {
-    }
-
-    public void run() {
-        Acceptor acc = (Acceptor) ((ScopedMemory) RealtimeThread
-                .getCurrentMemoryArea()).getPortal();
-        acc.shutdown();
-    }
 }
 
 class AcceptorCountRunnable implements Runnable {

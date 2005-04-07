@@ -35,6 +35,7 @@ import org.omg.RTCORBA.PRIORITY_MODEL_POLICY_TYPE;
 public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
     private java.net.ServerSocket ssock;
     private int threadPoolId;
+    private boolean isShuttingDown = false;
 
     public Acceptor(edu.uci.ece.zen.orb.ORB orb,
             edu.uci.ece.zen.orb.ORBImpl orbImpl,
@@ -53,13 +54,20 @@ public class Acceptor extends edu.uci.ece.zen.orb.transport.Acceptor {
         try {
             Transport t = new Transport(orb, orbImpl, ssock.accept());
             registerTransport(t);
+        } catch (java.net.SocketException se){
+            if( !isShuttingDown )
+                ZenProperties.logger.log(Logger.WARN, getClass(), "accept", se);
         } catch (java.io.IOException ioex) {
-            ZenProperties.logger.log(Logger.WARN,
-                    getClass(), "accept", ioex);
-        }
+            ZenProperties.logger.log(Logger.WARN, getClass(), "accept", ioex); }
     }
 
     protected void internalShutdown() {
+        isShuttingDown = true;
+        try{
+            ssock.close();
+        }catch( java.io.IOException ioex ){
+            //ignore
+        }
     }
 
     protected TaggedProfile [] getInternalProfiles(byte iiopMajorVersion,

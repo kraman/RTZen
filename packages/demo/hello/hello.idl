@@ -4,7 +4,9 @@ module demo
 	{
 		interface HelloWorld
 		{
+            void beginMeasurement();
 			long getMessage();
+            void shutdown();
 		};
 	};
 };
