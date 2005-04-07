@@ -49,7 +49,7 @@ public final class ZenProperties {
             + VersionStamp.versionDate
             + "\n"
             + "Platform: "
-            + VersionStamp.devJVM + "\n";
+            + ZenBuildProperties.buildJvm + "\n";
 
     public static final String zenStartupMessage = zenVersion + "\n"
             + "Developed at:\n"
