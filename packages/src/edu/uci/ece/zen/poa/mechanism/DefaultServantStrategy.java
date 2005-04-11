@@ -11,6 +11,7 @@ package edu.uci.ece.zen.poa.mechanism;
 
 import javax.realtime.ScopedMemory;
 
+import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.IntHolder;
 import org.omg.CORBA.portable.InvokeHandler;
 import org.omg.PortableServer.Servant;
@@ -31,6 +32,7 @@ import edu.uci.ece.zen.poa.SynchronizedInt;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Logger;
 import edu.uci.ece.zen.utils.Queue;
+import edu.uci.ece.zen.utils.SystemExceptionFactory;
 import edu.uci.ece.zen.utils.ZenProperties;
 
 // XXX A lot of duplicated code, i have to fix it.
@@ -222,7 +224,9 @@ public final class DefaultServantStrategy extends RequestProcessingStrategy
         if (myServant == null)
         {
             exceptionValue.value = POARunnable.ObjNotExistException;
-            return;
+            //OBJ_ADAPTER Exception
+            throw  SystemExceptionFactory.getInstance().getSystemException(SystemExceptionFactory.OBJ_ADAPTER , 3 , CompletionStatus.COMPLETED_NO);
+            
         }
 
         POAImpl pimpl = (POAImpl) poa.poaMemoryArea.getPortal(); // the portal

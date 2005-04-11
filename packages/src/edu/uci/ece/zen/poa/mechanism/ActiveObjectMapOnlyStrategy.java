@@ -11,6 +11,7 @@ package edu.uci.ece.zen.poa.mechanism;
 
 import javax.realtime.ScopedMemory;
 
+import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.IntHolder;
 import org.omg.CORBA.portable.InvokeHandler;
 import org.omg.PortableServer.Servant;
@@ -28,6 +29,7 @@ import edu.uci.ece.zen.poa.POARunnable;
 import edu.uci.ece.zen.poa.SynchronizedInt;
 import edu.uci.ece.zen.utils.FString;
 import edu.uci.ece.zen.utils.Queue;
+import edu.uci.ece.zen.utils.SystemExceptionFactory;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.Logger;
 
@@ -160,6 +162,10 @@ public final class ActiveObjectMapOnlyStrategy extends RequestProcessingStrategy
 	}
 
 	myServant = map.getServant();
+	
+	//Checks for OBJECT_NOT_EXIST exception
+	if(myServant == null)
+		throw SystemExceptionFactory.getInstance().getSystemException(SystemExceptionFactory.OBJECT_NOT_EXIST , 2 , CompletionStatus.COMPLETED_NO );
 
 	POAImpl pimpl = (POAImpl) poa.poaMemoryArea.getPortal(); // the portal == POAImpl
 
