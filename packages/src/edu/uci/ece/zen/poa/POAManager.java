@@ -18,6 +18,7 @@ import org.omg.PortableServer.POAManagerPackage.State;
 import edu.uci.ece.zen.orb.ORB;
 import edu.uci.ece.zen.poa.mechanism.PolicyUtils;
 import edu.uci.ece.zen.utils.Queue;
+import edu.uci.ece.zen.utils.SystemExceptionFactory;
 import edu.uci.ece.zen.utils.ZenProperties;
 import edu.uci.ece.zen.utils.ZenBuildProperties;
 import edu.uci.ece.zen.utils.Logger;
@@ -157,8 +158,9 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
         // queue
         // is 0.
 
-        if (wait_for_completion && isInContext()) { throw new org.omg.CORBA.BAD_INV_ORDER(
-                3, CompletionStatus.COMPLETED_NO); }
+        if (wait_for_completion && isInContext()) { throw SystemExceptionFactory.getInstance().
+			getSystemException(SystemExceptionFactory.BAD_INV_ORDER , 3 , CompletionStatus.COMPLETED_NO);
+        }
 
         synchronized (this) {
             this.state = State.HOLDING;
@@ -185,8 +187,10 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
             throws org.omg.PortableServer.POAManagerPackage.AdapterInactive {
         if (this.state == State.INACTIVE) { throw new org.omg.PortableServer.POAManagerPackage.AdapterInactive(); }
 
-        if (wait_for_completion && isInContext()) { throw new org.omg.CORBA.BAD_INV_ORDER(
-                3, CompletionStatus.COMPLETED_NO); }
+        if (wait_for_completion && isInContext()) {
+        	throw SystemExceptionFactory.getInstance().
+					getSystemException(SystemExceptionFactory.BAD_INV_ORDER , 3 , CompletionStatus.COMPLETED_NO);
+        }
 
         synchronized (this) {
             this.state = State.DISCARDING;
@@ -216,8 +220,11 @@ public class POAManager extends org.omg.CORBA.LocalObject implements
     public void deactivate(boolean etherealize_objects,
             boolean wait_for_completion)
             throws org.omg.PortableServer.POAManagerPackage.AdapterInactive {
-        if (wait_for_completion && isInContext()) { throw new org.omg.CORBA.BAD_INV_ORDER(
-                6, CompletionStatus.COMPLETED_NO); }
+        if (wait_for_completion && isInContext()) {
+        	throw SystemExceptionFactory.getInstance().
+				getSystemException
+				(SystemExceptionFactory.BAD_INV_ORDER , 3 , CompletionStatus.COMPLETED_NO);
+			 }
 
         // should invoke the etherealize on all the POAs that have a Retain and
         // also
