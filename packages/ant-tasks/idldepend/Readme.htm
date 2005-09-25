@@ -18,7 +18,7 @@
 		<font color="#4444ff"><a href="http://grasia.fdi.ucm.es/~luismi/idldepend">Luismi Pena Home page</a></font>
 		<hr size="1" color="#7777FF" width="80%">
 		<a href="mailto:java_lmp@yahoo.co.uk?subject=webpage"><font size="-1">java_lmp@yahoo.co.uk</font></a><br><br>
-		<font size="-1"><b><i><font color="#4444ff">Last Updated:<br> 10th March 2005</font></i></b></font>
+		<font size="-1"><b><i><font color="#4444ff">Last Updated:<br> 29th July 2005</font></i></b></font>
 		<hr size="1" color="#7777FF" width="80%">
 			</center>
 		</td>
@@ -32,7 +32,7 @@
 		<hr size="2" color="#663366" width="600">
 		 <ul type="disc">
 					<li><a href="#Description">Description</a></li>
-					<li><a href="#Version">Version and CORBA compliance</a> (<b>new version</b> 0.71 the 10th March 2005)</li>
+					<li><a href="#Version">Version and CORBA compliance</a> (<b>new version</b> 0.80 the 29th July 2005)</li>
 					<li><a href="#LicenseAndDownload">License and download</a></li>
 					<li><a href="#Attributes">Attributes</a></li>
 					<li><a href="#NestedElements">Nested elements</a></li>
@@ -78,7 +78,7 @@
 		<hr size="1" color="#333399">
 		<table border="0"><tr><td width="5"></td><td>
 		<a name="Version"><h2><font color="#333399">Version and CORBA compliance</font></h2></a>
-		<p>Current version, since the 10th March 2005 is <b><i>0.71</i></b>. It is written using Ant 1.6, and I do not check usually whether it would compile or work under previous Ant versions (note that it was initially developed using Ant 1.4).</p>
+		<p>Current version, since the 29th July 2005 is <b><i>0.80</i></b>. It is written using Ant 1.6, and I do not check usually whether it would compile or work under previous Ant versions (note that it was initially developed using Ant 1.4).</p>
       <p>Idldepend is compliant with the IDL to Java mapping defined for CORBA 2.4. Support for the mapping 1.2 -CORBA 3.0 compliant- is
       under work (note as well that the current IDL to Java mapping is only CORBA 2.4 compliant!).<br>In particular, the following keywords
       are not supported:
@@ -138,13 +138,15 @@
 		(<a href="mailto:java_lmp@yahoo.co.uk?subject=idldpend">java_lmp@yahoo.co.uk</a>) and I will
 		promptly introduce the modifications. The task is distributed with source, and therefore you can make by your
 		own any changes.</p>
-		<p>Following are the downloadable files:
+		<p>Following are the downloadable files. Please note that version 0.80 handles slightly differently included files than on previous versions;
+                   if the new modifications break your existing compilations, please get back to version 0.71 and report me the problems:
 		<ul type="square">
-      <li>Version 0.71. Latest version, (10/03/05). 
+      <li>Version 0.80. Latest version, (29/07/05). 
 		<ul type="disc">
-				<li>Source code (.zip format, 140.008 bytes), to be built using ant: <a href="idldepend-0-7-1.zip">idldepend-0-7-1.zip</a></li>
-				<li>Binary code (.jar file, 221.366 bytes): <a href="idldepend-0-7-1.jar">idldepend-0-7-1.jar</a></li>
+				<li>Source code (.zip format, 140.973 bytes), to be built using ant: <a href="idldepend-0-8-0.zip">idldepend-0-8-0.zip</a></li>
+				<li>Binary code (.jar file, 221.894 bytes): <a href="idldepend-0-8-0.jar">idldepend-0-8-0.jar</a></li>
 		</ul>
+      </li><li>Version 0.71 (10/03/05). <a href="idldepend-0-7-1.zip">idldepend-0-7-1.zip</a> and <a href="idldepend-0-7-1.jar">idldepend-0-7-1.jar</a>
       </li><li>Version 0.70 (19/10/04). <a href="idldepend-0-7-0.zip">idldepend-0-7-0.zip</a> and <a href="idldepend-0-7-0.jar">idldepend-0-7-0.jar</a>
       </li><li>Version 0.63 (06/10/04). <a href="idldepend-0-6-3.zip">idldepend-0-6-3.zip</a> and <a href="idldepend-0-6-3.jar">idldepend-0-6-3.jar</a>
       </li><li>Version 0.62 (01/10/04). <a href="idldepend-0-6-2.zip">idldepend-0-6-2.zip</a> and <a href="idldepend-0-6-2.jar">idldepend-0-6-2.jar</a>
@@ -461,7 +463,7 @@
 									&nbsp;&nbsp;&lt;/target&gt;<br>
 							<br>
 									&nbsp;&nbsp;&nbsp;&nbsp;&lt;target name=&quot;main&quot; depends=&quot;idl&quot;&gt;<br>
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;javac srcdir=&quot;output&quot; includes=&quot;**/*.java&quot;&gt;<br>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;javac srcdir=&quot;output&quot; includes=&quot;**/*.java&quot;/&gt;<br>
 									&nbsp;&nbsp;&nbsp;&lt;/target&gt;<br>
 								<br>
 							&lt;/project&gt;<br>
@@ -1135,6 +1137,34 @@
 	<a name="History"><h2><font color="#333399">History changes</font></h2></a>
 	<p>
 	<table border="1" width="95%" align="center" bordercolor="#333399">
+		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
+		<b></br>Version 0.80</br>27th April 2005</b>
+		</td></tr>		
+		<tr><td>
+		 Corrected the behaviour on <b>files inclusion</b>: if a file is included in some IDL scope, the definitions in the given
+		 file must be added to the current scope; previous versions would discard included files unless the attribute <code>checkAll</code>
+		 were set to <code>true</code>. <br>
+		 For example:<br>
+		 <code> 
+		 &nbsp;&nbsp;<b>{file a.idl}</b><br>
+		 &nbsp;&nbsp;module A {<br>
+		 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#include &quot;b.idl&quot;<br>
+		 &nbsp;&nbsp;};<br>
+		 <b>
+		 &nbsp;&nbsp;{file b.idl}</b><br>
+		 &nbsp;&nbsp;const short variable = 0;
+		  </code>
+		  <br>In this case, the content of the second file should be included, independent of the attribute <code>checkAll</code>; that
+		  is, the defined <code>variable</code> should be included in the given module <code>A</code>
+		</td></tr>		
+		<tr><td>
+		Updated the grammar to support empty module definitions. The OMG specification declares that an empty module
+                -that is, containing no nested definitions- is invalid; however, compilers like JDK allow it, and there is no
+		reason for IdlDepend to stop the compilation.
+		</td></tr>		
+		<tr><td>
+		 Bug correction: the dependencies would not be properly regenerated after modifying an included file <br>
+		</td></tr>		
 		<tr align="left" style="font: oblique bold; color: #333399"> <td width="250">
 		<b></br>Version 0.71</br>10th March 2005</b>
 		</td></tr>		
