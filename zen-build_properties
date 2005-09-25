@@ -13,6 +13,7 @@ zen.optimization = on
 zen.debug = on
 #build.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
 javac.target=1.1
+javac.source=1.2
 
 ####################################
 ##### Compiler/runtime Options #####

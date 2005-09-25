@@ -96,6 +96,7 @@
             fork = "true"
             debug="${zen.debug}"
             target="${javac.target}"
+            source="${javac.source}"
             bootclasspath="${zen.classpath};${java.home}/lib/rt.jar;${zen.rtbootclasspath}"
             includeJavaRuntime="yes"
             memoryMaximumSize="256m"
