@@ -164,6 +164,7 @@ public class POAImpl {
         this.manager = manager;
         this.tpId = 0;
         this.poaCurrent = new ThreadLocal();
+        this.poaCurrent.get();
         ZenProperties.logger.log("POAImpl init 2");
 
         try {
