@@ -34,13 +34,14 @@ public abstract class Logger{
             try{
                 Class loggerClass = Class.forName( "edu.uci.ece.zen.utils."+loggerType+"Logger" );
                 instance = (Logger) loggerClass.newInstance();
+		System.out.println( "Using " + loggerClass + " at level " + level );
             }catch( Exception e ){
 
                 System.err.println("Logger.instance(): " +
                     "Unable to load logger of type " + loggerType + ". Loading NullLogger.");
                 instance = new NullLogger();
                 e.printStackTrace();
-
+
             }
             instance.setLevel(level);
         }
@@ -69,8 +70,8 @@ public abstract class Logger{
 
     public static void printMemStats(int code){
 
-        //MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
-        //printMemStats(code, ma);
+        MemoryArea ma = RealtimeThread.getCurrentMemoryArea();
+        printMemStats(code, ma);
 
     }
     public static void writeln(long a){
@@ -103,7 +104,7 @@ public abstract class Logger{
         writeln();
     }
 
-    public static void printMemStats(int code, MemoryArea ma){
+    synchronized public static void printMemStats(int code, MemoryArea ma){
 
         //System.out.println(ma.memoryConsumed()+","+ma.memoryRemaining());
         if(edu.uci.ece.zen.utils.ZenProperties.memDbg){
