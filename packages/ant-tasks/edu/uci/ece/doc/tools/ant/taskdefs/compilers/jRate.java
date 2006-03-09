@@ -401,10 +401,10 @@ public class jRate extends MatchingTask {
         if (additionalLinkOptions != null) cmd.createArgument().setLine(
                 additionalLinkOptions);
 
-        cmd.createArgument().setValue("-ljRateRT");
-        cmd.createArgument().setValue("-ljRate");
-        cmd.createArgument().setValue("-ljRateCore");
-        cmd.createArgument().setValue("-lrt");
+//        cmd.createArgument().setValue("-ljRateRT");
+//        cmd.createArgument().setValue("-ljRate");
+//        cmd.createArgument().setValue("-ljRateCore");
+//        cmd.createArgument().setValue("-lrt");
 
         return cmd;
     }
