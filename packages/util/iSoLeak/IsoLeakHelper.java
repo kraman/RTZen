@@ -18,7 +18,8 @@ public class IsoLeakHelper{
     private static long startTime = System.currentTimeMillis();
     private static boolean logLeaks = false;
     public synchronized static void init(){
-        if( leakOut == null ){
+        //System.out.println("this sucks, butthead");
+	if( leakOut == null ){
             try{
                 long l = (new java.util.Random()).nextLong();
                 leakOut = new FileOutputStream( "leak" + l + ".log" );
@@ -30,8 +31,8 @@ public class IsoLeakHelper{
         }
     }
 
-    private static final int maxNumThreads = 100;
-    private static final int maxMemRegions = 100;
+    private static final int maxNumThreads = 1000;
+    private static final int maxMemRegions = 1000;
     private static final int maxLeaks = 10;
 
     private static final int THRD_ID = 0;
@@ -69,7 +70,8 @@ public class IsoLeakHelper{
 
     private static int findThread( long threadId ){
         try{
-            for( int i=0;i<totThreads;i++ ){
+//System.out.println("threads: " + totThreads + " tid: " + threadId);
+            for( int i=0;i<totThreads && i<maxNumThreads;i++ ){
                 if( threadLog[i][THRD_ID] == threadId ){
                     return i;
                 }

@@ -58,7 +58,6 @@ public class IsoLeak {
                 }
             }
             cls.setConstantPool(pool.getFinalConstantPool());
-
             //adding static final identifier field to every class
             if( !cls.isAbstract() ){
                 ClassGen thisClass = new ClassGen( cls );
@@ -111,7 +110,7 @@ public class IsoLeak {
             if( instructions[i].getInstruction() instanceof ReturnInstruction )
             {
                 BranchInstruction finallyJump = new JSR( null );
-                finallyJumpHandlers.add( finallyJump );
+                finallyJumpHandlers.addElement( finallyJump );
                 InstructionHandle ih;
                 if( instructions[i].getInstruction() instanceof RETURN ){
                     ih = oldList.insert( instructions[i] , finallyJump );

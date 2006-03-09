@@ -29,8 +29,11 @@
             bootclasspath="${java.home}/lib/rt.jar;${zen.rtbootclasspath};${zen.srcdir}/util/iSoLeak/bcel-5.1.jar"
             memoryMaximumSize="256m"
             compiler="modern"
+            source="1.2"
+            target="1.2"
             >
             <include name="IsoLeak**.java"/>
+            <compilerarg value="-Xlint:unchecked"/>
         </javac>
     </target>
 </project>
