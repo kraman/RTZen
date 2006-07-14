@@ -1,18 +1,15 @@
 #!/bin/bash
 
-CheckSVN=`svn --version | grep version`
 RevDate="Unknown date"
 RevNum=-1
 
-if [ "x${CheckSVN}" = "x" ]; then
-    echo "No subversion found";
-else
+if [ ! -d ".svn" ]; then
     RevDate=`svn info | grep "Last Changed Date" | awk -F'[()]' '{ print $2 }'`
     RevNum=`svn info | grep "Last Changed Rev" | awk -F'[ :]+' '{ print $4 }'`
 fi
 
 DevJVM=$1
-echo "Building RTZen revision ${RevNum} , Snapshot from ${RevDate}";
+echo "Building RTZen revision ${RevNum}, Snapshot from ${RevDate}";
 echo "RTZen will be compiled for the ${DevJVM} platform";
 
 echo "
