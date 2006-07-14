@@ -3,7 +3,7 @@
 RevDate="Unknown date"
 RevNum=-1
 
-if [ ! -d ".svn" ]; then
+if [ -d ".svn" ]; then
     RevDate=`svn info | grep "Last Changed Date" | awk -F'[()]' '{ print $2 }'`
     RevNum=`svn info | grep "Last Changed Rev" | awk -F'[ :]+' '{ print $4 }'`
 fi
