@@ -8,9 +8,7 @@ if [ -d ".svn" ]; then
     RevNum=`svn info | grep "Last Changed Rev" | awk -F'[ :]+' '{ print $4 }'`
 fi
 
-DevJVM=$1
 echo "Building RTZen revision ${RevNum}, Snapshot from ${RevDate}";
-echo "RTZen will be compiled for the ${DevJVM} platform";
 
 echo "
 /******************************************************************************\\
@@ -25,5 +23,4 @@ package edu.uci.ece.zen.utils;
 public class VersionStamp{
     public static final String versionDate=\"${RevDate}\";
     public static final int versionRev=${RevNum};
-    public static final String devJVM=\"${DevJVM}\";
 }" > packages/src/edu/uci/ece/zen/utils/VersionStamp.java
